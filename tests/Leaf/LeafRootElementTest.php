@@ -1,0 +1,156 @@
+<?php
+
+namespace Bdf\Form\Leaf;
+
+use Bdf\Form\ElementInterface;
+use Bdf\Form\Error\FormError;
+use Bdf\Validator\Validator;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\Validator\Constraint;
+
+/**
+ * Class LeafRootElementTest
+ */
+class LeafRootElementTest extends TestCase
+{
+    /**
+     *
+     */
+    public function test_submit()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $element->expects($this->once())->method('submit')->with('data');
+        $this->assertSame($root, $root->submit('data'));
+    }
+
+    /**
+     *
+     */
+    public function test_import()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $element->expects($this->once())->method('import')->with('data');
+        $this->assertSame($root, $root->import('data'));
+    }
+
+    /**
+     *
+     */
+    public function test_value()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $element->expects($this->once())->method('value')->willReturn('value');
+        $this->assertSame('value', $root->value());
+    }
+
+    /**
+     *
+     */
+    public function test_httpValue()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $element->expects($this->once())->method('httpValue')->willReturn('value');
+        $this->assertSame('value', $root->httpValue());
+    }
+
+    /**
+     *
+     */
+    public function test_valid()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $element->expects($this->once())->method('valid')->willReturn(true);
+        $this->assertTrue($root->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_error()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $error = FormError::message('error');
+
+        $element->expects($this->once())->method('error')->willReturn($error);
+        $this->assertSame($error, $root->error());
+    }
+
+    /**
+     *
+     */
+    public function test_container()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $this->assertNull($root->container());
+    }
+
+    /**
+     *
+     */
+    public function test_submitButton()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $this->assertNull($root->submitButton());
+    }
+
+    /**
+     *
+     */
+    public function test_root()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $this->assertSame($root, $root->root());
+    }
+
+    /**
+     *
+     */
+    public function test_getValidator()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $this->assertInstanceOf(Validator::class, $root->getValidator());
+    }
+
+    /**
+     *
+     */
+    public function test_getPropertyAccessor()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $this->assertInstanceOf(PropertyAccessor::class, $root->getPropertyAccessor());
+    }
+
+    /**
+     *
+     */
+    public function test_constraintGroups()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $this->assertEquals([Constraint::DEFAULT_GROUP], $root->constraintGroups());
+    }
+}

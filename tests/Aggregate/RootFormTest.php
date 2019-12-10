@@ -1,0 +1,112 @@
+<?php
+
+namespace Bdf\Form\Aggregate;
+
+use Bdf\Form\Aggregate\Collection\ChildrenCollection;
+use Bdf\Form\Button\SubmitButton;
+use Bdf\Form\Child\Child;
+use Bdf\Form\Child\Http\ArrayOffsetHttpFields;
+use Bdf\Form\Leaf\IntegerElement;
+use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Registry\Registry;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
+
+/**
+ * Class RootFormTest
+ */
+class RootFormTest extends TestCase
+{
+    /**
+     *
+     */
+    public function test_submit_with_button()
+    {
+        $registry = new Registry();
+
+        $form = new Form(new ChildrenCollection([
+            $registry->childBuilder(StringElement::class, 'firstName')->buildChild(),
+            $registry->childBuilder(StringElement::class, 'lastName')->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->buildChild(),
+        ]));
+
+        $root = new RootForm(
+            $form,
+            [
+                $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
+                $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
+            ]
+        );
+
+        $root->submit([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+            'btn1' => 'ok',
+        ]);
+
+        $this->assertSame($btn1, $root->submitButton());
+        $this->assertEquals(['btn1'], $root->constraintGroups());
+
+        $root->submit([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+            'btn2' => 'ok',
+        ]);
+
+        $this->assertSame($btn2, $root->submitButton());
+        $this->assertEquals(['btn2'], $root->constraintGroups());
+
+        $root->submit([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+            'btn2' => 'nok',
+        ]);
+
+        $this->assertNull($root->submitButton());
+        $this->assertEquals([Constraint::DEFAULT_GROUP], $root->constraintGroups());
+    }
+
+    /**
+     *
+     */
+    public function test_getValidator()
+    {
+        $form = new RootForm(new Form(new ChildrenCollection()));
+        $this->assertInstanceOf(RecursiveValidator::class, $form->getValidator());
+        $this->assertSame($form->getValidator(), $form->getValidator());
+    }
+
+    /**
+     *
+     */
+    public function test_getPropertyAccessor()
+    {
+        $form = new RootForm(new Form(new ChildrenCollection()));
+        $this->assertInstanceOf(PropertyAccessor::class, $form->getPropertyAccessor());
+        $this->assertSame($form->getPropertyAccessor(), $form->getPropertyAccessor());
+    }
+
+    /**
+     *
+     */
+    public function test_delegation()
+    {
+        $form = new RootForm(new Form(new ChildrenCollection([
+            new Child('value', new IntegerElement(), new ArrayOffsetHttpFields('value'))
+        ])));
+
+        $this->assertSame($form, $form->submit(['value' => '42']));
+        $this->assertSame($form, $form->import([]));
+        $this->assertSame([], $form->value());
+        $this->assertSame(['value' => '42'], $form->httpValue());
+        $this->assertTrue($form->valid());
+        $this->assertTrue($form->error()->empty());
+        $this->assertNull($form->container());
+        $this->assertSame($form, $form->root());
+    }
+}

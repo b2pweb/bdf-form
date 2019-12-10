@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit bootstrap="tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         stderr="true"
+>
+    <php>
+        <!-- php -r 'echo -1 & ~E_USER_DEPRECATED;' -->
+        <!--<ini name="error_reporting" value="-16385"/>-->
+        <ini name="error_reporting" value="-1" />
+        <ini name="zend.enable_gc" value="0" />
+        <ini name="memory_limit" value="2G" />
+    </php>
+
+    <testsuites>
+        <testsuite name="All Test Suite">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="false">
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
+</phpunit>
