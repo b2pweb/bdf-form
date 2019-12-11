@@ -2,9 +2,12 @@
 
 namespace Bdf\Form\Leaf;
 
+use Bdf\Form\Aggregate\Collection\ChildrenCollection;
+use Bdf\Form\Aggregate\Form;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
+use Symfony\Component\Validator\Constraints\Positive;
 
 /**
  * Class IntegerElementBuilderTest
@@ -166,5 +169,38 @@ class IntegerElementBuilderTest extends TestCase
 
         $this->assertTrue($element->submit('10.1')->valid());
         $this->assertSame(10, $element->value());
+    }
+
+    /**
+     *
+     */
+    public function test_required()
+    {
+        $element = $this->builder->required()->buildElement();
+
+        $element->submit(null);
+        $this->assertEquals('This value should not be blank.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_required_with_custom_message()
+    {
+        $element = $this->builder->required('my message')->buildElement();
+
+        $element->submit(null);
+        $this->assertEquals('my message', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_required_with_custom_constraint()
+    {
+        $element = $this->builder->required(new Positive())->buildElement();
+
+        $element->submit('-1');
+        $this->assertEquals('This value should be positive.', $element->error()->global());
     }
 }

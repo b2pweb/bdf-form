@@ -10,7 +10,6 @@ use Bdf\Form\Error\FormError;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
-use Symfony\Component\Validator\Constraint;
 
 /**
  * Child which extract HTTP field value from a simple array access
@@ -38,11 +37,6 @@ final class Child implements ChildInterface
     private $fields;
 
     /**
-     * @var bool
-     */
-    private $required;
-
-    /**
      * @var mixed
      */
     private $defaultValue;
@@ -67,11 +61,6 @@ final class Child implements ChildInterface
      */
     private $dependencies;
 
-    /**
-     * @var FormError|null
-     */
-    private $error;
-
 
     /**
      * ArrayOffsetChild constructor.
@@ -80,18 +69,16 @@ final class Child implements ChildInterface
      * @param ElementInterface $element
      * @param HttpFieldsInterface $fields
      * @param FilterInterface[] $filters
-     * @param Constraint|null $required
      * @param mixed $defaultValue
      * @param HydratorInterface|null $hydrator
      * @param ExtractorInterface|null $extractor
      * @param string[] $dependencies
      */
-    public function __construct(string $name, ElementInterface $element, ?HttpFieldsInterface $fields = null, array $filters = [], ?Constraint $required = null, $defaultValue = null, ?HydratorInterface $hydrator = null, ?ExtractorInterface $extractor = null, array $dependencies = [])
+    public function __construct(string $name, ElementInterface $element, ?HttpFieldsInterface $fields = null, array $filters = [], $defaultValue = null, ?HydratorInterface $hydrator = null, ?ExtractorInterface $extractor = null, array $dependencies = [])
     {
         $this->name = $name;
         $this->element = $element->setContainer($this);
         $this->fields = $fields ?: new ArrayOffsetHttpFields($name);
-        $this->required = $required;
         $this->defaultValue = $defaultValue;
         $this->filters = $filters;
         $this->hydrator = $hydrator;
@@ -150,14 +137,6 @@ final class Child implements ChildInterface
     /**
      * {@inheritdoc}
      */
-    public function required(): bool
-    {
-        return $this->required !== null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function import($entity): void
     {
         if (!$this->extractor) {
@@ -194,23 +173,10 @@ final class Child implements ChildInterface
      */
     public function submit($data): bool
     {
-        $this->error = null;
-
         $value = $this->fields->extract($data, $this->defaultValue);
 
         foreach ($this->filters as $filter) {
             $value = $filter->filter($value, $this->element); // @todo use $this instead of element ?
-        }
-
-        if ($this->required) {
-            $errors = $this->parent->root()->getValidator()->validate($value, $this->required);
-
-            if (count($errors)) {
-                $this->error = FormError::message($errors->get(0)->getMessage());
-                $this->element->import(null);
-
-                return false;
-            }
         }
 
         return $this->element->submit($value)->valid();
@@ -229,7 +195,7 @@ final class Child implements ChildInterface
      */
     public function error(): FormError
     {
-        return $this->error ?: $this->element->error();
+        return $this->element->error();
     }
 
     /**

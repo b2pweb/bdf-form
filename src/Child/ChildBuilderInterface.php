@@ -12,15 +12,6 @@ use Bdf\Form\PropertyAccess\HydratorInterface;
 interface ChildBuilderInterface
 {
     /**
-     * Mark this input as required
-     *
-     * @param mixed $options
-     *
-     * @return $this
-     */
-    public function required($options = null);
-
-    /**
      * Define the hydrator for the child
      * The hydrator is used by fill() method to set the element value into the entity
      *

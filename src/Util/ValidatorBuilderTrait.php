@@ -7,6 +7,7 @@ use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Trait for implements build of constraint validator
@@ -17,6 +18,26 @@ trait ValidatorBuilderTrait
      * @var Constraint[]
      */
     private $constraints = [];
+
+    /**
+     * Mark this input as required
+     *
+     * @param mixed $options
+     *
+     * @return $this
+     */
+    final public function required($options = null)
+    {
+        if (!$options instanceof Constraint) {
+            if (is_string($options)) {
+                $options = ['message' => $options];
+            }
+
+            $options = new NotBlank($options);
+        }
+
+        return $this->satisfy($options);
+    }
 
     /**
      * @see ElementBuilderInterface::satisfy()

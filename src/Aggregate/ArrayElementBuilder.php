@@ -10,7 +10,9 @@ use Bdf\Form\Registry\Registry;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Util\TransformerBuilderTrait;
 use Bdf\Form\Util\ValidatorBuilderTrait;
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Builder for the array element
@@ -171,6 +173,28 @@ class ArrayElementBuilder implements ElementBuilderInterface
     public function count(array $options): ArrayElementBuilder
     {
         return $this->arrayConstraint(new Count($options));
+    }
+
+    /**
+     * Mark this input as required
+     *
+     * @todo duplicated from the trait
+     *
+     * @param mixed $options
+     *
+     * @return $this
+     */
+    final public function required($options = null)
+    {
+        if (!$options instanceof Constraint) {
+            if (is_string($options)) {
+                $options = ['message' => $options];
+            }
+
+            $options = new NotBlank($options);
+        }
+
+        return $this->arrayConstraint($options);
     }
 
     /**

@@ -39,7 +39,7 @@ class ChildrenCollectionTest extends TestCase
         $tree = new ChildrenCollection();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -58,8 +58,8 @@ class ChildrenCollectionTest extends TestCase
         $tree = new ChildrenCollection();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1', 'e2']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1', 'e2']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -81,7 +81,7 @@ class ChildrenCollectionTest extends TestCase
 
         $e1 = new Child('e1', new StringElement());
         $e2 = new Child('e2', new StringElement());
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1', 'e2']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1', 'e2']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -102,8 +102,8 @@ class ChildrenCollectionTest extends TestCase
         $tree = new ChildrenCollection();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -124,9 +124,9 @@ class ChildrenCollectionTest extends TestCase
         $tree = new ChildrenCollection();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
         $e3 = new Child('e3', new StringElement());
-        $e4 = new Child('e4', new StringElement(), null, [], null, null, null, null, ['e1', 'e3']);
+        $e4 = new Child('e4', new StringElement(), null, [], null, null, null, ['e1', 'e3']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -186,8 +186,8 @@ class ChildrenCollectionTest extends TestCase
         $tree = new ChildrenCollection();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1']);
 
         $tree->add($e1);
         $tree->add($e2);

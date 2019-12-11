@@ -24,7 +24,7 @@ class PrefixedHttpFieldsTest extends TestCase
      */
     public function test_submit_empty($value)
     {
-        $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, null, new Setter());
+        $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
@@ -36,7 +36,7 @@ class PrefixedHttpFieldsTest extends TestCase
      */
     public function test_submit_empty_with_default_value($value)
     {
-        $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, ['default'], new Setter());
+        $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], ['default'], new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
@@ -48,7 +48,7 @@ class PrefixedHttpFieldsTest extends TestCase
      */
     public function test_submit_not_empty()
     {
-        $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, null, new Setter());
+        $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit(['child_0' => 'foo', 'child_bar' => 'baz', 'other' => 42]));
@@ -60,7 +60,7 @@ class PrefixedHttpFieldsTest extends TestCase
      */
     public function test_submit_element_constraint_error()
     {
-        $child = new Child('child', new ArrayElement(new StringElement(), null, new ConstraintValueValidator(new Count(['min' => 2]))), new PrefixedHttpFields('child_'), [], null, null, new Setter());
+        $child = new Child('child', new ArrayElement(new StringElement(), null, new ConstraintValueValidator(new Count(['min' => 2]))), new PrefixedHttpFields('child_'), [], null, new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertFalse($child->submit(['child_0' => 'value']));

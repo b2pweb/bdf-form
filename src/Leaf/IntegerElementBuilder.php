@@ -141,7 +141,13 @@ class IntegerElementBuilder extends AbstractElementBuilder
 
     protected function addNumberTransformer(TransformerInterface $previous): TransformerInterface
     {
-        $numberTransformer = new DataTransformerAdapter(new IntegerToLocalizedStringTransformer($this->grouping, $this->roundingMode));
+        // Handle null and scalar types
+        $numberTransformer = new DataTransformerAdapter(new class($this->grouping, $this->roundingMode) extends IntegerToLocalizedStringTransformer {
+            public function reverseTransform($value)
+            {
+                return parent::reverseTransform(is_scalar($value) || $value === null ? (string) $value : $value);
+            }
+        });
 
         if ($previous instanceof NullTransformer) {
             return $numberTransformer;

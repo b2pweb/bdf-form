@@ -6,6 +6,7 @@ use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
 
@@ -159,5 +160,38 @@ class ArrayElementBuilderTest extends TestCase
         $element = $this->builder->value(['foo', 'bar'])->buildElement();
 
         $this->assertSame(['foo', 'bar'], $element->value());
+    }
+
+    /**
+     *
+     */
+    public function test_required()
+    {
+        $element = $this->builder->required()->buildElement();
+
+        $element->submit([]);
+        $this->assertEquals('This value should not be blank.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_required_with_custom_message()
+    {
+        $element = $this->builder->required('my message')->buildElement();
+
+        $element->submit([]);
+        $this->assertEquals('my message', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_required_with_custom_constraint()
+    {
+        $element = $this->builder->required(new Count(['min' => 2]))->buildElement();
+
+        $element->submit([]);
+        $this->assertEquals('This collection should contain 2 elements or more.', $element->error()->global());
     }
 }

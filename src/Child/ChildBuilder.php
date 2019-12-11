@@ -13,8 +13,6 @@ use Bdf\Form\PropertyAccess\HydratorInterface;
 use Bdf\Form\PropertyAccess\Setter;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Registry\RegistryInterface;
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Base builder for a child
@@ -23,6 +21,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * @method $this satisfy($constraint, $options = null, $append = true)
  * @method $this value($value)
  * @method $this transformer($transformer, $append = true)
+ * @method $this required($options = null)
  */
 class ChildBuilder implements ChildBuilderInterface
 {
@@ -42,15 +41,6 @@ class ChildBuilder implements ChildBuilderInterface
      * @var string[]
      */
     private $viewDependencies = [];
-
-    /**
-     * Set the input required
-     * The builder will add the require constraint if this property is set
-     * The property could be the error message or the constraint options
-     *
-     * @var Constraint|null
-     */
-    private $required;
 
     /**
      * @var mixed
@@ -107,24 +97,6 @@ class ChildBuilder implements ChildBuilderInterface
         $this->name = $name;
         $this->elementBuilder = $elementBuilder;
         $this->registry = $registry ?: new Registry();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function required($options = null)
-    {
-        if (!$options instanceof Constraint) {
-            if (is_string($options)) {
-                $options = ['message' => $options];
-            }
-
-            $options = new NotBlank($options);
-        }
-
-        $this->required = $options;
-
-        return $this;
     }
 
     /**
@@ -202,7 +174,6 @@ class ChildBuilder implements ChildBuilderInterface
                 $this->elementBuilder->buildElement(),
                 $fields,
                 $filters,
-                $this->required,
                 $this->default,
                 $this->hydrator,
                 $this->extractor,
@@ -215,7 +186,6 @@ class ChildBuilder implements ChildBuilderInterface
             $this->elementBuilder->buildElement(),
             $fields,
             $filters,
-            $this->required,
             $this->default,
             $this->hydrator,
             $this->extractor,

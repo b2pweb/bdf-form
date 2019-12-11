@@ -52,14 +52,6 @@ interface ChildInterface
     public function name(): string;
 
     /**
-     * Check if the child is required
-     * If an empty value is submitted on a required child, an error will be generated
-     *
-     * @return bool
-     */
-    public function required(): bool;
-
-    /**
      * List of sibling input dependencies
      * Dependencies must be submitted before current child
      * The returned list contains the same keys and values

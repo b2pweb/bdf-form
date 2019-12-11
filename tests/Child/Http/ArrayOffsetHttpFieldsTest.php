@@ -23,7 +23,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
      */
     public function test_submit_empty($value)
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, null, new Setter());
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
@@ -35,7 +35,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
      */
     public function test_submit_empty_with_default_value($value)
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, 'default', new Setter());
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], 'default', new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
@@ -47,7 +47,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
      */
     public function test_submit_not_empty($value)
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, null, new Setter());
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit(['child' => $value]));
@@ -59,7 +59,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
      */
     public function test_submit_element_constraint_error()
     {
-        $child = new Child('child', new StringElement(new ConstraintValueValidator(new NotEqualTo('value'))), new ArrayOffsetHttpFields('child'), [], null, null, new Setter());
+        $child = new Child('child', new StringElement(new ConstraintValueValidator(new NotEqualTo('value'))), new ArrayOffsetHttpFields('child'), [], null, new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertFalse($child->submit(['child' => 'value']));

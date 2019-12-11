@@ -29,7 +29,7 @@ abstract class LeafElement implements ElementInterface
      *
      * @var TransformerInterface
      */
-    private $transformer = [];
+    private $transformer;
 
     /**
      * @var mixed
@@ -80,7 +80,7 @@ abstract class LeafElement implements ElementInterface
     /**
      * {@inheritdoc}
      */
-    public function valid(): bool
+    final public function valid(): bool
     {
         return $this->submitted && $this->error->empty();
     }
@@ -88,7 +88,7 @@ abstract class LeafElement implements ElementInterface
     /**
      * {@inheritdoc}
      */
-    public function error(): FormError
+    final public function error(): FormError
     {
         return $this->error;
     }

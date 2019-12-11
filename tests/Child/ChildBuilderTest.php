@@ -44,7 +44,6 @@ class ChildBuilderTest extends TestCase
         $this->assertInstanceOf(Child::class, $child);
         $this->assertEquals('child', $child->name());
         $this->assertInstanceOf(StringElement::class, $child->element());
-        $this->assertFalse($child->required());
         $this->assertEmpty($child->dependencies());
     }
 
@@ -56,7 +55,6 @@ class ChildBuilderTest extends TestCase
         $child = $this->builder->required()->buildChild();
         $child->setParent(new Form(new ChildrenCollection()));
 
-        $this->assertTrue($child->required());
         $child->submit([]);
         $this->assertEquals('This value should not be blank.', $child->error()->global());
     }
@@ -69,7 +67,6 @@ class ChildBuilderTest extends TestCase
         $child = $this->builder->required('my message')->buildChild();
         $child->setParent(new Form(new ChildrenCollection()));
 
-        $this->assertTrue($child->required());
         $child->submit([]);
         $this->assertEquals('my message', $child->error()->global());
     }
@@ -82,7 +79,6 @@ class ChildBuilderTest extends TestCase
         $child = $this->builder->required(new Positive())->buildChild();
         $child->setParent(new Form(new ChildrenCollection()));
 
-        $this->assertTrue($child->required());
         $child->submit(['child' => '-1']);
         $this->assertEquals('This value should be positive.', $child->error()->global());
     }
@@ -308,10 +304,6 @@ class MyCustomChild implements ChildInterface
     }
 
     public function name(): string
-    {
-    }
-
-    public function required(): bool
     {
     }
 

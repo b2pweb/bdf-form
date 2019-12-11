@@ -4,6 +4,7 @@ namespace Bdf\Form\Leaf;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
+use Symfony\Component\Validator\Constraints\Positive;
 
 /**
  * Class StringElementBuilderTest
@@ -99,5 +100,38 @@ class StringElementBuilderTest extends TestCase
 
         $this->assertFalse($element->submit('Bill')->valid());
         $this->assertFalse($element->submit('John')->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_required()
+    {
+        $element = $this->builder->required()->buildElement();
+
+        $element->submit(null);
+        $this->assertEquals('This value should not be blank.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_required_with_custom_message()
+    {
+        $element = $this->builder->required('my message')->buildElement();
+
+        $element->submit(null);
+        $this->assertEquals('my message', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_required_with_custom_constraint()
+    {
+        $element = $this->builder->required(new Positive())->buildElement();
+
+        $element->submit('-1');
+        $this->assertEquals('This value should be positive.', $element->error()->global());
     }
 }

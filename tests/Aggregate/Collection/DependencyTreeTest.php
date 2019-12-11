@@ -46,7 +46,7 @@ class DependencyTreeTest extends TestCase
         $tree = new DependencyTree();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -70,8 +70,8 @@ class DependencyTreeTest extends TestCase
         $tree = new DependencyTree();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1', 'e2']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1', 'e2']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -99,7 +99,7 @@ class DependencyTreeTest extends TestCase
 
         $e1 = new Child('e1', new StringElement());
         $e2 = new Child('e2', new StringElement());
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1', 'e2']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1', 'e2']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -120,8 +120,8 @@ class DependencyTreeTest extends TestCase
         $tree = new DependencyTree();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -142,9 +142,9 @@ class DependencyTreeTest extends TestCase
         $tree = new DependencyTree();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
         $e3 = new Child('e3', new StringElement());
-        $e4 = new Child('e4', new StringElement(), null, [], null, null, null, null, ['e1', 'e3']);
+        $e4 = new Child('e4', new StringElement(), null, [], null, null, null, ['e1', 'e3']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -166,8 +166,8 @@ class DependencyTreeTest extends TestCase
     {
         $tree = new DependencyTree();
 
-        $e1 = new Child('e1', new StringElement(), null, [], null, null, null, null, ['d1', 'd2']);
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['d1', 'd3']);
+        $e1 = new Child('e1', new StringElement(), null, [], null, null, null, ['d1', 'd2']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['d1', 'd3']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -188,8 +188,8 @@ class DependencyTreeTest extends TestCase
     {
         $tree = new DependencyTree();
 
-        $e1 = new Child('e1', new StringElement(), null, [], null, null, null, null, ['d1', 'd2']);
-        $d1 = new Child('d1', new StringElement(), null, [], null, null, null, null, ['d2']);
+        $e1 = new Child('e1', new StringElement(), null, [], null, null, null, ['d1', 'd2']);
+        $d1 = new Child('d1', new StringElement(), null, [], null, null, null, ['d2']);
 
         $tree->add($e1);
         $tree->add($d1);
@@ -256,8 +256,8 @@ class DependencyTreeTest extends TestCase
         $tree = new DependencyTree();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -276,8 +276,8 @@ class DependencyTreeTest extends TestCase
         $tree = new DependencyTree();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -296,8 +296,8 @@ class DependencyTreeTest extends TestCase
         $tree = new DependencyTree();
 
         $e1 = new Child('e1', new StringElement());
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e1']);
-        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, null, ['e1']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e1']);
+        $e3 = new Child('e3', new StringElement(), null, [], null, null, null, ['e1']);
 
         $tree->add($e1);
         $tree->add($e2);
@@ -313,10 +313,10 @@ class DependencyTreeTest extends TestCase
     {
         $tree = new DependencyTree();
 
-        $e1 = new Child('e1', new StringElement(), null, [], null, null, null, null, ['e2', 'e3']);
-        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, null, ['e3']);
+        $e1 = new Child('e1', new StringElement(), null, [], null, null, null, ['e2', 'e3']);
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['e3']);
         $e3 = new Child('e3', new StringElement());
-        $e4 = new Child('e4', new StringElement(), null, [], null, null, null, null, ['e3', 'e2', 'e5']);
+        $e4 = new Child('e4', new StringElement(), null, [], null, null, null, ['e3', 'e2', 'e5']);
         $e5 = new Child('e5', new StringElement());
 
         $tree->add($e1);
