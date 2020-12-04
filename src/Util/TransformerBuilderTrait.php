@@ -19,6 +19,13 @@ trait TransformerBuilderTrait
     private $transformers = [];
 
     /**
+     * @var callable[]
+     */
+    private $transformerProviders = [];
+
+    /**
+     * {@inheritdoc}
+     *
      * @see ElementBuilderInterface::transformer()
      */
     final public function transformer($transformer, $append = true)
@@ -30,6 +37,18 @@ trait TransformerBuilderTrait
         }
 
         return $this;
+    }
+
+    /**
+     * Add a new transformer provider
+     * The transformer provider permit to create a transformer during the build of the element transformer
+     * So the transformer can be configured by the element builder
+     *
+     * @param callable(RegistryInterface):TransformerInterface[] $provider
+     */
+    final protected function addTransformerProvider(callable $provider): void
+    {
+        $this->transformerProviders[] = $provider;
     }
 
     /**
@@ -46,15 +65,27 @@ trait TransformerBuilderTrait
      */
     private function buildTransformer(): TransformerInterface
     {
-        switch (count($this->transformers)) {
+        $providedTransformers = [];
+
+        foreach ($this->transformerProviders as $provider) {
+            $providedTransformers = array_merge($providedTransformers, $provider($this->registry()));
+        }
+
+        $transformers = array_map([$this->registry(), 'transformer'], $this->transformers);
+
+        if (!empty($providedTransformers)) {
+            $transformers = array_merge($providedTransformers, $transformers);
+        }
+
+        switch (count($transformers)) {
             case 0:
                 return NullTransformer::instance();
 
             case 1:
-                return $this->registry()->transformer($this->transformers[0]);
+                return $transformers[0];
 
             default:
-                return new TransformerAggregate(array_map([$this->registry(), 'transformer'], $this->transformers));
+                return new TransformerAggregate($transformers);
         }
     }
 }

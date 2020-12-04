@@ -22,17 +22,27 @@
       "Bdf\\Form\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Bdf\\Form\\": "tests"
+    }
+  },
   "minimum-stability": "dev",
   "require": {
     "php": ">=7.1",
     "psr/container": "~1.0",
     "symfony/form": "~4.3|~5.0",
     "symfony/property-access": "~4.3|~5.0",
-    "symfony/security-csrf": "~4.3|~5.0",
     "symfony/validator": "~4.3|~5.0",
     "b2p/bdf-validator": "~1.6"
   },
   "require-dev": {
+    "symfony/security-csrf": "~4.3|~5.0",
+    "giggsey/libphonenumber-for-php": "~8.0",
     "phpunit/phpunit": "~7.0|~8.0"
+  },
+  "suggest": {
+    "symfony/security-csrf": "For enable CSRF element",
+    "giggsey/libphonenumber-for-php": "Required to use phone type (~8.0)"
   }
 }

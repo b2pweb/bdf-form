@@ -5,8 +5,11 @@ namespace Bdf\Form\Aggregate;
 use Bdf\Form\Aggregate\Value\ValueGeneratorInterface;
 use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -61,6 +64,46 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @return ChildBuilderInterface|IntegerElementBuilder
      */
     public function integer(string $name, $default = null): ChildBuilderInterface;
+
+    /**
+     * Add a new float element on the form
+     *
+     * <code>
+     * $builder->float('value', 42)->scale(2);
+     * </code>
+     *
+     * @param string $name The child name
+     * @param mixed $default Default value to submit (in HTTP format)
+     *
+     * @return ChildBuilderInterface|FloatElementBuilder
+     */
+    public function float(string $name, $default = null): ChildBuilderInterface;
+
+    /**
+     * Add a new boolean element on the form
+     *
+     * <code>
+     * $builder->boolean('accept', 42);
+     * </code>
+     *
+     * @param string $name The child name
+     *
+     * @return ChildBuilderInterface|BooleanElementBuilder
+     */
+    public function boolean(string $name): ChildBuilderInterface;
+
+    /**
+     * Add a new csrf token on form
+     *
+     * <code>
+     * $builder->csrf()->tokenId('my_csrf_token');
+     * </code>
+     *
+     * @param string $name The child name
+     *
+     * @return ChildBuilderInterface|CsrfElementBuilder
+     */
+    public function csrf(string $name = '_token'): ChildBuilderInterface;
 
     /**
      * Add an embedded form

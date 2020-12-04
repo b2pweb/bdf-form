@@ -8,18 +8,18 @@ use Symfony\Component\Validator\Constraints\NotEqualTo;
 use Symfony\Component\Validator\Constraints\Positive;
 
 /**
- * Class IntegerElementBuilderTest
+ * Class FloatElementBuilderTest
  */
-class IntegerElementBuilderTest extends TestCase
+class FloatElementBuilderTest extends TestCase
 {
     /**
-     * @var IntegerElementBuilder
+     * @var FloatElementBuilder
      */
     private $builder;
 
     protected function setUp(): void
     {
-        $this->builder = new IntegerElementBuilder();
+        $this->builder = new FloatElementBuilder();
     }
 
     /**
@@ -29,7 +29,7 @@ class IntegerElementBuilderTest extends TestCase
     {
         $element = $this->builder->buildElement();
 
-        $this->assertInstanceOf(IntegerElement::class, $element);
+        $this->assertInstanceOf(FloatElement::class, $element);
     }
 
     /**
@@ -40,7 +40,7 @@ class IntegerElementBuilderTest extends TestCase
         $element = $this->builder->satisfy(new NotEqualTo(5))->buildElement();
 
         $this->assertFalse($element->submit(5)->valid());
-        $this->assertTrue($element->submit(4)->valid());
+        $this->assertTrue($element->submit(5.1)->valid());
     }
 
     /**
@@ -89,9 +89,9 @@ class IntegerElementBuilderTest extends TestCase
      */
     public function test_value()
     {
-        $element = $this->builder->value(15)->buildElement();
+        $element = $this->builder->value(15.2)->buildElement();
 
-        $this->assertSame(15, $element->value());
+        $this->assertSame(15.2, $element->value());
     }
 
     /**
@@ -101,8 +101,8 @@ class IntegerElementBuilderTest extends TestCase
     {
         $element = $this->builder->min(15)->buildElement();
 
-        $this->assertFalse($element->submit(14)->valid());
-        $this->assertTrue($element->submit(16)->valid());
+        $this->assertFalse($element->submit(14.9)->valid());
+        $this->assertTrue($element->submit(15.1)->valid());
     }
 
     /**
@@ -123,7 +123,7 @@ class IntegerElementBuilderTest extends TestCase
         $element = $this->builder->max(15)->buildElement();
 
         $this->assertTrue($element->submit(14)->valid());
-        $this->assertFalse($element->submit(16)->valid());
+        $this->assertFalse($element->submit(15.1)->valid());
     }
 
     /**
@@ -133,7 +133,7 @@ class IntegerElementBuilderTest extends TestCase
     {
         $element = $this->builder->max(15, 'my error')->buildElement();
 
-        $this->assertEquals('my error', $element->submit(16)->error()->global());
+        $this->assertEquals('my error', $element->submit(15.1)->error()->global());
     }
 
     /**
@@ -144,7 +144,7 @@ class IntegerElementBuilderTest extends TestCase
         $element = $this->builder->grouping()->buildElement();
 
         $this->assertTrue($element->submit('15 000')->valid());
-        $this->assertSame(15000, $element->value());
+        $this->assertSame(15000.0, $element->value());
     }
 
     /**
@@ -152,10 +152,21 @@ class IntegerElementBuilderTest extends TestCase
      */
     public function test_roundingMode()
     {
-        $element = $this->builder->roundingMode(IntegerToLocalizedStringTransformer::ROUND_UP)->buildElement();
+        $element = $this->builder->scale(1)->roundingMode(IntegerToLocalizedStringTransformer::ROUND_UP)->buildElement();
 
-        $this->assertTrue($element->submit('10.1')->valid());
-        $this->assertSame(11, $element->value());
+        $this->assertTrue($element->submit('10.11')->valid());
+        $this->assertSame(10.2, $element->value());
+    }
+
+    /**
+     *
+     */
+    public function test_scale()
+    {
+        $element = $this->builder->scale(3)->buildElement();
+
+        $this->assertTrue($element->submit('1.23456')->valid());
+        $this->assertSame(1.234, $element->value());
     }
 
     /**
@@ -166,7 +177,7 @@ class IntegerElementBuilderTest extends TestCase
         $element = $this->builder->raw()->buildElement();
 
         $this->assertTrue($element->submit('10.1')->valid());
-        $this->assertSame(10, $element->value());
+        $this->assertSame(10.1, $element->value());
     }
 
     /**

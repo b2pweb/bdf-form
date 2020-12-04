@@ -10,15 +10,23 @@ use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Bdf\Form\Csrf\CsrfElement;
+use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
 use Bdf\Form\Custom\CustomFormBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Filter\FilterInterface;
+use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Phone\PhoneElement;
+use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -39,6 +47,12 @@ final class Registry implements RegistryInterface
     private $elementBuilderFactories = [
         StringElement::class => StringElementBuilder::class,
         IntegerElement::class => IntegerElementBuilder::class,
+        FloatElement::class => FloatElementBuilder::class,
+        BooleanElement::class => BooleanElementBuilder::class,
+
+        CsrfElement::class => CsrfElementBuilder::class,
+        PhoneElement::class => PhoneElementBuilder::class,
+
         ArrayElement::class => ArrayElementBuilder::class,
         Form::class => FormBuilder::class,
     ];

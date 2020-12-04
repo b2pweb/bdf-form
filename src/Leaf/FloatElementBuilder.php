@@ -6,15 +6,20 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
-use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
+use Symfony\Component\Form\Extension\Core\DataTransformer\NumberToLocalizedStringTransformer;
 
 /**
- * Builder for an integer element
+ * Builder for a float element
  *
- * @see IntegerElement
+ * @see FloatElement
  */
-class IntegerElementBuilder extends NumberElementBuilder
+class FloatElementBuilder extends NumberElementBuilder
 {
+    /**
+     * @var int|null
+     */
+    private $scale = null;
+
     /**
      * @var bool
      */
@@ -23,13 +28,13 @@ class IntegerElementBuilder extends NumberElementBuilder
     /**
      * @var int
      */
-    private $roundingMode = IntegerToLocalizedStringTransformer::ROUND_DOWN;
+    private $roundingMode = NumberToLocalizedStringTransformer::ROUND_DOWN;
 
 
     /**
      * Enable grouping of thousands
      *
-     * Note: The element must not in raw() mode to works
+     * Note: The element must not be in raw() mode to works
      *
      * @param bool $flag Enable or disable grouping
      *
@@ -45,9 +50,9 @@ class IntegerElementBuilder extends NumberElementBuilder
     /**
      * How to round the decimal values
      *
-     * Note: The element must not in raw() mode to works
+     * Note: The element must not be in raw() mode to works
      *
-     * @param int $mode One of the IntegerToLocalizedStringTransformer::ROUND_ constant
+     * @param int $mode One of the NumberToLocalizedStringTransformer::ROUND_ constant
      *
      * @return $this
      */
@@ -59,11 +64,27 @@ class IntegerElementBuilder extends NumberElementBuilder
     }
 
     /**
+     * Define the number of digits of the decimal part
+     *
+     * Note: The element must not be in raw() mode to works
+     *
+     * @param int $scale
+     *
+     * @return $this
+     */
+    public function scale(int $scale): self
+    {
+        $this->scale = $scale;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
     {
-        return new IntegerElement($validator, $transformer);
+        return new FloatElement($validator, $transformer);
     }
 
     /**
@@ -71,8 +92,7 @@ class IntegerElementBuilder extends NumberElementBuilder
      */
     protected function numberTransformer(): TransformerInterface
     {
-        // Handle null and scalar types
-        return new DataTransformerAdapter(new class($this->grouping, $this->roundingMode) extends IntegerToLocalizedStringTransformer {
+        return new DataTransformerAdapter(new class($this->scale, $this->grouping, $this->roundingMode) extends NumberToLocalizedStringTransformer {
             public function reverseTransform($value)
             {
                 return parent::reverseTransform(is_scalar($value) || $value === null ? (string) $value : $value);

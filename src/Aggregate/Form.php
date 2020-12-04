@@ -67,7 +67,7 @@ final class Form implements FormInterface
      *
      * @param ChildrenCollectionInterface $children
      * @param ValueValidatorInterface|null $validator
-     * @param TransformerInterface $transformer
+     * @param TransformerInterface|null $transformer
      * @param ValueGeneratorInterface|null $generator
      */
     public function __construct(ChildrenCollectionInterface $children, ?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ValueGeneratorInterface $generator = null)

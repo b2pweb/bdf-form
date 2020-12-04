@@ -10,16 +10,24 @@ use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildBuilder;
+use Bdf\Form\Csrf\CsrfElement;
+use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
 use Bdf\Form\Custom\CustomFormBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Filter\TrimFilter;
+use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\LeafElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Phone\PhoneElement;
+use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerAggregate;
@@ -146,13 +154,17 @@ class RegistryTest extends TestCase
     {
         $this->assertInstanceOf(StringElementBuilder::class, $this->registry->elementBuilder(StringElement::class));
         $this->assertInstanceOf(IntegerElementBuilder::class, $this->registry->elementBuilder(IntegerElement::class));
+        $this->assertInstanceOf(FloatElementBuilder::class, $this->registry->elementBuilder(FloatElement::class));
+        $this->assertInstanceOf(BooleanElementBuilder::class, $this->registry->elementBuilder(BooleanElement::class));
+        $this->assertInstanceOf(CsrfElementBuilder::class, $this->registry->elementBuilder(CsrfElement::class));
+        $this->assertInstanceOf(PhoneElementBuilder::class, $this->registry->elementBuilder(PhoneElement::class));
         $this->assertInstanceOf(FormBuilder::class, $this->registry->elementBuilder(Form::class));
         $this->assertInstanceOf(ArrayElementBuilder::class, $this->registry->elementBuilder(ArrayElement::class));
         $this->assertInstanceOf(CustomFormBuilder::class, $this->registry->elementBuilder(MyCustomForm::class));
         $this->assertInstanceOf(MyCustomForm::class, $this->registry->elementBuilder(MyCustomForm::class)->buildElement());
 
         $builder = $this->createMock(ElementBuilderInterface::class);
-        $this->registry->register(MyCustomTestElement::class, function ()  use($builder) { return $builder; });
+        $this->registry->register(MyCustomTestElement::class, function () use($builder) { return $builder; });
 
         $this->assertSame($builder, $this->registry->elementBuilder(MyCustomTestElement::class));
     }

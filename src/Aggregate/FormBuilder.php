@@ -8,7 +8,10 @@ use Bdf\Form\Aggregate\Value\ValueGenerator;
 use Bdf\Form\Aggregate\Value\ValueGeneratorInterface;
 use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Registry\RegistryInterface;
@@ -88,6 +91,30 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
+    public function float(string $name, $default = null): ChildBuilderInterface
+    {
+        return $this->add($name, FloatElement::class)->default($default);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function boolean(string $name): ChildBuilderInterface
+    {
+        return $this->add($name, BooleanElement::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function csrf(string $name = '_token'): ChildBuilderInterface
+    {
+        return $this->add($name, CsrfElement::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function embedded(string $name, ?callable $configurator = null): ChildBuilderInterface
     {
         $builder = $this->add($name, Form::class);
@@ -162,7 +189,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    final protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
     {
         $children = new ChildrenCollection();
 

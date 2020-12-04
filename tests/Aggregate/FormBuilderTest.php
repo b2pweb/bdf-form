@@ -4,6 +4,9 @@ namespace Bdf\Form\Aggregate;
 
 use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\ChildBuilder;
+use Bdf\Form\Csrf\CsrfElement;
+use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
@@ -53,6 +56,45 @@ class FormBuilderTest extends TestCase
 
         $this->assertInstanceOf(Form::class, $form);
         $this->assertInstanceOf(IntegerElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_float()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->float('value'));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(FloatElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_boolean()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->boolean('value'));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(BooleanElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_csrf()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->csrf());
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(CsrfElement::class, $form['_token']->element());
     }
 
     /**

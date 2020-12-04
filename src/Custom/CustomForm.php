@@ -11,7 +11,7 @@ use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 
 /**
- * Utility class fr simply create a custom form element
+ * Utility class for simply create a custom form element
  *
  * <code>
  * class MyForm extends CustomForm
@@ -42,7 +42,7 @@ abstract class CustomForm implements FormInterface
     /**
      * CustomForm constructor.
      *
-     * @param FormBuilderInterface $builder
+     * @param FormBuilderInterface|null $builder
      */
     public function __construct(?FormBuilderInterface $builder = null)
     {

@@ -1,0 +1,214 @@
+<?php
+
+namespace Bdf\Form\Phone;
+
+use Bdf\Form\Aggregate\Collection\ChildrenCollection;
+use Bdf\Form\Aggregate\Form;
+use Bdf\Form\Child\Child;
+use Bdf\Form\Leaf\LeafRootElement;
+use Bdf\Form\Transformer\ClosureTransformer;
+use Bdf\Form\Transformer\TransformerInterface;
+use Bdf\Form\Validator\ConstraintValueValidator;
+use libphonenumber\PhoneNumber;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Validator\Constraints\NotBlank;
+
+/**
+ * Class PhoneElementTest
+ */
+class PhoneElementTest extends TestCase
+{
+    /**
+     *
+     */
+    public function test_default()
+    {
+        $element = new PhoneElement();
+
+        $this->assertFalse($element->valid());
+        $this->assertNull($element->value());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_success()
+    {
+        $element = new PhoneElement();
+
+        $this->assertTrue($element->submit('+330142563698')->valid());
+        $this->assertInstanceOf(PhoneNumber::class, $element->value());
+        $this->assertEquals(33, $element->value()->getCountryCode());
+        $this->assertEquals('142563698', $element->value()->getNationalNumber());
+        $this->assertEquals('+330142563698', $element->value()->getRawInput());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_malformed_phone()
+    {
+        $element = new PhoneElement();
+
+        $this->assertTrue($element->submit('invalid')->valid());
+        $this->assertInstanceOf(PhoneNumber::class, $element->value());
+        $this->assertFalse($element->value()->hasCountryCode());
+        $this->assertFalse($element->value()->hasNationalNumber());
+        $this->assertEquals('invalid', $element->value()->getRawInput());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_null()
+    {
+        $element = new PhoneElement();
+
+        $this->assertTrue($element->submit(null)->valid());
+        $this->assertNull($element->value());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_constraint()
+    {
+        $element = new PhoneElement(new ConstraintValueValidator(new NotBlank()));
+
+        $this->assertFalse($element->submit(null)->valid());
+        $this->assertNull($element->value());
+        $this->assertEquals('This value should not be blank.', $element->error()->global());
+
+        $this->assertTrue($element->submit('+330142563698')->valid());
+        $this->assertInstanceOf(PhoneNumber::class, $element->value());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_exception()
+    {
+        $transformer = $this->createMock(TransformerInterface::class);
+        $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
+        $element = new PhoneElement(null, $transformer);
+
+        $this->assertFalse($element->submit('aa')->valid());
+        $this->assertSame('aa', $element->value());
+        $this->assertEquals('my error', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer()
+    {
+        $element = new PhoneElement(null, new ClosureTransformer(function ($value, $_, $toPhp) {
+            return $toPhp ? base64_decode($value) : base64_encode($value);
+        }));
+
+        $element->submit(base64_encode('+330142563698'));
+        $this->assertInstanceOf(PhoneNumber::class, $element->value());
+        $this->assertEquals(33, $element->value()->getCountryCode());
+        $this->assertEquals('142563698', $element->value()->getNationalNumber());
+        $this->assertEquals('+330142563698', $element->value()->getRawInput());
+        $this->assertSame(base64_encode('+330142563698'), $element->httpValue());
+    }
+
+    /**
+     *
+     */
+    public function test_import()
+    {
+        $element = new PhoneElement();
+
+        $phone = new PhoneNumber();
+        $this->assertSame($phone, $element->import($phone)->value());
+    }
+
+    /**
+     *
+     */
+    public function test_httpValue_with_raw_input()
+    {
+        $element = new PhoneElement();
+
+        $phone = new PhoneNumber();
+        $phone->setRawInput('+330142563698');
+        $this->assertSame('+330142563698', $element->import($phone)->httpValue());
+    }
+
+    /**
+     *
+     */
+    public function test_httpValue_without_raw_input()
+    {
+        $element = new PhoneElement();
+
+        $phone = new PhoneNumber();
+        $phone
+            ->setCountryCode(33)
+            ->setNationalNumber('142563698')
+        ;
+
+        $this->assertSame('+33142563698', $element->import($phone)->httpValue());
+    }
+
+    /**
+     *
+     */
+    public function test_httpValue_null()
+    {
+        $element = new PhoneElement();
+
+        $this->assertNull($element->import(null)->httpValue());
+    }
+
+    /**
+     *
+     */
+    public function test_container()
+    {
+        $element = new PhoneElement();
+
+        $this->assertNull($element->container());
+
+        $container = new Child('name', $element);
+        $newElement = $element->setContainer($container);
+
+        $this->assertNotSame($element, $newElement);
+        $this->assertSame($container, $newElement->container());
+    }
+
+    /**
+     *
+     */
+    public function test_root_without_container()
+    {
+        $element = new PhoneElement();
+
+        $this->assertInstanceOf(LeafRootElement::class, $element->root());
+    }
+
+    /**
+     *
+     */
+    public function test_root_with_container()
+    {
+        $element = new PhoneElement();
+
+        $this->assertNull($element->container());
+
+        $container = new Child('name', $element);
+        $container->setParent(new Form(new ChildrenCollection()));
+
+        $element = $element->setContainer($container);
+
+        $this->assertSame($container->parent()->root(), $element->root());
+    }
+}
