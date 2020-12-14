@@ -5,9 +5,11 @@ namespace Bdf\Form\Leaf;
 use BadMethodCallException;
 use Bdf\Form\Button\ButtonInterface;
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
+use Bdf\Form\View\ElementViewInterface;
 use Bdf\Validator\ValidatorBuilder;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -115,9 +117,9 @@ final class LeafRootElement implements RootElementInterface
     /**
      * {@inheritdoc}
      */
-    public function view()
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        return $this->element->view();
+        return $this->element->view($field);
     }
 
     /**

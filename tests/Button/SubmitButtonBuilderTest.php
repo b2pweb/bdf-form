@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Button;
 
+use Bdf\Form\Button\View\ButtonViewInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -81,5 +83,10 @@ class CustomButton implements ButtonInterface
 
     public function constraintGroups(): array
     {
+    }
+
+    public function view(?HttpFieldPath $parent = null): ButtonViewInterface
+    {
+        // TODO: Implement view() method.
     }
 }

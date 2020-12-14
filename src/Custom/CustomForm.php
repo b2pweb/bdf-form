@@ -6,9 +6,11 @@ use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
+use Bdf\Form\View\ElementViewInterface;
 
 /**
  * Utility class for simply create a custom form element
@@ -23,6 +25,8 @@ use Bdf\Form\RootElementInterface;
  *     }
  * }
  * </code>
+ *
+ * @todo delegate to root for submit view etc...
  */
 abstract class CustomForm implements FormInterface
 {
@@ -182,9 +186,13 @@ abstract class CustomForm implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function view()
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        return $this->form()->view();
+        $view = $this->form()->view($field);
+
+        $view->setType(static::class);
+
+        return $view;
     }
 
     /**

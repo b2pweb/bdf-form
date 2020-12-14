@@ -5,9 +5,11 @@ namespace Bdf\Form\Aggregate;
 use BadMethodCallException;
 use Bdf\Form\Button\ButtonInterface;
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
+use Bdf\Form\View\ElementViewInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraint;
@@ -150,9 +152,9 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     /**
      * {@inheritdoc}
      */
-    public function view()
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        return $this->form->view();
+        return $this->form->view($field);
     }
 
     /**

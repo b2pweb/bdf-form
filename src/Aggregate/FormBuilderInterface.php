@@ -41,7 +41,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * Add a new string element on the form
      *
      * <code>
-     * $builder->string('id', 'aaa-aaa-aaa')->regex('/[a-z]{3}(-[a-z]{3}){2}/i');
+     * $builder->string('id', 'aaa-aaa-aaa')->regex('/[a-z]{3}(-[a-z]{3}){2}/i')->length(['max' => 35]);
      * </code>
      *
      * @param string $name The child name

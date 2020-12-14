@@ -3,9 +3,11 @@
 namespace Bdf\Form\Child;
 
 use Bdf\Form\Aggregate\ChildAggregateInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\PropertyAccess\AccessorInterface;
+use Bdf\Form\View\ElementViewInterface;
 
 /**
  * Wrapper for a form sub-element
@@ -110,4 +112,14 @@ interface ChildInterface
      * @see ElementInterface::error()
      */
     public function error(): FormError;
+
+    /**
+     * Get the view for the given child
+     *
+     * @param HttpFieldPath|null $field The parent field name. The child should append it's HTTP field to generate the real element view
+     *
+     * @return ElementViewInterface
+     * @see ElementInterface::view() For generate the element view
+     */
+    public function view(?HttpFieldPath $field = null): ElementViewInterface;
 }

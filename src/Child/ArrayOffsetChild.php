@@ -3,15 +3,19 @@
 namespace Bdf\Form\Child;
 
 use Bdf\Form\Aggregate\ChildAggregateInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
+use Bdf\Form\View\ElementViewInterface;
 use Symfony\Component\Validator\Constraint;
 
 /**
  * Child which extract HTTP field value from a simple array access
+ *
+ * @todo useful ? delete ?
  */
 final class ArrayOffsetChild implements ChildInterface
 {
@@ -222,6 +226,14 @@ final class ArrayOffsetChild implements ChildInterface
     public function error(): FormError
     {
         return $this->error ?: $this->element->error();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    {
+        return $this->element->view($field === null ? HttpFieldPath::named($this->name) : $field->add($this->name));
     }
 
     /**

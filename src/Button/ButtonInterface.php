@@ -2,6 +2,9 @@
 
 namespace Bdf\Form\Button;
 
+use Bdf\Form\Button\View\ButtonViewInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
+
 /**
  * Base type for form buttons
  */
@@ -38,4 +41,13 @@ interface ButtonInterface
      * @return string[]
      */
     public function constraintGroups(): array;
+
+    /**
+     * Get the view for the current button
+     *
+     * @param HttpFieldPath|null $parent The parent HTTP field name, if applicable
+     *
+     * @return ButtonViewInterface
+     */
+    public function view(?HttpFieldPath $parent = null): ButtonViewInterface;
 }

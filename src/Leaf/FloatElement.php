@@ -18,8 +18,8 @@ final class FloatElement extends LeafElement
     /**
      * {@inheritdoc}
      */
-    protected function toHttp($phpValue): string
+    protected function toHttp($phpValue): ?string
     {
-        return (string) $phpValue;
+        return $phpValue === null ? null : (string) $phpValue;
     }
 }

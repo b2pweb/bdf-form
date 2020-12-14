@@ -4,7 +4,11 @@ namespace Bdf\Form\Custom;
 
 use Bdf\Form\Aggregate\ArrayElement;
 use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
+use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Leaf\IntegerElement;
+use Bdf\Form\Leaf\StringElement;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\LessThan;
 
@@ -130,6 +134,46 @@ class CustomFormTest extends TestCase
         $this->assertNull($this->form['firstName']->element()->value());
         $this->assertNull($this->form['lastName']->element()->value());
         $this->assertNull($this->form['birthDate']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $view = $this->form->view();
+
+        $this->assertInstanceOf(FormView::class, $view);
+        $this->assertEquals(PersonForm::class, $view->type());
+        $this->assertFalse($view->hasError());
+
+        $this->assertEquals(StringElement::class, $view['firstName']->type());
+        $this->assertEquals('<input type="text" name="firstName" value="" required />', (string) $view['firstName']);
+        $this->assertEquals(StringElement::class, $view['lastName']->type());
+        $this->assertEquals('<input type="text" name="lastName" value="" required />', (string) $view['lastName']);
+        $this->assertEquals(IntegerElement::class, $view['birthDate']->type());
+        $this->assertEquals('<input type="number" name="birthDate" value="" />', (string) $view['birthDate']);
+
+        $view = $this->form->submit(['firstName' => 'John', 'lastName' => 'Doe', 'birthDate' => $date = time() + 100])->view();
+
+        $this->assertTrue($view->hasError());
+
+        $this->assertEquals('<input type="text" name="firstName" value="John" required />', (string) $view['firstName']);
+        $this->assertEquals('<input type="text" name="lastName" value="Doe" required />', (string) $view['lastName']);
+        $this->assertEquals('<input type="number" name="birthDate" value="'.$date.'" />', (string) $view['birthDate']);
+        $this->assertStringStartsWith('This value should be less than', $view['birthDate']->error());
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_prefix()
+    {
+        $view = $this->form->view(HttpFieldPath::prefixed('foo_'));
+
+        $this->assertEquals('<input type="text" name="foo_firstName" value="" required />', (string) $view['firstName']);
+        $this->assertEquals('<input type="text" name="foo_lastName" value="" required />', (string) $view['lastName']);
+        $this->assertEquals('<input type="number" name="foo_birthDate" value="" />', (string) $view['birthDate']);
     }
 }
 

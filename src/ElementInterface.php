@@ -3,7 +3,9 @@
 namespace Bdf\Form;
 
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Error\FormError;
+use Bdf\Form\View\ElementViewInterface;
 
 /**
  * Base type for the form tree
@@ -27,7 +29,7 @@ interface ElementInterface
      * Set the PHP value of the element
      *
      * On an aggregate / form element, will import entity on each children elements
-     * Once imported, the element value must be attached to the element : `$element->import($value) === $value` must be true
+     * Once imported, the element value must be attached to the element : `$element->import($value)->value() === $value` must be true
      *
      * @param mixed $entity
      *
@@ -119,10 +121,12 @@ interface ElementInterface
 
     /**
      * Get the view object of the element
+     * Note: This method will only create the view for the element, independently of the parent.
+     *       To generate the view within the parent, you should pass by ChildInterface::view()
      *
-     * @todo define behavior
+     * @param HttpFieldPath|null $field The used HTTP field name
      *
-     * @return mixed
+     * @return ElementViewInterface
      */
-    public function view();
+    public function view(?HttpFieldPath $field = null): ElementViewInterface;
 }

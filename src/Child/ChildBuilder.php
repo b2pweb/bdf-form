@@ -204,7 +204,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @param string|callable|null $propertyName The property name. If null use the child name.
      * @param callable|null $transformer The value transformer (transform model value to input value)
-     * @param callable|null $customAccessor Custom getter function. Ff null use the symfony property accessor
+     * @param callable|null $customAccessor Custom getter function. If null use the symfony property accessor
      *
      * @return $this
      *
@@ -225,8 +225,8 @@ class ChildBuilder implements ChildBuilderInterface
      *   function setter(?string $propertyName, ?callable $transformer, ?callable $customAccessor): this - Add a setter hydrator, with a value transformer and a custom accessor
      *
      * @param string|callable|null $propertyName The property name. If null use the child name.
-     * @param callable|null $transformer The value transformer (transform model value to input value)
-     * @param callable|null $customAccessor Custom setter function. Ff null use the symfony property accessor
+     * @param callable|null $transformer The value transformer (transform input [i.e. http] value to model value)
+     * @param callable|null $customAccessor Custom setter function. If null use the symfony property accessor
      *
      * @return $this
      *

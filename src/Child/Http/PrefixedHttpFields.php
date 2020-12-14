@@ -68,4 +68,12 @@ final class PrefixedHttpFields implements HttpFieldsInterface
 
         return $http;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get(?HttpFieldPath $path = null): HttpFieldPath
+    {
+        return $path === null ? HttpFieldPath::prefixed($this->prefix) : $path->prefix($this->prefix);
+    }
 }

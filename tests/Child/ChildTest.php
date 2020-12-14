@@ -5,9 +5,11 @@ namespace Bdf\Form\Child;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Http\ArrayOffsetHttpFields;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\PropertyAccess\Getter;
 use Bdf\Form\PropertyAccess\Setter;
 use Bdf\Form\Validator\ConstraintValueValidator;
@@ -177,6 +179,27 @@ class ChildTest extends TestCase
         $child->element()->import('value');
 
         $this->assertSame(['child' => 'value'], $child->httpFields());
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [new ClosureFilter(function ($value) { return strtoupper($value); }), new ClosureFilter(function ($value) { return substr($value, 0, 3); })]);
+        $child->setParent(new Form(new ChildrenCollection()));
+        $child->element()->import('value');
+
+        $view = $child->view();
+
+        $this->assertInstanceOf(SimpleElementView::class, $view);
+        $this->assertEquals(StringElement::class, $view->type());
+        $this->assertEquals('child', $view->name());
+
+        $this->assertEquals('foo[child]', $child->view(HttpFieldPath::named('foo'))->name());
+        $this->assertEquals('foo_child', $child->view(HttpFieldPath::prefixed('foo_'))->name());
+        $this->assertEquals('foo[bar_child]', $child->view(HttpFieldPath::named('foo')->prefix('bar_'))->name());
+        $this->assertEquals('foo[bar_child]', $child->view(HttpFieldPath::named('foo')->prefix('bar_'))->name());
     }
 
     /**

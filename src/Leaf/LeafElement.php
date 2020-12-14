@@ -2,15 +2,23 @@
 
 namespace Bdf\Form\Leaf;
 
+use BadMethodCallException;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
+use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\ContainerTrait;
 use Bdf\Form\Validator\NullValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Bdf\Form\View\ConstraintsNormalizer;
+use Bdf\Form\View\ElementViewInterface;
+use Bdf\Form\View\FieldViewInterface;
 use Exception;
+use LogicException;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Form element containing a single value
@@ -134,10 +142,14 @@ abstract class LeafElement implements ElementInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return FieldViewInterface
      */
-    public function view()
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        // TODO: Implement view() method.
+        $normalizedConstraints = ConstraintsNormalizer::normalize($this->validator);
+
+        return new SimpleElementView(static::class, (string) $field, $this->httpValue(), $this->error->global(), isset($normalizedConstraints[NotBlank::class]), $normalizedConstraints);
     }
 
     /**

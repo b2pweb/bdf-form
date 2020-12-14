@@ -6,7 +6,9 @@ use BadMethodCallException;
 use Bdf\Form\Aggregate\Collection\ChildrenCollectionInterface;
 use Bdf\Form\Aggregate\Value\ValueGenerator;
 use Bdf\Form\Aggregate\Value\ValueGeneratorInterface;
+use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
@@ -15,6 +17,7 @@ use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\ContainerTrait;
 use Bdf\Form\Validator\NullValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Bdf\Form\View\ElementViewInterface;
 use Exception;
 
 /**
@@ -173,10 +176,18 @@ final class Form implements FormInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return FormView
      */
-    public function view()
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        // TODO: Implement view() method.
+        $elements = [];
+
+        foreach ($this->children as $child) {
+            $elements[$child->name()] = $child->view($field);
+        }
+
+        return new FormView(self::class, $this->error->global(), $elements);
     }
 
     /**

@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\ArrayElementBuilder;
 use Bdf\Form\Aggregate\ChildAggregateInterface;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Child\Http\HttpFieldsInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
@@ -13,6 +14,7 @@ use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\PropertyAccess\Getter;
 use Bdf\Form\PropertyAccess\Setter;
+use Bdf\Form\View\ElementViewInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Positive;
 
@@ -328,6 +330,10 @@ class MyCustomChild implements ChildInterface
     }
 
     public function error(): FormError
+    {
+    }
+
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
     }
 }

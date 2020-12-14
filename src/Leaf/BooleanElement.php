@@ -2,8 +2,14 @@
 
 namespace Bdf\Form\Leaf;
 
+use BadMethodCallException;
+use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Leaf\View\BooleanElementView;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Bdf\Form\View\ElementViewInterface;
+use Bdf\Form\View\FieldViewInterface;
+use LogicException;
 
 /**
  * Handle a boolean value, like with checkbox input
@@ -46,5 +52,16 @@ final class BooleanElement extends LeafElement
     protected function toHttp($phpValue)
     {
         return $phpValue ? $this->httpValue : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return FieldViewInterface
+     */
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    {
+        // @todo method createElementView
+        return new BooleanElementView(self::class, (string) $field, $this->httpValue(), $this->httpValue, $this->value(), $this->error()->global());
     }
 }

@@ -5,6 +5,7 @@ namespace Bdf\Form\Csrf;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Leaf\LeafRootElement;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -143,5 +144,29 @@ class CsrfElementTest extends TestCase
         $this->expectException(\BadMethodCallException::class);
 
         (new CsrfElement())->import('test');
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $element = new CsrfElement();
+
+        $token = $element->value();
+        $view = $element->view(HttpFieldPath::named('token'));
+
+        $this->assertEquals(CsrfElement::class, $view->type());
+        $this->assertEquals('<input type="hidden" name="token" value="'.$token.'" required />', (string) $view);
+        $this->assertEquals('token', $view->name());
+        $this->assertFalse($view->hasError());
+
+        $element->submit('invalid');
+
+        $view = $element->view(HttpFieldPath::named('token'));
+
+        $this->assertEquals('<input type="hidden" name="token" value="'.$token.'" required />', (string) $view);
+        $this->assertTrue($view->hasError());
+        $this->assertEquals('The CSRF token is invalid.', $view->error());
     }
 }

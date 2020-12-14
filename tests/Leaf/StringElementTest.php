@@ -5,12 +5,15 @@ namespace Bdf\Form\Leaf;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
+use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class StringElementTest
@@ -26,6 +29,7 @@ class StringElementTest extends TestCase
 
         $this->assertFalse($element->valid());
         $this->assertNull($element->value());
+        $this->assertNull($element->httpValue());
         $this->assertTrue($element->error()->empty());
     }
 
@@ -158,5 +162,80 @@ class StringElementTest extends TestCase
         $element = $element->setContainer($container);
 
         $this->assertSame($container->parent()->root(), $element->root());
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $element = new StringElement();
+        $element->import('foo');
+
+        $view = $element->view(HttpFieldPath::named('name'));
+
+        $this->assertInstanceOf(SimpleElementView::class, $view);
+        $this->assertEquals('<input type="text" name="name" value="foo" />', (string) $view);
+        $this->assertEquals('<input id="foo" class="form-element" type="text" name="name" value="foo" />', (string) $view->id('foo')->class('form-element'));
+        $this->assertNull($view->onError('my error'));
+
+        $this->assertEquals('foo', $view->value());
+        $this->assertEquals('name', $view->name());
+        $this->assertFalse($view->hasError());
+        $this->assertNull($view->error());
+        $this->assertFalse($view->required());
+        $this->assertEmpty($view->constraints());
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_constraints()
+    {
+        $element = (new StringElementBuilder())->length(['min' => 3, 'max' => 35])->required()->buildElement();
+        $element->import('foo');
+
+        $view = $element->view(HttpFieldPath::named('name'));
+
+        $this->assertInstanceOf(SimpleElementView::class, $view);
+        $this->assertEquals('<input type="text" name="name" value="foo" required minlength="3" maxlength="35" />', (string) $view);
+        $this->assertNull($view->onError('my error'));
+
+        $this->assertEquals('foo', $view->value());
+        $this->assertEquals('name', $view->name());
+        $this->assertFalse($view->hasError());
+        $this->assertNull($view->error());
+        $this->assertTrue($view->required());
+        $this->assertEquals([NotBlank::class => [], Length::class => ['min' => 3, 'max' => 35]], $view->constraints());
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_error()
+    {
+        $element = (new StringElementBuilder())->length(['min' => 3, 'max' => 35])->required()->buildElement();
+        $element->submit('f');
+
+        $view = $element->view(HttpFieldPath::named('name'));
+
+        $this->assertInstanceOf(SimpleElementView::class, $view);
+        $this->assertEquals('<input type="text" name="name" value="f" required minlength="3" maxlength="35" />', (string) $view);
+        $this->assertEquals('my error', $view->onError('my error'));
+
+        $this->assertEquals('f', $view->value());
+        $this->assertEquals('name', $view->name());
+        $this->assertTrue($view->hasError());
+        $this->assertEquals('This value is too short. It should have 3 characters or more.', $view->error());
+    }
+
+    /**
+     *
+     */
+    public function test_view_without_name()
+    {
+        $element = new StringElement();
+
+        $this->assertEquals('<input type="text" name="" value="" />', (string) $element->view());
     }
 }

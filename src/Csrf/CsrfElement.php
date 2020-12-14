@@ -3,11 +3,15 @@
 namespace Bdf\Form\Csrf;
 
 use BadMethodCallException;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Leaf\LeafRootElement;
+use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Util\ContainerTrait;
+use Bdf\Form\View\ConstraintsNormalizer;
+use Bdf\Form\View\ElementViewInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -47,9 +51,9 @@ final class CsrfElement implements ElementInterface
     /**
      * CsrfElement constructor.
      *
-     * @param string $tokenId
+     * @param string|null $tokenId
      * @param CsrfValueValidator|null $validator
-     * @param CsrfTokenManagerInterface $tokenManager
+     * @param CsrfTokenManagerInterface|null $tokenManager
      */
     public function __construct(?string $tokenId = null, ?CsrfValueValidator $validator = null, ?CsrfTokenManagerInterface $tokenManager = null)
     {
@@ -126,9 +130,16 @@ final class CsrfElement implements ElementInterface
     /**
      * {@inheritdoc}
      */
-    public function view()
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        // TODO: Implement view() method.
+        return new SimpleElementView(
+            self::class,
+            (string) $field,
+            $this->tokenManager->getToken($this->tokenId), // Always get the real token value
+            $this->error->global(),
+            true, // Token is always required
+            []
+        );
     }
 
     /**

@@ -4,12 +4,14 @@ namespace Bdf\Form\Child;
 
 use Bdf\Form\Aggregate\ChildAggregateInterface;
 use Bdf\Form\Child\Http\ArrayOffsetHttpFields;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Child\Http\HttpFieldsInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
+use Bdf\Form\View\ElementViewInterface;
 
 /**
  * Child which extract HTTP field value from a simple array access
@@ -67,7 +69,7 @@ final class Child implements ChildInterface
      *
      * @param string $name
      * @param ElementInterface $element
-     * @param HttpFieldsInterface $fields
+     * @param HttpFieldsInterface|null $fields
      * @param FilterInterface[] $filters
      * @param mixed $defaultValue
      * @param HydratorInterface|null $hydrator
@@ -196,6 +198,14 @@ final class Child implements ChildInterface
     public function error(): FormError
     {
         return $this->element->error();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    {
+        return $this->element->view($this->fields->get($field));
     }
 
     /**

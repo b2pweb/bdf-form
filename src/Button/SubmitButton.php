@@ -2,6 +2,10 @@
 
 namespace Bdf\Form\Button;
 
+use Bdf\Form\Button\View\ButtonView;
+use Bdf\Form\Button\View\ButtonViewInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
+
 /**
  * Simple button implementation
  * The button is considered as clicked when its value is equals to the registered value
@@ -73,5 +77,13 @@ final class SubmitButton implements ButtonInterface
     public function submit($data): bool
     {
         return $this->clicked = isset($data[$this->name]) && (string) $data[$this->name] === $this->value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function view(?HttpFieldPath $parent = null): ButtonViewInterface
+    {
+        return new ButtonView($parent ? (string) $parent->add($this->name) : $this->name, $this->value, $this->clicked());
     }
 }

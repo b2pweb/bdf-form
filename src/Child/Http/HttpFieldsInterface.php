@@ -27,4 +27,13 @@ interface HttpFieldsInterface
      * @return mixed
      */
     public function format($value);
+
+    /**
+     * Get the field path for the current child
+     *
+     * @param HttpFieldPath|null $path The container element path. Null if the current child is on the root.
+     *
+     * @return HttpFieldPath The new field path instance
+     */
+    public function get(?HttpFieldPath $path = null): HttpFieldPath;
 }

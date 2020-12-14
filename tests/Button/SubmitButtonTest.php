@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Button;
 
+use Bdf\Form\Child\Http\HttpFieldPath;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,5 +37,30 @@ class SubmitButtonTest extends TestCase
 
         $this->assertTrue($btn->submit(['btn' => 'aaa']));
         $this->assertTrue($btn->clicked());
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $btn = new SubmitButton('btn', 'ok');
+
+        $view = $btn->view();
+
+        $this->assertEquals('btn', $view->name());
+        $this->assertEquals('ok', $view->value());
+        $this->assertFalse($view->clicked());
+        $this->assertEquals('<input type="submit" name="btn" value="ok" />', (string) $view);
+        $this->assertEquals('<button class="btn btn-primary" type="submit" name="btn" value="ok">My button</button>', (string) $view->class('btn btn-primary')->inner('My button'));
+
+        $btn->submit(['btn' => 'ok']);
+        $view = $btn->view();
+        $this->assertTrue($view->clicked());
+
+        $view = $btn->view(HttpFieldPath::named('foo')->prefix('bar_'));
+
+        $this->assertEquals('foo[bar_btn]', $view->name());
+        $this->assertEquals('<input type="submit" name="foo[bar_btn]" value="ok" />', (string) $view);
     }
 }

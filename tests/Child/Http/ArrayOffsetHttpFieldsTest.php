@@ -92,6 +92,18 @@ class ArrayOffsetHttpFieldsTest extends TestCase
     }
 
     /**
+     *
+     */
+    public function test_get()
+    {
+        $fields = new ArrayOffsetHttpFields('child');
+
+        $this->assertEquals('child', $fields->get());
+        $this->assertEquals('foo[child]', $fields->get(HttpFieldPath::named('foo')));
+        $this->assertEquals('foo_child', $fields->get(HttpFieldPath::prefixed('foo_')));
+    }
+
+    /**
      * @return array
      */
     public function emptyValues()

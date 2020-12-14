@@ -4,8 +4,10 @@ namespace Bdf\Form\Aggregate;
 
 use ArrayIterator;
 use BadMethodCallException;
+use Bdf\Form\Aggregate\View\ArrayElementView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Leaf\LeafRootElement;
@@ -15,8 +17,11 @@ use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\ContainerTrait;
 use Bdf\Form\Validator\NullValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Bdf\Form\View\ConstraintsNormalizer;
+use Bdf\Form\View\ElementViewInterface;
 use Countable;
 use Exception;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class ArrayElement
@@ -248,9 +253,25 @@ final class ArrayElement implements ChildAggregateInterface, Countable
     /**
      * {@inheritdoc}
      */
-    public function view()
+    public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        // TODO: Implement view() method.
+        $elements = [];
+
+        foreach ($this->children as $key => $child) {
+            $elements[$key] = $child->view($field);
+        }
+
+        $constraints = ConstraintsNormalizer::normalize($this->validator);
+
+        return new ArrayElementView(
+            self::class,
+            (string) $field,
+            $this->httpValue(),
+            $this->error->global(),
+            $elements,
+            isset($constraints[NotBlank::class]),
+            $constraints
+        );
     }
 
     /**

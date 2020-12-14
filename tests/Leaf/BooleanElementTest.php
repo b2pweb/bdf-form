@@ -2,9 +2,11 @@
 
 namespace Bdf\Form\Leaf;
 
+use BadMethodCallException;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
@@ -170,5 +172,42 @@ class BooleanElementTest extends TestCase
         $element = $element->setContainer($container);
 
         $this->assertSame($container->parent()->root(), $element->root());
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $element = new BooleanElement();
+        $element->import(true);
+
+        $view = $element->view(HttpFieldPath::named('name'));
+
+        $this->assertEquals('<input type="checkbox" name="name" value="1" checked />', (string) $view);
+        $this->assertEquals('<input id="foo" class="form-element" type="checkbox" name="name" value="1" checked />', (string) $view->id('foo')->class('form-element'));
+        $this->assertNull($view->onError('my error'));
+
+        $this->assertTrue($view->checked());
+        $this->assertEquals('1', $view->httpValue());
+        $this->assertEquals('1', $view->value());
+        $this->assertEquals('name', $view->name());
+        $this->assertFalse($view->hasError());
+        $this->assertNull($view->error());
+        $this->assertFalse($view->required());
+        $this->assertEmpty($view->constraints());
+
+        $element->import(false);
+
+        $view = $element->view(HttpFieldPath::named('name'));
+
+        $this->assertEquals('<input type="checkbox" name="name" value="1" />', (string) $view);
+        $this->assertEquals('<input id="foo" class="form-element" type="checkbox" name="name" value="1" />', (string) $view->id('foo')->class('form-element'));
+
+        $this->assertFalse($view->checked());
+        $this->assertEquals('1', $view->httpValue());
+        $this->assertEquals('', $view->value());
+
+        $this->assertEquals('<input type="checkbox" name="" value="1" />', (string) $element->view());
     }
 }

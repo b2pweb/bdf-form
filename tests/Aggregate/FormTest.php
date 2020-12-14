@@ -3,10 +3,12 @@
 namespace Bdf\Form\Aggregate;
 
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
+use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Validator\ConstraintValueValidator;
@@ -446,6 +448,121 @@ class FormTest extends TestCase
         $this->assertEquals(4, $person->id);
         $this->assertEquals('John', $person->firstName);
         $this->assertEquals('Smith', $person->lastName);
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $registry = new Registry();
+
+        $form = new Form(new ChildrenCollection([
+            $registry->childBuilder(StringElement::class, 'firstName')->buildChild(),
+            $registry->childBuilder(StringElement::class, 'lastName')->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->buildChild(),
+        ]));
+
+        /** @var FormView $view */
+        $view = $form->view();
+
+        $this->assertInstanceOf(FormView::class, $view);
+        $this->assertInstanceOf(SimpleElementView::class, $view['firstName']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['lastName']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['id']);
+
+        $this->assertNull($view->error());
+        $this->assertFalse($view->hasError());
+        $this->assertEquals(Form::class, $view->type());
+
+        $this->assertTrue(isset($view['firstName']));
+        $this->assertTrue(isset($view['lastName']));
+        $this->assertTrue(isset($view['id']));
+
+        $this->assertEquals('<input type="text" name="firstName" value="" />', (string) $view['firstName']);
+        $this->assertEquals('<input type="text" name="lastName" value="" />', (string) $view['lastName']);
+        $this->assertEquals('<input type="number" name="id" value="" />', (string) $view['id']);
+
+        $form->submit([
+            'firstName' => 'John',
+            'lastName' => 'Doe',
+            'id' => '145',
+        ]);
+
+        $view = $form->view();
+
+        $this->assertEquals('<input type="text" name="firstName" value="John" />', (string) $view['firstName']);
+        $this->assertEquals('<input type="text" name="lastName" value="Doe" />', (string) $view['lastName']);
+        $this->assertEquals('<input type="number" name="id" value="145" />', (string) $view['id']);
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_embedded_prefix()
+    {
+        $registry = new Registry();
+
+        $nameFormBuilder = $registry->childBuilder(Form::class, 'name');
+        $nameFormBuilder->prefix();
+        $nameFormBuilder->string('first');
+        $nameFormBuilder->string('last');
+
+        $form = new Form(new ChildrenCollection([
+            $nameFormBuilder->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->buildChild(),
+        ]));
+
+        /** @var FormView $view */
+        $view = $form->view();
+
+        $this->assertInstanceOf(FormView::class, $view);
+        $this->assertInstanceOf(FormView::class, $view['name']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['name']['first']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['name']['last']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['id']);
+
+        $this->assertNull($view->error());
+        $this->assertFalse($view->hasError());
+        $this->assertEquals(Form::class, $view->type());
+
+        $this->assertEquals('<input type="text" name="name_first" value="" />', (string) $view['name']['first']);
+        $this->assertEquals('<input type="text" name="name_last" value="" />', (string) $view['name']['last']);
+        $this->assertEquals('<input type="number" name="id" value="" />', (string) $view['id']);
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_embedded_array()
+    {
+        $registry = new Registry();
+
+        $nameFormBuilder = $registry->childBuilder(Form::class, 'name');
+        $nameFormBuilder->string('first');
+        $nameFormBuilder->string('last');
+
+        $form = new Form(new ChildrenCollection([
+            $nameFormBuilder->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->buildChild(),
+        ]));
+
+        /** @var FormView $view */
+        $view = $form->view();
+
+        $this->assertInstanceOf(FormView::class, $view);
+        $this->assertInstanceOf(FormView::class, $view['name']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['name']['first']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['name']['last']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['id']);
+
+        $this->assertNull($view->error());
+        $this->assertFalse($view->hasError());
+        $this->assertEquals(Form::class, $view->type());
+
+        $this->assertEquals('<input type="text" name="name[first]" value="" />', (string) $view['name']['first']);
+        $this->assertEquals('<input type="text" name="name[last]" value="" />', (string) $view['name']['last']);
+        $this->assertEquals('<input type="number" name="id" value="" />', (string) $view['id']);
     }
 }
 

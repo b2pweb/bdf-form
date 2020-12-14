@@ -13,6 +13,7 @@ use libphonenumber\RegionCode;
  * Builder for a phone element
  *
  * @see PhoneElement
+ * @todo validate phone number constraint
  */
 class PhoneElementBuilder extends AbstractElementBuilder
 {

@@ -93,6 +93,18 @@ class PrefixedHttpFieldsTest extends TestCase
     }
 
     /**
+     *
+     */
+    public function test_get()
+    {
+        $fields = new PrefixedHttpFields('child_');
+
+        $this->assertEquals('child_', $fields->get());
+        $this->assertEquals('foo[child_]', $fields->get(HttpFieldPath::named('foo')));
+        $this->assertEquals('foo_child_', $fields->get(HttpFieldPath::prefixed('foo_')));
+    }
+
+    /**
      * @return array
      */
     public function emptyValues()

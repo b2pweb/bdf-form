@@ -5,6 +5,8 @@ namespace Bdf\Form\Phone;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
+use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Leaf\LeafRootElement;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -210,5 +212,29 @@ class PhoneElementTest extends TestCase
         $element = $element->setContainer($container);
 
         $this->assertSame($container->parent()->root(), $element->root());
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $element = new PhoneElement();
+
+        $view = $element->view(HttpFieldPath::named('tel'));
+
+        $this->assertEquals(PhoneElement::class, $view->type());
+        $this->assertEquals('<input type="tel" name="tel" value="" />', (string) $view);
+        $this->assertEquals('tel', $view->name());
+        $this->assertFalse($view->hasError());
+
+        $element->submit('0123456789');
+
+        $view = $element->view(HttpFieldPath::named('tel'));
+
+        $this->assertEquals(PhoneElement::class, $view->type());
+        $this->assertEquals('<input type="tel" name="tel" value="0123456789" />', (string) $view);
+        $this->assertEquals('tel', $view->name());
+        $this->assertFalse($view->hasError());
     }
 }

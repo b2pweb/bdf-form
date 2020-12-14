@@ -52,4 +52,12 @@ final class ArrayOffsetHttpFields implements HttpFieldsInterface
     {
         return [$this->offset => $value];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get(?HttpFieldPath $path = null): HttpFieldPath
+    {
+        return $path === null ? HttpFieldPath::named($this->offset) : $path->add($this->offset);
+    }
 }
