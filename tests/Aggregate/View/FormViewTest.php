@@ -3,6 +3,7 @@
 namespace Bdf\Form\Aggregate\View;
 
 use Bdf\Form\Aggregate\Form;
+use Bdf\Form\Button\View\ButtonView;
 use Bdf\Form\View\ElementViewInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -28,9 +29,65 @@ class FormViewTest extends TestCase
         $this->assertSame($elements['foo'], $view['foo']);
         $this->assertSame($elements['bar'], $view['bar']);
 
-        $this->assertTrue(isset($elements['foo']));
-        $this->assertTrue(isset($elements['bar']));
-        $this->assertFalse(isset($elements['other']));
+        $this->assertTrue(isset($view['foo']));
+        $this->assertTrue(isset($view['bar']));
+        $this->assertFalse(isset($view['other']));
+
+        $this->assertEquals($elements, iterator_to_array($view));
+    }
+
+    /**
+     *
+     */
+    public function test_with_buttons()
+    {
+        $view = new FormView(Form::class, 'my error', $elements = [
+            'foo' => $this->createMock(ElementViewInterface::class),
+            'bar' => $this->createMock(ElementViewInterface::class),
+        ]);
+
+        $view->setButtons($buttons = ['btn1' => new ButtonView('btn1', 'foo', false)]);
+
+        $this->assertSame(Form::class, $view->type());
+        $this->assertTrue($view->hasError());
+        $this->assertSame('my error', $view->error());
+
+        $this->assertSame($elements['foo'], $view['foo']);
+        $this->assertSame($elements['bar'], $view['bar']);
+        $this->assertSame($buttons['btn1'], $view['btn1']);
+
+        $this->assertTrue(isset($view['foo']));
+        $this->assertTrue(isset($view['bar']));
+        $this->assertTrue(isset($view['btn1']));
+        $this->assertFalse(isset($view['other']));
+
+        $this->assertEquals($elements, iterator_to_array($view));
+        $this->assertSame($buttons, $view->buttons());
+        $this->assertSame($buttons['btn1'], $view->button('btn1'));
+    }
+
+    /**
+     *
+     */
+    public function test_serialization()
+    {
+        $view = new FormView(Form::class, 'my error', $elements = [
+            'foo' => $this->createMock(ElementViewInterface::class),
+            'bar' => $this->createMock(ElementViewInterface::class),
+        ]);
+
+        $view = unserialize(serialize($view));
+
+        $this->assertSame(Form::class, $view->type());
+        $this->assertTrue($view->hasError());
+        $this->assertSame('my error', $view->error());
+
+        $this->assertEquals($elements['foo'], $view['foo']);
+        $this->assertEquals($elements['bar'], $view['bar']);
+
+        $this->assertTrue(isset($view['foo']));
+        $this->assertTrue(isset($view['bar']));
+        $this->assertFalse(isset($view['other']));
 
         $this->assertEquals($elements, iterator_to_array($view));
     }

@@ -74,4 +74,14 @@ final class ArrayElementView implements IteratorAggregate, FieldViewInterface, F
     {
         return ArrayElementViewRenderer::instance();
     }
+
+    /**
+     * Ignore property "attributes"
+     *
+     * @return array
+     */
+    public function __sleep()
+    {
+        return ['type', 'name', 'error', 'value', 'elements', 'required', 'constraints'];
+    }
 }

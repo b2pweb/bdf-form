@@ -67,7 +67,7 @@ final class ButtonView implements ButtonViewInterface
     /**
      * {@inheritdoc}
      */
-    public function render(ButtonViewRendererInterface $renderer = null): string
+    public function render(?ButtonViewRendererInterface $renderer = null): string
     {
         return ($renderer ?? ButtonViewRenderer::instance())->render($this, $this->attributes);
     }

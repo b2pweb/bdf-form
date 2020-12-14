@@ -54,6 +54,61 @@ class CustomFormTest extends TestCase
     /**
      *
      */
+    public function test_submit_on_embedded()
+    {
+        $parentForm = new class() extends CustomForm {
+            protected function configure(FormBuilderInterface $builder): void
+            {
+                $builder->add('embedded', PersonForm::class)->setter();
+                $builder->string('foo')->setter();
+            }
+        };
+
+        $this->assertSame($parentForm, $parentForm->submit([
+            'embedded' => [
+                'firstName' => 'John',
+                'lastName' => 'Doe',
+                'birthDate' => (new \DateTime('1992-05-22'))->getTimestamp(),
+            ],
+            'foo' => 'bar',
+        ]));
+        $this->assertTrue($parentForm->valid());
+
+        $value = $parentForm->value();
+
+        $this->assertInstanceOf(Person::class, $value['embedded']);
+        $this->assertSame('John', $value['embedded']->firstName);
+        $this->assertSame('Doe', $value['embedded']->lastName);
+        $this->assertEquals(new \DateTime('1992-05-22'), $value['embedded']->birthDate);
+        $this->assertSame('bar', $value['foo']);
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_button()
+    {
+        $this->form = new PersonFormWithButton();
+        $this->assertSame($this->form, $this->form->submit([
+            'firstName' => 'John',
+            'lastName' => 'Doe',
+            'birthDate' => (new \DateTime('1992-05-22'))->getTimestamp(),
+            'btn' => 'ok',
+        ]));
+        $this->assertTrue($this->form->valid());
+
+        $person = $this->form->value();
+
+        $this->assertInstanceOf(Person::class, $person);
+        $this->assertSame('John', $person->firstName);
+        $this->assertSame('Doe', $person->lastName);
+        $this->assertEquals(new \DateTime('1992-05-22'), $person->birthDate);
+        $this->assertEquals('btn', $this->form->root()->submitButton()->name());
+    }
+
+    /**
+     *
+     */
     public function test_submit_error()
     {
         $this->assertSame($this->form, $this->form->submit(['firstName' => 'John']));
@@ -175,6 +230,24 @@ class CustomFormTest extends TestCase
         $this->assertEquals('<input type="text" name="foo_lastName" value="" required />', (string) $view['lastName']);
         $this->assertEquals('<input type="number" name="foo_birthDate" value="" />', (string) $view['birthDate']);
     }
+
+    /**
+     *
+     */
+    public function test_view_with_btn()
+    {
+        $this->form = new PersonFormWithButton();
+        $view = $this->form->view();
+
+        $this->assertInstanceOf(FormView::class, $view);
+        $this->assertEquals(PersonFormWithButton::class, $view->type());
+        $this->assertFalse($view->hasError());
+
+        $this->assertEquals('<input type="text" name="firstName" value="" required />', (string) $view['firstName']);
+        $this->assertEquals('<input type="text" name="lastName" value="" required />', (string) $view['lastName']);
+        $this->assertEquals('<input type="number" name="birthDate" value="" />', (string) $view['birthDate']);
+        $this->assertEquals('<input type="submit" name="btn" value="ok" />', (string) $view['btn']);
+    }
 }
 
 /**
@@ -201,6 +274,16 @@ class PersonForm extends CustomForm
                 return $value === null ? null : new \DateTime('@'.$value);
             })
         ;
+    }
+}
+
+class PersonFormWithButton extends PersonForm
+{
+    protected function configure(FormBuilderInterface $builder): void
+    {
+        parent::configure($builder);
+
+        $builder->submit('btn');
     }
 }
 

@@ -77,4 +77,14 @@ final class BooleanElementView implements FieldViewInterface
     {
         return CheckboxHtmlRenderer::instance();
     }
+
+    /**
+     * Ignore property "attributes"
+     *
+     * @return array
+     */
+    public function __sleep(): array
+    {
+        return ['type', 'name', 'value', 'httpValue', 'checked', 'error'];
+    }
 }

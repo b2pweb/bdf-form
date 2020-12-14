@@ -4,10 +4,12 @@ namespace Bdf\Form\Aggregate;
 
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Button\SubmitButton;
+use Bdf\Form\Button\View\ButtonView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\ArrayOffsetHttpFields;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Registry\Registry;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -108,5 +110,35 @@ class RootFormTest extends TestCase
         $this->assertTrue($form->error()->empty());
         $this->assertNull($form->container());
         $this->assertSame($form, $form->root());
+    }
+
+    /**
+     *
+     */
+    public function test_view()
+    {
+        $registry = new Registry();
+
+        $form = new Form(new ChildrenCollection([
+            $registry->childBuilder(StringElement::class, 'firstName')->buildChild(),
+            $registry->childBuilder(StringElement::class, 'lastName')->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->buildChild(),
+        ]));
+
+        $root = new RootForm(
+            $form,
+            [
+                $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
+                $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
+            ]
+        );
+
+        $view = $root->view();
+
+        $this->assertInstanceOf(SimpleElementView::class, $view['firstName']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['lastName']);
+        $this->assertInstanceOf(SimpleElementView::class, $view['id']);
+        $this->assertInstanceOf(ButtonView::class, $view['btn1']);
+        $this->assertInstanceOf(ButtonView::class, $view['btn2']);
     }
 }

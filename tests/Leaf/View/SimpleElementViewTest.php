@@ -33,6 +33,27 @@ class SimpleElementViewTest extends TestCase
     /**
      *
      */
+    public function test_serialization_should_ignore_attributes()
+    {
+        $view = new SimpleElementView(StringElement::class, 'foo', 'bar', 'my error', true, [Length::class => ['min' => 5]]);
+
+        $view->foo('bar')->myAttr('attr value');
+
+        $view = unserialize(serialize($view));
+
+        $this->assertSame(StringElement::class, $view->type());
+        $this->assertSame('foo', $view->name());
+        $this->assertSame('bar', $view->value());
+        $this->assertSame('my error', $view->error());
+        $this->assertTrue($view->hasError());
+        $this->assertTrue($view->required());
+        $this->assertEquals([Length::class => ['min' => 5]], $view->constraints());
+        $this->assertSame([], $view->attributes());
+    }
+
+    /**
+     *
+     */
     public function test_onError_with_error()
     {
         $view = new SimpleElementView(StringElement::class, 'foo', 'bar', 'my error', true, [Length::class => ['min' => 5]]);

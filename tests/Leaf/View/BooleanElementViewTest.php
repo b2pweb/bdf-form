@@ -35,6 +35,29 @@ class BooleanElementViewTest extends TestCase
     /**
      *
      */
+    public function test_serialization_should_ignore_attributes()
+    {
+        $view = new BooleanElementView(BooleanElement::class, 'foo', 'true', 'true', true, 'my error');
+
+        $view->foo('bar')->myAttr('attr value');
+
+        $view = unserialize(serialize($view));
+
+        $this->assertSame(BooleanElement::class, $view->type());
+        $this->assertSame('foo', $view->name());
+        $this->assertSame('true', $view->value());
+        $this->assertSame('my error', $view->error());
+        $this->assertTrue($view->hasError());
+        $this->assertFalse($view->required());
+        $this->assertEquals([], $view->constraints());
+        $this->assertSame([], $view->attributes());
+        $this->assertTrue($view->checked());
+        $this->assertSame('true', $view->httpValue());
+    }
+
+    /**
+     *
+     */
     public function test_onError_with_error()
     {
         $view = new BooleanElementView(BooleanElement::class, 'foo', 'true', 'true', true, 'my error');

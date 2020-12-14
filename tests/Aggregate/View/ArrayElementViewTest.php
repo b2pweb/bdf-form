@@ -3,7 +3,6 @@
 namespace Bdf\Form\Aggregate\View;
 
 use Bdf\Form\Aggregate\ArrayElement;
-use Bdf\Form\Aggregate\Form;
 use Bdf\Form\View\ElementViewInterface;
 use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
@@ -35,6 +34,39 @@ class ArrayElementViewTest extends TestCase
 
         $this->assertSame($elements[0], $view[0]);
         $this->assertSame($elements[0], $view[0]);
+
+        $this->assertTrue(isset($elements[0]));
+        $this->assertTrue(isset($elements[1]));
+        $this->assertFalse(isset($elements[42]));
+
+        $this->assertCount(2, $view);
+        $this->assertEquals($elements, iterator_to_array($view));
+    }
+
+    /**
+     *
+     */
+    public function test_serialization_should_ignore_attributes()
+    {
+        $view = new ArrayElementView(ArrayElement::class, 'foo', ['aaa', 'bbb'], 'my error', $elements = [
+            $this->createMock(ElementViewInterface::class),
+            $this->createMock(ElementViewInterface::class),
+        ], true, [Count::class => ['max' => 5]]);
+
+        $view->foo('bar')->myAttr('attr value');
+
+        $view = unserialize(serialize($view));
+
+        $this->assertSame(ArrayElement::class, $view->type());
+        $this->assertTrue($view->hasError());
+        $this->assertSame('my error', $view->error());
+        $this->assertTrue($view->required());
+        $this->assertEquals([Count::class => ['max' => 5]], $view->constraints());
+        $this->assertFalse($view->isCsv());
+        $this->assertEquals(['aaa', 'bbb'], $view->value());
+
+        $this->assertEquals($elements[0], $view[0]);
+        $this->assertEquals($elements[0], $view[0]);
 
         $this->assertTrue(isset($elements[0]));
         $this->assertTrue(isset($elements[1]));

@@ -154,7 +154,16 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        return $this->form->view($field);
+        $buttons = [];
+
+        foreach ($this->buttons as $button) {
+            $buttons[$button->name()] = $button->view($field);
+        }
+
+        $view = $this->form->view($field);
+        $view->setButtons($buttons);
+
+        return $view;
     }
 
     /**

@@ -26,7 +26,7 @@ use Bdf\Form\View\ElementViewInterface;
  * }
  * </code>
  *
- * @todo delegate to root for submit view etc...
+ * @todo implements root form interface ?
  */
 abstract class CustomForm implements FormInterface
 {
@@ -98,7 +98,14 @@ abstract class CustomForm implements FormInterface
      */
     public function submit($data): ElementInterface
     {
-        $this->form()->submit($data);
+        $form = $this->form();
+
+        // The form is the root form
+        if ($form->container() === null) {
+            $form->root()->submit($data);
+        } else {
+            $form->submit($data);
+        }
 
         return $this;
     }
@@ -188,7 +195,11 @@ abstract class CustomForm implements FormInterface
      */
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        $view = $this->form()->view($field);
+        $form = $this->form();
+        $view = $form->container() === null
+            ? $form->root()->view($field)
+            : $form->view($field)
+        ;
 
         $view->setType(static::class);
 

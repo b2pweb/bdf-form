@@ -47,4 +47,14 @@ final class SimpleElementView implements FieldViewInterface
     {
         return SimpleFieldHtmlRenderer::instance();
     }
+
+    /**
+     * Ignore property "attributes"
+     *
+     * @return array
+     */
+    public function __sleep(): array
+    {
+        return ['type', 'name', 'value', 'error', 'required', 'constraints'];
+    }
 }
