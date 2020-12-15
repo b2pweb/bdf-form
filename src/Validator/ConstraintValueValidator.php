@@ -42,7 +42,7 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         ;
 
         if ($errors->has(0)) {
-            return FormError::message($errors->get(0)->getMessage());
+            return FormError::violation($errors->get(0));
         }
 
         return FormError::null();

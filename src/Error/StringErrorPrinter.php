@@ -48,6 +48,14 @@ final class StringErrorPrinter implements FormErrorPrinterInterface
     /**
      * {@inheritdoc}
      */
+    public function code(string $code): void
+    {
+        // Ignore code
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function child(string $name, FormError $error): void
     {
         if ($this->maxDepth <= $this->depth) {

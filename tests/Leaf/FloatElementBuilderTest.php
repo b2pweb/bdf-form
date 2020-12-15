@@ -105,6 +105,18 @@ class FloatElementBuilderTest extends TestCase
         $this->assertTrue($element->submit(15.1)->valid());
     }
 
+
+    /**
+     *
+     */
+    public function test_min_with_float_val()
+    {
+        $element = $this->builder->min(0.1)->buildElement();
+
+        $this->assertFalse($element->submit(0)->valid());
+        $this->assertTrue($element->submit(0.2)->valid());
+    }
+
     /**
      *
      */

@@ -2,7 +2,10 @@
 
 namespace Bdf\Form\Error;
 
+use Bdf\Validator\Validator;
+use Bdf\Validator\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * Class FormErrorTest
@@ -29,6 +32,38 @@ class FormErrorTest extends TestCase
         $this->assertInstanceOf(FormError::class, $error);
         $this->assertFalse($error->empty());
         $this->assertEquals('my error', $error->global());
+        $this->assertNull($error->code());
+        $this->assertEmpty($error->children());
+    }
+
+    /**
+     *
+     */
+    public function test_message_with_code()
+    {
+        $error = FormError::message('my error', 'MY_CODE');
+
+        $this->assertInstanceOf(FormError::class, $error);
+        $this->assertFalse($error->empty());
+        $this->assertEquals('my error', $error->global());
+        $this->assertEquals('MY_CODE', $error->code());
+        $this->assertEmpty($error->children());
+    }
+
+
+    /**
+     *
+     */
+    public function test_violation()
+    {
+        $validator = (new ValidatorBuilder)->getValidator();
+        $violation = $validator->validate('foo', new Length(['min' => 5]))->get(0);
+        $error = FormError::violation($violation);
+
+        $this->assertInstanceOf(FormError::class, $error);
+        $this->assertFalse($error->empty());
+        $this->assertEquals('This value is too short. It should have 5 characters or more.', $error->global());
+        $this->assertEquals('TOO_SHORT_ERROR', $error->code());
         $this->assertEmpty($error->children());
     }
 
@@ -42,6 +77,7 @@ class FormErrorTest extends TestCase
         $this->assertInstanceOf(FormError::class, $error);
         $this->assertFalse($error->empty());
         $this->assertNull($error->global());
+        $this->assertNull($error->code());
         $this->assertSame($errors, $error->children());
     }
 
@@ -50,7 +86,7 @@ class FormErrorTest extends TestCase
      */
     public function test_toArray_global_message()
     {
-        $error = new FormError('my error', []);
+        $error = new FormError('my error', null, []);
 
         $this->assertEquals(['my error'], $error->toArray());
     }
@@ -61,7 +97,7 @@ class FormErrorTest extends TestCase
     public function test_toArray_aggregate()
     {
         $error = FormError::aggregate([
-            'child' => new FormError('child error', ['inner' => FormError::message('inner error')]),
+            'child' => new FormError('child error', null, ['inner' => FormError::message('inner error')]),
             'embedded' => FormError::aggregate([
                 'el1' => FormError::message('el1 error'),
                 'el2' => FormError::message('el2 error'),
@@ -82,7 +118,7 @@ class FormErrorTest extends TestCase
      */
     public function test_toArray_mixed()
     {
-        $error = new FormError('global error', [
+        $error = new FormError('global error', null, [
             'child' => FormError::message('child error'),
         ]);
 
@@ -97,7 +133,7 @@ class FormErrorTest extends TestCase
      */
     public function test_print_mixed()
     {
-        $error = new FormError('global error', [
+        $error = new FormError('global error', 'MY_CODE', [
             'child' => FormError::message('child error'),
             'child2' => FormError::message('child2 error'),
         ]);
@@ -105,9 +141,10 @@ class FormErrorTest extends TestCase
         $printer = $this->createMock(FormErrorPrinterInterface::class);
 
         $printer->expects($this->at(0))->method('global')->with('global error');
-        $printer->expects($this->at(1))->method('child')->with('child', FormError::message('child error'));
-        $printer->expects($this->at(2))->method('child')->with('child2', FormError::message('child2 error'));
-        $printer->expects($this->at(3))->method('print')->willReturn('formatted');
+        $printer->expects($this->at(1))->method('code')->with('MY_CODE');
+        $printer->expects($this->at(2))->method('child')->with('child', FormError::message('child error'));
+        $printer->expects($this->at(3))->method('child')->with('child2', FormError::message('child2 error'));
+        $printer->expects($this->at(4))->method('print')->willReturn('formatted');
 
         $this->assertEquals('formatted', $error->print($printer));
     }
@@ -123,6 +160,23 @@ class FormErrorTest extends TestCase
 
         $printer->expects($this->at(0))->method('global')->with('global error');
         $printer->expects($this->at(1))->method('print')->willReturn('formatted');
+        $printer->expects($this->never())->method('child');
+
+        $this->assertEquals('formatted', $error->print($printer));
+    }
+
+    /**
+     *
+     */
+    public function test_print_global_and_code()
+    {
+        $error = FormError::message('global error', 'MY_CODE');
+
+        $printer = $this->createMock(FormErrorPrinterInterface::class);
+
+        $printer->expects($this->at(0))->method('global')->with('global error');
+        $printer->expects($this->at(1))->method('code')->with('MY_CODE');
+        $printer->expects($this->at(2))->method('print')->willReturn('formatted');
         $printer->expects($this->never())->method('child');
 
         $this->assertEquals('formatted', $error->print($printer));

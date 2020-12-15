@@ -18,6 +18,15 @@ interface FormErrorPrinterInterface
     public function global(string $error): void;
 
     /**
+     * Print the error code
+     *
+     * @param string $code
+     *
+     * @see FormError::code()
+     */
+    public function code(string $code): void;
+
+    /**
      * Print a child error
      *
      * @param string $name The child name

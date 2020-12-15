@@ -22,6 +22,7 @@ class CsrfConstraintValidator extends ConstraintValidator
         if (!$value instanceof CsrfToken || !$constraint->manager->isTokenValid($value)) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
+                ->setCode(CsrfConstraint::INVALID_TOKEN_ERROR)
                 ->addViolation()
             ;
         }

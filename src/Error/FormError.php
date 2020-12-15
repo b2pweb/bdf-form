@@ -4,6 +4,9 @@ namespace Bdf\Form\Error;
 
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\ElementInterface;
+use InvalidArgumentException;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
  * Store errors of a form element
@@ -24,6 +27,11 @@ final class FormError
     private $global;
 
     /**
+     * @var string|null
+     */
+    private $code;
+
+    /**
      * @var FormError[]
      */
     private $children;
@@ -33,22 +41,34 @@ final class FormError
      * FormError constructor.
      *
      * @param string|null $global
+     * @param string|null $code
      * @param FormError[] $children
      */
-    public function __construct(?string $global, array $children)
+    public function __construct(?string $global, ?string $code, array $children)
     {
         $this->global = $global;
+        $this->code = $code;
         $this->children = $children;
     }
 
     /**
-     * Get the error of the current element, or th global error on an aggregate element
+     * Get the error of the current element, or the global error on an aggregate element
      *
      * @return string|null The error message, or null if there is no errors
      */
     public function global(): ?string
     {
         return $this->global;
+    }
+
+    /**
+     * The error code of the current element
+     *
+     * @return string|null The error code, or null if not provided
+     */
+    public function code(): ?string
+    {
+        return $this->code;
     }
 
     /**
@@ -73,7 +93,7 @@ final class FormError
      */
     public function empty(): bool
     {
-        return empty($this->global) && empty($this->children);
+        return empty($this->global) && empty($this->code) && empty($this->children);
     }
 
     /**
@@ -118,6 +138,10 @@ final class FormError
             $printer->global($this->global);
         }
 
+        if ($this->code) {
+            $printer->code($this->code);
+        }
+
         foreach ($this->children as $name => $child) {
             $printer->child($name, $child);
         }
@@ -146,19 +170,20 @@ final class FormError
             return self::$null;
         }
 
-        return self::$null = new FormError(null, []);
+        return self::$null = new FormError(null, null, []);
     }
 
     /**
      * Creates an error containing only the global message
      *
      * @param string $message The error message
+     * @param string|null $code The error code
      *
      * @return FormError
      */
-    public static function message(string $message): FormError
+    public static function message(string $message, ?string $code = null): FormError
     {
-        return new FormError($message, []);
+        return new FormError($message, $code, []);
     }
 
     /**
@@ -170,6 +195,29 @@ final class FormError
      */
     public static function aggregate(array $errors): FormError
     {
-        return new FormError(null, $errors);
+        return new FormError(null, null, $errors);
+    }
+
+    /**
+     * Create a form error from a symfony violation
+     *
+     * @param ConstraintViolationInterface $violation The violation instance
+     *
+     * @return FormError
+     */
+    public static function violation(ConstraintViolationInterface $violation): FormError
+    {
+        $message = $violation->getMessage();
+        $code = $violation->getCode();
+
+        if ($code !== null && $violation instanceof ConstraintViolation && $violation->getConstraint() !== null) {
+            try {
+                $code = $violation->getConstraint()->getErrorName($code);
+            } catch (InvalidArgumentException $e) {
+                // Ignore error
+            }
+        }
+
+        return self::message($message, $code);
     }
 }

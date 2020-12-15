@@ -52,6 +52,14 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
     /**
      * {@inheritdoc}
      */
+    public function code(string $code): void
+    {
+        // Ignore code
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function child(string $name, FormError $error): void
     {
         $this->inChild = true;

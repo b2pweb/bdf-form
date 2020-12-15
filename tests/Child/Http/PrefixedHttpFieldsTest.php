@@ -65,7 +65,7 @@ class PrefixedHttpFieldsTest extends TestCase
 
         $this->assertFalse($child->submit(['child_0' => 'value']));
         $this->assertEquals(['value'], $child->element()->value());
-        $this->assertEquals(FormError::message('This collection should contain 2 elements or more.'), $child->error());
+        $this->assertEquals(FormError::message('This collection should contain 2 elements or more.', 'TOO_FEW_ERROR'), $child->error());
     }
 
     /**

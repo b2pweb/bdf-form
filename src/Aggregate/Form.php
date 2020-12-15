@@ -273,7 +273,7 @@ final class Form implements FormInterface
         try {
             $data = $this->transformer->transformFromHttp($data, $this);
         } catch (Exception $e) {
-            $this->error = FormError::message($e->getMessage());
+            $this->error = FormError::message($e->getMessage(), 'TRANSFORM_ERROR');
             $this->valid = false;
 
             // Reset children values

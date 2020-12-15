@@ -78,7 +78,7 @@ abstract class LeafElement implements ElementInterface
             $this->value = $this->toPhp($this->transformer->transformFromHttp($this->sanitize($data), $this));
             $this->error = $this->validator->validate($this->value, $this);
         } catch (Exception $e) {
-            $this->error = FormError::message($e->getMessage());
+            $this->error = FormError::message($e->getMessage(), 'TRANSFORM_ERROR');
             $this->value = $data; // @todo null ? keep original ?
         }
 

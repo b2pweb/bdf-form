@@ -39,6 +39,7 @@ class CsrfElementTest extends TestCase
         $this->assertFalse($element->submit('invalid')->valid());
         $this->assertEquals(new CsrfToken(CsrfElement::class, 'invalid'), $element->value());
         $this->assertEquals('The CSRF token is invalid.', $element->error()->global());
+        $this->assertEquals('INVALID_TOKEN_ERROR', $element->error()->code());
     }
 
     /**
@@ -51,6 +52,7 @@ class CsrfElementTest extends TestCase
         $this->assertFalse($element->submit(null)->valid());
         $this->assertEquals(new CsrfToken(CsrfElement::class, null), $element->value());
         $this->assertEquals('The CSRF token is invalid.', $element->error()->global());
+        $this->assertEquals('INVALID_TOKEN_ERROR', $element->error()->code());
     }
 
     /**

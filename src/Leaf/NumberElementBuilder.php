@@ -34,12 +34,12 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
     /**
      * Set the minimal value constraint
      *
-     * @param int $min The minimal value (included)
+     * @param int|float $min The minimal value (included)
      * @param string|null $message The error message
      *
      * @return $this
      */
-    public function min(int $min, ?string $message = null): self
+    public function min($min, ?string $message = null): self
     {
         $options = ['value' => $min];
 
@@ -55,7 +55,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
     /**
      * Set the maximal value constraint
      *
-     * @param int $max The maximal value (included)
+     * @param int|float $max The maximal value (included)
      * @param string|null $message The error message
      *
      * @return $this

@@ -64,7 +64,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
 
         $this->assertFalse($child->submit(['child' => 'value']));
         $this->assertEquals('value', $child->element()->value());
-        $this->assertEquals(FormError::message('This value should not be equal to "value".'), $child->error());
+        $this->assertEquals(FormError::message('This value should not be equal to "value".', 'IS_EQUAL_ERROR'), $child->error());
     }
 
     /**

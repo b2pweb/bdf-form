@@ -136,7 +136,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable
             $data = (array) $this->transformer->transformFromHttp($data, $this);
         } catch (Exception $e) {
             $this->valid = false;
-            $this->error = FormError::message($e->getMessage());
+            $this->error = FormError::message($e->getMessage(), 'TRANSFORM_ERROR');
 
             return $this;
         }
