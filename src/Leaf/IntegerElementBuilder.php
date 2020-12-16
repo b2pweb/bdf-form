@@ -63,7 +63,7 @@ class IntegerElementBuilder extends NumberElementBuilder
      */
     protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
     {
-        return new IntegerElement($validator, $transformer);
+        return new IntegerElement($validator, $transformer, $this->getChoices());
     }
 
     /**

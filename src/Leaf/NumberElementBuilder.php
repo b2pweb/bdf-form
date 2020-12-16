@@ -3,6 +3,7 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\AbstractElementBuilder;
+use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
@@ -13,6 +14,8 @@ use Symfony\Component\Validator\Constraints\LessThanOrEqual;
  */
 abstract class NumberElementBuilder extends AbstractElementBuilder
 {
+    use ChoiceBuilderTrait;
+
     /**
      * @var bool
      */
@@ -60,7 +63,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function max(int $max, ?string $message = null): self
+    public function max($max, ?string $message = null): self
     {
         $options = ['value' => $max];
 

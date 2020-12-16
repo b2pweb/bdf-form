@@ -3,6 +3,7 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\AbstractElementBuilder;
+use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
@@ -16,6 +17,8 @@ use Symfony\Component\Validator\Constraints\Regex;
  */
 class StringElementBuilder extends AbstractElementBuilder
 {
+    use ChoiceBuilderTrait;
+
     /**
      * Add a string length constraint
      *
@@ -51,6 +54,6 @@ class StringElementBuilder extends AbstractElementBuilder
      */
     protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
     {
-        return new StringElement($validator, $transformer);
+        return new StringElement($validator, $transformer, $this->getChoices());
     }
 }

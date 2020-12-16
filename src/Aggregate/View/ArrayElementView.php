@@ -3,6 +3,7 @@
 namespace Bdf\Form\Aggregate\View;
 
 use Bdf\Form\Aggregate\ArrayElement;
+use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\View\ElementViewInterface;
 use Bdf\Form\View\ElementViewTrait;
 use Bdf\Form\View\FieldSetViewInterface;
@@ -36,8 +37,9 @@ final class ArrayElementView implements IteratorAggregate, FieldViewInterface, F
      * @param ElementViewInterface[] $elements
      * @param bool $required
      * @param array $constraints
+     * @param ChoiceView[]|null $choices
      */
-    public function __construct(string $type, string $name, $value, ?string $error, array $elements, bool $required, array $constraints)
+    public function __construct(string $type, string $name, $value, ?string $error, array $elements, bool $required, array $constraints, ?array $choices = [])
     {
         $this->type = $type;
         $this->name = $name;
@@ -46,6 +48,7 @@ final class ArrayElementView implements IteratorAggregate, FieldViewInterface, F
         $this->elements = $elements;
         $this->required = $required;
         $this->constraints = $constraints;
+        $this->choices = $choices;
     }
 
     /**
@@ -82,6 +85,6 @@ final class ArrayElementView implements IteratorAggregate, FieldViewInterface, F
      */
     public function __sleep()
     {
-        return ['type', 'name', 'error', 'value', 'elements', 'required', 'constraints'];
+        return ['type', 'name', 'error', 'value', 'elements', 'required', 'constraints', 'choices'];
     }
 }

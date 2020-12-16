@@ -3,6 +3,7 @@
 namespace Bdf\Form\Aggregate\View;
 
 use Bdf\Form\Aggregate\ArrayElement;
+use Bdf\Form\Choice\ChoiceView;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
@@ -14,7 +15,6 @@ use Symfony\Component\Validator\Constraints\PositiveOrZero;
  */
 class ArrayElementViewRendererTest extends TestCase
 {
-
     /**
      *
      */
@@ -25,6 +25,24 @@ class ArrayElementViewRendererTest extends TestCase
 
         $this->assertEquals('<input class="my-custom-style" type="text" name="foo" value="aaa,bbb,ccc" required />', $renderer->render($view, ['class' => 'my-custom-style']));
         $this->assertEquals('<input type="email" multiple name="foo" value="aaa,bbb,ccc" required />', $renderer->render($view, ['type' => 'email', 'multiple' => true]));
+    }
+
+    /**
+     *
+     */
+    public function test_render_with_choice()
+    {
+        $view = new ArrayElementView(ArrayElement::class, 'foo', ['aaa' , 'bbb'], null, [], true, [], [
+            new ChoiceView('aaa', 'aaa', true),
+            new ChoiceView('bbb', 'bbb', true),
+            new ChoiceView('ccc', 'ccc'),
+        ]);
+        $renderer = new ArrayElementViewRenderer();
+
+        $this->assertEquals(
+            '<select multiple name="foo[]" required><option value="aaa" selected>aaa</option><option value="bbb" selected>bbb</option><option value="ccc">ccc</option></select>',
+            $renderer->render($view, [])
+        );
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf\View;
 
+use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\Leaf\LeafElement;
 use Bdf\Form\View\ElementViewTrait;
 use Bdf\Form\View\FieldViewInterface;
@@ -12,8 +13,6 @@ use Bdf\Form\View\FieldViewTrait;
  * View for simple input fields
  *
  * @see LeafElement::view()
- *
- * @todo test serialization
  */
 final class SimpleElementView implements FieldViewInterface
 {
@@ -29,8 +28,9 @@ final class SimpleElementView implements FieldViewInterface
      * @param string|null $error
      * @param bool $required
      * @param array $constraints
+     * @param ChoiceView[]|null $choices
      */
-    public function __construct(string $type, string $name, $value, ?string $error, bool $required, array $constraints)
+    public function __construct(string $type, string $name, $value, ?string $error, bool $required, array $constraints, ?array $choices = null)
     {
         $this->type = $type;
         $this->name = $name;
@@ -38,6 +38,7 @@ final class SimpleElementView implements FieldViewInterface
         $this->error = $error;
         $this->required = $required;
         $this->constraints = $constraints;
+        $this->choices = $choices;
     }
 
     /**
@@ -45,7 +46,7 @@ final class SimpleElementView implements FieldViewInterface
      */
     protected function defaultRenderer(): FieldViewRendererInterface
     {
-        return SimpleFieldHtmlRenderer::instance();
+        return $this->choices ? SelectHtmlRenderer::instance() : SimpleFieldHtmlRenderer::instance();
     }
 
     /**
@@ -55,6 +56,6 @@ final class SimpleElementView implements FieldViewInterface
      */
     public function __sleep(): array
     {
-        return ['type', 'name', 'value', 'error', 'required', 'constraints'];
+        return ['type', 'name', 'value', 'error', 'required', 'constraints', 'choices'];
     }
 }

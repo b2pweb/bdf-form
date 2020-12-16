@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\View\ArrayElementView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Choice\ArrayChoice;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
@@ -337,5 +338,37 @@ class ArrayElementTest extends TestCase
 
         $this->assertTrue($view[0]->hasError());
         $this->assertEquals('This value is too short. It should have 3 characters or more.', $view[0]->error());
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_choice()
+    {
+        $element = (new ArrayElementBuilder())
+            ->choices(['aaa', 'bbb', 'ccc', 'ddd'])
+            ->buildElement()
+        ;
+
+        $this->assertEquals(new ArrayChoice(['aaa', 'bbb', 'ccc', 'ddd']), $element->choices());
+
+        $element->submit(['aaa', 'ccc']);
+
+        $view = $element->view(HttpFieldPath::named('arr'));
+
+        $this->assertCount(4, $view->choices());
+        $this->assertEquals('aaa', $view->choices()[0]->value());
+        $this->assertTrue($view->choices()[0]->selected());
+        $this->assertEquals('bbb', $view->choices()[1]->value());
+        $this->assertFalse($view->choices()[1]->selected());
+        $this->assertEquals('ccc', $view->choices()[2]->value());
+        $this->assertTrue($view->choices()[2]->selected());
+        $this->assertEquals('ddd', $view->choices()[3]->value());
+        $this->assertFalse($view->choices()[3]->selected());
+
+        $this->assertEquals(
+            '<select multiple foo="bar" name="arr[]"><option value="aaa" selected>aaa</option><option value="bbb">bbb</option><option value="ccc" selected>ccc</option><option value="ddd">ddd</option></select>'
+            , (string) $view->foo('bar')
+        );
     }
 }

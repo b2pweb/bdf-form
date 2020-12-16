@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf;
 
+use Bdf\Form\Choice\ArrayChoice;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
@@ -138,6 +139,18 @@ class FloatElementBuilderTest extends TestCase
         $this->assertFalse($element->submit(15.1)->valid());
     }
 
+
+    /**
+     *
+     */
+    public function test_max_with_float_val()
+    {
+        $element = $this->builder->max(1.5)->buildElement();
+
+        $this->assertTrue($element->submit(1.4)->valid());
+        $this->assertFalse($element->submit(1.6)->valid());
+    }
+
     /**
      *
      */
@@ -223,5 +236,22 @@ class FloatElementBuilderTest extends TestCase
 
         $element->submit('-1');
         $this->assertEquals('This value should be positive.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_choices()
+    {
+        $element = $this->builder->choices([12.3, 45.6, 78.9])->buildElement();
+
+        $this->assertEquals(new ArrayChoice([12.3, 45.6, 78.9]), $element->choices());
+
+        $element->submit('14.7');
+        $this->assertFalse($element->valid());
+        $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
+
+        $element->submit('45.6');
+        $this->assertTrue($element->valid());
     }
 }

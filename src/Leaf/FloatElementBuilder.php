@@ -84,7 +84,7 @@ class FloatElementBuilder extends NumberElementBuilder
      */
     protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
     {
-        return new FloatElement($validator, $transformer);
+        return new FloatElement($validator, $transformer, $this->getChoices());
     }
 
     /**

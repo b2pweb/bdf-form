@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\View;
 
+use Bdf\Form\Choice\ChoiceView;
+
 /**
  * Implements @see FieldViewInterface
  */
@@ -28,6 +30,11 @@ trait FieldViewTrait
      * @var array
      */
     private $constraints = [];
+
+    /**
+     * @var ChoiceView[]
+     */
+    private $choices;
 
     /**
      * {@inheritdoc}
@@ -59,6 +66,14 @@ trait FieldViewTrait
     public function constraints(): array
     {
         return $this->constraints;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function choices(): array
+    {
+        return $this->choices;
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Aggregate;
 
+use Bdf\Form\Choice\ChoiceBuilderTrait;
+use Bdf\Form\Choice\ChoiceInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\IntegerElement;
@@ -21,12 +23,16 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class ArrayElementBuilder implements ElementBuilderInterface
 {
+    use ChoiceBuilderTrait {
+        ChoiceBuilderTrait::choices as protected baseChoices;
+    }
+
     use TransformerBuilderTrait {
         transformer as arrayTransformer;
     }
 
     use ValidatorBuilderTrait {
-        satisfy as arrayConstraint;
+        ValidatorBuilderTrait::satisfy as arrayConstraint;
     }
 
     /**
@@ -198,6 +204,25 @@ class ArrayElementBuilder implements ElementBuilderInterface
     }
 
     /**
+     * Define choices for the element
+     *
+     * @param ChoiceInterface|array|callable $choices  The allowed values. Should be normalized.
+     * @param null|string|array $options  If options is a string it will be considered as constraint message
+     *
+     * @return $this
+     */
+    final public function choices($choices, $options = null): self
+    {
+        if (is_string($options)) {
+            $options = ['message' => $options, 'multipleMessage' => $options];
+        }
+
+        $options['multiple'] = true;
+
+        return $this->baseChoices($choices, $options);
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @return ArrayElement
@@ -207,7 +232,8 @@ class ArrayElementBuilder implements ElementBuilderInterface
         $element = new ArrayElement(
             $this->getElementBuilder()->buildElement(),
             $this->buildTransformer(),
-            $this->buildValidator()
+            $this->buildValidator(),
+            $this->getChoices()
         );
 
         if ($this->value) {

@@ -37,6 +37,7 @@ final class ConstraintsNormalizer
             return [];
         }
 
+        // @todo do not use reflection
         $r = new \ReflectionProperty(ConstraintValueValidator::class, 'constraint');
         $r->setAccessible(true);
         $constraint = $r->getValue($validator);

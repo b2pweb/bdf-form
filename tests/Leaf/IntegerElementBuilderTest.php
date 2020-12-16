@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf;
 
+use Bdf\Form\Choice\ArrayChoice;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
@@ -200,5 +201,19 @@ class IntegerElementBuilderTest extends TestCase
 
         $element->submit('-1');
         $this->assertEquals('This value should be positive.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_choices()
+    {
+        $element = $this->builder->choices([12, 34, 56])->buildElement();
+
+        $this->assertEquals(new ArrayChoice([12, 34, 56]), $element->choices());
+
+        $element->submit(22);
+        $this->assertFalse($element->valid());
+        $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
     }
 }

@@ -2,8 +2,10 @@
 
 namespace Bdf\Form\Leaf;
 
-use BadMethodCallException;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Choice\Choiceable;
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Leaf\View\SimpleElementView;
@@ -17,13 +19,12 @@ use Bdf\Form\View\ConstraintsNormalizer;
 use Bdf\Form\View\ElementViewInterface;
 use Bdf\Form\View\FieldViewInterface;
 use Exception;
-use LogicException;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Form element containing a single value
  */
-abstract class LeafElement implements ElementInterface
+abstract class LeafElement implements ElementInterface, Choiceable
 {
     use ContainerTrait;
 
@@ -38,6 +39,11 @@ abstract class LeafElement implements ElementInterface
      * @var TransformerInterface
      */
     private $transformer;
+
+    /**
+     * @var ChoiceInterface|null
+     */
+    private $choices;
 
     /**
      * @var mixed
@@ -60,12 +66,14 @@ abstract class LeafElement implements ElementInterface
      *
      * @param ValueValidatorInterface|null $validator
      * @param TransformerInterface|null $transformer
+     * @param ChoiceInterface|null $choices
      */
-    public function __construct(?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null)
+    public function __construct(?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ChoiceInterface $choices = null)
     {
         $this->validator = $validator ?: NullValueValidator::instance();
         $this->transformer = $transformer ?: NullTransformer::instance();
         $this->error = FormError::null();
+        $this->choices = $choices;
     }
 
     /**
@@ -149,7 +157,23 @@ abstract class LeafElement implements ElementInterface
     {
         $normalizedConstraints = ConstraintsNormalizer::normalize($this->validator);
 
-        return new SimpleElementView(static::class, (string) $field, $this->httpValue(), $this->error->global(), isset($normalizedConstraints[NotBlank::class]), $normalizedConstraints);
+        return new SimpleElementView(
+            static::class,
+            (string) $field,
+            $this->httpValue(),
+            $this->error->global(),
+            isset($normalizedConstraints[NotBlank::class]),
+            $normalizedConstraints,
+            $this->choiceView()
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function choices(): ?ChoiceInterface
+    {
+        return $this->choices;
     }
 
     /**
@@ -185,5 +209,23 @@ abstract class LeafElement implements ElementInterface
 
         // Leaf element supports only scalar values
         return null;
+    }
+
+    /**
+     * Get the choice view and apply value transformation and selected value
+     *
+     * @return array|null
+     * @see ChoiceInterface::view()
+     */
+    protected function choiceView(): ?array
+    {
+        if ($this->choices === null) {
+            return null;
+        }
+
+        return $this->choices->view(function (ChoiceView $view) {
+            $view->setSelected($view->value() == $this->value());
+            $view->setValue($this->transformer->transformToHttp($this->toHttp($view->value()), $this));
+        });
     }
 }

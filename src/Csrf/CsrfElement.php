@@ -10,14 +10,14 @@ use Bdf\Form\Leaf\LeafRootElement;
 use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Util\ContainerTrait;
-use Bdf\Form\View\ConstraintsNormalizer;
 use Bdf\Form\View\ElementViewInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 /**
- * Class CsrfElement
+ * Element for add a CSRF token on the form
+ * The token value is auto-generated using CsrfTokenManagerInterface
  */
 final class CsrfElement implements ElementInterface
 {

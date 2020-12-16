@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -237,5 +238,58 @@ class StringElementTest extends TestCase
         $element = new StringElement();
 
         $this->assertEquals('<input type="text" name="" value="" />', (string) $element->view());
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_choice()
+    {
+        $element = (new StringElementBuilder())->choices(['Foo' => 'foo', 'Bar' => 'bar'])->required()->buildElement();
+        $element->submit('foo');
+
+        $view = $element->view(HttpFieldPath::named('val'));
+
+        $this->assertContainsOnly(ChoiceView::class, $view->choices());
+        $this->assertCount(2, $view->choices());
+
+        $this->assertSame('foo', $view->choices()[0]->value());
+        $this->assertTrue($view->choices()[0]->selected());
+        $this->assertSame('bar', $view->choices()[1]->value());
+        $this->assertFalse($view->choices()[1]->selected());
+
+        $this->assertEquals(
+            '<select foo="bar" name="val" required><option value="foo" selected>Foo</option><option value="bar">Bar</option></select>'
+            , (string) $view->foo('bar')
+        );
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_choice_and_transformer()
+    {
+        $element = (new StringElementBuilder())
+            ->choices(['Foo' => 'foo', 'Bar' => 'bar'])
+            ->transformer(function ($value, $input, $toPhp) { return $toPhp ? base64_decode($value) : base64_encode($value); })
+            ->buildElement()
+        ;
+
+        $element->submit('Zm9v');
+
+        $view = $element->view(HttpFieldPath::named('val'));
+
+        $this->assertContainsOnly(ChoiceView::class, $view->choices());
+        $this->assertCount(2, $view->choices());
+
+        $this->assertSame('Zm9v', $view->choices()[0]->value());
+        $this->assertTrue($view->choices()[0]->selected());
+        $this->assertSame('YmFy', $view->choices()[1]->value());
+        $this->assertFalse($view->choices()[1]->selected());
+
+        $this->assertEquals(
+            '<select foo="bar" name="val"><option value="Zm9v" selected>Foo</option><option value="YmFy">Bar</option></select>'
+            , (string) $view->foo('bar')
+        );
     }
 }

@@ -2,6 +2,10 @@
 
 namespace Bdf\Form\View;
 
+use Bdf\Form\Choice\Choiceable;
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Choice\ChoiceView;
+
 /**
  * Base type for HTTP input / field
  * The implementations must be renderable
@@ -43,6 +47,17 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      * @see ConstraintsNormalizer::normalize() For normalize symfony constraints
      */
     public function constraints(): array;
+
+    /**
+     * Get configure choices on the element
+     * Returns null if no choices has been configured
+     *
+     * @return ChoiceView[]|null
+     *
+     * @see Choiceable
+     * @see ChoiceInterface::view()
+     */
+    public function choices(): ?array;
 
     /**
      * Render the field view

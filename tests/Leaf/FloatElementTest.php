@@ -7,6 +7,7 @@ use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -240,5 +241,31 @@ class FloatElementTest extends TestCase
         $element = (new FloatElementBuilder())->buildElement();
 
         $this->assertEquals('<input type="text" name="" value="" />', (string) $element->view());
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_choice()
+    {
+        $element = (new FloatElementBuilder())->raw()->choices([1.2, 6.2, 3.2])->required()->buildElement();
+        $element->submit(3.2);
+
+        $view = $element->view(HttpFieldPath::named('val'));
+
+        $this->assertContainsOnly(ChoiceView::class, $view->choices());
+        $this->assertCount(3, $view->choices());
+
+        $this->assertSame('1.2', $view->choices()[0]->value());
+        $this->assertFalse($view->choices()[0]->selected());
+        $this->assertSame('6.2', $view->choices()[1]->value());
+        $this->assertFalse($view->choices()[1]->selected());
+        $this->assertSame('3.2', $view->choices()[2]->value());
+        $this->assertTrue($view->choices()[2]->selected());
+
+        $this->assertEquals(
+            '<select foo="bar" name="val" required><option value="1.2">1.2</option><option value="6.2">6.2</option><option value="3.2" selected>3.2</option></select>'
+            , (string) $view->foo('bar')
+        );
     }
 }

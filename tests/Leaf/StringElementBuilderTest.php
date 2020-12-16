@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf;
 
+use Bdf\Form\Choice\ArrayChoice;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -133,5 +134,19 @@ class StringElementBuilderTest extends TestCase
 
         $element->submit('-1');
         $this->assertEquals('This value should be positive.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_choices()
+    {
+        $element = $this->builder->choices(['foo', 'bar'])->buildElement();
+
+        $this->assertEquals(new ArrayChoice(['foo', 'bar']), $element->choices());
+
+        $element->submit('aaa');
+        $this->assertFalse($element->valid());
+        $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
     }
 }

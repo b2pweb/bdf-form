@@ -8,6 +8,9 @@ use Bdf\Form\Aggregate\View\ArrayElementView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Choice\Choiceable;
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Leaf\LeafRootElement;
@@ -26,7 +29,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * Class ArrayElement
  */
-final class ArrayElement implements ChildAggregateInterface, Countable
+final class ArrayElement implements ChildAggregateInterface, Countable, Choiceable
 {
     use ContainerTrait;
 
@@ -44,6 +47,11 @@ final class ArrayElement implements ChildAggregateInterface, Countable
      * @var ValueValidatorInterface
      */
     private $validator;
+
+    /**
+     * @var ChoiceInterface|null
+     */
+    private $choices;
 
     /**
      * @var bool
@@ -67,13 +75,15 @@ final class ArrayElement implements ChildAggregateInterface, Countable
      * @param ElementInterface $templateElement
      * @param TransformerInterface|null $transformer
      * @param ValueValidatorInterface|null $validator
+     * @param ChoiceInterface|null $choices
      */
-    public function __construct(ElementInterface $templateElement, ?TransformerInterface $transformer = null, ?ValueValidatorInterface $validator = null)
+    public function __construct(ElementInterface $templateElement, ?TransformerInterface $transformer = null, ?ValueValidatorInterface $validator = null, ?ChoiceInterface $choices = null)
     {
         $this->templateElement = $templateElement;
         $this->transformer = $transformer ?: NullTransformer::instance();
         $this->validator = $validator ?: NullValueValidator::instance();
         $this->error = FormError::null();
+        $this->choices = $choices;
     }
 
     /**
@@ -122,6 +132,14 @@ final class ArrayElement implements ChildAggregateInterface, Countable
     public function count(): int
     {
         return count($this->children);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function choices(): ?ChoiceInterface
+    {
+        return $this->choices;
     }
 
     /**
@@ -270,7 +288,8 @@ final class ArrayElement implements ChildAggregateInterface, Countable
             $this->error->global(),
             $elements,
             isset($constraints[NotBlank::class]),
-            $constraints
+            $constraints,
+            $this->choiceView()
         );
     }
 
@@ -285,5 +304,26 @@ final class ArrayElement implements ChildAggregateInterface, Countable
         foreach ($children as $name => $child) {
             $this->children[$name] = $child->setParent($this);
         }
+    }
+
+    /**
+     * Get the choice view and apply value transformation and selected value
+     *
+     * @return array|null
+     * @see ChoiceInterface::view()
+     */
+    private function choiceView(): ?array
+    {
+        if ($this->choices === null) {
+            return null;
+        }
+
+        // Use inner element for transform choice values
+        $innerElement = clone $this->templateElement;
+
+        return $this->choices->view(function (ChoiceView $view) use($innerElement) {
+            $view->setSelected(in_array($view->value(), $this->value()));
+            $view->setValue($innerElement->import($view->value())->httpValue());
+        });
     }
 }

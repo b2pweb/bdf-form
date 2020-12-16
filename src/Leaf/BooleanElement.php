@@ -61,7 +61,6 @@ final class BooleanElement extends LeafElement
      */
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        // @todo method createElementView
         return new BooleanElementView(self::class, (string) $field, $this->httpValue(), $this->httpValue, $this->value(), $this->error()->global());
     }
 }
