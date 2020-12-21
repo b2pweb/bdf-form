@@ -4,8 +4,6 @@ namespace Bdf\Form\View;
 
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
-use Bdf\Validator\Constraints\Chain;
-use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -37,21 +35,9 @@ final class ConstraintsNormalizer
             return [];
         }
 
-        // @todo do not use reflection
-        $r = new \ReflectionProperty(ConstraintValueValidator::class, 'constraint');
-        $r->setAccessible(true);
-        $constraint = $r->getValue($validator);
-
-        if ($constraint instanceof Chain) {
-            $constraints = $constraint->constraints;
-        } else {
-            $constraints = [$constraint];
-        }
-
         $normalizedConstraints = [];
 
-        /** @var Constraint $constraint */
-        foreach ($constraints as $constraint) {
+        foreach ($validator->constraints() as $constraint) {
             $className = get_class($constraint);
 
             if (isset(self::$constraints[$className])) {

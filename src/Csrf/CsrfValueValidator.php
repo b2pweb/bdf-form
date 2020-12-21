@@ -6,6 +6,7 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Symfony\Component\Validator\Constraint;
 
 /**
  * Class CsrfValueValidator
@@ -29,8 +30,8 @@ final class CsrfValueValidator implements ValueValidatorInterface
     /**
      * CsrfValueValidator constructor.
      *
-     * @param bool $invalidate
-     * @param array $options
+     * @param bool $invalidate Always invalidate the token after validation
+     * @param array $options Constraints options
      */
     public function __construct(bool $invalidate = false, array $options = [])
     {
@@ -52,5 +53,13 @@ final class CsrfValueValidator implements ValueValidatorInterface
                 $element->invalidateToken();
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function constraints(): array
+    {
+        return []; // Does CsrfConstraint should be returns ?
     }
 }

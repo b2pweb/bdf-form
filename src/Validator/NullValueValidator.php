@@ -4,6 +4,7 @@ namespace Bdf\Form\Validator;
 
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
+use Symfony\Component\Validator\Constraint;
 
 /**
  * Null object for value validator
@@ -23,6 +24,14 @@ final class NullValueValidator implements ValueValidatorInterface
     public function validate($value, ElementInterface $element): FormError
     {
         return FormError::null();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function constraints(): array
+    {
+        return [];
     }
 
     /**

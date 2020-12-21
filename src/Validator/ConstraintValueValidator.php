@@ -49,6 +49,17 @@ final class ConstraintValueValidator implements ValueValidatorInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function constraints(): array
+    {
+        return $this->constraint instanceof Chain
+            ? $this->constraint->constraints
+            : [$this->constraint]
+        ;
+    }
+
+    /**
      * Create the value validator from list of symfony constraints
      *
      * @param Constraint[] $constraints

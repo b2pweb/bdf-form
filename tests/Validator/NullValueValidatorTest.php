@@ -22,6 +22,14 @@ class NullValueValidatorTest extends TestCase
     /**
      *
      */
+    public function test_constraints()
+    {
+        $this->assertSame([], NullValueValidator::instance()->constraints());
+    }
+
+    /**
+     *
+     */
     public function test_validate()
     {
         $this->assertTrue((new NullValueValidator())->validate('value', $this->createMock(ElementInterface::class))->empty());

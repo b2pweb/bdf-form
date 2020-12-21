@@ -45,6 +45,8 @@ class ConstraintValueValidatorTest extends TestCase
     {
         $this->assertEquals(new NullValueValidator(), ConstraintValueValidator::fromConstraints([]));
         $this->assertEquals(new ConstraintValueValidator(new NotBlank()), ConstraintValueValidator::fromConstraints([new NotBlank()]));
+        $this->assertEquals([new NotBlank()], ConstraintValueValidator::fromConstraints([new NotBlank()])->constraints());
         $this->assertEquals(new ConstraintValueValidator(new Chain(['constraints' => [new NotBlank(), new NotEqualTo('foo')]])), ConstraintValueValidator::fromConstraints([new NotBlank(), new NotEqualTo('foo')]));
+        $this->assertEquals([new NotBlank(['groups' => ['Default']]), new NotEqualTo(['value' => 'foo', 'groups' => ['Default']])], ConstraintValueValidator::fromConstraints([new NotBlank(), new NotEqualTo('foo')])->constraints());
     }
 }
