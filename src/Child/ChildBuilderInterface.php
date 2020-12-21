@@ -57,7 +57,7 @@ interface ChildBuilderInterface
 
     /**
      * Define the default value
-     * Should be normalized (i.e. formatted as HTTP value)
+     * The value must be the PHP value (i.e. the parsed HTTP value)
      * The default will be used when submitting form without (or with an empty) value for the current field
      *
      * Note: The default value is not the initial value, and it's only used on submit.

@@ -5,6 +5,7 @@ namespace Bdf\Form\Leaf\Date;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
+use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Leaf\LeafRootElement;
 use Bdf\Form\Leaf\View\SimpleElementView;
@@ -259,49 +260,26 @@ class DateTimeElementTest extends TestCase
         $this->assertFalse($view->required());
         $this->assertEmpty($view->constraints());
     }
-//
-//    /**
-//     *
-//     */
-//    public function test_view_with_constraints()
-//    {
-//        $element = (new DateTimeElementBuilder())->min(5)->required()->buildElement();
-//        $element->import(42);
-//
-//        $view = $element->view(HttpFieldPath::named('name'));
-//
-//        $this->assertInstanceOf(SimpleElementView::class, $view);
-//        $this->assertEquals('<input type="number" name="name" value="42" required min="5" />', (string) $view);
-//        $this->assertEquals('<input id="foo" class="form-element" type="number" name="name" value="42" required min="5" />', (string) $view->id('foo')->class('form-element'));
-//        $this->assertNull($view->onError('my error'));
-//
-//        $this->assertEquals('42', $view->value());
-//        $this->assertEquals('name', $view->name());
-//        $this->assertFalse($view->hasError());
-//        $this->assertNull($view->error());
-//        $this->assertTrue($view->required());
-//        $this->assertEquals([NotBlank::class => [], GreaterThanOrEqual::class => ['value' => 5]], $view->constraints());
-//    }
-//
-//    /**
-//     *
-//     */
-//    public function test_view_with_error()
-//    {
-//        $element = (new DateTimeElementBuilder())->min(5)->required()->buildElement();
-//        $element->submit(3);
-//
-//        $view = $element->view(HttpFieldPath::named('name'));
-//
-//        $this->assertInstanceOf(SimpleElementView::class, $view);
-//        $this->assertEquals('<input type="number" name="name" value="3" required min="5" />', (string) $view);
-//        $this->assertEquals('my error', $view->onError('my error'));
-//
-//        $this->assertEquals('3', $view->value());
-//        $this->assertEquals('name', $view->name());
-//        $this->assertTrue($view->hasError());
-//        $this->assertEquals('This value should be greater than or equal to 5.', $view->error());
-//    }
+
+    /**
+     *
+     */
+    public function test_view_with_error()
+    {
+        $element = (new DateTimeElementBuilder())->before(new DateTime('1980-10-14 15:00:00'))->required()->buildElement();
+        $element->submit('2020-10-14T12:00:00Z');
+
+        $view = $element->view(HttpFieldPath::named('name'));
+
+        $this->assertInstanceOf(SimpleElementView::class, $view);
+        $this->assertEquals('<input type="text" name="name" value="2020-10-14T12:00:00+00:00" required />', (string) $view);
+        $this->assertEquals('my error', $view->onError('my error'));
+
+        $this->assertEquals('2020-10-14T12:00:00+00:00', $view->value());
+        $this->assertEquals('name', $view->name());
+        $this->assertTrue($view->hasError());
+        $this->assertEquals('This value should be less than 14 oct. 1980 à 15:00.', $view->error());
+    }
 
     /**
      *
@@ -312,65 +290,20 @@ class DateTimeElementTest extends TestCase
 
         $this->assertEquals('<input type="text" name="" value="" />', (string) $element->view());
     }
-//
-//    /**
-//     *
-//     */
-//    public function test_view_with_choice()
-//    {
-//        $element = (new DateTimeElementBuilder())->raw()->choices([12, 62, 32])->required()->buildElement();
-//        $element->submit(32);
-//
-//        $view = $element->view(HttpFieldPath::named('val'));
-//
-//        $this->assertContainsOnly(ChoiceView::class, $view->choices());
-//        $this->assertCount(3, $view->choices());
-//
-//        $this->assertSame('12', $view->choices()[0]->value());
-//        $this->assertFalse($view->choices()[0]->selected());
-//        $this->assertSame('62', $view->choices()[1]->value());
-//        $this->assertFalse($view->choices()[1]->selected());
-//        $this->assertSame('32', $view->choices()[2]->value());
-//        $this->assertTrue($view->choices()[2]->selected());
-//
-//        $this->assertEquals(
-//            '<select foo="bar" name="val" required><option value="12">12</option><option value="62">62</option><option value="32" selected>32</option></select>'
-//            , (string) $view->foo('bar')
-//        );
-//    }
-//
-//    /**
-//     *
-//     */
-//    public function test_view_with_choice_and_transformer()
-//    {
-//        $element = (new DateTimeElementBuilder())
-//            ->choices([12, 62, 32])
-//            ->transformer(function ($value, $input, $toPhp) {
-//                return $toPhp ? hexdec($value) : dechex($value);
-//            })
-//            ->required()
-//            ->buildElement()
-//        ;
-//        $element->submit('20');
-//
-//        $view = $element->view(HttpFieldPath::named('val'));
-//
-//        $this->assertContainsOnly(ChoiceView::class, $view->choices());
-//        $this->assertCount(3, $view->choices());
-//
-//        $this->assertSame('c', $view->choices()[0]->value());
-//        $this->assertFalse($view->choices()[0]->selected());
-//        $this->assertSame('3e', $view->choices()[1]->value());
-//        $this->assertFalse($view->choices()[1]->selected());
-//        $this->assertSame('20', $view->choices()[2]->value());
-//        $this->assertTrue($view->choices()[2]->selected());
-//
-//        $this->assertEquals(
-//            '<select foo="bar" name="val" required><option value="c">12</option><option value="3e">62</option><option value="20" selected>32</option></select>'
-//            , (string) $view->foo('bar')
-//        );
-//    }
+
+    /**
+     *
+     */
+    public function test_child_builder_default()
+    {
+        $builder = new ChildBuilder('child', new DateTimeElementBuilder());
+        $builder->default(new DateTime('2020-11-13 05:00:00'));
+        $child = $builder->buildChild();
+
+        $child->submit([]);
+        $this->assertEquals(new DateTime('2020-11-13 05:00:00'), $child->element()->value());
+        $this->assertEquals('2020-11-13T05:00:00+01:00', $child->element()->httpValue());
+    }
 }
 
 class MyCustomDate extends DateTime

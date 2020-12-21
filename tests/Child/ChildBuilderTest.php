@@ -160,6 +160,24 @@ class ChildBuilderTest extends TestCase
     /**
      *
      */
+    public function test_default_with_transformer_should_be_applied()
+    {
+        $child = $this->builder->default('default')
+            ->transformer(function ($value, $input, $toPhp) { return $toPhp ? base64_decode($value) : base64_encode($value); })
+            ->buildChild()
+        ;
+
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $child->submit([]);
+
+        $this->assertEquals('default', $child->element()->value());
+        $this->assertEquals(base64_encode('default'), $child->element()->httpValue());
+    }
+
+    /**
+     *
+     */
     public function test_depends()
     {
         $child = $this->builder->depends('dep1', 'dep2')->buildChild();

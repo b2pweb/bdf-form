@@ -90,7 +90,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @param string $name
      * @param ElementBuilderInterface $elementBuilder
-     * @param RegistryInterface $registry
+     * @param RegistryInterface|null $registry
      */
     public function __construct(string $name, ElementBuilderInterface $elementBuilder, RegistryInterface $registry = null)
     {
@@ -167,14 +167,24 @@ class ChildBuilder implements ChildBuilderInterface
         }
 
         $fields = $this->fields ?: new ArrayOffsetHttpFields($this->name);
+        $element = $this->elementBuilder->buildElement();
+
+        // Apply element transformation to the default value
+        if ($this->default !== null) {
+            $lastValue = $element->value();
+            $default = $element->import($this->default)->httpValue();
+            $element->import($lastValue);
+        } else {
+            $default = null;
+        }
 
         if (is_string($this->factory)) {
             return new $this->factory(
                 $this->name,
-                $this->elementBuilder->buildElement(),
+                $element,
                 $fields,
                 $filters,
-                $this->default,
+                $default,
                 $this->hydrator,
                 $this->extractor,
                 $this->viewDependencies
@@ -183,10 +193,10 @@ class ChildBuilder implements ChildBuilderInterface
 
         return ($this->factory)(
             $this->name,
-            $this->elementBuilder->buildElement(),
+            $element,
             $fields,
             $filters,
-            $this->default,
+            $default,
             $this->hydrator,
             $this->extractor,
             $this->viewDependencies
