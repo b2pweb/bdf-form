@@ -19,6 +19,8 @@ use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Filter\TrimFilter;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElement;
@@ -158,6 +160,7 @@ class RegistryTest extends TestCase
         $this->assertInstanceOf(BooleanElementBuilder::class, $this->registry->elementBuilder(BooleanElement::class));
         $this->assertInstanceOf(CsrfElementBuilder::class, $this->registry->elementBuilder(CsrfElement::class));
         $this->assertInstanceOf(PhoneElementBuilder::class, $this->registry->elementBuilder(PhoneElement::class));
+        $this->assertInstanceOf(DateTimeElementBuilder::class, $this->registry->elementBuilder(DateTimeElement::class));
         $this->assertInstanceOf(FormBuilder::class, $this->registry->elementBuilder(Form::class));
         $this->assertInstanceOf(ArrayElementBuilder::class, $this->registry->elementBuilder(ArrayElement::class));
         $this->assertInstanceOf(CustomFormBuilder::class, $this->registry->elementBuilder(MyCustomForm::class));

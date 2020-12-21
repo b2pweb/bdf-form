@@ -9,6 +9,7 @@ use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElementBuilder;
@@ -91,6 +92,19 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @return ChildBuilderInterface|BooleanElementBuilder
      */
     public function boolean(string $name): ChildBuilderInterface;
+
+    /**
+     * Add a new date time element on the form
+     *
+     * <code>
+     * $builder->dateTime('eventDate')->after(new DateTime());
+     * </code>
+     *
+     * @param string $name The child name
+     *
+     * @return ChildBuilderInterface|DateTimeElementBuilder
+     */
+    public function dateTime(string $name): ChildBuilderInterface;
 
     /**
      * Add a new csrf token on form

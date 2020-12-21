@@ -6,6 +6,7 @@ use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
@@ -82,6 +83,19 @@ class FormBuilderTest extends TestCase
 
         $this->assertInstanceOf(Form::class, $form);
         $this->assertInstanceOf(BooleanElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_dateTime()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->dateTime('value'));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(DateTimeElement::class, $form['value']->element());
     }
 
     /**

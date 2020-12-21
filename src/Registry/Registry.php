@@ -19,6 +19,8 @@ use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElement;
@@ -52,6 +54,8 @@ final class Registry implements RegistryInterface
 
         CsrfElement::class => CsrfElementBuilder::class,
         PhoneElement::class => PhoneElementBuilder::class,
+
+        DateTimeElement::class => DateTimeElementBuilder::class,
 
         ArrayElement::class => ArrayElementBuilder::class,
         Form::class => FormBuilder::class,

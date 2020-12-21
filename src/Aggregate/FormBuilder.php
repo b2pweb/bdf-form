@@ -11,6 +11,8 @@ use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
@@ -57,9 +59,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * FormBuilder constructor.
      *
-     * @param RegistryInterface $registry
+     * @param RegistryInterface|null $registry
      */
-    public function __construct(RegistryInterface $registry = null)
+    public function __construct(?RegistryInterface $registry = null)
     {
         parent::__construct($registry);
     }
@@ -102,6 +104,14 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     public function boolean(string $name): ChildBuilderInterface
     {
         return $this->add($name, BooleanElement::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dateTime(string $name): ChildBuilderInterface
+    {
+        return $this->add($name, DateTimeElement::class);
     }
 
     /**
