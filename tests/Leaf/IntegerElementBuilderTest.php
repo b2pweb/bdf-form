@@ -140,6 +140,18 @@ class IntegerElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_positive()
+    {
+        $element = $this->builder->positive('my error')->buildElement();
+
+        $this->assertFalse($element->submit(-1)->valid());
+        $this->assertEquals('my error', $element->error()->global());
+        $this->assertTrue($element->submit(1)->valid());
+    }
+
+    /**
+     *
+     */
     public function test_grouping()
     {
         $element = $this->builder->grouping()->buildElement();

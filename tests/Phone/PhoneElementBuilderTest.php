@@ -37,6 +37,45 @@ class PhoneElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_must_validate_number_by_default()
+    {
+        $element = $this->builder->buildElement();
+        $element->submit('1');
+
+        $this->assertFalse($element->valid());
+        $this->assertEquals('The phone number is not valid.', $element->error()->global());
+        $this->assertEquals('INVALID_PHONE_NUMBER_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
+    public function test_allowInvalidNumber()
+    {
+        $element = $this->builder->allowInvalidNumber()->buildElement();
+        $element->submit('1');
+
+        $this->assertTrue($element->valid());
+        $this->assertNull($element->error()->global());
+        $this->assertSame('1', $element->httpValue());
+    }
+
+    /**
+     *
+     */
+    public function test_validateNumber()
+    {
+        $element = $this->builder->validateNumber('my error')->buildElement();
+        $element->submit('1');
+
+        $this->assertFalse($element->valid());
+        $this->assertEquals('my error', $element->error()->global());
+        $this->assertEquals('INVALID_PHONE_NUMBER_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
     public function test_formatter()
     {
         $element = $this->builder->formatter($formatter = $this->createMock(PhoneNumberUtil::class))->buildElement();

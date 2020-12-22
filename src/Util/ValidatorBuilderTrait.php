@@ -20,6 +20,11 @@ trait ValidatorBuilderTrait
     private $constraints = [];
 
     /**
+     * @var callable[]
+     */
+    private $constraintsProviders = [];
+
+    /**
      * Mark this input as required
      *
      * @param mixed $options
@@ -58,6 +63,27 @@ trait ValidatorBuilderTrait
     }
 
     /**
+     * Register a new constraints provider
+     * Constrains providers are call when building validator
+     * It should return an array of constraints
+     *
+     * <code>
+     * $builder->addConstraintsProvider(function() {
+     *     return [
+     *         new FooConstraint($this->fooValue),
+     *         new BarConstraint($this->barValue),
+     *     ];
+     * });
+     * </code>
+     *
+     * @param callable():Constraint[] $constraintsProvider
+     */
+    final protected function addConstraintsProvider(callable $constraintsProvider): void
+    {
+        $this->constraintsProviders[] = $constraintsProvider;
+    }
+
+    /**
      * Get the registry instance
      *
      * @return RegistryInterface
@@ -71,6 +97,14 @@ trait ValidatorBuilderTrait
      */
     private function buildValidator(): ValueValidatorInterface
     {
-        return ConstraintValueValidator::fromConstraints(array_map([$this->registry(), 'constraint'], $this->constraints));
+        $constraints = [];
+
+        foreach ($this->constraintsProviders as $provider) {
+            $constraints = array_merge($constraints, $provider());
+        }
+
+        $constraints = array_merge($constraints, array_map([$this->registry(), 'constraint'], $this->constraints));
+
+        return ConstraintValueValidator::fromConstraints($constraints);
     }
 }

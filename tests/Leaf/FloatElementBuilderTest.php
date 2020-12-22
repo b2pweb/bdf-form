@@ -164,6 +164,17 @@ class FloatElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_positive()
+    {
+        $element = $this->builder->positive()->buildElement();
+
+        $this->assertFalse($element->submit(-0.1)->valid());
+        $this->assertTrue($element->submit(0.1)->valid());
+    }
+
+    /**
+     *
+     */
     public function test_grouping()
     {
         $element = $this->builder->grouping()->buildElement();

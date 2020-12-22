@@ -8,6 +8,7 @@ use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
+use Symfony\Component\Validator\Constraints\Positive;
 
 /**
  * Base builder for an number element
@@ -74,6 +75,23 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
         $this->satisfy(new LessThanOrEqual($options));
 
         return $this;
+    }
+
+    /**
+     * The number must be positive
+     *
+     * @param array|string $options The constraint options, or the error message
+     *
+     * @return $this
+     * @see Positive
+     */
+    public function positive($options = []): self
+    {
+        if (is_string($options)) {
+            $options = ['message' => $options];
+        }
+
+        return $this->satisfy(new Positive($options));
     }
 
     /**
