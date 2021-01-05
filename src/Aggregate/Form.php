@@ -90,12 +90,23 @@ final class Form implements FormInterface
         $this->valid = true;
         $data = $this->transformHttpValue($data);
 
-        if (!$this->submitToChildren($data)) {
-            return $this;
+        $this->submitToChildrenAndValidate($data, 'submit');
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function patch($data): ElementInterface
+    {
+        $this->valid = true;
+
+        if ($data !== null) {
+            $data = $this->transformHttpValue($data);
         }
 
-        $this->error = $this->validator->validate($this->value(), $this);
-        $this->valid = $this->error->empty();
+        $this->submitToChildrenAndValidate($data, 'patch');
 
         return $this;
     }
@@ -288,13 +299,30 @@ final class Form implements FormInterface
     }
 
     /**
+     * Submit the transformed http data to children and validate the value
+     *
+     * @param mixed $data Data to submit
+     * @param string $method The submit method to call. Should be "submit" or "patch"
+     */
+    private function submitToChildrenAndValidate($data, string $method): void
+    {
+        if (!$this->submitToChildren($data, $method)) {
+            return;
+        }
+
+        $this->error = $this->validator->validate($this->value(), $this);
+        $this->valid = $this->error->empty();
+    }
+
+    /**
      * Submit the transformed http data to children
      *
      * @param mixed $data Data to submit
+     * @param string $method The submit method to call. Should be "submit" or "patch"
      *
      * @return bool false on fail, or true on success
      */
-    private function submitToChildren($data): bool
+    private function submitToChildren($data, string $method): bool
     {
         if (!$this->valid) {
             return false;
@@ -303,7 +331,7 @@ final class Form implements FormInterface
         $errors = [];
 
         foreach ($this->children->reverseIterator() as $child) {
-            if (!$child->submit($data)) {
+            if (!$child->$method($data)) {
                 $this->valid = false;
                 $errors[$child->name()] = $child->error();
             }

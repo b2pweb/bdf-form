@@ -22,8 +22,32 @@ interface ElementInterface
      *
      * @see ElementInterface::import() For import PHP value
      * @see ElementInterface::valid() For validates the element after submition
+     * @see ElementInterface::patch() For submit value without overrides previous ones
      */
     public function submit($data): self;
+
+    /**
+     * Submit HTTP data without override previous ones
+     * Like `ElementInterface::submit()`, the value will be transformed to PHP value and will be validated
+     *
+     * Permit to handle HTTP PATCH method when used like :
+     * <code>
+     * $entity = $element->import($entity)->patch($request->post())->value();
+     * $repository->save($entity);
+     * </code>
+     *
+     * On a leaf element, the value will be kept when null is passed, otherwise it will be overridden (like `submit()`).
+     * On an aggregate element, patch will be called on each children.
+     *
+     * Note: the element value will always be revalidated when calling patch even if null if passed
+     *
+     * @param mixed $data The HTTP data. A scalar value for a leaf element, or an array for form / aggregate element. If null, the previous value will be kept
+     *
+     * @return $this
+     *
+     * @see ElementInterface::submit() For submit data with override old values
+     */
+    public function patch($data): self;
 
     /**
      * Set the PHP value of the element

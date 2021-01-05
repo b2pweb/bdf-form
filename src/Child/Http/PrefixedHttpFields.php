@@ -52,7 +52,13 @@ final class PrefixedHttpFields implements HttpFieldsInterface
             $value = $data;
         }
 
-        return empty($value) ? $defaultValue : $value;
+        // Return default value only if provided
+        return $defaultValue !== null && empty($value) ? $defaultValue : $value;
+    }
+
+    public function contains($httpFields): bool
+    {
+        return true; // Always true ?
     }
 
     /**

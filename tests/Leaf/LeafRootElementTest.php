@@ -29,6 +29,18 @@ class LeafRootElementTest extends TestCase
     /**
      *
      */
+    public function test_patch()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $element->expects($this->once())->method('patch')->with('data');
+        $this->assertSame($root, $root->patch('data'));
+    }
+
+    /**
+     *
+     */
     public function test_import()
     {
         $element = $this->createMock(ElementInterface::class);

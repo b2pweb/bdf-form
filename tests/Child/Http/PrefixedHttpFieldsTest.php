@@ -46,6 +46,14 @@ class PrefixedHttpFieldsTest extends TestCase
     /**
      *
      */
+    public function test_contains()
+    {
+        $this->assertTrue((new PrefixedHttpFields('child_'))->contains([]));
+    }
+
+    /**
+     *
+     */
     public function test_submit_not_empty()
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, new Setter());

@@ -42,7 +42,20 @@ final class ArrayOffsetHttpFields implements HttpFieldsInterface
 
         $value = $httpFields[$this->offset];
 
+        // No default value : return the real submitted value
+        if ($defaultValue === null) {
+            return $value;
+        }
+
         return $value !== '' && $value !== null && $value !== [] ? $value : $defaultValue;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function contains($httpFields): bool
+    {
+        return isset($httpFields[$this->offset]);
     }
 
     /**

@@ -91,6 +91,48 @@ class StringElementTest extends TestCase
     /**
      *
      */
+    public function test_patch_null()
+    {
+        $element = new StringElement();
+        $element->import('foo');
+
+        $this->assertSame($element, $element->patch(null));
+        $this->assertSame('foo', $element->value());
+        $this->assertTrue($element->valid());
+        $this->assertNull($element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_null_with_constraints_should_be_validated()
+    {
+        $element = (new StringElementBuilder())->length(['min' => 5])->buildElement();
+        $element->import('foo');
+
+        $this->assertSame($element, $element->patch(null));
+        $this->assertSame('foo', $element->value());
+        $this->assertFalse($element->valid());
+        $this->assertEquals('This value is too short. It should have 5 characters or more.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_with_value()
+    {
+        $element = (new StringElementBuilder())->length(['min' => 3])->buildElement();
+
+        $this->assertFalse($element->patch('f')->valid());
+        $this->assertSame('f', $element->value());
+
+        $this->assertTrue($element->patch('foo')->valid());
+        $this->assertSame('foo', $element->value());
+    }
+
+    /**
+     *
+     */
     public function test_transformer()
     {
         $element = new StringElement(null, new ClosureTransformer(function ($value, $_, $toPhp) {

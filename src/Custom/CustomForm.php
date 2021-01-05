@@ -98,14 +98,17 @@ abstract class CustomForm implements FormInterface
      */
     public function submit($data): ElementInterface
     {
-        $form = $this->form();
+        $this->submitTarget()->submit($data);
 
-        // The form is the root form
-        if ($form->container() === null) {
-            $form->root()->submit($data);
-        } else {
-            $form->submit($data);
-        }
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function patch($data): ElementInterface
+    {
+        $this->submitTarget()->patch($data);
 
         return $this;
     }
@@ -227,5 +230,24 @@ abstract class CustomForm implements FormInterface
         $this->configure($this->builder);
 
         return $this->form = $this->builder->buildElement();
+    }
+
+    /**
+     * Get the submit target element
+     * This element must be used for all submit or patch call
+     * Handle submit button if the current form is the root element
+     *
+     * @return ElementInterface
+     */
+    final protected function submitTarget(): ElementInterface
+    {
+        $form = $this->form();
+
+        // The form is the root form
+        if ($form->container() === null) {
+            return $form->root();
+        }
+
+        return $form;
     }
 }

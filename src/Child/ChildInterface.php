@@ -92,8 +92,22 @@ interface ChildInterface
      * @param mixed $data
      *
      * @return bool true on success (data are valid), or false if there is a form error
+     *
+     * @see ElementInterface::submit() The element submit() method
      */
     public function submit($data): bool;
+
+    /**
+     * Submit HTTP form data without override previous ones
+     * Unlike `ChildInterface::submit()` default value will not be used if the http value is not present, but will keep the last one.
+     *
+     * @param mixed $data The HTTP fields
+     *
+     * @return bool true on success (data are valid), or false if there is a form error
+     *
+     * @see ElementInterface::patch() The element patch() method
+     */
+    public function patch($data): bool;
 
     /**
      * Export the http value of the child as an array

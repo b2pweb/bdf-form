@@ -27,7 +27,13 @@ use Exception;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * Class ArrayElement
+ * Dynamic collection of elements
+ * This element may be a simple list array (i.e. with numeric offset), or associative array (with string offset)
+ * Contrary to Form, all components elements are identically
+ *
+ * Array element can be used as leaf element (like with CSV string), or root of embedded forms
+ *
+ * @see ArrayElementBuilder For build the element
  */
 final class ArrayElement implements ChildAggregateInterface, Countable, Choiceable
 {
@@ -72,7 +78,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     /**
      * ArrayElement constructor.
      *
-     * @param ElementInterface $templateElement
+     * @param ElementInterface $templateElement Inner element
      * @param TransformerInterface|null $transformer
      * @param ValueValidatorInterface|null $validator
      * @param ChoiceInterface|null $choices
@@ -148,6 +154,8 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     public function submit($data): ElementInterface
     {
         $this->valid = true;
+
+        $lastChildren = $this->children;
         $this->children = [];
 
         try {
@@ -162,9 +170,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         $errors = [];
 
         foreach ((array) $data as $key => $value) {
-            // @todo optimize the child implementation ?
-            $child = new Child($key, $this->templateElement);
-            $child->setParent($this);
+            $child = $lastChildren[$key] ?? (new Child($key, $this->templateElement))->setParent($this);
 
             if (!$child->element()->submit($value)->valid()) {
                 $this->valid = false;
@@ -180,14 +186,36 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
             }
         }
 
-        if (!$this->valid) {
-            $this->error = FormError::aggregate($errors);
+        $this->validate($errors);
 
-            return $this;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function patch($data): ElementInterface
+    {
+        $this->valid = true;
+
+        if ($data !== null) {
+            return $this->submit($data);
         }
 
-        $this->error = $this->validator->validate($this->value(), $this);
-        $this->valid = $this->error->empty();
+        $errors = [];
+
+        // Keep all elements, and propagate the patch
+        foreach ($this->children as $key => $child) {
+            if (!$child->element()->patch(null)->valid()) {
+                $this->valid = false;
+                $errors[$key] = $child->error();
+                $this->children[$key] = $child;
+
+                continue;
+            }
+        }
+
+        $this->validate($errors);
 
         return $this;
     }
@@ -325,5 +353,21 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
             $view->setSelected(in_array($view->value(), $this->value()));
             $view->setValue($innerElement->import($view->value())->httpValue());
         });
+    }
+
+    /**
+     * Validate the array value
+     *
+     * @param array $childrenErrors The children errors
+     */
+    private function validate(array $childrenErrors): void
+    {
+        if (!$this->valid) {
+            $this->error = FormError::aggregate($childrenErrors);
+            return;
+        }
+
+        $this->error = $this->validator->validate($this->value(), $this);
+        $this->valid = $this->error->empty();
     }
 }

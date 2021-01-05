@@ -93,6 +93,49 @@ class IntegerElementTest extends TestCase
     /**
      *
      */
+    public function test_patch_null()
+    {
+        $element = new IntegerElement();
+        $element->import(1);
+
+        $this->assertSame($element, $element->patch(null));
+        $this->assertSame(1, $element->value());
+        $this->assertTrue($element->valid());
+        $this->assertNull($element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_null_with_constraints_should_be_validated()
+    {
+        $element = (new IntegerElementBuilder())->min(3)->buildElement();
+        $element->import(1);
+
+        $this->assertSame($element, $element->patch(null));
+        $this->assertSame(1, $element->value());
+        $this->assertFalse($element->valid());
+        $this->assertEquals('This value should be greater than or equal to 3.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_with_value()
+    {
+        $element = (new IntegerElementBuilder())->min(3)->buildElement();
+        $element->import(1);
+
+        $this->assertFalse($element->patch(2)->valid());
+        $this->assertSame(2, $element->value());
+
+        $this->assertTrue($element->patch(3.3)->valid());
+        $this->assertSame(3, $element->value());
+    }
+
+    /**
+     *
+     */
     public function test_transformer()
     {
         $element = new IntegerElement(null, new ClosureTransformer(function ($value, $_, $toPhp) {

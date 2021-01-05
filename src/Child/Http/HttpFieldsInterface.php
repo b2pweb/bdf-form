@@ -20,6 +20,16 @@ interface HttpFieldsInterface
     public function extract($httpFields, $defaultValue);
 
     /**
+     * Does the required field is contained into given http fields
+     * If this method return false, calling `extract()` will return the default value
+     *
+     * @param mixed $httpFields HTTP fields to check
+     *
+     * @return bool true if the field is available
+     */
+    public function contains($httpFields): bool;
+
+    /**
      * Format an element value to HTTP fields
      *
      * @param mixed $value Value to format

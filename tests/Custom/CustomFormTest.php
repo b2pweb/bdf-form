@@ -119,6 +119,62 @@ class CustomFormTest extends TestCase
     /**
      *
      */
+    public function test_patch_success()
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->birthDate = new \DateTime('1992-05-22');
+
+        $this->form->import($person);
+
+        $this->assertSame($this->form, $this->form->patch(['firstName' => 'Paul']));
+        $this->assertTrue($this->form->valid());
+
+        $person = $this->form->value();
+
+        $this->assertInstanceOf(Person::class, $person);
+        $this->assertSame('Paul', $person->firstName);
+        $this->assertSame('Doe', $person->lastName);
+        $this->assertEquals(new \DateTime('1992-05-22'), $person->birthDate);
+    }
+
+    /**
+     *
+     */
+    public function test_patch_on_embedded()
+    {
+        $parentForm = new class() extends CustomForm {
+            protected function configure(FormBuilderInterface $builder): void
+            {
+                $builder->add('embedded', PersonForm::class)->setter();
+                $builder->string('foo')->setter();
+            }
+        };
+
+        $parentForm->submit([
+            'embedded' => [
+                'firstName' => 'John',
+                'lastName' => 'Doe',
+                'birthDate' => (new \DateTime('1992-05-22'))->getTimestamp(),
+            ],
+            'foo' => 'bar',
+        ]);
+
+        $parentForm->patch(['embedded' => ['firstName' => 'Paul']]);
+
+        $value = $parentForm->value();
+
+        $this->assertInstanceOf(Person::class, $value['embedded']);
+        $this->assertSame('Paul', $value['embedded']->firstName);
+        $this->assertSame('Doe', $value['embedded']->lastName);
+        $this->assertEquals(new \DateTime('1992-05-22'), $value['embedded']->birthDate);
+        $this->assertSame('bar', $value['foo']);
+    }
+
+    /**
+     *
+     */
     public function test_import()
     {
         $person = new Person();

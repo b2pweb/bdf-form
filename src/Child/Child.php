@@ -175,13 +175,22 @@ final class Child implements ChildInterface
      */
     public function submit($data): bool
     {
-        $value = $this->fields->extract($data, $this->defaultValue);
-
-        foreach ($this->filters as $filter) {
-            $value = $filter->filter($value, $this->element); // @todo use $this instead of element ?
-        }
+        $value = $this->extractValue($data);
 
         return $this->element->submit($value)->valid();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function patch($data): bool
+    {
+        $value = $data !== null && $this->fields->contains($data)
+            ? $this->extractValue($data)
+            : null
+        ;
+
+        return $this->element->patch($value)->valid();
     }
 
     /**
@@ -214,5 +223,22 @@ final class Child implements ChildInterface
     public function __clone()
     {
         $this->element = $this->element->setContainer($this);
+    }
+
+    /**
+     * Extract HTTP value and apply filters
+     *
+     * @param mixed $httpValue
+     * @return mixed The filtered value
+     */
+    private function extractValue($httpValue)
+    {
+        $value = $this->fields->extract($httpValue, $this->defaultValue);
+
+        foreach ($this->filters as $filter) {
+            $value = $filter->filter($value, $this->element); // @todo use $this instead of element ?
+        }
+
+        return $value;
     }
 }

@@ -117,7 +117,7 @@ class ChildTest extends TestCase
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
-        $this->assertNull($child->element()->value());
+        $this->assertEmpty($child->element()->value());
     }
 
     /**
@@ -167,6 +167,46 @@ class ChildTest extends TestCase
 
         $this->assertTrue($child->submit(['child' => 'hello world !']));
         $this->assertEquals('HEL', $child->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_empty()
+    {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $child->element()->import('foo');
+
+        $this->assertTrue($child->patch(null));
+        $this->assertSame('foo', $child->element()->value());
+
+        $this->assertTrue($child->patch(''));
+        $this->assertSame('foo', $child->element()->value());
+
+        $this->assertTrue($child->patch([]));
+        $this->assertSame('foo', $child->element()->value());
+
+        $this->assertTrue($child->patch(['child' => null]));
+        $this->assertSame('foo', $child->element()->value());
+
+        $this->assertTrue($child->patch(['child' => '']));
+        $this->assertSame('', $child->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_not_empty()
+    {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $child->element()->import('foo');
+
+        $this->assertTrue($child->patch(['child' => 'bar']));
+        $this->assertSame('bar', $child->element()->value());
     }
 
     /**

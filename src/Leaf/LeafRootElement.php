@@ -51,6 +51,16 @@ final class LeafRootElement implements RootElementInterface
     /**
      * {@inheritdoc}
      */
+    public function patch($data): ElementInterface
+    {
+        $this->element->patch($data);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function import($entity): ElementInterface
     {
         $this->element->import($entity);

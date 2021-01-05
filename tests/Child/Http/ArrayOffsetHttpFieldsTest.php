@@ -27,7 +27,34 @@ class ArrayOffsetHttpFieldsTest extends TestCase
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
-        $this->assertNull($child->element()->value());
+        $this->assertEmpty($child->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_empty_values_without_default()
+    {
+        $field = new ArrayOffsetHttpFields('child');
+
+        $this->assertSame(null, $field->extract([], null));
+        $this->assertSame(null, $field->extract('', null));
+        $this->assertSame(null, $field->extract(null, null));
+        $this->assertSame('', $field->extract(['child' => ''], null));
+    }
+
+    /**
+     *
+     */
+    public function test_contains()
+    {
+        $field = new ArrayOffsetHttpFields('child');
+
+        $this->assertFalse($field->contains([]));
+        $this->assertFalse($field->contains(null));
+        $this->assertFalse($field->contains(''));
+        $this->assertFalse($field->contains(['foo' => 'xxx']));
+        $this->assertTrue($field->contains(['child' => 'xxx']));
     }
 
     /**

@@ -78,6 +78,15 @@ final class CsrfElement implements ElementInterface
     /**
      * {@inheritdoc}
      */
+    public function patch($data): ElementInterface
+    {
+        // CSRF element must be submitted
+        return $this->submit($data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function import($entity): ElementInterface
     {
         throw new BadMethodCallException('Cannot set a Csrf token value');

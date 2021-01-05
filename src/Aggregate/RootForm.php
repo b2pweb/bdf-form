@@ -70,15 +70,19 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function submit($data): ElementInterface
     {
-        $this->submitButton = null;
-
-        foreach ($this->buttons as $button) {
-            if ($button->submit($data) && $this->submitButton === null) {
-                $this->submitButton = $button;
-            }
-        }
-
+        $this->submitToButtons($data);
         $this->form->submit($data);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function patch($data): ElementInterface
+    {
+        $this->submitToButtons($data);
+        $this->form->patch($data);
 
         return $this;
     }
@@ -248,5 +252,21 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     public function getIterator()
     {
         return $this->form->getIterator();
+    }
+
+    /**
+     * Submit HTTP fields to buttons
+     *
+     * @param mixed $data The HTTP value
+     */
+    private function submitToButtons($data): void
+    {
+        $this->submitButton = null;
+
+        foreach ($this->buttons as $button) {
+            if ($button->submit($data) && $this->submitButton === null) {
+                $this->submitButton = $button;
+            }
+        }
     }
 }

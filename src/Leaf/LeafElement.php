@@ -96,6 +96,23 @@ abstract class LeafElement implements ElementInterface, Choiceable
     /**
      * {@inheritdoc}
      */
+    final public function patch($data): ElementInterface
+    {
+        // A data is provided : simply submit the data
+        if ($data !== null) {
+            return $this->submit($data);
+        }
+
+        $this->submitted = true;
+        // Revalidate the element
+        $this->error = $this->validator->validate($this->value, $this);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     final public function valid(): bool
     {
         return $this->submitted && $this->error->empty();

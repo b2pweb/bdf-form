@@ -76,6 +76,49 @@ class RootFormTest extends TestCase
     /**
      *
      */
+    public function test_patch_with_button()
+    {
+        $registry = new Registry();
+
+        $form = new Form(new ChildrenCollection([
+            $registry->childBuilder(StringElement::class, 'firstName')->buildChild(),
+            $registry->childBuilder(StringElement::class, 'lastName')->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->buildChild(),
+        ]));
+
+        $root = new RootForm(
+            $form,
+            [
+                $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
+                $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
+            ]
+        );
+
+        $root->submit([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+            'btn1' => 'ok',
+        ]);
+
+        $this->assertSame($btn1, $root->submitButton());
+
+        $root->patch(['btn2' => 'ok']);
+
+        $this->assertSame($btn2, $root->submitButton());
+        $this->assertEquals('John', $root['firstName']->element()->value());
+        $this->assertEquals('Smith', $root['lastName']->element()->value());
+
+        $root->patch([]);
+
+        $this->assertNull($root->submitButton());
+        $this->assertEquals('John', $root['firstName']->element()->value());
+        $this->assertEquals('Smith', $root['lastName']->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_getValidator()
     {
         $form = new RootForm(new Form(new ChildrenCollection()));

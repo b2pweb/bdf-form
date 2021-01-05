@@ -93,6 +93,48 @@ class DateTimeElementTest extends TestCase
     /**
      *
      */
+    public function test_patch_null()
+    {
+        $element = new DateTimeElement();
+        $element->import(new DateTime('2020-10-14 15:00:00'));
+
+        $this->assertSame($element, $element->patch(null));
+        $this->assertEquals(new DateTime('2020-10-14 15:00:00'), $element->value());
+        $this->assertTrue($element->valid());
+        $this->assertNull($element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_null_with_constraints_should_be_validated()
+    {
+        $element = (new DateTimeElementBuilder())->after(new DateTime('2030-10-14 15:00:00'))->buildElement();
+        $element->import(new DateTime('2020-10-14 15:00:00'));
+
+        $this->assertSame($element, $element->patch(null));
+        $this->assertEquals(new DateTime('2020-10-14 15:00:00'), $element->value());
+        $this->assertFalse($element->valid());
+        $this->assertEquals('This value should be greater than 14 oct. 2030 à 15:00.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_with_value()
+    {
+        $element = (new DateTimeElementBuilder())->after(new DateTime('2030-10-14 15:00:00'))->buildElement();
+
+        $this->assertFalse($element->patch('2020-10-14T15:00:00Z')->valid());
+        $this->assertEquals(new DateTime('2020-10-14T15:00:00Z'), $element->value());
+
+        $this->assertTrue($element->patch('2040-10-14T15:00:00Z')->valid());
+        $this->assertEquals(new DateTime('2040-10-14T15:00:00Z'), $element->value());
+    }
+
+    /**
+     *
+     */
     public function test_with_transformer_that_returns_DateTime_should_keep_the_value()
     {
         $date = new DateTime('2020-12-17 15:00:00');

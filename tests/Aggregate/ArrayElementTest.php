@@ -7,7 +7,6 @@ use Bdf\Form\Aggregate\View\ArrayElementView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Choice\ArrayChoice;
-use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Leaf\View\SimpleElementView;
@@ -16,6 +15,7 @@ use Bdf\Form\Validator\ConstraintValueValidator;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Count;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
 
@@ -116,6 +116,101 @@ class ArrayElementTest extends TestCase
         $this->assertEquals('This collection should contain 3 elements or more.', $element->error()->global());
 
         $this->assertTrue($element->submit(['foo', 'bar', 'rab'])->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_import_and_patch_null()
+    {
+        $element = new ArrayElement(new StringElement());
+
+        $element->import(['foo', 'bar']);
+        $this->assertTrue($element->patch(null)->valid());
+
+        $this->assertSame(['foo', 'bar'], $element->value());
+        $this->assertEquals('foo', $element[0]->element()->value());
+        $this->assertSame($element, $element[0]->parent());
+        $this->assertEquals('bar', $element[1]->element()->value());
+        $this->assertSame($element, $element[1]->parent());
+    }
+
+    /**
+     *
+     */
+    public function test_import_and_patch_null_will_keep_global_error()
+    {
+        $element = (new ArrayElementBuilder())->count(['min' => 3])->buildElement();
+
+        $element->submit(['foo', 'bar']);
+
+        $this->assertFalse($element->patch(null)->valid());
+        $this->assertEquals('This collection should contain 3 elements or more.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_import_and_patch_null_will_keep_element_error()
+    {
+        $element = (new ArrayElementBuilder())->satisfy(new Length(['min' => 3]))->buildElement();
+
+        $element->submit(['a', 'bar']);
+
+        $this->assertFalse($element->patch(null)->valid());
+        $this->assertEquals('0 : This value is too short. It should have 3 characters or more.', (string) $element->error());
+    }
+
+    /**
+     *
+     */
+    public function test_import_and_patch_new_value()
+    {
+        $element = new ArrayElement(new StringElement());
+
+        $element->import(['foo', 'bar']);
+        $this->assertTrue($element->patch(['a', 'b', 'c'])->valid());
+
+        $this->assertSame(['a', 'b', 'c'], $element->value());
+        $this->assertEquals('a', $element[0]->element()->value());
+        $this->assertEquals('b', $element[1]->element()->value());
+        $this->assertEquals('c', $element[2]->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_with_element_error()
+    {
+        $element = new ArrayElement(new StringElement(new ConstraintValueValidator(new NotEqualTo('foo'))));
+
+        $this->assertFalse($element->patch(['foo', 'bar'])->valid());
+        $this->assertEquals([0 => 'This value should not be equal to "foo".'], $element->error()->toArray());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_with_transformer_error()
+    {
+        $element = new ArrayElement(new StringElement(), new ClosureTransformer(function () { throw new Exception('My error'); }));
+
+        $this->assertFalse($element->patch(['foo', 'bar'])->valid());
+        $this->assertSame([], $element->value());
+        $this->assertEquals('My error', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_with_array_error()
+    {
+        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator(new Count(['min' => 3])));
+
+        $this->assertFalse($element->patch(['foo', 'bar'])->valid());
+        $this->assertEquals('This collection should contain 3 elements or more.', $element->error()->global());
+
+        $this->assertTrue($element->patch(['foo', 'bar', 'rab'])->valid());
     }
 
     /**

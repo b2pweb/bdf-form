@@ -72,6 +72,49 @@ class CsrfElementTest extends TestCase
     /**
      *
      */
+    public function test_patch_invalid()
+    {
+        $element = new CsrfElement();
+        $element->submit($element->httpValue());
+
+        $this->assertFalse($element->submit('invalid')->valid());
+        $this->assertEquals(new CsrfToken(CsrfElement::class, 'invalid'), $element->value());
+        $this->assertEquals('The CSRF token is invalid.', $element->error()->global());
+        $this->assertEquals('INVALID_TOKEN_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_null()
+    {
+        $element = new CsrfElement();
+        $element->submit($element->httpValue());
+
+        $this->assertFalse($element->submit(null)->valid());
+        $this->assertEquals(new CsrfToken(CsrfElement::class, null), $element->value());
+        $this->assertEquals('The CSRF token is invalid.', $element->error()->global());
+        $this->assertEquals('INVALID_TOKEN_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_valid()
+    {
+        $element = new CsrfElement();
+        $element->submit($element->httpValue());
+
+        $value = $element->value()->getValue();
+
+        $this->assertTrue($element->submit($value)->valid());
+        $this->assertEquals(new CsrfToken(CsrfElement::class, $value), $element->value());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
     public function test_httpValue()
     {
         $element = new CsrfElement();

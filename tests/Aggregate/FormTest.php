@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\View\SimpleElementView;
@@ -21,30 +22,46 @@ use PHPUnit\Framework\TestCase;
 class FormTest extends TestCase
 {
     /**
+     * @var Form
+     */
+    private $form;
+
+    /**
+     * @var Registry
+     */
+    private $registry;
+
+    /**
+     *
+     */
+    protected function setUp(): void
+    {
+        $this->registry = new Registry();
+
+        $this->form = new Form(new ChildrenCollection([
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->setter()->buildChild(),
+        ]));
+    }
+
+    /**
      *
      */
     public function test_submit_success()
     {
-        $registry = new Registry();
-
-        $form = new Form(new ChildrenCollection([
-            $registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
-            $registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
-            $registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
-        ]));
-
-        $form->submit([
+        $this->form->submit([
             'firstName' => 'John',
             'lastName' => 'Smith',
             'id' => '4',
         ]);
 
-        $this->assertTrue($form->valid());
-        $this->assertTrue($form->error()->empty());
+        $this->assertTrue($this->form->valid());
+        $this->assertTrue($this->form->error()->empty());
 
-        $this->assertSame('John', $form['firstName']->element()->value());
-        $this->assertSame('Smith', $form['lastName']->element()->value());
-        $this->assertSame(4, $form['id']->element()->value());
+        $this->assertSame('John', $this->form['firstName']->element()->value());
+        $this->assertSame('Smith', $this->form['lastName']->element()->value());
+        $this->assertSame(4, $this->form['id']->element()->value());
     }
 
     /**
@@ -52,32 +69,24 @@ class FormTest extends TestCase
      */
     public function test_submit_error_on_child()
     {
-        $registry = new Registry();
-
-        $form = new Form(new ChildrenCollection([
-            $registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
-            $registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
-            $registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
-        ]));
-
-        $form->submit([
+        $this->form->submit([
             'firstName' => 'J',
             'lastName' => 'S',
             'id' => '4',
         ]);
 
-        $this->assertFalse($form->valid());
-        $this->assertFalse($form->error()->empty());
+        $this->assertFalse($this->form->valid());
+        $this->assertFalse($this->form->error()->empty());
         $this->assertEquals([
             'firstName' => 'This value is too short. It should have 2 characters or more.',
             'lastName' => 'This value is too short. It should have 2 characters or more.',
-        ], $form->error()->toArray());
+        ], $this->form->error()->toArray());
 
-        $this->assertSame('J', $form['firstName']->element()->value());
-        $this->assertFalse($form['firstName']->element()->valid());
-        $this->assertSame('S', $form['lastName']->element()->value());
-        $this->assertFalse($form['lastName']->element()->valid());
-        $this->assertSame(4, $form['id']->element()->value());
+        $this->assertSame('J', $this->form['firstName']->element()->value());
+        $this->assertFalse($this->form['firstName']->element()->valid());
+        $this->assertSame('S', $this->form['lastName']->element()->value());
+        $this->assertFalse($this->form['lastName']->element()->valid());
+        $this->assertSame(4, $this->form['id']->element()->value());
     }
 
     /**
@@ -85,11 +94,9 @@ class FormTest extends TestCase
      */
     public function test_submit_error_on_form()
     {
-        $registry = new Registry();
-
         $form = new Form(new ChildrenCollection([
-            $registry->childBuilder(StringElement::class, 'password')->length(['min' => 8])->buildChild(),
-            $registry->childBuilder(StringElement::class, 'confirm')->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'password')->length(['min' => 8])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'confirm')->buildChild(),
         ]), new ConstraintValueValidator(new Closure(function ($value, $form) {
             if ($form['password']->element()->value() != $form['confirm']->element()->value()) {
                 return 'invalid confirmation';
@@ -111,12 +118,10 @@ class FormTest extends TestCase
      */
     public function test_submit_with_view_transformer()
     {
-        $registry = new Registry();
-
         $form = new Form(new ChildrenCollection([
-            $registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
-            $registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
-            $registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
         ]), null, new ClosureTransformer(function ($value) { return array_map('strtolower', $value); }));
 
         $form->submit([
@@ -138,12 +143,10 @@ class FormTest extends TestCase
      */
     public function test_submit_with_transformer_exception()
     {
-        $registry = new Registry();
-
         $form = new Form(new ChildrenCollection([
-            $registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
-            $registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
-            $registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
         ]), null, new ClosureTransformer(function () { throw new \Exception('my error'); }));
 
         $form->import([
@@ -166,14 +169,139 @@ class FormTest extends TestCase
     /**
      *
      */
+    public function test_import_and_patch_null()
+    {
+        $entity = new Person();
+
+        $entity->id = 42;
+        $entity->firstName = 'Mike';
+        $entity->lastName = 'Smith';
+
+        $this->assertEquals($entity, $this->form->import($entity)->value());
+        $this->assertEquals($entity, $this->form->patch(null)->value());
+
+        $this->assertSame('Mike', $this->form['firstName']->element()->value());
+        $this->assertSame('Smith', $this->form['lastName']->element()->value());
+        $this->assertSame(42, $this->form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_import_and_patch_partial()
+    {
+        $entity = new Person();
+
+        $entity->id = 42;
+        $entity->firstName = 'Mike';
+        $entity->lastName = 'Smith';
+
+        $this->form->import($entity);
+
+        $expectedEntity = clone $entity;
+        $expectedEntity->firstName = 'John';
+
+        $this->assertEquals($expectedEntity, $this->form->patch(['firstName' => 'John'])->value());
+
+        $this->assertSame('John', $this->form['firstName']->element()->value());
+        $this->assertSame('Smith', $this->form['lastName']->element()->value());
+        $this->assertSame(42, $this->form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_import_and_patch_with_error()
+    {
+        $entity = new Person();
+
+        $entity->id = 42;
+        $entity->firstName = 'Mike';
+        $entity->lastName = 'Smith';
+
+        $this->form->import($entity);
+
+        $expectedEntity = clone $entity;
+        $expectedEntity->firstName = 'J';
+
+        $this->assertEquals($expectedEntity, $this->form->patch(['firstName' => 'J'])->value());
+
+        $this->assertFalse($this->form->valid());
+        $this->assertEquals('firstName : This value is too short. It should have 2 characters or more.', (string) $this->form->error());
+
+        $this->assertSame('J', $this->form['firstName']->element()->value());
+        $this->assertSame('Smith', $this->form['lastName']->element()->value());
+        $this->assertSame(42, $this->form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_import_and_patch_with_sibling_element_error()
+    {
+        $builder = new FormBuilder($this->registry);
+
+        $builder->string('firstName')
+            ->satisfy(function ($value, ElementInterface $input) { if ($value == $input->container()->parent()['lastName']->element()->value()) { return 'my error'; } })
+            ->depends('lastName')
+            ->getter()
+            ->setter()
+        ;
+
+        $builder->string('lastName')->getter()->setter();
+        $builder->integer('id')->getter()->setter();
+
+        $form = $builder->buildElement();
+
+        $entity = new Person();
+
+        $entity->id = 42;
+        $entity->firstName = 'Mike';
+        $entity->lastName = 'Smith';
+
+        $form->import($entity);
+
+        $expectedEntity = clone $entity;
+        $expectedEntity->lastName = 'Mike';
+
+        $this->assertEquals($expectedEntity, $form->patch(['lastName' => 'Mike'])->value());
+
+        $this->assertFalse($form->valid());
+        $this->assertEquals('firstName : my error', (string) $form->error());
+
+        $this->assertSame('Mike', $form['firstName']->element()->value());
+        $this->assertSame('Mike', $form['lastName']->element()->value());
+        $this->assertSame(42, $form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_success()
+    {
+        $this->form->patch([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+        ]);
+
+        $this->assertTrue($this->form->valid());
+        $this->assertTrue($this->form->error()->empty());
+
+        $this->assertSame('John', $this->form['firstName']->element()->value());
+        $this->assertSame('Smith', $this->form['lastName']->element()->value());
+        $this->assertSame(4, $this->form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_import_with_entity()
     {
-        $registry = new Registry();
-
         $form = new Form(new ChildrenCollection([
-            $registry->childBuilder(StringElement::class, 'firstName')->getter()->buildChild(),
-            $registry->childBuilder(StringElement::class, 'lastName')->getter()->buildChild(),
-            $registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
         ]));
 
         $entity = new Person();
@@ -194,12 +322,10 @@ class FormTest extends TestCase
      */
     public function test_import_with_array()
     {
-        $registry = new Registry();
-
         $form = new Form(new ChildrenCollection([
-            $registry->childBuilder(StringElement::class, 'firstName')->getter()->buildChild(),
-            $registry->childBuilder(StringElement::class, 'lastName')->getter()->buildChild(),
-            $registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
         ]));
 
         $form->import($data = [

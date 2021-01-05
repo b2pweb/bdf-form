@@ -343,6 +343,10 @@ class MyCustomChild implements ChildInterface
     {
     }
 
+    public function patch($data): bool
+    {
+    }
+
     public function httpFields(): array
     {
     }
