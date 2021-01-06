@@ -51,6 +51,18 @@ class DateTimeElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_invalid_format()
+    {
+        $element = new DateTimeElement();
+
+        $this->assertFalse($element->submit('invalid')->valid());
+        $this->assertEquals('Invalid date format', $element->error()->global());
+        $this->assertEquals('TRANSFORM_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
     public function test_submit_null()
     {
         $element = new DateTimeElement();

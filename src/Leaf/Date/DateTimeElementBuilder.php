@@ -10,6 +10,7 @@ use Bdf\Form\Constraint\LessThanField;
 use Bdf\Form\Constraint\LessThanOrEqualField;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
+use Bdf\Form\Util\FieldPath;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use DateTime;
 use DateTimeImmutable;
@@ -169,11 +170,13 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      * ;
      * </code>
      *
-     * @param string $field Other field to compare with
+     * @param string $field Other field to compare with. This is a field path
      * @param string|null $message The error message
      * @param bool $orEqual Does the element date can be equal ?
      *
      * @return $this
+     *
+     * @see FieldPath::parse() For the field path syntax
      */
     public function beforeField(string $field, ?string $message = null, bool $orEqual = false): self
     {
@@ -223,11 +226,13 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      * ;
      * </code>
      *
-     * @param string $field Other field to compare with
+     * @param string $field Other field to compare with. This is a field path
      * @param string|null $message The error message
      * @param bool $orEqual Does the element date can be equal ?
      *
      * @return $this
+     *
+     * @see FieldPath::parse() For the field path syntax
      */
     public function afterField(string $field, ?string $message = null, bool $orEqual = false): self
     {

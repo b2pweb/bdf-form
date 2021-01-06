@@ -9,6 +9,7 @@ use Bdf\Form\Validator\ValueValidatorInterface;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
+use InvalidArgumentException;
 
 /**
  * Handle DateTime form element
@@ -72,6 +73,10 @@ final class DateTimeElement extends LeafElement
 
             default:
                 $dateTime = ($this->className)::createFromFormat($this->format, $httpValue, $this->timezone);
+        }
+
+        if ($dateTime === false) {
+            throw new InvalidArgumentException('Invalid date format');
         }
 
         if ($this->timezone !== null) {

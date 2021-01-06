@@ -3,6 +3,7 @@
 namespace Bdf\Form\Constraint;
 
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Util\FieldPath;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -18,10 +19,13 @@ trait FieldComparisonValidatorTrait
     {
         /** @var ElementInterface $element */
         $element = $this->context->getRoot();
+        $field = $constraint->field;
 
-        if (isset($element->container()->parent()[$constraint->field])) {
-            $constraint->value = $element->container()->parent()[$constraint->field]->element()->value(); // @todo handle path
+        if (!$field instanceof FieldPath) {
+            $field = FieldPath::parse($field);
         }
+
+        $constraint->value = $field->value($element);
 
         parent::validate($value, $constraint);
     }

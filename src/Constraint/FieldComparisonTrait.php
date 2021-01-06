@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Constraint;
 
+use Bdf\Form\Util\FieldPath;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -13,7 +14,7 @@ trait FieldComparisonTrait
     /**
      * The field path
      *
-     * @var string
+     * @var string|FieldPath
      */
     public $field;
 
