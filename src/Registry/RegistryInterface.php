@@ -19,7 +19,7 @@ interface RegistryInterface
     /**
      * Create the filter
      *
-     * @param mixed $filter
+     * @param FilterInterface|callable|string $filter
      *
      * @return FilterInterface
      */
@@ -28,7 +28,7 @@ interface RegistryInterface
     /**
      * Create the constraint
      *
-     * @param mixed $constraint
+     * @param Constraint|callable|array|string $constraint
      *
      * @return Constraint
      */
@@ -48,19 +48,37 @@ interface RegistryInterface
     /**
      * Create the child builder
      *
+     * Usage:
+     * <code>
+     * $registry->childBuilder(Form::class, 'embedded'); // Create an embedded form builder
+     * $registry->childBuilder(MyCustomForm::class, 'custom'); // Create a custom embedded form builder
+     * $registry->childBuilder(IntegerElement::class, 'foo'); // Create builder for integer element "foo"
+     * </code>
+     *
      * @param string $element The element class name
      * @param string $name The child name
      *
      * @return ChildBuilderInterface
+     *
+     * @throws \InvalidArgumentException When cannot found the element builder
      */
     public function childBuilder(string $element, string $name): ChildBuilderInterface;
 
     /**
      * Create the element build for an element
      *
+     * Usage:
+     * <code>
+     * $registry->elementBuilder(Form::class); // Create the form builder
+     * $registry->elementBuilder(MyCustomForm::class); // Should also works with custom forms
+     * $registry->elementBuilder(IntegerElement::class); // For a leaf element
+     * </code>
+     *
      * @param string $element The element class name
      *
      * @return ElementBuilderInterface
+     *
+     * @throws \InvalidArgumentException When cannot found the element builder
      */
     public function elementBuilder(string $element): ElementBuilderInterface;
 

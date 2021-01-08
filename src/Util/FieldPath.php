@@ -39,8 +39,10 @@ final class FieldPath
     /**
      * FieldPath constructor.
      *
-     * @param string[] $path
-     * @param bool $absolute
+     * @param string[] $path The path
+     * @param bool $absolute true to start the resolution from the root element
+     *
+     * @see FieldPath::parse() Prefer use this method instead of the constructor
      */
     public function __construct(array $path, bool $absolute)
     {

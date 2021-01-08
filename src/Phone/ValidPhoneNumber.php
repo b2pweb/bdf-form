@@ -5,7 +5,7 @@ namespace Bdf\Form\Phone;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Valid if the phone number is valid
+ * Check if the phone number is valid
  */
 class ValidPhoneNumber extends Constraint
 {

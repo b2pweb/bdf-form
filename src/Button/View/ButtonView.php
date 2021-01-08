@@ -6,6 +6,11 @@ use Bdf\Form\View\RenderableTrait;
 
 /**
  * Base view object for buttons
+ *
+ * <code>
+ * echo $view->class('btn btn-primary'); // <input type="submit" name="btn" value="ok" />
+ * echo $view->class('btn btn-primary')->inner('Process'); // <button type="submit" name="btn" value="ok">Process</button>
+ * </code>
  */
 final class ButtonView implements ButtonViewInterface
 {

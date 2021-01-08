@@ -18,9 +18,20 @@ use Bdf\Form\Registry\RegistryInterface;
  * Base builder for a child
  * If a method cannot be found, it'll be delegate to the element builder
  *
- * @method $this satisfy($constraint, $options = null, $append = true)
+ * <code>
+ * $builder->add('element', MyElement::class)
+ *     ->getter()->setter()
+ *     ->default('foo')
+ *     ->depends('bar')
+ *     ->satisfy(new MyConstraint(['field' => 'bar']))
+ * ;
+ * </code>
+ *
+ * @mixin ElementBuilderInterface
+ *
+ * @method $this satisfy($constraint, $options = null, bool $append = true)
  * @method $this value($value)
- * @method $this transformer($transformer, $append = true)
+ * @method $this transformer($transformer, bool $append = true)
  * @method $this required($options = null)
  */
 class ChildBuilder implements ChildBuilderInterface
@@ -88,7 +99,7 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * AbstractChildBuilder constructor.
      *
-     * @param string $name
+     * @param string $name The element name
      * @param ElementBuilderInterface $elementBuilder
      * @param RegistryInterface|null $registry
      */
@@ -122,7 +133,7 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * {@inheritdoc}
      */
-    final public function filter($filter, $append = true)
+    final public function filter($filter, bool $append = true)
     {
         if ($append === true) {
             $this->filters[] = $filter;
@@ -205,12 +216,39 @@ class ChildBuilder implements ChildBuilderInterface
 
     /**
      * Define extractor using a getter
+     * The getter is used by `import()` method, which get the value from the model to fill the form element value
      *
      * Prototypes :
      *   function getter(): this - Add a getter extractor, using the child name as property name
      *   function getter(string $propertyName): this - Add a getter extractor, using $propertyName as property name
      *   function getter(callable $transformer): this - Add a getter extractor, with a value transformer
      *   function getter(?string $propertyName, ?callable $transformer, ?callable $customAccessor): this - Add a getter extractor, with a value transformer and a custom accessor
+     *
+     * <code>
+     * $builder->string('foo')->getter(); // import() from the "foo" property
+     * $builder->string('foo')->getter('bar'); // import() from the "bar" property
+     *
+     * // import() from the "foo" property, and apply a transformer to the value
+     * // First parameter is the model property value
+     * // Second parameter is the current child instance
+     * $builder->string('foo')->getter(function ($value, ChildInterface $input) {
+     *     return $this->normalizeFoo($value);
+     * });
+     *
+     * // Same as above, but use the "bar" property instead of "foo"
+     * $builder->string('foo')->getter('bar', function ($value, ChildInterface $input) {
+     *     return $this->normalizeFoo($value);
+     * });
+     *
+     * // Define a custom accessor
+     * // First parameter is the import()'ed entity
+     * // Second is always null
+     * // Third is the mode : always ExtractorInterface::EXTRACTION
+     * // Fourth is the Getter instance
+     * $builder->string('foo')->getter(null, null, function ($entity, $_, string $mode, Getter $getter) {
+     *     return $entity->myCustomGetter();
+     * });
+     * </code>
      *
      * @param string|callable|null $propertyName The property name. If null use the child name.
      * @param callable|null $transformer The value transformer (transform model value to input value)
@@ -219,6 +257,8 @@ class ChildBuilder implements ChildBuilderInterface
      * @return $this
      *
      * @see Getter
+     * @see ChildBuilderInterface::extractor()
+     * @see ChildInterface::import()
      */
     final public function getter($propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null): self
     {
@@ -227,12 +267,39 @@ class ChildBuilder implements ChildBuilderInterface
 
     /**
      * Define hydrator using a setter
+     * The setter is used by `fill()` method, which get the value from the element to fill the entity property
      *
      * Prototypes :
      *   function setter(): this - Add a setter hydrator, using the child name as property name
      *   function setter(string $propertyName): this - Add a setter hydrator, using $propertyName as property name
      *   function setter(callable $transformer): this - Add a setter hydrator, with a value transformer
      *   function setter(?string $propertyName, ?callable $transformer, ?callable $customAccessor): this - Add a setter hydrator, with a value transformer and a custom accessor
+     *
+     * <code>
+     * $builder->string('foo')->setter(); // fill() the "foo" property
+     * $builder->string('foo')->setter('bar'); // fill() the "bar" property
+     *
+     * // fill() the "foo" property, and apply a transformer to the value
+     * // First parameter is the model property value
+     * // Second parameter is the current child instance
+     * $builder->string('foo')->setter(function ($value, ChildInterface $input) {
+     *     return $this->parseFoo($value);
+     * });
+     *
+     * // Same as above, but use the "bar" property instead of "foo"
+     * $builder->string('foo')->setter('bar', function ($value, ChildInterface $input) {
+     *     return $this->parseFoo($value);
+     * });
+     *
+     * // Define a custom accessor
+     * // First parameter is the fill()'ed entity
+     * // Second is the element value
+     * // Third is the mode : always ExtractorInterface::HYDRATION
+     * // Fourth is the Setter instance
+     * $builder->string('foo')->setter(null, null, function ($entity, $value, string $mode, Setter $setter) {
+     *     return $entity->myCustomSetter($value);
+     * });
+     * </code>
      *
      * @param string|callable|null $propertyName The property name. If null use the child name.
      * @param callable|null $transformer The value transformer (transform input [i.e. http] value to model value)
@@ -241,6 +308,8 @@ class ChildBuilder implements ChildBuilderInterface
      * @return $this
      *
      * @see Setter
+     * @see ChildBuilderInterface::hydrator()
+     * @see ChildInterface::fill()
      */
     final public function setter($propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null): self
     {
@@ -278,7 +347,21 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * Define the child as a prefixed partition of the parent form
      *
-     * Note: The child element must a an aggregation element, like an embedded form, or an array element
+     * Note: The child element must be an aggregation element, like an embedded form, or an array element
+     *
+     * <code>
+     * // For HTTP value ['emb_foo' => 'xxx', 'emb_bar' => 'xxx']
+     * $builder->embedded('emb', function ($builder) {
+     *     $builder->string('foo');
+     *     $builder->string('bar');
+     * })->prefix();
+     *
+     * // For HTTP value ['efoo' => 'xxx', 'ebar' => 'xxx']
+     * $builder->embedded('emb', function ($builder) {
+     *     $builder->string('foo');
+     *     $builder->string('bar');
+     * })->prefix('e');
+     * </code>
      *
      * @param string|null $prefix The HTTP fields prefix. If null, use the name followed by en underscore "_" as prefix.
      *                            The prefix may be an empty string for partitioning the parent form without prefixing embedded names

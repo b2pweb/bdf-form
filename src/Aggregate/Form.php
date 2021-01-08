@@ -22,6 +22,28 @@ use Exception;
 
 /**
  * The base form element
+ * A form is an static aggregate of elements, unlike ArrayElement which is a dynamic aggregate
+ *
+ * The form will submit HTTP value to all it's children, and then perform it's validation process (if defined)
+ * A form cannot have a "global" error if there is at least one child on error
+ *
+ * To access to children elements, use array access : `$form['child']->element()`
+ * Note: The return value of array access is a ChildInterface. Use `ChildInterface::element()` to get the element
+ *
+ * <code>
+ * // Show form view
+ * $view = $form->import($entity)->view();
+ *
+ * echo $view['foo']->id('foo')->class('form-control');
+ * echo $view['bar']->id('bar')->class('form-control');
+ *
+ * // Submit form
+ * if (!$form->submit($request->post())->valid()) {
+ *     throw new ApiException($form->error()->print(new ApiErrorPrinter()));
+ * }
+ *
+ * $entity = $form->attach($entity)->value();
+ * </code>
  */
 final class Form implements FormInterface
 {

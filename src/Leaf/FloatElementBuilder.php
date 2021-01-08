@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf;
 
+use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -11,7 +12,16 @@ use Symfony\Component\Form\Extension\Core\DataTransformer\NumberToLocalizedStrin
 /**
  * Builder for a float element
  *
+ * <code>
+ * $builder->float('weight')
+ *     ->required()
+ *     ->min(3.5)
+ *     ->raw()
+ * ;
+ * </code>
+ *
  * @see FloatElement
+ * @see FormBuilderInterface::float()
  */
 class FloatElementBuilder extends NumberElementBuilder
 {

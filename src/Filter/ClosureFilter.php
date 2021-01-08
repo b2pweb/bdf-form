@@ -2,10 +2,20 @@
 
 namespace Bdf\Form\Filter;
 
+use Bdf\Form\Child\ChildBuilderInterface;
+use Bdf\Form\Child\ChildInterface;
+
 /**
- * ClosureFilter
- * 
- * @package Bdf\Form\Filter
+ * Adapt a simple callback to FilterInterface
+ * Takes the value and the ChildInterface as parameters
+ *
+ * <code>
+ * $builder->filter(function ($value, ChildInterface $input) {
+ *     return $this->clean($value);
+ * });
+ * </code>
+ *
+ * @see ChildBuilderInterface::filter()
  */
 final class ClosureFilter implements FilterInterface
 {
@@ -26,7 +36,7 @@ final class ClosureFilter implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function filter($value, $input)
+    public function filter($value, ChildInterface $input)
     {
         return ($this->callback)($value, $input);
     }

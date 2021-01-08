@@ -2,12 +2,15 @@
 
 namespace Bdf\Form\Filter;
 
+use Bdf\Form\Child\ChildInterface;
+
 /**
- * HtmlFilter
+ * Adapt filter_var() to FilterInterface
+ * By default, configured to filter HTML values
  *
- * @tdo rename
+ * @see filter_var()
  */
-class HtmlFilter implements FilterInterface
+final class FilterVar implements FilterInterface
 {
     /**
      * The filter option given to filter_var
@@ -24,12 +27,12 @@ class HtmlFilter implements FilterInterface
     private $flags;
 
     /**
-     * HtmlFilter constructor.
+     * FilterVar constructor.
      *
      * @param int $filter  The filter option. Sanitize HTML by default.
      * @param int $flags
      */
-    public function __construct($filter = FILTER_SANITIZE_STRING, $flags = FILTER_FLAG_NO_ENCODE_QUOTES)
+    public function __construct(int $filter = FILTER_SANITIZE_STRING, int $flags = FILTER_FLAG_NO_ENCODE_QUOTES)
     {
         $this->filter = $filter;
         $this->flags = $flags;
@@ -38,7 +41,7 @@ class HtmlFilter implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function filter($value, $input)
+    public function filter($value, ChildInterface $input)
     {
         if (!is_array($value)) {
             return filter_var($value, $this->filter, $this->flags);

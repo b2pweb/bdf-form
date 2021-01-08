@@ -102,6 +102,17 @@ final class Registry implements RegistryInterface
             return new Closure(['callback' => $constraint]);
         }
 
+        if (is_array($constraint)) {
+            $options = $constraint[1];
+            $constraint = $constraint[0];
+
+            if (is_string($options)) {
+                $options = ['message' => $options];
+            }
+
+            return new $constraint($options);
+        }
+
         return new $constraint();
     }
 

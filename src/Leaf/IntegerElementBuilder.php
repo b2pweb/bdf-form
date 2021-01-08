@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf;
 
+use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -11,7 +12,16 @@ use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStri
 /**
  * Builder for an integer element
  *
+ * <code>
+ * $builder->integer('id')
+ *     ->required()
+ *     ->min(15)
+ *     ->raw()
+ * ;
+ * </code>
+ *
  * @see IntegerElement
+ * @see FormBuilderInterface::integer()
  */
 class IntegerElementBuilder extends NumberElementBuilder
 {

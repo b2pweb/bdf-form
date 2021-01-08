@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Filter;
 
+use Bdf\Form\Child\ChildInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,6 +19,6 @@ class ClosureFilterTest extends TestCase
             return $value.'bar';
         });
 
-        $this->assertEquals('foobar', $filter->filter('foo', null));
+        $this->assertEquals('foobar', $filter->filter('foo', $this->createMock(ChildInterface::class)));
     }
 }

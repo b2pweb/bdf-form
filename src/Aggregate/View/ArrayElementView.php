@@ -17,6 +17,19 @@ use IteratorAggregate;
 /**
  * View object for the ArrayElement
  *
+ * <code>
+ *  <!-- Array of elements : use as array -->
+ *  <?php if (count($view) === 0): ?>
+ *      <span>There is no elements</span>
+ *  <?php endif; ?>
+ *  <?php foreach ($view as $item): ?>
+ *      <?php echo $item->class('form-control'); ?>
+ *  <?php endforeach; ?>
+ *
+ *  <!-- CSV element : use as simple element -->
+ *  <?php echo $view->class('form-control'); ?>
+ * </code>
+ *
  * @see ArrayElement::view()
  */
 final class ArrayElementView implements IteratorAggregate, FieldViewInterface, FieldSetViewInterface, Countable

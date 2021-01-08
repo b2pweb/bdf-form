@@ -3,7 +3,7 @@
 namespace Bdf\Form\View;
 
 /**
- * Interface Renderable
+ * Base type for a renderable element of the form view tree
  */
 interface Renderable
 {

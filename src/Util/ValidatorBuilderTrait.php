@@ -26,10 +26,23 @@ trait ValidatorBuilderTrait
 
     /**
      * Mark this input as required
+     * Calling this method is equivalent as calling `satisfy(new NotBlank($options))`
      *
-     * @param mixed $options
+     * Note: The constraint is not prepend, but simply added at the end of constraints.
+     *       To stop validation process if the value is empty, this method must be called before all other `satisfy()`.
+     *
+     * Usage:
+     * <code>
+     * $builder->required(); // Mark as required, using default message
+     * $builder->required('This field is required'); // With custom message
+     * $builder->required(['allowNull' => true]); // With custom options
+     * </code>
+     *
+     * @param array|string|null $options The constraint option. Is a string is given, it will be used as error message
      *
      * @return $this
+     *
+     * @see NotBlank The used constraint
      */
     final public function required($options = null)
     {
@@ -45,9 +58,11 @@ trait ValidatorBuilderTrait
     }
 
     /**
+     * {@inheritdoc}
+     *
      * @see ElementBuilderInterface::satisfy()
      */
-    final public function satisfy($constraint, $options = null, $append = true)
+    final public function satisfy($constraint, $options = null, bool $append = true)
     {
         if ($options !== null) {
             $constraint = [$constraint, $options];

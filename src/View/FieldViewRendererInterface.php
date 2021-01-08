@@ -3,7 +3,7 @@
 namespace Bdf\Form\View;
 
 /**
- * Interface FieldViewRendererInterface
+ * Base type for perform the render of a field view
  */
 interface FieldViewRendererInterface
 {

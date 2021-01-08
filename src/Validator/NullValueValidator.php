@@ -4,7 +4,6 @@ namespace Bdf\Form\Validator;
 
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
-use Symfony\Component\Validator\Constraint;
 
 /**
  * Null object for value validator

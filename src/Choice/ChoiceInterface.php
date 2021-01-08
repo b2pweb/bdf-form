@@ -18,6 +18,13 @@ interface ChoiceInterface
     /**
      * Get the available values for view display
      *
+     * <code>
+     * $choices->view(function ($view) {
+     *     $view->setSelected($view->value() == $this->value);
+     *     $view->setValue($this->transformToHttp($view->value()));
+     * });
+     * </code>
+     *
      * @param callable(ChoiceView):void|null $configuration The view configuration callback
      *
      * @return ChoiceView[]

@@ -13,7 +13,7 @@ use LogicException;
 
 /**
  * Handle a boolean value, like with checkbox input
- * A value is considered as true when a value is present
+ * A value is considered as true when a value is present, and equals to the defined value
  *
  * @method bool value()
  */

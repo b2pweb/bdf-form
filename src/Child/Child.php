@@ -236,7 +236,7 @@ final class Child implements ChildInterface
         $value = $this->fields->extract($httpValue, $this->defaultValue);
 
         foreach ($this->filters as $filter) {
-            $value = $filter->filter($value, $this->element); // @todo use $this instead of element ?
+            $value = $filter->filter($value, $this);
         }
 
         return $value;

@@ -18,6 +18,12 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 /**
  * Element for add a CSRF token on the form
  * The token value is auto-generated using CsrfTokenManagerInterface
+ *
+ * This element is always required, and validated, and cannot be `import()'d`
+ *
+ * The dependency "symfony/security-csrf" is required to use this element
+ *
+ * @see CsrfTokenManager
  */
 final class CsrfElement implements ElementInterface
 {

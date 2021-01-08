@@ -2,8 +2,21 @@
 
 namespace Bdf\Form\Button;
 
+use Bdf\Form\Aggregate\FormBuilderInterface;
+
 /**
  * Builder for a submit button
+ *
+ * <code>
+ * $builder
+ *     ->submit('btn')
+ *     ->value('create')
+ *     ->groups(['creation'])
+ * ;
+ * </code>
+ *
+ * @see SubmitButton
+ * @see FormBuilderInterface::submit()
  */
 final class SubmitButtonBuilder implements ButtonBuilderInterface
 {

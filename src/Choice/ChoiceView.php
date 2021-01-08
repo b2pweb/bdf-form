@@ -4,6 +4,15 @@ namespace Bdf\Form\Choice;
 
 /**
  * View object for choice
+ *
+ * <code>
+ * <?php foreach ($element->choices() as $choice): ?>
+ *     <label>
+ *         <?php echo $choice->label(); ?>
+ *         <input type="radio" name="<?php echo $element->name(); ?>" value="<?php echo $choice->value()" <?php echo $choice->selected() ? 'selected' : ''; ?> />
+ *     </label>
+ * <?php endforeach; ?>
+ * </code>
  */
 class ChoiceView
 {

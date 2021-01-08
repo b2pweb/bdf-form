@@ -18,13 +18,32 @@ trait ChoiceBuilderTrait
     /**
      * Define choices for the element
      *
+     * Note: a constraint will be added, so this method should not be called multiple times
+     *
+     * Usage:
      * <code>
+     * $builder->choices(['foo', 'bar']); // Simple choice, without defined label
+     * // With label as key
+     * $builder->choices([
+     *     'First choice' => 'foo',
+     *     'Second choice' => 'bar',
+     * ]);
+     *
+     * // Using lazy loading
+     * // Return value must follow array choices syntax
+     * $builder->choices(function () {
+     *     return $this->repository->loadChoices();
+     * });
+     *
+     * $builder->choices(['foo', 'bar'], 'my error'); // With message
+     * $builder->choices(['foo', 'bar'], ['min' => 2, 'max' => 6]); // With options array
      * </code>
      *
      * @param ChoiceInterface|array|callable $choices  The allowed values in PHP form.
      * @param null|string|array $options  If options is a string it will be considered as constraint message
      *
      * @return $this
+     * @see ChoiceConstraint
      */
     final public function choices($choices, $options = null): self
     {
@@ -59,5 +78,5 @@ trait ChoiceBuilderTrait
      *
      * @see ElementBuilderInterface::satisfy()
      */
-    abstract public function satisfy($constraint, $options = null, $append = true);
+    abstract public function satisfy($constraint, $options = null, bool $append = true);
 }

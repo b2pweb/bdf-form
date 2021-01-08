@@ -52,6 +52,14 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      * Get configure choices on the element
      * Returns null if no choices has been configured
      *
+     * <code>
+     *   <select name="<?php echo $view->name(); ?>">
+     *      <?php foreach ($view->choices() as $choice): ?>
+     *          <option value="<?php echo $choice->value(); ?>"<?php echo $choice->selected() ? ' selected' : ''; ?>><?php echo $choice->label(); ?></option>
+     *      <?php endforeach; ?>
+     *   </select>
+     * </code>
+     *
      * @return ChoiceView[]|null
      *
      * @see Choiceable
@@ -61,6 +69,12 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
 
     /**
      * Render the field view
+     *
+     * Usage:
+     * <code>
+     * echo $view->render(); // Use the default renderer
+     * echo $view->render(new CustomRenderer()); // Use a custom renderer
+     * </code>
      *
      * @param FieldViewRendererInterface|null $renderer The renderer to use. If null, will use the default renderer (i.e. html renderer)
      *

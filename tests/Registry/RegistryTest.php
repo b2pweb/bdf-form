@@ -103,6 +103,15 @@ class RegistryTest extends TestCase
     /**
      *
      */
+    public function test_constraint_with_classname_and_options()
+    {
+        $this->assertEquals(new NotBlank(['message' => 'error']), $this->registry->constraint([NotBlank::class, 'error']));
+        $this->assertEquals(new NotBlank(['message' => 'error']), $this->registry->constraint([NotBlank::class, ['message' => 'error']]));
+    }
+
+    /**
+     *
+     */
     public function test_constraint_with_callback()
     {
         $this->assertInstanceOf(Closure::class, $this->registry->constraint(function () {}));

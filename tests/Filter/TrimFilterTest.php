@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Filter;
 
+use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\ElementInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +18,7 @@ class TrimFilterTest extends TestCase
     {
         $filter = new TrimFilter();
 
-        $this->assertEquals('aaa', $filter->filter("\xc2\xa0 aaa\xe2\x80\x83", $this->createMock(ElementInterface::class)));
+        $this->assertEquals('aaa', $filter->filter("\xc2\xa0 aaa\xe2\x80\x83", $this->createMock(ChildInterface::class)));
     }
 
     /**
@@ -27,6 +28,6 @@ class TrimFilterTest extends TestCase
     {
         $filter = new TrimFilter();
 
-        $this->assertEquals(utf8_decode('é'), $filter->filter(utf8_decode(' é '), $this->createMock(ElementInterface::class)));
+        $this->assertEquals(utf8_decode('é'), $filter->filter(utf8_decode(' é '), $this->createMock(ChildInterface::class)));
     }
 }

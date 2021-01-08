@@ -3,9 +3,12 @@
 namespace Bdf\Form\Phone;
 
 use Bdf\Form\AbstractElementBuilder;
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
+use Bdf\Form\Util\FieldPath;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\RegionCode;
@@ -14,7 +17,16 @@ use Symfony\Component\Validator\Constraint;
 /**
  * Builder for a phone element
  *
+ * <code>
+ * $builder->phone('contact')
+ *     ->depends('country')
+ *     ->regionInput('country')
+ *     ->allowInvalidNumber()
+ * ;
+ * </code>
+ *
  * @see PhoneElement
+ * @see FormBuilderInterface::phone()
  */
 class PhoneElementBuilder extends AbstractElementBuilder
 {
@@ -46,6 +58,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
 
     /**
      * PhoneElementBuilder constructor.
+     *
      * @param RegistryInterface|null $registry
      */
     public function __construct(RegistryInterface $registry = null)
@@ -92,15 +105,30 @@ class PhoneElementBuilder extends AbstractElementBuilder
     /**
      * Use a sibling input as region code value
      *
-     * @param string $inputName The input name. It should be located on the same parent element, and returns the region code
+     * Note: Do not forget to declare the other input as dependency
+     *
+     * <code>
+     * $builder->string('country')->choice();
+     * $builder
+     *      ->phone('phone')
+     *      ->depends('country')
+     *      ->regionInput('country')
+     * ;
+     * </code>
+     *
+     * @param string $inputPath The input path
      *
      * @return $this
      *
      * @see RegionCode
+     * @see FieldPath::parse() For the path syntax
+     * @see ChildBuilderInterface::depends() For declare the dependency to the other field
      */
-    public function regionInput(string $inputName): self
+    public function regionInput(string $inputPath): self
     {
-        return $this->regionResolver(function (ElementInterface $element) use($inputName) { return $element->container()->parent()[$inputName]->element()->value(); });
+        return $this->regionResolver(function (ElementInterface $element) use($inputPath) {
+            return FieldPath::parse($inputPath)->value($element);
+        });
     }
 
     /**
@@ -135,12 +163,20 @@ class PhoneElementBuilder extends AbstractElementBuilder
     /**
      * Define phone validation options
      *
+     * Note: This method can be called multiple times, the last defined options will overrides the previous ones
+     *
+     * Usage:
+     * <code>
+     * $builder->validateNumber('My error'); // Define the error message
+     * $builder->validateNumber(['message' => 'My error']); // Also accept array of options
+     * </code>
+     *
      * @param array|string $options The option array, or string for provide the error message
      *
      * @return $this
      * @see ValidPhoneNumber
      */
-    public function validateNumber($options =  []): self
+    public function validateNumber($options = []): self
     {
         if (is_string($options)) {
             $options = ['message' => $options];

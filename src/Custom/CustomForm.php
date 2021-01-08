@@ -16,6 +16,7 @@ use Bdf\Form\View\ElementViewInterface;
  * Utility class for simply create a custom form element
  *
  * <code>
+ * // Declaration
  * class MyForm extends CustomForm
  * {
  *     public function configure(FormBuilderInterface $builder)
@@ -24,6 +25,19 @@ use Bdf\Form\View\ElementViewInterface;
  *         $builder->string('foo')->setter();
  *     }
  * }
+ *
+ * // Usage
+ * $form = new MyForm(); // Directly instantiate the form
+ * $form = $this->registry->elementBuilder(MyForm::class)->buildElement(); // Use registry and builder
+ *
+ * if (!$form->submit($request->post())->valid()) {
+ *     return new JsonResponse($form->error()->print(new FormErrorFormat()), 400);
+ * }
+ *
+ * $entity = $form->value();
+ * $this->service->handle($entity);
+ *
+ * return new Response('OK', 200);
  * </code>
  *
  * @todo implements root form interface ?

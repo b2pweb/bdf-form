@@ -9,12 +9,31 @@ use Bdf\Form\View\ElementViewInterface;
 
 /**
  * Base type for the form tree
+ *
+ * Usage:
+ * <code>
+ *  <div class="input-group<?php echo $input->onError(' has-error'); ?>">
+ *      <label for="my-element">My label</label>
+ *      <?php echo $input->id('my-element')->class('form-control'); ?>
+ *      <div class="form-control-feedback"><?php echo $input->error(); ?></div>
+ *  </div>
+ * </code>
  */
 interface ElementInterface
 {
     /**
      * Submit HTTP data to the form element
      * The value will be transformed to PHP value and validated by the element's constraints
+     *
+     * Usage:
+     * <code>
+     * // Submit and check if the input is valid
+     * if (!$element->submit($request->post())->valid()) {
+     *     throw new FormError($element->error());
+     * }
+     *
+     * $value = $element->value(); // Get the transformed value
+     * </code>
      *
      * @param mixed $data The HTTP data. A scalar value for a leaf element, or an array for form / aggregate element.
      *
@@ -55,6 +74,11 @@ interface ElementInterface
      * On an aggregate / form element, will import entity on each children elements
      * Once imported, the element value must be attached to the element : `$element->import($value)->value() === $value` must be true
      *
+     * <code>
+     * // Get the edit user form view
+     * $userFormView = $userForm->import($user)->view();
+     * </code>
+     *
      * @param mixed $entity
      *
      * @return $this
@@ -76,7 +100,7 @@ interface ElementInterface
 
     /**
      * Get the raw HTTP value
-     * This value should be equals with submit()'ed data : `$element->submit($value) == $value` should be true
+     * This value should be equals with submit()'ed data : `$element->submit($value)->httpValue() == $value` should be true
      *
      * Note: The value is generated from the PHP value, which may add some transformations of the original HTTP data
      *
@@ -93,6 +117,8 @@ interface ElementInterface
      * Note: A non-submit()'ed element will return false
      *
      * @return bool
+     *
+     * @see ElementInterface::error() To get error
      */
     public function valid(): bool;
 
@@ -101,6 +127,14 @@ interface ElementInterface
      *
      * If the element is valid (i.e. has no errors), a null object is returned
      * The return value may contains the errors of the element or of its children
+     *
+     * In case of an aggregate element, if at least a child as an error, no "global" error should be present
+     *
+     * <code>
+     * if (!$form->valid()) {
+     *     return new JsonResponse($form->error()->print(new ApiFormErrorPrinter()), 400);
+     * }
+     * </code>
      *
      * @return FormError
      */
@@ -114,7 +148,7 @@ interface ElementInterface
      * The container is the element's adapter to ChildInterface, keeping a circular reference
      * `$element->container()->element() === $element` is always true
      *
-     * @return ChildInterface|null
+     * @return ChildInterface|null The child, or null if the current element is the root element
      *
      * @see ElementInterface::setContainer() For define the container
      * @see ChildInterface::element() For get the element from the container
@@ -147,6 +181,14 @@ interface ElementInterface
      * Get the view object of the element
      * Note: This method will only create the view for the element, independently of the parent.
      *       To generate the view within the parent, you should pass by ChildInterface::view()
+     *
+     * <code>
+     * // On controller
+     * $view = $form->view();
+     *
+     * // On view
+     * echo $view['myElement']->class('form-control')->id('my-input');
+     * </code>
      *
      * @param HttpFieldPath|null $field The used HTTP field name
      *

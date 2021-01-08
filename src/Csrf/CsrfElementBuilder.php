@@ -3,6 +3,7 @@
 namespace Bdf\Form\Csrf;
 
 use BadMethodCallException;
+use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use LogicException;
@@ -11,7 +12,18 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 /**
  * Builder for a CsrfElement
  *
+ * Unlike other elements, some methods are disallowed, due to the CSRF implementation :
+ * - satisfy() : The only performed validation is the CSRF token check
+ * - transformer() : Not implemented
+ * - value() : `import()` value is disabled on the element, and token value is always provided on the view
+ * - default() : A token must be provided by the HTTP request
+ *
+ * <code>
+ * $builder->csrf()->message('invalid token')->invalidate();
+ * </code>
+ *
  * @see CsrfElement
+ * @see FormBuilderInterface::csrf()
  */
 class CsrfElementBuilder implements ElementBuilderInterface
 {
@@ -52,6 +64,8 @@ class CsrfElementBuilder implements ElementBuilderInterface
      * @param string $tokenId
      *
      * @return $this
+     *
+     * @see CsrfTokenManagerInterface::getToken() The parameter tokenId will be used as parameter of this method
      */
     public function tokenId(string $tokenId): self
     {
@@ -63,7 +77,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * Define the error message
      *
-     * @param string|null $message
+     * @param string|null $message The message, or null to use the default one
      *
      * @return $this
      */
@@ -77,7 +91,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * Does the token should be invalidated after check ?
      *
-     * @param bool $invalidate If true, the token is for one use, if false, the token can b reused
+     * @param bool $invalidate If true, the token is for one use, if false, the token can be reused
      *
      * @return $this
      */
@@ -105,7 +119,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function satisfy($constraint, $options = null, $append = true)
+    public function satisfy($constraint, $options = null, bool $append = true)
     {
         throw new BadMethodCallException();
     }
@@ -113,7 +127,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function transformer($transformer, $append = true)
+    public function transformer($transformer, bool $append = true)
     {
         throw new BadMethodCallException();
     }

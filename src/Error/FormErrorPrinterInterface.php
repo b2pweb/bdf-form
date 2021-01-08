@@ -5,6 +5,8 @@ namespace Bdf\Form\Error;
 /**
  * Print and format form errors
  * Printer are single use objects
+ *
+ * Note: Element's errors are set before children ones
  */
 interface FormErrorPrinterInterface
 {

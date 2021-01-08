@@ -18,6 +18,31 @@ use Symfony\Component\Validator\ValidatorBuilder;
 
 /**
  * Adapt a form element as root element
+ * The root form handle constraint group, validator and property accessor instances, and submit button
+ *
+ * The root form should be used instead of the form element for `submit()`
+ *
+ * <code>
+ * $form = new MyForm();
+ *
+ * $root = $form->root();
+ * if (!$root->submit($request->post())->valid()) {
+ *     throw new MyError();
+ * }
+ *
+ * $entity = $root->value();
+ *
+ * switch ($btn = $root->submitButton() ? $btn->name() : null) {
+ *     case 'save':
+ *         return $this->save($entity);
+ *
+ *     case 'delete':
+ *         return $this->delete($entity);
+ *
+ *     default:
+ *         throw new InvalidAction();
+ * }
+ * </code>
  *
  * @todo delegation trait
  */

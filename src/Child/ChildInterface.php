@@ -12,11 +12,19 @@ use Bdf\Form\View\ElementViewInterface;
 /**
  * Wrapper for a form sub-element
  * A child always has a parent, which is a an instance of ChildAggregateInterface
+ *
+ * A child handle :
+ * - The HTTP field extraction
+ * - Applying filters
+ * - Hydrator and extractor
+ * - Dependencies and form tree hierarchy
  */
 interface ChildInterface
 {
     /**
      * Get the related element
+     *
+     * Note: `$child->element()->container() === $child` is always true
      *
      * @return ElementInterface
      *
@@ -35,6 +43,8 @@ interface ChildInterface
      * Define a new parent
      * If a parent is already set, a new instance will be created
      *
+     * Note: The child variable must be reassigned with the `setParent()` return value
+     *
      * @param ChildAggregateInterface $parent
      *
      * @return static The child instance linked with the parent
@@ -48,6 +58,8 @@ interface ChildInterface
      *
      * The HTTP field name is handled by submit() and httpFields()
      * The PHP field name is handled by import() and fill()
+     *
+     * The expression `$child->parent()[$child->name()] === $child` must be true
      *
      * @return string
      */

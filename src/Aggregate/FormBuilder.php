@@ -9,12 +9,14 @@ use Bdf\Form\Aggregate\Value\ValueGeneratorInterface;
 use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Csrf\CsrfElement;
+use Bdf\Form\Custom\CustomForm;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -25,7 +27,29 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Builder for a form
  *
+ * <code>
+ * // Get the builder
+ * $builder = $registry->elementBuilder(Form::class);
+ * $builder->generates(MyEntity::class); // Define the generated entity
+ *
+ * // Declare fields
+ * $builder->string('foo')->required()->setter();
+ * $builder->integer('bar')->min(11)->required()->setter();
+ *
+ * // Build the form
+ * $form = $builder->buildElement();
+ *
+ * // Submit and validate http data
+ * if (!$form->submit($request->post())->valid()) {
+ *     throw new FormError();
+ * }
+ *
+ * // Get the generated entity, and save it
+ * $repository->save($form->value());
+ * </code>
+ *
  * @see Form
+ * @see CustomForm::configure()
  */
 class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 {
@@ -111,6 +135,14 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     public function dateTime(string $name): ChildBuilderInterface
     {
         return $this->add($name, DateTimeElement::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function phone(string $name): ChildBuilderInterface
+    {
+        return $this->add($name, PhoneElement::class);
     }
 
     /**

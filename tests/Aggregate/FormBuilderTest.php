@@ -11,6 +11,7 @@ use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Phone\PhoneElement;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraints\Count;
@@ -96,6 +97,19 @@ class FormBuilderTest extends TestCase
 
         $this->assertInstanceOf(Form::class, $form);
         $this->assertInstanceOf(DateTimeElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_phone()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->phone('value'));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(PhoneElement::class, $form['value']->element());
     }
 
     /**

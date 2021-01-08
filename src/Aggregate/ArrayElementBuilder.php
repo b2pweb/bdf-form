@@ -19,7 +19,16 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * Builder for the array element
  *
+ * <code>
+ * $builder->array('names')->string()
+ *     ->length(['min' => 3]) // Add "length" constraint to inner string
+ *     ->count(['min' => 1, 'max' => 6]) // Add count constraint
+ *     ->satisfyArray(new MyArrayConstraint()) // Add a constraint for the array
+ * ;
+ * </code>
+ *
  * @see ArrayElement
+ * @see FormBuilderInterface::array()
  */
 class ArrayElementBuilder implements ElementBuilderInterface
 {
@@ -66,7 +75,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * Define a constraint on the inner element
      */
-    public function satisfy($constraint, $options = null, $append = true)
+    public function satisfy($constraint, $options = null, bool $append = true)
     {
         $this->getElementBuilder()->satisfy($constraint, $options, $append);
 
@@ -78,7 +87,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * Define a transformer on the inner element
      */
-    public function transformer($transformer, $append = true)
+    public function transformer($transformer, bool $append = true)
     {
         $this->getElementBuilder()->transformer($transformer, $append);
 
@@ -182,13 +191,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     }
 
     /**
-     * Mark this input as required
-     *
-     * @todo duplicated from the trait
-     *
-     * @param mixed $options
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     final public function required($options = null)
     {
@@ -204,12 +207,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     }
 
     /**
-     * Define choices for the element
-     *
-     * @param ChoiceInterface|array|callable $choices  The allowed values. Should be normalized.
-     * @param null|string|array $options  If options is a string it will be considered as constraint message
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     final public function choices($choices, $options = null): self
     {

@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraint;
 
 /**
  * Value validator using symfony constraint
+ * The element will be used as "root" context object on the symfony validator
  */
 final class ConstraintValueValidator implements ValueValidatorInterface
 {

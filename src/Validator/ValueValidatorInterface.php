@@ -8,6 +8,8 @@ use Symfony\Component\Validator\Constraint;
 
 /**
  * Validator for an element value
+ *
+ * @see ElementInterface::submit()
  */
 interface ValueValidatorInterface
 {

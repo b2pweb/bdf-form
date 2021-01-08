@@ -13,13 +13,24 @@ use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Phone\PhoneElementBuilder;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Builder for a form
+ * Base builder type for a form
  *
- * @see Form
+ * <code>
+ * // Define the generated entity
+ * $builder->generates(MyEntity::class);
+ *
+ * // Declare fields
+ * $builder->string('foo')->required()->setter();
+ * $builder->integer('bar')->min(11)->required()->setter();
+ *
+ * // Build the form
+ * $form = $builder->buildElement();
+ * </code>
  */
 interface FormBuilderInterface extends ElementBuilderInterface
 {
@@ -32,7 +43,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param string $element The element class name
+     * @param string $element The element class name. May be a custom form
      *
      * @return ChildBuilderInterface The child builder
      */
@@ -46,7 +57,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param mixed $default Default value to submit (in HTTP format)
+     * @param mixed $default Default value to submit
      *
      * @return ChildBuilderInterface|StringElementBuilder
      */
@@ -60,7 +71,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param mixed $default Default value to submit (in HTTP format)
+     * @param mixed $default Default value to submit
      *
      * @return ChildBuilderInterface|IntegerElementBuilder
      */
@@ -74,7 +85,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param mixed $default Default value to submit (in HTTP format)
+     * @param mixed $default Default value to submit
      *
      * @return ChildBuilderInterface|FloatElementBuilder
      */
@@ -84,7 +95,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * Add a new boolean element on the form
      *
      * <code>
-     * $builder->boolean('accept', 42);
+     * $builder->boolean('accept');
      * </code>
      *
      * @param string $name The child name
@@ -107,6 +118,22 @@ interface FormBuilderInterface extends ElementBuilderInterface
     public function dateTime(string $name): ChildBuilderInterface;
 
     /**
+     * Add a new phone element on the form
+     * The phone element will return a `\libphonenumber\PhoneNumber` instance
+     *
+     * Note: The package "giggsey/libphonenumber-for-php" is required to use this element
+     *
+     * <code>
+     * $builder->phone('contact')->allowInvalidNumber()->setter();
+     * </code>
+     *
+     * @param string $name The child name
+     *
+     * @return ChildBuilderInterface|PhoneElementBuilder
+     */
+    public function phone(string $name): ChildBuilderInterface;
+
+    /**
      * Add a new csrf token on form
      *
      * <code>
@@ -123,9 +150,16 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * Add an embedded form
      *
      * <code>
-     * $builder->embedded('emb', function ($builder) {
+     * // Takes the builder as parameter
+     * // The builder is a child builder that wrap a FormBuilderInterface
+     * $builder->embedded('emb', function (ChildBuilderInterface $builder) {
      *     $builder->string('foo');
      * });
+     *
+     * // Use without configurator callback
+     * $embedded = $builder->embedded('emb');
+     * $embedded->string('foo');
+     * $embedded->string('bar');
      * </code>
      *
      * Note: It's advisable sur create a custom form, and add as embedded using `$this->add($name, $formType)` than use embedded()
@@ -196,23 +230,28 @@ interface FormBuilderInterface extends ElementBuilderInterface
 
     /**
      * Define the value generator
+     * Prefer use the `generates()` method if possible
      *
      * @param ValueGeneratorInterface $generator
      *
      * @return $this
+     *
+     * @see FormBuilderInterface::generates()
      */
     public function generator(ValueGeneratorInterface $generator): FormBuilderInterface;
 
     /**
      * Define the entity to generate by the form when call $form->value()
      *
+     * Note: This method is ignored when calling `ElementInterface::import()`, `FormInterface::attach()`, or `ElementBuilderInterface::value()`
+     *
      * <code>
      * $builder->string('firstName')->setter();
      * $builder->string('lastName')->setter();
      *
-     * $builder->generates(Person::class); // The Person's default constructor will be called, and the instance will be fill'ed
+     * $builder->generates(Person::class); // The Person's default constructor will be called, and the instance will be fill()'ed
      * $builder->generates($person); // Clone the $person instance, and fill will form values
-     * $builder->generate(function (EmbeddedFormInterface $form) {
+     * $builder->generate(function (FormInterface $form) {
      *     return new Person(['myValue' => 42]); // Use custom generator
      * });
      * </code>

@@ -39,6 +39,7 @@ final class FormError
 
     /**
      * FormError constructor.
+     * Prefer use static methods to instantiate the FormError
      *
      * @param string|null $global
      * @param string|null $code

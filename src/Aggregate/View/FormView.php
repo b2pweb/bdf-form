@@ -14,6 +14,18 @@ use IteratorAggregate;
  * View for a form element
  * Works for root and embedded forms
  *
+ * <code>
+ *  <div><?php echo $form['foo']; ?></div>
+ *  <div><?php echo $form['bar']; ?></div>
+ *  <fieldset>
+ *      <div><?php echo $form['embedded']['a']; ?></div>
+ *      <div><?php echo $form['embedded']['b']; ?></div>
+ *  </fieldset>
+ *  <?php echo $form->button('btn'); ?>
+ *  <!-- Array access works also for buttons -->
+ *  <?php echo $form['btn']; ?>
+ * </code>
+ *
  * @see Form::view()
  */
 final class FormView implements IteratorAggregate, FieldSetViewInterface
@@ -63,6 +75,14 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
     /**
      * Get all available buttons
      *
+     * <code>
+     *  <div class="form-footer">
+     *      <?php foreach ($view->buttons() as $button): ?>
+     *          <?php echo $button->class('btn btn-default'); ?>
+     *      <?php endforeach; ?>
+     *  </div>
+     * </code>
+     *
      * @return ButtonViewInterface[]
      */
     public function buttons(): array
@@ -73,9 +93,14 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
     /**
      * Get a button by its name
      *
-     * @param string $name
+     * <code>
+     * echo $form->button('btn')->inner('Save')->class('btn btn-primary');
+     * </code>
+     *
+     * @param string $name The button name
      *
      * @return ButtonViewInterface|null
+     * @see ButtonViewInterface::name()
      */
     public function button(string $name): ?ButtonViewInterface
     {

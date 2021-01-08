@@ -10,6 +10,7 @@ use Iterator;
 
 /**
  * Collection of form child elements
+ * Handle dependency tree
  */
 interface ChildrenCollectionInterface extends ArrayAccess, Countable
 {
@@ -42,12 +43,14 @@ interface ChildrenCollectionInterface extends ArrayAccess, Countable
     /**
      * Get the reverse iterator (i.e. iterate on higher dependencies in first)
      *
-     * @return Iterator
+     * @return Iterator|ChildInterface[]
      */
     public function reverseIterator(): Iterator;
 
     /**
-     * @return Iterator
+     * Get the base iterator
+     *
+     * @return Iterator|ChildInterface[]
      */
     public function forwardIterator(): Iterator;
 
@@ -60,6 +63,7 @@ interface ChildrenCollectionInterface extends ArrayAccess, Countable
 
     /**
      * Duplicate the children into a new container
+     * This method will not modify the current collection instance, but return a new one
      *
      * @param ChildAggregateInterface $newParent The new container
      *

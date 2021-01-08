@@ -40,8 +40,8 @@ abstract class AbstractAccessor implements AccessorInterface
      * Getter constructor.
      *
      * @param string|callable $propertyName
-     * @param callable $transformer
-     * @param callable $customAccessor
+     * @param callable|null $transformer
+     * @param callable|null $customAccessor
      */
     public function __construct($propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null)
     {

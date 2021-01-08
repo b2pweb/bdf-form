@@ -3,7 +3,7 @@
 namespace Bdf\Form\Leaf;
 
 /**
- * Element for a float
+ * Element for a float value
  */
 final class FloatElement extends LeafElement
 {

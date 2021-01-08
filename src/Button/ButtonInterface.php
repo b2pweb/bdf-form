@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Button;
 
+use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Button\View\ButtonViewInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
 
@@ -45,9 +46,15 @@ interface ButtonInterface
     /**
      * Get the view for the current button
      *
+     * <code>
+     * echo $btn->view()->class('btn btn-primary')->inner('Save'); // <button type="submit" value="ok" name="btn">Save</button>
+     * </code>
+     *
      * @param HttpFieldPath|null $parent The parent HTTP field name, if applicable
      *
      * @return ButtonViewInterface
+     *
+     * @see FormView::buttons()
      */
     public function view(?HttpFieldPath $parent = null): ButtonViewInterface;
 }

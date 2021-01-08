@@ -28,7 +28,7 @@ trait TransformerBuilderTrait
      *
      * @see ElementBuilderInterface::transformer()
      */
-    final public function transformer($transformer, $append = true)
+    final public function transformer($transformer, bool $append = true)
     {
         if ($append === true) {
             $this->transformers[] = $transformer;
@@ -43,6 +43,17 @@ trait TransformerBuilderTrait
      * Add a new transformer provider
      * The transformer provider permit to create a transformer during the build of the element transformer
      * So the transformer can be configured by the element builder
+     *
+     * Usage:
+     * <code>
+     * $this->addTransformerProvider(function (RegistryInterface $registry) {
+     *     if ($this->enableTransformer) {
+     *         return [new MyTransformer($this->transformerOptions)];
+     *     }
+     *
+     *     return [];
+     * });
+     * </code>
      *
      * @param callable(RegistryInterface):TransformerInterface[] $provider
      */

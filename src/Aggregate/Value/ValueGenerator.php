@@ -11,7 +11,7 @@ use Bdf\Form\ElementInterface;
  * (new ValueGenerator())->generate($form); // Will generate an empty array
  * (new ValueGenerator(MyEntity::class))->generate($form); // Will call the default constructor of MyEntity
  * (new ValueGenerator($entity))->generate($form); // Will clone the instance of $entity
- * (new ValueGenerator(function ($form) { return new MyEntity(...); }))->generate($form); // Custom generator
+ * (new ValueGenerator(function (FormInterface $form) { return new MyEntity(...); }))->generate($form); // Custom generator
  * </code>
  */
 final class ValueGenerator implements ValueGeneratorInterface
