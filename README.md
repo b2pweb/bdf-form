@@ -240,7 +240,7 @@ class UserForm extends \Bdf\Form\Custom\CustomForm
         });
         
         // Define an array of Address instances
-        $builder->array('addresses', \Bdf\Form\Aggregate\Form::class, function (FormBuilderInterface $builder) {
+        $builder->array('addresses')->form(function (FormBuilderInterface $builder) {
             $builder->generates(Address::class);
             $builder->string('address')->required()->getter()->setter();
             $builder->string('city')->required()->getter()->setter();

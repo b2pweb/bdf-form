@@ -3,11 +3,14 @@
 namespace Bdf\Form\Aggregate;
 
 use Bdf\Form\Choice\ChoiceBuilderTrait;
-use Bdf\Form\Choice\ChoiceInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Util\TransformerBuilderTrait;
@@ -107,6 +110,12 @@ class ArrayElementBuilder implements ElementBuilderInterface
     /**
      * Define the inner element
      *
+     * <code>
+     * $builder->array('phones')->element(PhoneElement::class, function (PhoneElementBuilder $builder) {
+     *     $builder->regionInput('../../address/country');
+     * });
+     * </code>
+     *
      * @param string $element The element class name
      * @param callable|null $configurator Callback for configure the inner element builder. Takes as parameter the element builder
      *
@@ -139,7 +148,13 @@ class ArrayElementBuilder implements ElementBuilderInterface
     }
 
     /**
-     * Add a new string element on the form
+     * Define as array of string
+     *
+     * <code>
+     * $builder->array('names')->string(function (StringElementBuilder $builder) {
+     *     $builder->length(['min' => 3, 'max' => 32])->regex('/[a-z -]+/i');
+     * });
+     * </code>
      *
      * @param callable|null $configurator Callback for configure the inner element builder
      *
@@ -151,7 +166,13 @@ class ArrayElementBuilder implements ElementBuilderInterface
     }
 
     /**
-     * Add a new integer element on the form
+     * Define as array of integer
+     *
+     * <code>
+     * $builder->array('ids')->integer(function (IntegerElementBuilder $builder) {
+     *     $builder->min(1)->max(9999);
+     * });
+     * </code>
      *
      * @param callable|null $configurator Callback for configure the inner element builder
      *
@@ -163,7 +184,86 @@ class ArrayElementBuilder implements ElementBuilderInterface
     }
 
     /**
-     * Add an embedded form
+     * Define as array of float
+     *
+     * <code>
+     * $builder->array('prices')->float(function (FloatElementBuilder $builder) {
+     *     $builder->min(0.01)->scale(2);
+     * });
+     * </code>
+     *
+     * @param callable|null $configurator Callback for configure the inner element builder
+     *
+     * @return $this
+     */
+    public function float(?callable $configurator = null): ArrayElementBuilder
+    {
+        return $this->element(FloatElement::class, $configurator);
+    }
+
+    /**
+     * Define as array of boolean
+     *
+     * <code>
+     * $builder->array('flags')->boolean();
+     * </code>
+     *
+     * @param callable|null $configurator Callback for configure the inner element builder
+     *
+     * @return $this
+     */
+    public function boolean(?callable $configurator = null): ArrayElementBuilder
+    {
+        return $this->element(BooleanElement::class, $configurator);
+    }
+
+    /**
+     * Define as array of date time
+     *
+     * <code>
+     * $builder->array('dates')->dateTime(function (DateTimeElementBuilder $builder) {
+     *     $builder->after(new DateTime());
+     * });
+     * </code>
+     *
+     * @param callable|null $configurator Callback for configure the inner element builder
+     *
+     * @return $this
+     */
+    public function dateTime(?callable $configurator = null): ArrayElementBuilder
+    {
+        return $this->element(DateTimeElement::class, $configurator);
+    }
+
+    /**
+     * Define as array of phone number
+     *
+     * <code>
+     * $builder->array('phones')->phone(function (PhoneElementBuilder $builder) {
+     *     $builder->regionInput('../../address/country');
+     * });
+     * </code>
+     *
+     * @param callable|null $configurator Callback for configure the inner element builder
+     *
+     * @return $this
+     */
+    public function phone(?callable $configurator = null): ArrayElementBuilder
+    {
+        return $this->element(PhoneElement::class, $configurator);
+    }
+
+    /**
+     * Define as array of embedded forms
+     *
+     * <code>
+     * $builder->array('addresses')->form(function (FormBuilder $builder) {
+     *     $builder->string('address');
+     *     $builder->string('city');
+     *     $builder->string('zipcode');
+     *     $builder->string('country');
+     * });
+     * </code>
      *
      * @param callable|null $configurator Configure the embedded form
      *

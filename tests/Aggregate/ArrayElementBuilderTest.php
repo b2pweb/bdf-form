@@ -2,9 +2,16 @@
 
 namespace Bdf\Form\Aggregate;
 
+use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
+use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Phone\PhoneElementBuilder;
+use libphonenumber\PhoneNumber;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -77,6 +84,79 @@ class ArrayElementBuilderTest extends TestCase
         })->buildElement();
 
         $this->assertSame([10, 12], $element->submit(['a', 'c'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_float()
+    {
+        $element = $this->builder->float()->buildElement();
+
+        $this->assertSame([5.1, 6.2], $element->submit(['5.1', '6.2'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_float_with_configurator()
+    {
+        $element = $this->builder->float(function (FloatElementBuilder $builder) {
+            $builder->scale(2);
+        })->buildElement();
+
+        $this->assertSame([14.56, 1.74], $element->submit(['14.569', '1.7459'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_boolean()
+    {
+        $element = $this->builder->boolean(function (BooleanElementBuilder $builder) {})->buildElement();
+
+        $this->assertSame(['foo' => true, 'bar' => false], $element->submit(['foo' => '1', 'bar' => '0'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_dateTime()
+    {
+        $element = $this->builder->dateTime()->buildElement();
+
+        $this->assertEquals([new \DateTime('2020-10-25T12:14:00Z'), new \DateTime('2020-11-23T12:14:00Z')], $element->submit(['2020-10-25T12:14:00Z', '2020-11-23T12:14:00Z'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_dateTime_with_configurator()
+    {
+        $element = $this->builder->dateTime(function (DateTimeElementBuilder $builder) {
+            $builder->transformer(function ($value, $_, $toPhp) {
+                return $toPhp ? $value.' 00:00' : substr($value, -6);
+            })->format('d/m/Y H:i');
+        })->buildElement();
+
+        $this->assertEquals([new \DateTime('1984-03-14'), new \DateTime('1993-08-11')], $element->submit(['14/03/1984', '11/08/1993'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_phone_with_configurator()
+    {
+        $element = $this->builder->phone(function (PhoneElementBuilder $builder) {
+            $builder->region('FR');
+        })->buildElement();
+
+        $phones = $element->submit(['0451236585', '0241578932'])->value();
+
+        $this->assertContainsOnly(PhoneNumber::class, $phones);
+        $this->assertCount(2, $phones);
+        $this->assertEquals('+33451236585', PhoneNumberUtil::getInstance()->format($phones[0], PhoneNumberFormat::E164));
+        $this->assertEquals('+33241578932', PhoneNumberUtil::getInstance()->format($phones[1], PhoneNumberFormat::E164));
     }
 
     /**
