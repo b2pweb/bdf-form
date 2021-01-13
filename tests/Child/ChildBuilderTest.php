@@ -160,6 +160,20 @@ class ChildBuilderTest extends TestCase
     /**
      *
      */
+    public function test_default_with_value()
+    {
+        $child = $this->builder->default('default')->value('value')->buildChild();
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $this->assertEquals('value', $child->element()->value());
+
+        $child->submit([]);
+        $this->assertEquals('default', $child->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_default_with_transformer_should_be_applied()
     {
         $child = $this->builder->default('default')
@@ -248,6 +262,13 @@ class ChildBuilderTest extends TestCase
 
         $child->submit(['child' => '  a  ']);
         $this->assertEquals('  a  ', $child->element()->value());
+
+        $child = $this->builder->trim()->buildChild();
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $child->submit(['child' => '  a  ']);
+        $this->assertEquals('a', $child->element()->value());
+
     }
 
     /**

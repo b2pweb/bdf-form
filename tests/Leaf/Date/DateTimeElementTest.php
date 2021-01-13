@@ -63,6 +63,18 @@ class DateTimeElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_invalid_class()
+    {
+        $element = new DateTimeElement(null, null, null, \stdClass::class);
+
+        $this->assertFalse($element->submit('invalid')->valid());
+        $this->assertEquals('Invalid DateTime class name "stdClass" : method createFromFormat() is not found.', $element->error()->global());
+        $this->assertEquals('TRANSFORM_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
     public function test_submit_null()
     {
         $element = new DateTimeElement();

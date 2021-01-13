@@ -44,6 +44,25 @@ class BooleanElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_satisfy_order()
+    {
+        $this->builder->satisfy(function () { return 'error 1'; });
+        $this->builder->satisfy(function () { return 'error 2'; });
+        $element = $this->builder->buildElement();
+
+        $this->assertFalse($element->submit(null)->valid());
+        $this->assertEquals('error 1', $element->error()->global());
+
+        $this->builder->satisfy(function () { return 'error 3'; }, null, false);
+        $element = $this->builder->buildElement();
+
+        $this->assertFalse($element->submit(null)->valid());
+        $this->assertEquals('error 3', $element->error()->global());
+    }
+
+    /**
+     *
+     */
     public function test_transformer()
     {
         $element = $this->builder->transformer(function ($value, $element, $toPhp) {

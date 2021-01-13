@@ -128,6 +128,33 @@ class GetterTest extends TestCase
 
         $this->assertSame('my value', $input->element()->value());
     }
+
+    /**
+     *
+     */
+    public function test_embedded_property()
+    {
+        $builder = new ChildBuilder('private', new StringElementBuilder());
+        $builder->extractor(new Getter('foo.bar'));
+
+        $input = $builder->buildChild();
+        $input->setParent(new Form(new ChildrenCollection()));
+
+        $entity = new class {
+            public $foo;
+
+            public function __construct()
+            {
+                $this->foo = new class {
+                    public $bar = 'my value';
+                };
+            }
+        };
+
+        $input->import($entity);
+
+        $this->assertSame('my value', $input->element()->value());
+    }
 }
 
 class GetterTestEntity

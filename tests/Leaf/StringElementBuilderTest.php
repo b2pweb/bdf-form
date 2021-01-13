@@ -46,6 +46,25 @@ class StringElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_satisfy_order()
+    {
+        $this->builder->satisfy(function () { return 'error 1'; });
+        $this->builder->satisfy(function () { return 'error 2'; });
+        $element = $this->builder->buildElement();
+
+        $this->assertFalse($element->submit(null)->valid());
+        $this->assertEquals('error 1', $element->error()->global());
+
+        $this->builder->satisfy(function () { return 'error 3'; }, null, false);
+        $element = $this->builder->buildElement();
+
+        $this->assertFalse($element->submit(null)->valid());
+        $this->assertEquals('error 3', $element->error()->global());
+    }
+
+    /**
+     *
+     */
     public function test_satisfy_with_className_and_options()
     {
         $element = $this->builder->satisfy(NotEqualTo::class, ['value' => 'hello'])->buildElement();
@@ -159,5 +178,17 @@ class StringElementBuilderTest extends TestCase
         $element->submit('aaa');
         $this->assertFalse($element->valid());
         $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_choices_custom_message()
+    {
+        $element = $this->builder->choices(['foo', 'bar'], 'my error')->buildElement();
+
+        $element->submit('aaa');
+        $this->assertFalse($element->valid());
+        $this->assertEquals('my error', $element->error()->global());
     }
 }

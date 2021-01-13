@@ -3,7 +3,9 @@
 namespace Bdf\Form\Custom;
 
 use Bdf\Form\Aggregate\ArrayElement;
+use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Aggregate\RootForm;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
@@ -240,8 +242,10 @@ class CustomFormTest extends TestCase
         $person->firstName = 'John';
         $person->lastName = 'Doe';
         $person->birthDate = new \DateTime('1992-05-22');
+        $person->foo = 'bar';
 
         $this->assertSame($this->form, $this->form->attach($person));
+        $this->assertEquals('bar', $this->form->value()->foo);
         $this->assertNull($this->form['firstName']->element()->value());
         $this->assertNull($this->form['lastName']->element()->value());
         $this->assertNull($this->form['birthDate']->element()->value());
@@ -303,6 +307,22 @@ class CustomFormTest extends TestCase
         $this->assertEquals('<input type="text" name="lastName" value="" required />', (string) $view['lastName']);
         $this->assertEquals('<input type="number" name="birthDate" value="" />', (string) $view['birthDate']);
         $this->assertEquals('<input type="submit" name="btn" value="ok" />', (string) $view['btn']);
+    }
+
+    /**
+     *
+     */
+    public function test_protected_visibility()
+    {
+        $this->form = new class extends PersonForm {
+            public function test(): void
+            {
+                TestCase::assertInstanceOf(Form::class, $this->form());
+                TestCase::assertInstanceOf(RootForm::class, $this->submitTarget());
+            }
+        };
+
+        $this->form->test();
     }
 }
 

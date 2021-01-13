@@ -133,6 +133,34 @@ class SetterTest extends TestCase
 
         $this->assertSame('my value', $entity->private());
     }
+
+    /**
+     *
+     */
+    public function test_embedded_property()
+    {
+        $builder = new ChildBuilder('private', new StringElementBuilder());
+        $builder->hydrator(new Setter('foo.bar'));
+
+        $input = $builder->buildChild();
+        $input->setParent(new Form(new ChildrenCollection()));
+
+        $entity = new class {
+            public $foo;
+
+            public function __construct()
+            {
+                $this->foo = new class {
+                    public $bar;
+                };
+            }
+        };
+
+        $input->element()->import('my value');
+        $input->fill($entity);
+
+        $this->assertSame('my value', $entity->foo->bar);
+    }
 }
 
 class SetterTestEntity

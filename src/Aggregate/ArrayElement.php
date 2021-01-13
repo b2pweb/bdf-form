@@ -210,8 +210,6 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
                 $this->valid = false;
                 $errors[$key] = $child->error();
                 $this->children[$key] = $child;
-
-                continue;
             }
         }
 

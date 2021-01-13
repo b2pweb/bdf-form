@@ -63,6 +63,23 @@ class ArrayElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_should_reuse_old_child_instances()
+    {
+        $element = new ArrayElement(new StringElement());
+
+        $element->submit(['foo', 'bar']);
+
+        $children = iterator_to_array($element->getIterator());
+
+        $element->submit(['aaa', 'bbb']);
+        $this->assertSame($children, iterator_to_array($element->getIterator()));
+        $this->assertEquals('aaa', $children[0]->element()->value());
+        $this->assertEquals('bbb', $children[1]->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_submit_should_filter_empty_elements()
     {
         $element = new ArrayElement(new StringElement());
@@ -231,6 +248,17 @@ class ArrayElementTest extends TestCase
     /**
      *
      */
+    public function test_import_not_array_should_be_casted_to_array()
+    {
+        $element = new ArrayElement(new StringElement());
+
+        $this->assertSame([], $element->import(null)->value());
+        $this->assertSame(['foo'], $element->import('foo')->value());
+    }
+
+    /**
+     *
+     */
     public function test_httpValue()
     {
         $element = new ArrayElement(new StringElement(null, new ClosureTransformer(function ($value, $_, $toPhp) {
@@ -273,6 +301,28 @@ class ArrayElementTest extends TestCase
         $this->assertSame($element, $element[0]->parent());
         $this->assertEquals('bar', $element[1]->element()->value());
         $this->assertSame($element, $element[1]->parent());
+    }
+
+    /**
+     *
+     */
+    public function test_array_set_disabled()
+    {
+        $this->expectException(\BadMethodCallException::class);
+
+        $element = new ArrayElement(new StringElement());
+        $element[0] = 'foo';
+    }
+
+    /**
+     *
+     */
+    public function test_array_unset_disabled()
+    {
+        $this->expectException(\BadMethodCallException::class);
+
+        $element = new ArrayElement(new StringElement());
+        unset($element[0]);
     }
 
     /**
@@ -357,6 +407,30 @@ class ArrayElementTest extends TestCase
         $this->assertEquals('arr[foo]', $view['foo']->name());
         $this->assertEquals('rab', $view['baz']->value());
         $this->assertEquals('arr[baz]', $view['baz']->name());
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_element_transformer_should_be_applied()
+    {
+        $element = (new ArrayElementBuilder())
+            ->transformer(function ($value, $_, $toPhp) { return $toPhp ? base64_decode($value) : base64_encode($value); })
+            ->buildElement()
+        ;
+
+        $element->import(['foo', 'bar']);
+
+        $view = $element->view(HttpFieldPath::named('arr'));
+
+        $this->assertEquals('arr', $view->name());
+        $this->assertFalse($view->hasError());
+        $this->assertEquals(['Zm9v', 'YmFy'], $view->value());
+        $this->assertContainsOnly(SimpleElementView::class, $view);
+        $this->assertEquals('Zm9v', $view[0]->value());
+        $this->assertEquals('arr[0]', $view[0]->name());
+        $this->assertEquals('YmFy', $view[1]->value());
+        $this->assertEquals('arr[1]', $view[1]->name());
     }
 
     /**
@@ -465,5 +539,23 @@ class ArrayElementTest extends TestCase
             '<select multiple foo="bar" name="arr[]"><option value="aaa" selected>aaa</option><option value="bbb">bbb</option><option value="ccc" selected>ccc</option><option value="ddd">ddd</option></select>'
             , (string) $view->foo('bar')
         );
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_choice_and_element_transformer()
+    {
+        $element = (new ArrayElementBuilder())
+            ->choices(['aaa', 'bbb', 'ccc'])
+            ->transformer(function ($v, $_, $p) { return $p ? base64_decode($v) : base64_encode($v); })
+            ->buildElement()
+        ;
+
+        $view = $element->view();
+
+        $this->assertEquals('YWFh', $view->choices()[0]->value());
+        $this->assertEquals('YmJi', $view->choices()[1]->value());
+        $this->assertEquals('Y2Nj', $view->choices()[2]->value());
     }
 }

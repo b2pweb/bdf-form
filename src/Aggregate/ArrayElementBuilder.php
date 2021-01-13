@@ -2,7 +2,10 @@
 
 namespace Bdf\Form\Aggregate;
 
+use Bdf\Form\Choice\ArrayChoice;
 use Bdf\Form\Choice\ChoiceBuilderTrait;
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Choice\LazzyChoice;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElement;
@@ -16,6 +19,7 @@ use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Util\TransformerBuilderTrait;
 use Bdf\Form\Util\ValidatorBuilderTrait;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints\Choice as ChoiceConstraint;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -315,13 +319,21 @@ class ArrayElementBuilder implements ElementBuilderInterface
      */
     final public function choices($choices, $options = null): self
     {
+        // @fixme c/c choice from trait
+        if (!$choices instanceof ChoiceInterface) {
+            $choices = is_array($choices) ? new ArrayChoice($choices) : new LazzyChoice($choices);
+        }
+
         if (is_string($options)) {
             $options = ['message' => $options, 'multipleMessage' => $options];
         }
 
+        $options['callback'] = [$choices, 'values'];
         $options['multiple'] = true;
 
-        return $this->baseChoices($choices, $options);
+        $this->choices = $choices;
+
+        return $this->arrayConstraint(new ChoiceConstraint($options));
     }
 
     /**

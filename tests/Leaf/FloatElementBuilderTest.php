@@ -47,6 +47,25 @@ class FloatElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_satisfy_order()
+    {
+        $this->builder->satisfy(function () { return 'error 1'; });
+        $this->builder->satisfy(function () { return 'error 2'; });
+        $element = $this->builder->buildElement();
+
+        $this->assertFalse($element->submit(null)->valid());
+        $this->assertEquals('error 1', $element->error()->global());
+
+        $this->builder->satisfy(function () { return 'error 3'; }, null, false);
+        $element = $this->builder->buildElement();
+
+        $this->assertFalse($element->submit(null)->valid());
+        $this->assertEquals('error 3', $element->error()->global());
+    }
+
+    /**
+     *
+     */
     public function test_transformer()
     {
         $element = $this->builder->transformer(function ($value, $element, $toPhp) {
@@ -55,6 +74,20 @@ class FloatElementBuilderTest extends TestCase
 
         $this->assertEquals(11, $element->submit('b')->value());
         $this->assertEquals('b', $element->httpValue());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_order()
+    {
+        $this->builder->transformer(function ($value, $element, $toPhp) { return $value .= '1'; });
+        $this->builder->transformer(function ($value, $element, $toPhp) { return $value .= '2'; });
+        $this->builder->transformer(function ($value, $element, $toPhp) { return $value .= '3'; }, false);
+
+        $element = $this->builder->buildElement();
+
+        $this->assertEquals(213, $element->submit('')->value());
     }
 
     /**
@@ -264,5 +297,17 @@ class FloatElementBuilderTest extends TestCase
 
         $element->submit('45.6');
         $this->assertTrue($element->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_choices_custom_message()
+    {
+        $element = $this->builder->choices([12.3, 45.6, 78.9], 'my error')->buildElement();
+
+        $element->submit('14.7');
+        $this->assertFalse($element->valid());
+        $this->assertEquals('my error', $element->error()->global());
     }
 }

@@ -296,6 +296,28 @@ class FormTest extends TestCase
     /**
      *
      */
+    public function test_patch_should_apply_transformer_if_parameter_is_not_null()
+    {
+        $builder = new FormBuilder($this->registry);
+
+        $builder->string('foo');
+        $builder->transformer(function ($value, $_, $toPhp) { return $toPhp ? json_decode($value, true) : json_encode($value); });
+
+        $form = $builder->buildElement();
+
+        $form->patch('{"foo":"bar"}');
+
+        $this->assertTrue($form->valid());
+
+        $this->assertSame('bar', $form['foo']->element()->value());
+
+        $form->patch(null);
+        $this->assertSame('bar', $form['foo']->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_import_with_entity()
     {
         $form = new Form(new ChildrenCollection([
@@ -502,6 +524,26 @@ class FormTest extends TestCase
             'lastName' => $form['lastName'],
             'id' => $form['id'],
         ], iterator_to_array($form));
+    }
+
+    /**
+     *
+     */
+    public function test_array_set_disabled()
+    {
+        $this->expectException(\BadMethodCallException::class);
+
+        $this->form[0] = 'foo';
+    }
+
+    /**
+     *
+     */
+    public function test_array_unset_disabled()
+    {
+        $this->expectException(\BadMethodCallException::class);
+
+        unset($this->form[0]);
     }
 
     /**

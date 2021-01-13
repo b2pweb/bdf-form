@@ -157,6 +157,16 @@ class PhoneElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_regionResolver()
+    {
+        $element = $this->builder->regionResolver(function () { return 'FR'; })->buildElement();
+
+        $this->assertEquals(33, $element->submit('0452879613')->value()->getCountryCode());
+    }
+
+    /**
+     *
+     */
     public function test_regionInput()
     {
         $element = $this->builder->regionInput('country')->buildElement();

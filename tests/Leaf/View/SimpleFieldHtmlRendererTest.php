@@ -7,6 +7,7 @@ use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Phone\PhoneElement;
+use Bdf\Validator\Constraints\Closure;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
@@ -72,6 +73,7 @@ class SimpleFieldHtmlRendererTest extends TestCase
             [[Length::class => ['min' => 3], LessThanOrEqual::class => ['value' => 42]], ' minlength="3" max="42"'],
             [[GreaterThanOrEqual::class => ['value' => 42]], ' min="42"'],
             [[PositiveOrZero::class => ['value' => 0]], ' min="0"'],
+            [[Closure::class => [], PositiveOrZero::class => ['value' => 0]], ' min="0"'],
         ];
     }
 

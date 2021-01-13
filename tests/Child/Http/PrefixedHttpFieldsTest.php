@@ -66,6 +66,18 @@ class PrefixedHttpFieldsTest extends TestCase
     /**
      *
      */
+    public function test_submit_not_empty_with_default()
+    {
+        $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], ['default'], new Setter());
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $this->assertTrue($child->submit(['child_0' => 'foo', 'child_bar' => 'baz', 'other' => 42]));
+        $this->assertSame([0 => 'foo', 'bar' => 'baz'], $child->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_submit_element_constraint_error()
     {
         $child = new Child('child', new ArrayElement(new StringElement(), null, new ConstraintValueValidator(new Count(['min' => 2]))), new PrefixedHttpFields('child_'), [], null, new Setter());

@@ -56,6 +56,9 @@ final class PrefixedHttpFields implements HttpFieldsInterface
         return $defaultValue !== null && empty($value) ? $defaultValue : $value;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function contains($httpFields): bool
     {
         return true; // Always true ?

@@ -60,6 +60,26 @@ class CustomFormBuilderTest extends TestCase
     /**
      *
      */
+    public function test_satisfy_order()
+    {
+        $builder = new CustomFormBuilder(MyCustomTestForm::class);
+        $builder->satisfy(function () { return 'error 1'; });
+        $builder->satisfy(function () { return 'error 2'; });
+        $form = $builder->buildElement();
+
+        $form->submit([]);
+        $this->assertEquals('error 1', $form->error()->global());
+
+        $builder->satisfy(function () { return 'error 3'; }, null, false);
+        $form = $builder->buildElement();
+
+        $form->submit([]);
+        $this->assertEquals('error 3', $form->error()->global());
+    }
+
+    /**
+     *
+     */
     public function test_transformer()
     {
         $builder = new CustomFormBuilder(MyCustomTestForm::class);
@@ -69,6 +89,21 @@ class CustomFormBuilderTest extends TestCase
         })->buildElement();
 
         $this->assertEquals(['foo' => 'bar'], $form->submit(['bar' => 'foo'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_order()
+    {
+        $builder = new CustomFormBuilder(MyCustomTestForm::class);
+
+        $builder->transformer(function ($value) { $value['foo'] .= 'A'; return $value; });
+        $builder->transformer(function ($value) { $value['foo'] .= 'B'; return $value; });
+        $builder->transformer(function ($value) { $value['foo'] .= 'C'; return $value; }, false);
+        $form =$builder->buildElement();
+
+        $this->assertEquals(['foo' => 'BAC'], $form->submit(['foo' => ''])->value());
     }
 
     /**

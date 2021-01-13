@@ -39,6 +39,7 @@ class RootFormTest extends TestCase
             [
                 $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
                 $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
+                $btn3 = new SubmitButton('btn3', 'ok'),
             ]
         );
 
@@ -70,6 +71,15 @@ class RootFormTest extends TestCase
         ]);
 
         $this->assertNull($root->submitButton());
+        $this->assertEquals([Constraint::DEFAULT_GROUP], $root->constraintGroups());
+
+        $root->submit([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+            'btn3' => 'ok',
+        ]);
+
         $this->assertEquals([Constraint::DEFAULT_GROUP], $root->constraintGroups());
     }
 
@@ -114,6 +124,32 @@ class RootFormTest extends TestCase
         $this->assertNull($root->submitButton());
         $this->assertEquals('John', $root['firstName']->element()->value());
         $this->assertEquals('Smith', $root['lastName']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_import()
+    {
+        $registry = new Registry();
+
+        $form = new Form(new ChildrenCollection([
+            $registry->childBuilder(StringElement::class, 'firstName')->getter()->buildChild(),
+            $registry->childBuilder(StringElement::class, 'lastName')->getter()->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
+        ]));
+
+        $root = new RootForm($form);
+
+        $root->import([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+        ]);
+
+        $this->assertEquals('John', $root['firstName']->element()->value());
+        $this->assertEquals('Smith', $root['lastName']->element()->value());
+        $this->assertEquals(4, $root['id']->element()->value());
     }
 
     /**

@@ -42,6 +42,17 @@ class SubmitButtonTest extends TestCase
     /**
      *
      */
+    public function test_submit_with_integer()
+    {
+        $btn = new SubmitButton('btn', 1);
+
+        $this->assertFalse($btn->submit(['btn' => 0]));
+        $this->assertTrue($btn->submit(['btn' => 1]));
+    }
+
+    /**
+     *
+     */
     public function test_view()
     {
         $btn = new SubmitButton('btn', 'ok');

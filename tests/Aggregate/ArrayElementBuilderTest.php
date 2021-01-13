@@ -40,6 +40,8 @@ class ArrayElementBuilderTest extends TestCase
      */
     public function test_defaults()
     {
+        $this->assertInstanceOf(StringElementBuilder::class, $this->builder->getElementBuilder());
+
         $element = $this->builder->buildElement();
 
         $this->assertInstanceOf(ArrayElement::class, $element);
@@ -47,6 +49,17 @@ class ArrayElementBuilderTest extends TestCase
 
         $element->import(['foo']);
         $this->assertInstanceOf(StringElement::class, $element[0]->element());
+    }
+
+    /**
+     *
+     */
+    public function test_calling_undefined_method_should_be_forwarded_to_inner_element_builder()
+    {
+        $element = $this->builder->length(['min' => 2])->buildElement();
+
+        $this->assertFalse($element->submit(['a', 'bb'])->valid());
+        $this->assertEquals(['This value is too short. It should have 2 characters or more.'], $element->error()->toArray());
     }
 
     /**
@@ -225,11 +238,43 @@ class ArrayElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_satisfy_order()
+    {
+        $this->builder->satisfy(function () { return 'error 1'; });
+        $this->builder->satisfy(function () { return 'error 2'; });
+        $element = $this->builder->buildElement();
+
+        $this->assertFalse($element->submit(['foo'])->valid());
+        $this->assertEquals([0 => 'error 1'], $element->error()->toArray());
+
+        $this->builder->satisfy(function () { return 'error 3'; }, null, false);
+        $element = $this->builder->buildElement();
+
+        $this->assertFalse($element->submit(['foo'])->valid());
+        $this->assertEquals([0 => 'error 3'], $element->error()->toArray());
+    }
+
+    /**
+     *
+     */
     public function test_transformer()
     {
         $element = $this->builder->transformer(function ($v) { return strtoupper($v); })->buildElement();
 
         $this->assertSame(['FOO', 'BAR'], $element->submit(['foo', 'bar'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_order()
+    {
+        $this->builder->transformer(function ($v) { return $v.'A'; });
+        $this->builder->transformer(function ($v) { return $v.'B'; });
+        $this->builder->transformer(function ($v) { return $v.'C'; }, false);
+        $element = $this->builder->buildElement();
+
+        $this->assertSame(['BAC'], $element->submit([''])->value());
     }
 
     /**
@@ -273,5 +318,18 @@ class ArrayElementBuilderTest extends TestCase
 
         $element->submit([]);
         $this->assertEquals('This collection should contain 2 elements or more.', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_choices()
+    {
+        $element = $this->builder->choices(['foo', 'bar', 'baz'])->buildElement();
+
+        $this->assertFalse($element->submit(['foo', 'baz', 'aaa'])->valid());
+        $this->assertEquals('One or more of the given values is invalid.', $element->error()->global());
+
+        $this->assertTrue($element->submit(['foo', 'baz'])->valid());
     }
 }

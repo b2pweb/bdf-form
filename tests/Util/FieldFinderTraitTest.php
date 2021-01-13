@@ -17,6 +17,7 @@ class FieldFinderTraitTest extends TestCase
         $form = new CredentialsForm();
 
         $this->assertSame($form['username']->element(), $form->findField('username'));
+        $this->assertSame($form['username']->element(), $form->findField('./username'));
         $this->assertSame($form['password']->element(), $form->findField('password'));
     }
 
