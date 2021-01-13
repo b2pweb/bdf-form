@@ -11,6 +11,9 @@ use Bdf\Form\Validator\ValueValidatorInterface;
 
 /**
  * Base builder for elements
+ *
+ * @template E as ElementInterface
+ * @implements ElementBuilderInterface<E>
  */
 abstract class AbstractElementBuilder implements ElementBuilderInterface
 {
@@ -68,7 +71,7 @@ abstract class AbstractElementBuilder implements ElementBuilderInterface
      * @param ValueValidatorInterface $validator
      * @param TransformerInterface $transformer
      *
-     * @return ElementInterface
+     * @return E
      */
     abstract protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface;
 

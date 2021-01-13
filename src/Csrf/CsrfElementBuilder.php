@@ -24,6 +24,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
  *
  * @see CsrfElement
  * @see FormBuilderInterface::csrf()
+ *
+ * @implements ElementBuilderInterface<CsrfElement>
  */
 class CsrfElementBuilder implements ElementBuilderInterface
 {

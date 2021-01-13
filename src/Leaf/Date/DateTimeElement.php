@@ -20,7 +20,7 @@ use InvalidArgumentException;
 final class DateTimeElement extends LeafElement
 {
     /**
-     * @var string
+     * @var class-string<DateTimeInterface>
      */
     private $className;
 
@@ -40,7 +40,7 @@ final class DateTimeElement extends LeafElement
      * @param ValueValidatorInterface|null $validator
      * @param TransformerInterface|null $transformer
      * @param ChoiceInterface|null $choices
-     * @param string $className The date time class name to use
+     * @param class-string<DateTimeInterface> $className The date time class name to use
      * @param string $format The time format string
      * @param DateTimeZone|null $timezone Timezone to use. Use null to not define a timezone
      */
@@ -72,6 +72,10 @@ final class DateTimeElement extends LeafElement
                 // No break
 
             default:
+                if (!method_exists($this->className, 'createFromFormat')) {
+                    throw new \LogicException('Invalid DateTime class name "'.$this->className.'" : method createFromFormat() is not found.');
+                }
+
                 $dateTime = ($this->className)::createFromFormat($this->format, $httpValue, $this->timezone);
         }
 
@@ -88,12 +92,10 @@ final class DateTimeElement extends LeafElement
 
     /**
      * {@inheritdoc}
-     *
-     * @param DateTimeInterface $phpValue
      */
     protected function toHttp($phpValue)
     {
-        if ($phpValue === null) {
+        if (!$phpValue instanceof DateTimeInterface) {
             return null;
         }
 

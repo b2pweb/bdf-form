@@ -10,7 +10,7 @@ use Bdf\Form\ElementInterface;
 final class NullTransformer implements TransformerInterface
 {
     /**
-     * @var NullTransformer
+     * @var NullTransformer|null
      */
     private static $instance;
 

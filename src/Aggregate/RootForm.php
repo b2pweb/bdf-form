@@ -64,12 +64,12 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     private $submitButton;
 
     /**
-     * @var PropertyAccessorInterface
+     * @var PropertyAccessorInterface|null
      */
     private $propertyAccessor;
 
     /**
-     * @var ValidatorInterface
+     * @var ValidatorInterface|null
      */
     private $validator;
 

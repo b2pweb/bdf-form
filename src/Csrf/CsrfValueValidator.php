@@ -43,6 +43,7 @@ final class CsrfValueValidator implements ValueValidatorInterface
      * {@inheritdoc}
      *
      * @param CsrfElement $element
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function validate($value, ElementInterface $element): FormError
     {

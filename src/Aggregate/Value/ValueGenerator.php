@@ -17,7 +17,7 @@ use Bdf\Form\ElementInterface;
 final class ValueGenerator implements ValueGeneratorInterface
 {
     /**
-     * @var object|callable|array
+     * @var object|callable|array|class-string
      */
     private $value;
 
@@ -25,7 +25,7 @@ final class ValueGenerator implements ValueGeneratorInterface
     /**
      * ValueGenerator constructor.
      *
-     * @param callable|object|array $value
+     * @param callable|object|class-string|array $value
      */
     public function __construct($value = [])
     {

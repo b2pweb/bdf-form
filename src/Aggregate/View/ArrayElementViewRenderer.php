@@ -9,11 +9,13 @@ use Bdf\Form\View\FieldViewRendererInterface;
 
 /**
  * Default renderer for @see ArrayElementView
+ *
+ * @implements FieldViewRendererInterface<ArrayElementView>
  */
 final class ArrayElementViewRenderer implements FieldViewRendererInterface
 {
     /**
-     * @var ArrayElementViewRenderer
+     * @var ArrayElementViewRenderer|null
      */
     private static $instance;
 

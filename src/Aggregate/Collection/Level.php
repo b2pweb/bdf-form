@@ -18,17 +18,17 @@ final class Level implements IteratorAggregate
     private $number;
 
     /**
-     * @var Level
+     * @var Level|null
      */
     private $prev;
 
     /**
-     * @var Level
+     * @var Level|null
      */
     private $next;
 
     /**
-     * @var Level
+     * @var Level|null
      */
     private $last;
 
@@ -43,10 +43,10 @@ final class Level implements IteratorAggregate
     /**
      * Level constructor.
      *
-     * @param Level $prev
+     * @param Level|null $prev
      * @param int $number
      */
-    public function __construct(Level $prev = null, $number = 0)
+    public function __construct(?Level $prev = null, $number = 0)
     {
         $this->prev   = $prev;
         $this->number = $number;
@@ -128,7 +128,7 @@ final class Level implements IteratorAggregate
     /**
      * Get the previous level (lvl n-1)
      *
-     * @return Level
+     * @return Level|null
      */
     public function prev()
     {
@@ -150,7 +150,7 @@ final class Level implements IteratorAggregate
      * Get the next level (lvl n+1)
      * Can return NULL if the current level is the last element
      *
-     * @return Level
+     * @return Level|null
      */
     public function next()
     {
@@ -159,6 +159,8 @@ final class Level implements IteratorAggregate
 
     /**
      * {@inheritdoc}
+     *
+     * @return \Iterator<string, string[]>
      */
     public function getIterator()
     {
@@ -170,7 +172,7 @@ final class Level implements IteratorAggregate
      *
      * @param string $name The element name
      */
-    public function reset($name)
+    public function reset($name): void
     {
         if ($this->has($name)) {
             $this->elements[$name] = [];
@@ -182,7 +184,7 @@ final class Level implements IteratorAggregate
      *
      * @param string $name
      */
-    public function remove($name)
+    public function remove($name): void
     {
         unset($this->elements[$name]);
     }

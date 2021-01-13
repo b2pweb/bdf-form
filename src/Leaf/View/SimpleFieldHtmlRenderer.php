@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints\PositiveOrZero;
 final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
 {
     /**
-     * @var SimpleFieldHtmlRenderer
+     * @var SimpleFieldHtmlRenderer|null
      */
     private static $instance;
 

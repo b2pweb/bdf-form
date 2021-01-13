@@ -18,7 +18,11 @@ trait FieldComparisonTrait
      */
     public $field;
 
-    public function __construct($field = null)
+    /**
+     * FieldComparisonTrait constructor.
+     * @param string|FieldPath|array $field
+     */
+    public function __construct($field)
     {
         Constraint::__construct($field);
     }

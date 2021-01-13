@@ -17,7 +17,7 @@ final class LazzyChoice implements ChoiceInterface
     /**
      * The choice object
      *
-     * @var ChoiceInterface
+     * @var ChoiceInterface|null
      */
     private $choices;
 
@@ -36,9 +36,7 @@ final class LazzyChoice implements ChoiceInterface
      */
     public function values(): array
     {
-        $this->build();
-
-        return $this->choices->values();
+        return $this->build()->values();
     }
 
     /**
@@ -46,18 +44,16 @@ final class LazzyChoice implements ChoiceInterface
      */
     public function view(?callable $configurator = null): array
     {
-        $this->build();
-
-        return $this->choices->view($configurator);
+        return $this->build()->view($configurator);
     }
 
     /**
      * Resolve the lazzy choice list
      */
-    private function build(): void
+    private function build(): ChoiceInterface
     {
         if ($this->choices !== null) {
-            return;
+            return $this->choices;
         }
 
         $callback = $this->resolver;
@@ -66,5 +62,7 @@ final class LazzyChoice implements ChoiceInterface
         if (!$this->choices instanceof ChoiceInterface) {
             $this->choices = new ArrayChoice((array)$this->choices);
         }
+
+        return $this->choices;
     }
 }

@@ -13,7 +13,7 @@ use IteratorAggregate;
  * Simple implementation of children collection for handle dependencies order
  * When a child is added, all its dependencies are moved to the end of the collection
  */
-final class ChildrenCollection implements IteratorAggregate, Countable, ChildrenCollectionInterface
+final class ChildrenCollection implements Countable, ChildrenCollectionInterface
 {
     /**
      * The collection of children
@@ -115,7 +115,7 @@ final class ChildrenCollection implements IteratorAggregate, Countable, Children
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new ArrayIterator($this->children);
     }
@@ -169,7 +169,7 @@ final class ChildrenCollection implements IteratorAggregate, Countable, Children
      * @param string $name
      * @param ChildInterface $child
      */
-    private function addNamed($name, ChildInterface $child)
+    private function addNamed($name, ChildInterface $child): void
     {
         $this->children[$name] = $child;
         $this->orderDependencies($child);
@@ -180,7 +180,7 @@ final class ChildrenCollection implements IteratorAggregate, Countable, Children
      *
      * @param ChildInterface $child
      */
-    private function orderDependencies(ChildInterface $child)
+    private function orderDependencies(ChildInterface $child): void
     {
         if (!$child->dependencies()) {
             return;

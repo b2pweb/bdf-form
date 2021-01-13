@@ -4,13 +4,15 @@ namespace Bdf\Form\View;
 
 /**
  * Base type for perform the render of a field view
+ *
+ * @template T as FieldViewInterface
  */
 interface FieldViewRendererInterface
 {
     /**
      * Render the field
      *
-     * @param FieldViewInterface $view Field to render
+     * @param T $view Field to render
      * @param array $attributes Custom attributes
      *
      * @return string

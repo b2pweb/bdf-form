@@ -32,7 +32,7 @@ trait FieldViewTrait
     private $constraints = [];
 
     /**
-     * @var ChoiceView[]
+     * @var ChoiceView[]|null
      */
     private $choices;
 
@@ -70,8 +70,10 @@ trait FieldViewTrait
 
     /**
      * {@inheritdoc}
+     *
+     * @return array<array-key, ChoiceView>|null
      */
-    public function choices(): array
+    public function choices(): ?array
     {
         return $this->choices;
     }

@@ -14,7 +14,7 @@ use InvalidArgumentException;
 final class SelectHtmlRenderer implements FieldViewRendererInterface
 {
     /**
-     * @var SelectHtmlRenderer
+     * @var SelectHtmlRenderer|null
      */
     private static $instance;
 
@@ -23,7 +23,7 @@ final class SelectHtmlRenderer implements FieldViewRendererInterface
      */
     public function render(FieldViewInterface $view, array $attributes): string
     {
-        if (!$view->choices()) {
+        if (!$choices = $view->choices()) {
             throw new InvalidArgumentException('Choices must be provided for render a select element.');
         }
 
@@ -36,7 +36,7 @@ final class SelectHtmlRenderer implements FieldViewRendererInterface
 
         $options = '';
 
-        foreach ($view->choices() as $choice) {
+        foreach ($choices as $choice) {
             $options .= HtmlRenderer::element('option', ['value' => $choice->value(), 'selected' => $choice->selected()], htmlentities($choice->label()));
         }
 

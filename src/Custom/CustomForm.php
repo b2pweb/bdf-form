@@ -5,6 +5,7 @@ namespace Bdf\Form\Custom;
 use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Aggregate\FormInterface;
+use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
@@ -52,7 +53,7 @@ abstract class CustomForm implements FormInterface
     /**
      * The inner form
      *
-     * @var FormInterface
+     * @var FormInterface|null
      */
     private $form;
 
@@ -213,6 +214,7 @@ abstract class CustomForm implements FormInterface
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         $form = $this->form();
+        /** @var FormView $view */
         $view = $form->container() === null
             ? $form->root()->view($field)
             : $form->view($field)

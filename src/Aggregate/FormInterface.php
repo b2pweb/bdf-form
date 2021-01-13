@@ -4,6 +4,8 @@ namespace Bdf\Form\Aggregate;
 
 /**
  * The base form element type
+ *
+ * @method \Bdf\Form\Aggregate\View\FormView view(?\Bdf\Form\Child\Http\HttpFieldPath $fieldPath = null)
  */
 interface FormInterface extends ChildAggregateInterface
 {

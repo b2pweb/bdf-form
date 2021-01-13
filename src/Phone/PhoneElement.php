@@ -21,7 +21,7 @@ use libphonenumber\PhoneNumberUtil;
 final class PhoneElement extends LeafElement
 {
     /**
-     * @var callable
+     * @var callable(PhoneElement):string
      */
     private $regionResolver;
 
@@ -43,8 +43,8 @@ final class PhoneElement extends LeafElement
     {
         parent::__construct($validator, $transformer);
 
-        $this->regionResolver = $regionResolver ?: function() { return PhoneNumberUtil::UNKNOWN_REGION; };
-        $this->formatter = $formatter ?: PhoneNumberUtil::getInstance();
+        $this->regionResolver = $regionResolver ?? function(): string { return PhoneNumberUtil::UNKNOWN_REGION; };
+        $this->formatter = $formatter ?? PhoneNumberUtil::getInstance();
     }
 
     /**

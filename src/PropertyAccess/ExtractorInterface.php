@@ -16,7 +16,7 @@ interface ExtractorInterface extends AccessorInterface
      * 
      * @param array|object $source
      * 
-     * @return mixed
+     * @return void
      */
-    public function extract($source);
+    public function extract($source)/*: void*/;
 }

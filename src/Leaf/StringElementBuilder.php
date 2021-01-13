@@ -24,6 +24,8 @@ use Symfony\Component\Validator\Constraints\Regex;
  *
  * @see StringElement
  * @see FormBuilderInterface::string()
+ *
+ * @extends AbstractElementBuilder<StringElement>
  */
 class StringElementBuilder extends AbstractElementBuilder
 {

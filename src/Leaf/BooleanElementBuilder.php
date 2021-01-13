@@ -21,6 +21,8 @@ use InvalidArgumentException;
  *
  * @see BooleanElement
  * @see FormBuilderInterface::boolean()
+ *
+ * @extends AbstractElementBuilder<BooleanElement>
  */
 class BooleanElementBuilder extends AbstractElementBuilder
 {

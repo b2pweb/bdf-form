@@ -18,7 +18,7 @@ namespace Bdf\Form\Child\Http;
 final class HttpFieldPath
 {
     /**
-     * @var HttpFieldPath
+     * @var HttpFieldPath|null
      */
     private static $empty;
 

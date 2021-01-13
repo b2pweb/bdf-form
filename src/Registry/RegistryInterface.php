@@ -5,6 +5,7 @@ namespace Bdf\Form\Registry;
 use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
+use Bdf\Form\ElementInterface;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use LogicException;
@@ -55,10 +56,12 @@ interface RegistryInterface
      * $registry->childBuilder(IntegerElement::class, 'foo'); // Create builder for integer element "foo"
      * </code>
      *
-     * @param string $element The element class name
+     * @param class-string<E> $element The element class name
      * @param string $name The child name
      *
-     * @return ChildBuilderInterface
+     * @return ChildBuilderInterface<ElementBuilderInterface<E>>
+     *
+     * @template E as \Bdf\Form\ElementInterface
      *
      * @throws \InvalidArgumentException When cannot found the element builder
      */
@@ -74,9 +77,11 @@ interface RegistryInterface
      * $registry->elementBuilder(IntegerElement::class); // For a leaf element
      * </code>
      *
-     * @param string $element The element class name
+     * @param class-string<E> $element The element class name
      *
-     * @return ElementBuilderInterface
+     * @return ElementBuilderInterface<E>
+     *
+     * @template E as \Bdf\Form\ElementInterface
      *
      * @throws \InvalidArgumentException When cannot found the element builder
      */

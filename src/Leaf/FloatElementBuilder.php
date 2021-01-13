@@ -22,6 +22,8 @@ use Symfony\Component\Form\Extension\Core\DataTransformer\NumberToLocalizedStrin
  *
  * @see FloatElement
  * @see FormBuilderInterface::float()
+ *
+ * @extends NumberElementBuilder<FloatElement>
  */
 class FloatElementBuilder extends NumberElementBuilder
 {

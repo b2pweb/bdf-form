@@ -64,12 +64,12 @@ class ChildBuilder implements ChildBuilderInterface
     private $filters = [];
 
     /**
-     * @var ChildCreationStrategyInterface|callable|string
+     * @var ChildCreationStrategyInterface|callable|class-string<ChildInterface>
      */
     private $factory = Child::class;
 
     /**
-     * @var HttpFieldsInterface
+     * @var HttpFieldsInterface|null
      */
     private $fields;
 
@@ -190,6 +190,7 @@ class ChildBuilder implements ChildBuilderInterface
         }
 
         if (is_string($this->factory)) {
+            /** @var ChildInterface */
             return new $this->factory(
                 $this->name,
                 $element,
@@ -319,7 +320,7 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * Define the child creation factory or class name
      *
-     * @param ChildCreationStrategyInterface|callable|string $factory The factory, or child class name
+     * @param ChildCreationStrategyInterface|callable|class-string<ChildInterface> $factory The factory, or child class name
      *
      * @return $this
      */

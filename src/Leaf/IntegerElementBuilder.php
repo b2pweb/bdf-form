@@ -22,6 +22,8 @@ use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStri
  *
  * @see IntegerElement
  * @see FormBuilderInterface::integer()
+ *
+ * @extends NumberElementBuilder<IntegerElement>
  */
 class IntegerElementBuilder extends NumberElementBuilder
 {

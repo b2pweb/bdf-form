@@ -26,7 +26,7 @@ final class SubmitButtonBuilder implements ButtonBuilderInterface
     private $name;
 
     /**
-     * @var string
+     * @var class-string<ButtonInterface>
      */
     private $buttonClass;
 
@@ -45,7 +45,7 @@ final class SubmitButtonBuilder implements ButtonBuilderInterface
      * SubmitButtonBuilder constructor.
      *
      * @param string $name
-     * @param string $buttonClass
+     * @param class-string<ButtonInterface> $buttonClass
      */
     public function __construct(string $name, string $buttonClass = SubmitButton::class)
     {

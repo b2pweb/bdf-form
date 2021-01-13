@@ -12,6 +12,9 @@ use Symfony\Component\Validator\Constraints\Positive;
 
 /**
  * Base builder for an number element
+ *
+ * @template E as \Bdf\Form\ElementInterface
+ * @extends AbstractElementBuilder<E>
  */
 abstract class NumberElementBuilder extends AbstractElementBuilder
 {

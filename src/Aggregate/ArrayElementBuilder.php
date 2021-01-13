@@ -32,6 +32,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  *
  * @see ArrayElement
  * @see FormBuilderInterface::array()
+ *
+ * @implements ElementBuilderInterface<ArrayElement>
  */
 class ArrayElementBuilder implements ElementBuilderInterface
 {
@@ -53,7 +55,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     private $registry;
 
     /**
-     * @var ElementBuilderInterface
+     * @var ElementBuilderInterface|null
      */
     private $element;
 
@@ -66,11 +68,11 @@ class ArrayElementBuilder implements ElementBuilderInterface
     /**
      * ArrayBuilder constructor.
      *
-     * @param RegistryInterface $registry
+     * @param RegistryInterface|null $registry
      */
     public function __construct(RegistryInterface $registry = null)
     {
-        $this->registry = $registry ?: new Registry();
+        $this->registry = $registry ?? new Registry();
     }
 
     /**
@@ -116,7 +118,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * });
      * </code>
      *
-     * @param string $element The element class name
+     * @param class-string<ElementInterface> $element The element class name
      * @param callable|null $configurator Callback for configure the inner element builder. Takes as parameter the element builder
      *
      * @return $this
@@ -292,6 +294,8 @@ class ArrayElementBuilder implements ElementBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return $this
      */
     final public function required($options = null)
     {

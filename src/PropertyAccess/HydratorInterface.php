@@ -16,5 +16,5 @@ interface HydratorInterface extends AccessorInterface
      *
      * @return void
      */
-    public function hydrate(&$target);
+    public function hydrate(&$target)/*: void*/;
 }

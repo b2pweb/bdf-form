@@ -51,7 +51,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * Iterates over children
      *
-     * @return iterable|ChildInterface[]
+     * @return \Iterator<string, ChildInterface>
      */
     public function getIterator();
 }

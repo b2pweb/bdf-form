@@ -10,6 +10,8 @@ use Symfony\Component\Validator\Constraint;
 
 /**
  * Builder for instantiate a form element
+ *
+ * @template E as ElementInterface
  */
 interface ElementBuilderInterface
 {
@@ -106,7 +108,7 @@ interface ElementBuilderInterface
     /**
      * Build the element
      *
-     * @return ElementInterface
+     * @return E
      */
     public function buildElement(): ElementInterface;
 }

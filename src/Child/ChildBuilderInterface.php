@@ -9,6 +9,9 @@ use Bdf\Form\PropertyAccess\HydratorInterface;
 
 /**
  * Builder type for instantiate a child
+ *
+ * @template B is ElementBuilderInterface
+ * @mixin B
  */
 interface ChildBuilderInterface
 {

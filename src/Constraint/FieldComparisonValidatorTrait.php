@@ -14,9 +14,15 @@ trait FieldComparisonValidatorTrait
 {
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress UndefinedMagicPropertyFetch
+     * @psalm-suppress UndefinedMagicPropertyAssignment
+     *
+     * @return void
      */
     public function validate($value, Constraint $constraint)
     {
+        /** @var FieldComparisonTrait $constraint */
         /** @var ElementInterface $element */
         $element = $this->context->getRoot();
         $field = $constraint->field;

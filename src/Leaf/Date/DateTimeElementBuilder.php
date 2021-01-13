@@ -3,6 +3,7 @@
 namespace Bdf\Form\Leaf\Date;
 
 use Bdf\Form\AbstractElementBuilder;
+use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\Constraint\GreaterThanField;
 use Bdf\Form\Constraint\GreaterThanOrEqualField;
@@ -33,13 +34,18 @@ use Symfony\Component\Validator\Constraints\LessThanOrEqual;
  *     ->after(new DateTime()) // Must be in the future
  * ;
  * </code>
+ *
+ * @see DateTimeElement
+ * @see FormBuilderInterface::dateTime()
+ *
+ * @extends AbstractElementBuilder<DateTimeElement>
  */
 class DateTimeElementBuilder extends AbstractElementBuilder
 {
     use ChoiceBuilderTrait;
 
     /**
-     * @var string
+     * @var class-string<DateTimeInterface>
      */
     private $dateTimeClassName = DateTime::class;
 
@@ -60,7 +66,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      * $builder->dateTime('eventDate')->className(Carbon::class); // Use Carbon date time
      * </code>
      *
-     * @param string $dateTimeClassName The class name. Must be an implementation of DateTimeInterface
+     * @param class-string<DateTimeInterface> $dateTimeClassName The class name. Must be an implementation of DateTimeInterface
      *
      * @return $this
      *

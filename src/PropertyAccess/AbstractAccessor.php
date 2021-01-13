@@ -11,17 +11,17 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 abstract class AbstractAccessor implements AccessorInterface
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $propertyName;
 
     /**
-     * @var callable
+     * @var callable|null
      */
     protected $transformer;
 
     /**
-     * @var callable
+     * @var callable|null
      */
     protected $customAccessor;
 

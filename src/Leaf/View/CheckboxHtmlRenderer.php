@@ -8,11 +8,13 @@ use Bdf\Form\View\HtmlRenderer;
 
 /**
  * Default renderer for @see BooleanElementView
+ *
+ * @implements FieldViewRendererInterface<BooleanElementView>
  */
 final class CheckboxHtmlRenderer implements FieldViewRendererInterface
 {
     /**
-     * @var CheckboxHtmlRenderer
+     * @var CheckboxHtmlRenderer|null
      */
     private static $instance;
 

@@ -31,6 +31,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * // Build the form
  * $form = $builder->buildElement();
  * </code>
+ *
+ * @implements ElementBuilderInterface<FormInterface>
  */
 interface FormBuilderInterface extends ElementBuilderInterface
 {
@@ -43,9 +45,11 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param string $element The element class name. May be a custom form
+     * @param class-string<E> $element The element class name. May be a custom form
      *
-     * @return ChildBuilderInterface The child builder
+     * @template E as ElementInterface
+     *
+     * @return ChildBuilderInterface<ElementBuilderInterface<E>> The child builder
      */
     public function add(string $name, string $element): ChildBuilderInterface;
 
@@ -60,6 +64,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param mixed $default Default value to submit
      *
      * @return ChildBuilderInterface|StringElementBuilder
+     * @psalm-return ChildBuilderInterface<StringElementBuilder>
      */
     public function string(string $name, $default = null): ChildBuilderInterface;
 
@@ -74,6 +79,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param mixed $default Default value to submit
      *
      * @return ChildBuilderInterface|IntegerElementBuilder
+     * @psalm-return ChildBuilderInterface<IntegerElementBuilder>
      */
     public function integer(string $name, $default = null): ChildBuilderInterface;
 
@@ -88,6 +94,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param mixed $default Default value to submit
      *
      * @return ChildBuilderInterface|FloatElementBuilder
+     * @psalm-return ChildBuilderInterface<FloatElementBuilder>
      */
     public function float(string $name, $default = null): ChildBuilderInterface;
 
@@ -101,6 +108,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param string $name The child name
      *
      * @return ChildBuilderInterface|BooleanElementBuilder
+     * @psalm-return ChildBuilderInterface<BooleanElementBuilder>
      */
     public function boolean(string $name): ChildBuilderInterface;
 
@@ -114,6 +122,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param string $name The child name
      *
      * @return ChildBuilderInterface|DateTimeElementBuilder
+     * @psalm-return ChildBuilderInterface<DateTimeElementBuilder>
      */
     public function dateTime(string $name): ChildBuilderInterface;
 
@@ -130,6 +139,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param string $name The child name
      *
      * @return ChildBuilderInterface|PhoneElementBuilder
+     * @psalm-return ChildBuilderInterface<PhoneElementBuilder>
      */
     public function phone(string $name): ChildBuilderInterface;
 
@@ -143,6 +153,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param string $name The child name
      *
      * @return ChildBuilderInterface|CsrfElementBuilder
+     * @psalm-return ChildBuilderInterface<CsrfElementBuilder>
      */
     public function csrf(string $name = '_token'): ChildBuilderInterface;
 
@@ -168,6 +179,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param callable|null $configurator Configure the embedded form
      *
      * @return ChildBuilderInterface|FormBuilder
+     * @psalm-return ChildBuilderInterface<FormBuilder>
      */
     public function embedded(string $name, ?callable $configurator = null): ChildBuilderInterface;
 
@@ -182,10 +194,11 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param string|null $elementType The inner element type
+     * @param class-string<ElementInterface>|null $elementType The inner element type
      * @param callable|null $elementConfigurator Callback for configure the inner element
      *
      * @return ChildBuilderInterface|ArrayElementBuilder
+     * @psalm-return ChildBuilderInterface<ArrayElementBuilder>
      *
      * @see ArrayElementBuilder::element() For the $elementType and $elementConfigurator parameters
      */
@@ -256,7 +269,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * });
      * </code>
      *
-     * @param callable|string|object $entity The entity to generate
+     * @param callable|class-string|object|array $entity The entity to generate
      *
      * @return $this
      *

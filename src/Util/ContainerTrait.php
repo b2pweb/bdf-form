@@ -26,6 +26,8 @@ trait ContainerTrait
 
     /**
      * {@inheritdoc}
+     *
+     * @return static
      * @see ElementInterface::setContainer()
      */
     final public function setContainer(ChildInterface $container): ElementInterface

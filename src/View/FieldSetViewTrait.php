@@ -11,7 +11,7 @@ use BadMethodCallException;
 trait FieldSetViewTrait
 {
     /**
-     * @var ElementViewInterface[]
+     * @var array<string, ElementViewInterface>
      */
     private $elements = [];
 
@@ -26,7 +26,7 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset): ElementViewInterface
+    public function offsetGet($offset)
     {
         return $this->elements[$offset];
     }
@@ -68,7 +68,8 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      *
-     * @return ElementViewInterface[]
+     * @return \Iterator<string, ElementViewInterface>
+     * @psalm-suppress ImplementedReturnTypeMismatch
      */
     public function getIterator()
     {

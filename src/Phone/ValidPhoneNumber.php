@@ -11,6 +11,7 @@ class ValidPhoneNumber extends Constraint
 {
     const INVALID_PHONE_NUMBER_ERROR = '5169f03c-ec96-4e62-8651-9ee6766e0b5a';
 
+    /** @var array<string, string> */
     protected static $errorNames = [
         self::INVALID_PHONE_NUMBER_ERROR => 'INVALID_PHONE_NUMBER_ERROR',
     ];

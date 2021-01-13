@@ -27,16 +27,18 @@ use Symfony\Component\Validator\Constraint;
  *
  * @see PhoneElement
  * @see FormBuilderInterface::phone()
+ *
+ * @extends AbstractElementBuilder<PhoneElement>
  */
 class PhoneElementBuilder extends AbstractElementBuilder
 {
     /**
-     * @var callable
+     * @var callable(ElementInterface):string|null
      */
     private $regionResolver;
 
     /**
-     * @var PhoneNumberUtil
+     * @var PhoneNumberUtil|null
      */
     private $formatter;
 
@@ -77,7 +79,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      * });
      * </code>
      *
-     * @param callable $regionResolver The resolver. Takes as parameter the PhoneElement, and must return the country code as string
+     * @param callable(ElementInterface):string $regionResolver The resolver. Takes as parameter the PhoneElement, and must return the country code as string
      *
      * @return $this
      */

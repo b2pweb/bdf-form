@@ -64,17 +64,17 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     private $buttons = [];
 
     /**
-     * @var PropertyAccessorInterface
+     * @var PropertyAccessorInterface|null
      */
     private $propertyAccessor;
 
     /**
-     * @var ValidatorInterface
+     * @var ValidatorInterface|null
      */
     private $validator;
 
     /**
-     * @var ValueGeneratorInterface
+     * @var ValueGeneratorInterface|null
      */
     private $generator;
 
@@ -99,6 +99,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function string(string $name, $default = null): ChildBuilderInterface
     {
@@ -107,6 +110,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function integer(string $name, $default = null): ChildBuilderInterface
     {
@@ -115,6 +121,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function float(string $name, $default = null): ChildBuilderInterface
     {
@@ -123,6 +132,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function boolean(string $name): ChildBuilderInterface
     {
@@ -131,6 +143,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function dateTime(string $name): ChildBuilderInterface
     {
@@ -139,6 +154,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function phone(string $name): ChildBuilderInterface
     {
@@ -147,6 +165,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function csrf(string $name = '_token'): ChildBuilderInterface
     {
@@ -155,6 +176,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function embedded(string $name, ?callable $configurator = null): ChildBuilderInterface
     {
@@ -169,9 +193,13 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function array(string $name, ?string $elementType = null, ?callable $elementConfigurator = null): ChildBuilderInterface
     {
+        /** @var ChildBuilderInterface<ArrayElementBuilder> $builder */
         $builder = $this->add($name, ArrayElement::class);
 
         if ($elementType) {

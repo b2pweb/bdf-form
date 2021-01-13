@@ -36,6 +36,7 @@ final class ConstraintValueValidator implements ValueValidatorInterface
     {
         $root = $element->root();
 
+        /** @psalm-suppress TooManyArguments */
         $errors = $root->getValidator()
             ->startContext($element)
             ->validate($value, $this->constraint, $root->constraintGroups())

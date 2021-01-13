@@ -68,6 +68,7 @@ final class Registry implements RegistryInterface
     public function __construct()
     {
         $this->register(CustomForm::class, function (RegistryInterface $registry, string $formClass) {
+            /** @psalm-suppress ArgumentTypeCoercion */
             return new CustomFormBuilder($formClass, $this->elementBuilder(Form::class));
         });
     }
@@ -86,6 +87,7 @@ final class Registry implements RegistryInterface
         }
 
         // @todo container ?
+        /** @var class-string<FilterInterface> $filter */
         return new $filter();
     }
 
@@ -110,9 +112,11 @@ final class Registry implements RegistryInterface
                 $options = ['message' => $options];
             }
 
+            /** @var class-string<Constraint> $constraint */
             return new $constraint($options);
         }
 
+        /** @var class-string<Constraint> $constraint */
         return new $constraint();
     }
 
@@ -167,6 +171,7 @@ final class Registry implements RegistryInterface
         }
 
         if (is_string($builderFactory)) {
+            /** @var class-string<ElementBuilderInterface> $builderFactory */
             return new $builderFactory($this, $element);
         }
 

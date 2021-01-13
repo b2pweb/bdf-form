@@ -35,7 +35,7 @@ final class Getter extends AbstractAccessor implements ExtractorInterface
     /**
      * {@inheritdoc}
      */
-    public function extract($source)
+    public function extract($source): void
     {
         if ($this->customAccessor !== null) {
             $value = ($this->customAccessor)($source, null, self::EXTRACTION, $this);

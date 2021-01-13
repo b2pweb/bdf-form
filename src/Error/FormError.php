@@ -17,7 +17,7 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 final class FormError
 {
     /**
-     * @var FormError
+     * @var FormError|null
      */
     private static $null;
 
@@ -208,12 +208,12 @@ final class FormError
      */
     public static function violation(ConstraintViolationInterface $violation): FormError
     {
-        $message = $violation->getMessage();
+        $message = (string) $violation->getMessage();
         $code = $violation->getCode();
 
-        if ($code !== null && $violation instanceof ConstraintViolation && $violation->getConstraint() !== null) {
+        if ($code !== null && $violation instanceof ConstraintViolation && ($constraint = $violation->getConstraint()) !== null) {
             try {
-                $code = $violation->getConstraint()->getErrorName($code);
+                $code = $constraint->getErrorName($code);
             } catch (InvalidArgumentException $e) {
                 // Ignore error
             }

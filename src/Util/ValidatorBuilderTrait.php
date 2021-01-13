@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 trait ValidatorBuilderTrait
 {
     /**
-     * @var Constraint[]
+     * @var array<Constraint|string|array>
      */
     private $constraints = [];
 

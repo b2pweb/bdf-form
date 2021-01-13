@@ -12,7 +12,7 @@ use Bdf\Form\Error\FormError;
 final class NullValueValidator implements ValueValidatorInterface
 {
     /**
-     * @var NullValueValidator
+     * @var NullValueValidator|null
      */
     private static $instance;
 

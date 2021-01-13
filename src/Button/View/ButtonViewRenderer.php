@@ -10,7 +10,7 @@ use Bdf\Form\View\HtmlRenderer;
 final class ButtonViewRenderer implements ButtonViewRendererInterface
 {
     /**
-     * @var self
+     * @var self|null
      */
     private static $instance;
 

@@ -28,12 +28,12 @@ final class DependencyIterator implements Iterator
     private $reverse;
 
     /**
-     * @var Level
+     * @var Level|null
      */
     private $currentLevel;
 
     /**
-     * @var Iterator
+     * @var Iterator|null
      */
     private $levelIterator;
 
@@ -64,6 +64,9 @@ final class DependencyIterator implements Iterator
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress PossiblyNullReference
+     * @psalm-suppress PossiblyNullReference
      */
     public function next()
     {
@@ -94,6 +97,8 @@ final class DependencyIterator implements Iterator
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress PossiblyNullReference
      */
     public function key()
     {

@@ -13,7 +13,7 @@ trait ElementViewTrait
     private $type;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $error;
 

@@ -169,7 +169,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
 
         $errors = [];
 
-        foreach ((array) $data as $key => $value) {
+        foreach ($data as $key => $value) {
             $child = $lastChildren[$key] ?? (new Child($key, $this->templateElement))->setParent($this);
 
             if (!$child->element()->submit($value)->valid()) {

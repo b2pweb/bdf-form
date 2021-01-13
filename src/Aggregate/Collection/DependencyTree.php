@@ -81,6 +81,8 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress PossiblyNullReference
      */
     public function remove(string $name): bool
     {
@@ -149,7 +151,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new \ArrayIterator($this->children);
     }
@@ -202,6 +204,9 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      * @param ChildInterface|string $child
      *
      * @return Level
+     * @psalm-suppress PossiblyNullReference
+     * @psalm-suppress InvalidNullableReturnType
+     * @psalm-suppress NullableReturnStatement
      */
     protected function level($child)
     {
@@ -229,7 +234,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      * @param string $name
      * @param ChildInterface $child
      */
-    protected function addNamed($name, ChildInterface $child)
+    protected function addNamed($name, ChildInterface $child): void
     {
         $this->children[$name] = $child;
 

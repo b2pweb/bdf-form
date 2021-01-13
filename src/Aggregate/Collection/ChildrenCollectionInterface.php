@@ -12,7 +12,7 @@ use Iterator;
  * Collection of form child elements
  * Handle dependency tree
  */
-interface ChildrenCollectionInterface extends ArrayAccess, Countable
+interface ChildrenCollectionInterface extends \IteratorAggregate, ArrayAccess, Countable
 {
     /**
      * Add a child to the dependency tree
@@ -43,16 +43,25 @@ interface ChildrenCollectionInterface extends ArrayAccess, Countable
     /**
      * Get the reverse iterator (i.e. iterate on higher dependencies in first)
      *
-     * @return Iterator|ChildInterface[]
+     * @return Iterator<ChildInterface>
      */
     public function reverseIterator(): Iterator;
 
     /**
      * Get the base iterator
      *
-     * @return Iterator|ChildInterface[]
+     * @return Iterator<ChildInterface>
      */
     public function forwardIterator(): Iterator;
+
+    /**
+     * {@inheritdoc}
+     *
+     * Same as `$collection->forwardIterator()`
+     *
+     * @return Iterator<ChildInterface>
+     */
+    public function getIterator(): Iterator;
 
     /**
      * Get all children elements

@@ -14,6 +14,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 final class ConstraintsNormalizer
 {
+    /**
+     * @var array<class-string<\Symfony\Component\Validator\Constraint>, array<string, mixed>>
+     */
     static private $constraints = [
         NotBlank::class => [],
         Length::class => ['min' => null, 'max' => null],
@@ -42,11 +45,11 @@ final class ConstraintsNormalizer
 
             if (isset(self::$constraints[$className])) {
                 $normalizedConstraints[$className] = array_intersect_key((array) $constraint, self::$constraints[$className]);
-            } elseif ($constraint->getDefaultOption() !== null) {
-                $value = $constraint->{$constraint->getDefaultOption()};
+            } elseif (($option = $constraint->getDefaultOption()) !== null) {
+                $value = $constraint->{$option};
 
                 if (is_scalar($value)) {
-                    $normalizedConstraints[$className] = [$constraint->getDefaultOption() => $value];
+                    $normalizedConstraints[$className] = [$option => $value];
                 }
             }
         }

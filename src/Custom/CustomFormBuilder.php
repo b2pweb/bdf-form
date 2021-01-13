@@ -32,7 +32,7 @@ class CustomFormBuilder implements ElementBuilderInterface
     private $builder;
 
     /**
-     * @var string|callable
+     * @var class-string<CustomForm>|callable(FormBuilderInterface):CustomForm
      */
     private $formFactory;
 
@@ -40,7 +40,7 @@ class CustomFormBuilder implements ElementBuilderInterface
     /**
      * CustomFormBuilder constructor.
      *
-     * @param string|callable $formFactory
+     * @param class-string<CustomForm>|callable(FormBuilderInterface):CustomForm $formFactory
      * @param FormBuilderInterface|null $builder
      */
     public function __construct($formFactory, ?FormBuilderInterface $builder = null)
@@ -87,6 +87,7 @@ class CustomFormBuilder implements ElementBuilderInterface
     public function buildElement(): ElementInterface
     {
         if (is_string($this->formFactory)) {
+            /** @var class-string<CustomForm> $className */
             $className = $this->formFactory;
 
             return new $className($this->builder);
