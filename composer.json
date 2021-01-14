@@ -36,5 +36,10 @@
   "suggest": {
     "symfony/security-csrf": "For enable CSRF element",
     "giggsey/libphonenumber-for-php": "Required to use phone type (~8.0)"
+  },
+  "scripts": {
+    "tests": "phpunit",
+    "tests-with-coverage": "phpunit --coverage-clover coverage.xml",
+    "psalm": "psalm --shepherd"
   }
 }

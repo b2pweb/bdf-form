@@ -1,0 +1,24 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - 7.3
+  - 7.4
+
+jobs:
+  include:
+    - stage: analysis
+      php: 7.2
+      before_script:
+        - composer global require infection/infection
+      script:
+        - composer psalm
+        - composer bc-break
+        - ~/.config/composer/vendor/bin/infection --min-msi=90
+
+install:
+  - travis_retry composer --ignore-platform-reqs install
+
+script:
+  - composer tests
