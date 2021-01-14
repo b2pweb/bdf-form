@@ -2,6 +2,13 @@
 
 Library for handle form, and request validation.
 
+[![Build Status](https://travis-ci.org/b2pweb/bdf-form.svg?branch=master)](https://travis-ci.org/b2pweb/bdf-form)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/b2pweb/bdf-form/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/b2pweb/bdf-form/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/b2pweb/bdf-form/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/b2pweb/bdf-form/?branch=master)
+[![Packagist Version](https://img.shields.io/packagist/v/b2pweb/bdf-form.svg)](https://packagist.org/packages/b2pweb/bdf-form)
+[![Total Downloads](https://img.shields.io/packagist/dt/b2pweb/bdf-form.svg)](https://packagist.org/packages/b2pweb/bdf-form)
+[![Type Coverage](https://shepherd.dev/github/b2pweb/bdf-form/coverage.svg)](https://shepherd.dev/github/b2pweb/bdf-form)
+
 ## Installation using composer
 
 ```
