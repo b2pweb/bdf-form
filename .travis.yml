@@ -14,7 +14,6 @@ jobs:
         - composer global require infection/infection
       script:
         - composer psalm
-        - composer bc-break
         - ~/.config/composer/vendor/bin/infection --min-msi=90
 
 install:
