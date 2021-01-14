@@ -129,7 +129,7 @@ class IntegerElementTest extends TestCase
         $this->assertFalse($element->patch(2)->valid());
         $this->assertSame(2, $element->value());
 
-        $this->assertTrue($element->patch(3.3)->valid());
+        $this->assertTrue($element->patch('3,3')->valid());
         $this->assertSame(3, $element->value());
     }
 

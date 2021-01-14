@@ -200,7 +200,7 @@ class IntegerElementBuilderTest extends TestCase
     {
         $element = $this->builder->roundingMode(IntegerToLocalizedStringTransformer::ROUND_UP)->buildElement();
 
-        $this->assertTrue($element->submit('10.1')->valid());
+        $this->assertTrue($element->submit('10,1')->valid());
         $this->assertSame(11, $element->value());
     }
 
@@ -211,7 +211,7 @@ class IntegerElementBuilderTest extends TestCase
     {
         $element = $this->builder->raw()->buildElement();
 
-        $this->assertTrue($element->submit('10.1')->valid());
+        $this->assertTrue($element->submit('10,1')->valid());
         $this->assertSame(10, $element->value());
     }
 
