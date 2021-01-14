@@ -62,7 +62,7 @@ class BooleanElementTest extends TestCase
      */
     public function test_submit_with_constraint()
     {
-        $element = new BooleanElement(new ConstraintValueValidator(new NotBlank()));
+        $element = new BooleanElement(new ConstraintValueValidator([new NotBlank()]));
 
         $this->assertFalse($element->submit(null)->valid());
         $this->assertFalse($element->value());

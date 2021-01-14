@@ -80,7 +80,7 @@ class PrefixedHttpFieldsTest extends TestCase
      */
     public function test_submit_element_constraint_error()
     {
-        $child = new Child('child', new ArrayElement(new StringElement(), null, new ConstraintValueValidator(new Count(['min' => 2]))), new PrefixedHttpFields('child_'), [], null, new Setter());
+        $child = new Child('child', new ArrayElement(new StringElement(), null, new ConstraintValueValidator([new Count(['min' => 2])])), new PrefixedHttpFields('child_'), [], null, new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertFalse($child->submit(['child_0' => 'value']));

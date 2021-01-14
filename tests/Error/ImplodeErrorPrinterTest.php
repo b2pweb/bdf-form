@@ -18,7 +18,7 @@ class ImplodeErrorPrinterTest extends TestCase
      */
     public function test_functional_with_global_error()
     {
-        $element = new StringElement(new ConstraintValueValidator(new NotBlank()));
+        $element = new StringElement(new ConstraintValueValidator([new NotBlank()]));
         $this->assertEquals('This value should not be blank.', $element->submit('')->error()->print(new ImplodeErrorPrinter()));
     }
 

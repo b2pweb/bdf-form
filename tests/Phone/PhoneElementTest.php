@@ -80,7 +80,7 @@ class PhoneElementTest extends TestCase
      */
     public function test_submit_with_constraint()
     {
-        $element = new PhoneElement(new ConstraintValueValidator(new NotBlank()));
+        $element = new PhoneElement(new ConstraintValueValidator([new NotBlank()]));
 
         $this->assertFalse($element->submit(null)->valid());
         $this->assertNull($element->value());

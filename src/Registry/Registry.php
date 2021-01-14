@@ -32,7 +32,7 @@ use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerInterface;
-use Bdf\Validator\Constraints\Closure;
+use Bdf\Form\Constraint\Closure;
 use InvalidArgumentException;
 use LogicException;
 use Symfony\Component\Form\DataTransformerInterface;

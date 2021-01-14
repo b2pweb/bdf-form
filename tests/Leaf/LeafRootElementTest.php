@@ -4,10 +4,10 @@ namespace Bdf\Form\Leaf;
 
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
-use Bdf\Validator\Validator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
 
 /**
  * Class LeafRootElementTest
@@ -141,7 +141,7 @@ class LeafRootElementTest extends TestCase
         $element = $this->createMock(ElementInterface::class);
         $root = new LeafRootElement($element);
 
-        $this->assertInstanceOf(Validator::class, $root->getValidator());
+        $this->assertInstanceOf(RecursiveValidator::class, $root->getValidator());
     }
 
     /**

@@ -7,7 +7,7 @@ use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Phone\PhoneElement;
-use Bdf\Validator\Constraints\Closure;
+use Bdf\Form\Constraint\Closure;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;

@@ -89,7 +89,7 @@ class DateTimeElementTest extends TestCase
      */
     public function test_submit_with_constraint()
     {
-        $element = new DateTimeElement(new ConstraintValueValidator(new LessThan(new DateTime('2000-01-05 15:00:00'))));
+        $element = new DateTimeElement(new ConstraintValueValidator([new LessThan(new DateTime('2000-01-05 15:00:00'))]));
 
         $this->assertFalse($element->submit('2020-12-17T10:40:00+1000')->valid());
         $this->assertEquals(new DateTime('2020-12-17 10:40:00', new DateTimeZone('+1000')), $element->value());

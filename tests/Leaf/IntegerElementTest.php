@@ -65,7 +65,7 @@ class IntegerElementTest extends TestCase
      */
     public function test_submit_with_constraint()
     {
-        $element = new IntegerElement(new ConstraintValueValidator(new LessThan(2)));
+        $element = new IntegerElement(new ConstraintValueValidator([new LessThan(2)]));
 
         $this->assertFalse($element->submit('5')->valid());
         $this->assertSame(5, $element->value());

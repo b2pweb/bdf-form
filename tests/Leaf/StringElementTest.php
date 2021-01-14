@@ -63,7 +63,7 @@ class StringElementTest extends TestCase
      */
     public function test_submit_with_constraint()
     {
-        $element = new StringElement(new ConstraintValueValidator(new Length(['max' => 2])));
+        $element = new StringElement(new ConstraintValueValidator([new Length(['max' => 2])]));
 
         $this->assertFalse($element->submit('hello')->valid());
         $this->assertSame('hello', $element->value());

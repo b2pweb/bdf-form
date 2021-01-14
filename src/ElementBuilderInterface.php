@@ -3,6 +3,7 @@
 namespace Bdf\Form;
 
 use Bdf\Form\Child\ChildBuilderInterface;
+use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
@@ -42,6 +43,18 @@ interface ElementBuilderInterface
      *     }
      * });
      *
+     * // The custom constraint can also handle error code when returns an array
+     * $builder->satisfy(function ($value, ElementInterface $input) {
+     *     if (!is_valid($value)) {
+     *         return ['message' => 'my error', 'code' => 'MY_ERROR'];
+     *     }
+     * });
+     *
+     * // You can also return a simple boolean
+     * $builder->satisfy(function ($value, ElementInterface $input) {
+     *     return is_valid($value);
+     * });
+     *
      * // Use method reference also works, but the method must be public
      * $builder->satisfy([$this, 'checkElement']);
      * </code>
@@ -53,6 +66,7 @@ interface ElementBuilderInterface
      * @return $this
      *
      * @see RegistryInterface::constraint() For make the constraint
+     * @see Closure When use callback as first parameter
      */
     public function satisfy($constraint, $options = null, bool $append = true);
 

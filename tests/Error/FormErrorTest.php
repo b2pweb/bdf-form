@@ -2,10 +2,9 @@
 
 namespace Bdf\Form\Error;
 
-use Bdf\Validator\Validator;
-use Bdf\Validator\ValidatorBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\ValidatorBuilder;
 
 /**
  * Class FormErrorTest

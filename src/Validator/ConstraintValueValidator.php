@@ -4,7 +4,6 @@ namespace Bdf\Form\Validator;
 
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
-use Bdf\Validator\Constraints\Chain;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -14,19 +13,19 @@ use Symfony\Component\Validator\Constraint;
 final class ConstraintValueValidator implements ValueValidatorInterface
 {
     /**
-     * @var Constraint
+     * @var Constraint[]
      */
-    private $constraint;
+    private $constraints;
 
 
     /**
      * ConstraintValueValidator constructor.
      *
-     * @param Constraint $constraint
+     * @param Constraint[] $constraints
      */
-    public function __construct(Constraint $constraint)
+    public function __construct(array $constraints)
     {
-        $this->constraint = $constraint;
+        $this->constraints = $constraints;
     }
 
     /**
@@ -39,7 +38,7 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         /** @psalm-suppress TooManyArguments */
         $errors = $root->getValidator()
             ->startContext($element)
-            ->validate($value, $this->constraint, $root->constraintGroups())
+            ->validate($value, $this->constraints, $root->constraintGroups())
             ->getViolations()
         ;
 
@@ -55,10 +54,7 @@ final class ConstraintValueValidator implements ValueValidatorInterface
      */
     public function constraints(): array
     {
-        return $this->constraint instanceof Chain
-            ? $this->constraint->constraints
-            : [$this->constraint]
-        ;
+        return $this->constraints;
     }
 
     /**
@@ -70,15 +66,6 @@ final class ConstraintValueValidator implements ValueValidatorInterface
      */
     public static function fromConstraints(array $constraints = []): ValueValidatorInterface
     {
-        switch (count($constraints)) {
-            case 0:
-                return NullValueValidator::instance();
-
-            case 1:
-                return new self($constraints[0]);
-
-            default:
-                return new self(new Chain(['constraints' => $constraints]));
-        }
+        return empty($constraints) ? NullValueValidator::instance() : new self($constraints);
     }
 }

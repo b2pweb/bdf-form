@@ -104,7 +104,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_submit_with_element_error()
     {
-        $element = new ArrayElement(new StringElement(new ConstraintValueValidator(new NotEqualTo('foo'))));
+        $element = new ArrayElement(new StringElement(new ConstraintValueValidator([new NotEqualTo('foo')])));
 
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());
         $this->assertEquals([0 => 'This value should not be equal to "foo".'], $element->error()->toArray());
@@ -127,7 +127,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_submit_with_array_error()
     {
-        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator(new Count(['min' => 3])));
+        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator([new Count(['min' => 3])]));
 
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());
         $this->assertEquals('This collection should contain 3 elements or more.', $element->error()->global());
@@ -199,7 +199,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_patch_with_element_error()
     {
-        $element = new ArrayElement(new StringElement(new ConstraintValueValidator(new NotEqualTo('foo'))));
+        $element = new ArrayElement(new StringElement(new ConstraintValueValidator([new NotEqualTo('foo')])));
 
         $this->assertFalse($element->patch(['foo', 'bar'])->valid());
         $this->assertEquals([0 => 'This value should not be equal to "foo".'], $element->error()->toArray());
@@ -222,7 +222,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_patch_with_array_error()
     {
-        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator(new Count(['min' => 3])));
+        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator([new Count(['min' => 3])]));
 
         $this->assertFalse($element->patch(['foo', 'bar'])->valid());
         $this->assertEquals('This collection should contain 3 elements or more.', $element->error()->global());

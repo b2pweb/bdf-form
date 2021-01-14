@@ -13,7 +13,7 @@ use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Validator\ConstraintValueValidator;
-use Bdf\Validator\Constraints\Closure;
+use Bdf\Form\Constraint\Closure;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -97,11 +97,11 @@ class FormTest extends TestCase
         $form = new Form(new ChildrenCollection([
             $this->registry->childBuilder(StringElement::class, 'password')->length(['min' => 8])->buildChild(),
             $this->registry->childBuilder(StringElement::class, 'confirm')->buildChild(),
-        ]), new ConstraintValueValidator(new Closure(function ($value, $form) {
+        ]), new ConstraintValueValidator([new Closure(function ($value, $form) {
             if ($form['password']->element()->value() != $form['confirm']->element()->value()) {
                 return 'invalid confirmation';
             }
-        })));
+        })]));
 
         $form->submit([
             'password' => 'hello world !',

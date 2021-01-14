@@ -48,7 +48,7 @@ final class CsrfValueValidator implements ValueValidatorInterface
     public function validate($value, ElementInterface $element): FormError
     {
         try {
-            return (new ConstraintValueValidator(new CsrfConstraint($this->options + ['manager' => $element->getTokenManager()])))->validate($value, $element);
+            return (new ConstraintValueValidator([new CsrfConstraint($this->options + ['manager' => $element->getTokenManager()])]))->validate($value, $element);
         } finally {
             if ($this->invalidate) {
                 $element->invalidateToken();

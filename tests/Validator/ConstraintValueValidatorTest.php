@@ -3,7 +3,6 @@
 namespace Bdf\Form\Validator;
 
 use Bdf\Form\Leaf\StringElement;
-use Bdf\Validator\Constraints\Chain;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
@@ -19,7 +18,7 @@ class ConstraintValueValidatorTest extends TestCase
     public function test_validate_success()
     {
         $element = new StringElement();
-        $validator = new ConstraintValueValidator(new NotBlank());
+        $validator = new ConstraintValueValidator([new NotBlank()]);
 
         $this->assertTrue($validator->validate('value', $element)->empty());
     }
@@ -30,7 +29,7 @@ class ConstraintValueValidatorTest extends TestCase
     public function test_validate_error()
     {
         $element = new StringElement();
-        $validator = new ConstraintValueValidator(new NotBlank());
+        $validator = new ConstraintValueValidator([new NotBlank()]);
 
         $error = $validator->validate('', $element);
 
@@ -44,9 +43,9 @@ class ConstraintValueValidatorTest extends TestCase
     public function test_fromConstraints()
     {
         $this->assertEquals(new NullValueValidator(), ConstraintValueValidator::fromConstraints([]));
-        $this->assertEquals(new ConstraintValueValidator(new NotBlank()), ConstraintValueValidator::fromConstraints([new NotBlank()]));
+        $this->assertEquals(new ConstraintValueValidator([new NotBlank()]), ConstraintValueValidator::fromConstraints([new NotBlank()]));
         $this->assertEquals([new NotBlank()], ConstraintValueValidator::fromConstraints([new NotBlank()])->constraints());
-        $this->assertEquals(new ConstraintValueValidator(new Chain(['constraints' => [new NotBlank(), new NotEqualTo('foo')]])), ConstraintValueValidator::fromConstraints([new NotBlank(), new NotEqualTo('foo')]));
-        $this->assertEquals([new NotBlank(['groups' => ['Default']]), new NotEqualTo(['value' => 'foo', 'groups' => ['Default']])], ConstraintValueValidator::fromConstraints([new NotBlank(), new NotEqualTo('foo')])->constraints());
+        $this->assertEquals(new ConstraintValueValidator([new NotBlank(), new NotEqualTo('foo')]), ConstraintValueValidator::fromConstraints([new NotBlank(), new NotEqualTo('foo')]));
+        $this->assertEquals([new NotBlank(), new NotEqualTo(['value' => 'foo'])], ConstraintValueValidator::fromConstraints([new NotBlank(), new NotEqualTo('foo')])->constraints());
     }
 }

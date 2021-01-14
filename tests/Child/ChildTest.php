@@ -149,7 +149,7 @@ class ChildTest extends TestCase
      */
     public function test_submit_element_constraint_error()
     {
-        $child = new Child('child', new StringElement(new ConstraintValueValidator(new NotEqualTo('value'))), new ArrayOffsetHttpFields('child'), [], null, new Setter());
+        $child = new Child('child', new StringElement(new ConstraintValueValidator([new NotEqualTo('value')])), new ArrayOffsetHttpFields('child'), [], null, new Setter());
         $child->setParent(new Form(new ChildrenCollection()));
 
         $this->assertFalse($child->submit(['child' => 'value']));

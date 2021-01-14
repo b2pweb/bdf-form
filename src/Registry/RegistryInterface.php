@@ -5,7 +5,6 @@ namespace Bdf\Form\Registry;
 use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
-use Bdf\Form\ElementInterface;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use LogicException;
