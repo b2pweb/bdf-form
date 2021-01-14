@@ -10,6 +10,7 @@ jobs:
   include:
     - stage: analysis
       php: 7.4
+      env: XDEBUG_MODE=coverage
       before_script:
         - composer global require infection/infection
       script:
