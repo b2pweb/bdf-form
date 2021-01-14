@@ -18,7 +18,7 @@ jobs:
         - ~/.config/composer/vendor/bin/infection --min-msi=90
 
 install:
-  - travis_retry composer --ignore-platform-reqs install
+  - travis_retry composer install
 
 script:
   - composer tests

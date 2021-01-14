@@ -28,6 +28,6 @@ class ConstraintsNormalizerTest extends TestCase
             Length::class => ['min' => 3, 'max' => 5],
             LessThanOrEqual::class => ['value' => 42],
             NotEqualTo::class => ['value' => 666],
-        ], ConstraintsNormalizer::normalize(new ConstraintValueValidator([new NotBlank(), new Length(null, 3, 5), new LessThanOrEqual(42), new NotEqualTo(666)])));
+        ], ConstraintsNormalizer::normalize(new ConstraintValueValidator([new NotBlank(), new Length(['min' => 3, 'max' => 5]), new LessThanOrEqual(42), new NotEqualTo(666)])));
     }
 }
