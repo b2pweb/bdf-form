@@ -82,6 +82,15 @@ interface ChildBuilderInterface
     public function default($default);
 
     /**
+     * Define the child creation factory or class name
+     *
+     * @param ChildCreationStrategyInterface|callable|class-string<ChildInterface> $factory The factory, or child class name
+     *
+     * @return $this
+     */
+    public function childFactory($factory);
+
+    /**
      * Add an input dependency
      *
      * Dependencies are always submit()'ed before the current element

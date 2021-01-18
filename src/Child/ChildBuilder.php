@@ -318,11 +318,7 @@ class ChildBuilder implements ChildBuilderInterface
     }
 
     /**
-     * Define the child creation factory or class name
-     *
-     * @param ChildCreationStrategyInterface|callable|class-string<ChildInterface> $factory The factory, or child class name
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     final public function childFactory($factory): self
     {

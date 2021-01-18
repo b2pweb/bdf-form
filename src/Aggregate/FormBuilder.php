@@ -103,7 +103,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
-    public function string(string $name, $default = null): ChildBuilderInterface
+    public function string(string $name, ?string $default = null): ChildBuilderInterface
     {
         return $this->add($name, StringElement::class)->default($default);
     }
@@ -114,7 +114,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
-    public function integer(string $name, $default = null): ChildBuilderInterface
+    public function integer(string $name, ?int $default = null): ChildBuilderInterface
     {
         return $this->add($name, IntegerElement::class)->default($default);
     }
@@ -125,7 +125,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
-    public function float(string $name, $default = null): ChildBuilderInterface
+    public function float(string $name, ?float $default = null): ChildBuilderInterface
     {
         return $this->add($name, FloatElement::class)->default($default);
     }

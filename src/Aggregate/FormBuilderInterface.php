@@ -61,12 +61,12 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param mixed $default Default value to submit
+     * @param string|null $default Default value to submit
      *
      * @return ChildBuilderInterface|StringElementBuilder
      * @psalm-return ChildBuilderInterface<StringElementBuilder>
      */
-    public function string(string $name, $default = null): ChildBuilderInterface;
+    public function string(string $name, ?string $default = null): ChildBuilderInterface;
 
     /**
      * Add a new integer element on the form
@@ -76,12 +76,12 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param mixed $default Default value to submit
+     * @param integer|null $default Default value to submit
      *
      * @return ChildBuilderInterface|IntegerElementBuilder
      * @psalm-return ChildBuilderInterface<IntegerElementBuilder>
      */
-    public function integer(string $name, $default = null): ChildBuilderInterface;
+    public function integer(string $name, ?int $default = null): ChildBuilderInterface;
 
     /**
      * Add a new float element on the form
@@ -91,12 +91,12 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * </code>
      *
      * @param string $name The child name
-     * @param mixed $default Default value to submit
+     * @param float|null $default Default value to submit
      *
      * @return ChildBuilderInterface|FloatElementBuilder
      * @psalm-return ChildBuilderInterface<FloatElementBuilder>
      */
-    public function float(string $name, $default = null): ChildBuilderInterface;
+    public function float(string $name, ?float $default = null): ChildBuilderInterface;
 
     /**
      * Add a new boolean element on the form
