@@ -665,3 +665,162 @@ $builder->csrf() // No need to set a name. by default "_token"
     ->invalidate(true) // The token is always invalidated after check, and should be regenerated
 ;
 ```
+
+## Create a custom element
+
+You can declare custom elements to handle complex types, and reuse into any forms.
+The examples bellow are for declare an element to handle [`UriInterface`](https://www.php-fig.org/psr/psr-7/#35-psrhttpmessageuriinterface) objects, created using PSR-17 [`UriFactoryInterface`](https://www.php-fig.org/psr/psr-17/#26-urifactoryinterface)
+
+### Using custom form
+
+You can use a `CustomForm` to declare an element. 
+The advantage of this method is that it don't need to implements low level interfaces, and require only to extends the `CustomForm` class.
+But it has the consequence of using more resources, has a lower flexibility, and cannot define a custom builder.
+
+```php
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Custom\CustomForm;
+use Bdf\Form\ElementInterface;
+use Bdf\Form\Transformer\TransformerInterface;
+
+// Declare the element class
+class UriElement extends CustomForm
+{
+    const INNER_ELEMENT = 'uri';
+
+    /**
+    * @var UriFactoryInterface 
+    */
+    private $uriFactory;
+    
+    // Set the UriFactoryInterface at the constructor
+    public function __construct(?FormBuilderInterface $builder = null, ?UriFactoryInterface $uriFactory = null) 
+    {
+        parent::__construct($builder);
+        
+        $this->uriFactory = $uriFactory ?? new DefaultUriFactory(); // Default instance for the factory
+    }
+
+    protected function configure(FormBuilderInterface $builder) : void
+    {
+        // Define inner element to store value
+        // The URI is basically a string
+        $builder->string(self::INNER_ELEMENT);
+
+        // The UriElement is a form, and supports only array values
+        // Define a transformer to remap value to the inner element
+        $builder->transformer(new class implements TransformerInterface {
+            public function transformToHttp($value, ElementInterface $input)
+            {
+                // $value is an array of children value
+                // Return only the inner element value
+                return $value[UriElement::INNER_ELEMENT];
+            }
+            
+            public function transformFromHttp($value, ElementInterface $input)
+            {
+                // $value is the URI string
+                // Map it as array to the inner element
+                return [UriElement::INNER_ELEMENT => $value];
+            }           
+        });
+
+        // Define the value generator : parse the inner element value to UriInterface using the factory        
+        $builder->generates(function () {
+            return $this->uriFactory->createUri($this[self::INNER_ELEMENT]->element()->value());
+        });
+    }
+}
+```
+
+### Using LeafElement
+
+If declaring an element using the `CustomForm` is not enough, or if you want to optimise this element, you can use the low level class [`LeafElement`](src/Leaf/LeafElement.php) to declare a custom element.
+
+```php
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Leaf\LeafElement;
+use Bdf\Form\Transformer\TransformerInterface;
+use Bdf\Form\Validator\ValueValidatorInterface;
+
+// Declare the element using LeafElement class
+class UriElement extends LeafElement
+{
+    /**
+     * @var UriFactory 
+     */
+    private $uriFactory;
+
+    // Overrides constructor to add the factory
+    public function __construct(?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ChoiceInterface $choices = null, ?UriFactory $uriFactory = null) 
+    {
+        parent::__construct($validator, $transformer, $choices);
+        
+        $this->uriFactory = $uriFactory ?? new DefaultUriFactory(); // Use default instance
+    }
+
+    // Parse the HTTP string value using the factory
+    protected function toPhp($httpValue): ?UriInterface
+    {
+        return $httpValue ? $this->uriFactory->createUri($httpValue) : null;
+    }
+    
+    // Stringify the UriInterface instance
+    protected function toHttp($phpValue): ?string
+    {
+        return $phpValue === null ? null : (string) $phpValue;
+    }
+}
+
+use Bdf\Form\AbstractElementBuilder;
+use Bdf\Form\Choice\ChoiceBuilderTrait;
+use Bdf\Form\ElementInterface;
+
+// Declare the builder
+class UriElementBuilder extends AbstractElementBuilder
+{
+    use ChoiceBuilderTrait; // Enable choices building
+    
+    /**
+     * @var UriFactory
+     */
+    private $uriFactory;
+    
+    public function __construct(?RegistryInterface $registry = null, ?UriFactory $uriFactory = null) 
+    {
+        parent::__construct($registry);
+
+        $this->uriFactory = $uriFactory ?? new DefaultUriFactory();
+    }
+    
+    // You can define custom builder methods for constrains or 
+    public function host(string $hostName): self
+    {
+        return $this->satisfy(function (?UriInterface $uri) use($hostName) {
+            if ($uri->getHost() !== $hostName) {
+                return 'Invalid host name';
+            }
+        });
+    }
+
+    // Create the element
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer) : ElementInterface
+    {
+        return new UriElement($validator, $transformer, $this->getChoices(), $this->uriFactory);
+    }
+}
+
+// Register the element build on the registry
+// Use container to inject dependencies (here the UriFactoryInterface)
+$registry->register(UriElement::class, function(Registry $registry) use($container) {
+    return new UriElementBuilder($registry, $container->get(UriFactoryInterface::class));
+});
+```
+
+### Usage
+
+To use the custom element, simply call `FormBuilderInterface::add()` with the element class name as second parameter :
+
+```php
+$builder->add('uri', UriElement::class);
+```
