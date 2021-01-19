@@ -86,6 +86,13 @@ final class Form implements FormInterface
      */
     private $valid = false;
 
+    /**
+     * The generated value
+     * This value is reset on submit to force regeneration
+     *
+     * @var mixed|null
+     */
+    private $value;
 
     /**
      * Form constructor.
@@ -110,6 +117,8 @@ final class Form implements FormInterface
     public function submit($data): ElementInterface
     {
         $this->valid = true;
+        $this->value = null;
+
         $data = $this->transformHttpValue($data);
 
         $this->submitToChildrenAndValidate($data, 'submit');
@@ -123,6 +132,7 @@ final class Form implements FormInterface
     public function patch($data): ElementInterface
     {
         $this->valid = true;
+        $this->value = null;
 
         if ($data !== null) {
             $data = $this->transformHttpValue($data);
@@ -155,6 +165,7 @@ final class Form implements FormInterface
     public function import($entity): ElementInterface
     {
         $this->generator->attach($entity);
+        $this->value = $entity;
 
         foreach ($this->children as $child) {
             $child->import($entity);
@@ -168,13 +179,17 @@ final class Form implements FormInterface
      */
     public function value()
     {
-        $value = $this->generator->generate($this);
-
-        foreach ($this->children as $child) {
-            $child->fill($value);
+        if ($this->value !== null) {
+            return $this->value;
         }
 
-        return $value;
+        $this->value = $this->generator->generate($this);
+
+        foreach ($this->children as $child) {
+            $child->fill($this->value);
+        }
+
+        return $this->value;
     }
 
     /**
@@ -277,6 +292,7 @@ final class Form implements FormInterface
     public function attach($entity): FormInterface
     {
         $this->generator->attach($entity);
+        $this->value = null; // The value is only attached : it must be filled when calling value()
 
         return $this;
     }

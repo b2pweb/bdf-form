@@ -3,6 +3,7 @@
 namespace Bdf\Form\Aggregate;
 
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
+use Bdf\Form\Aggregate\Value\ValueGenerator;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildInterface;
@@ -164,6 +165,25 @@ class FormTest extends TestCase
         $this->assertNull($form['firstName']->element()->value());
         $this->assertNull($form['lastName']->element()->value());
         $this->assertNull($form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_value_should_be_generated_once_per_submit()
+    {
+        $count = 0;
+        $form = new Form(new ChildrenCollection(), null, null, new ValueGenerator(function () use(&$count) {
+            ++$count;
+
+            return ['count' => $count];
+        }));
+
+        $this->assertSame(['count' => 1], $form->submit([])->value());
+        $this->assertSame(['count' => 1], $form->value());
+
+        $this->assertSame(['count' => 2], $form->patch([])->value());
+        $this->assertSame(['count' => 3], $form->submit([])->value());
     }
 
     /**
@@ -609,6 +629,35 @@ class FormTest extends TestCase
                 'lastName' => 'Smith',
                 'id' => '4',
             ])
+            ->value()
+        ;
+
+        $this->assertInstanceOf(Person::class, $person);
+        $this->assertEquals(4, $person->id);
+        $this->assertEquals('John', $person->firstName);
+        $this->assertEquals('Smith', $person->lastName);
+    }
+
+    /**
+     *
+     */
+    public function test_attach_after_submit()
+    {
+        $registry = new Registry();
+
+        $form = new Form(new ChildrenCollection([
+            $registry->childBuilder(StringElement::class, 'firstName')->setter()->buildChild(),
+            $registry->childBuilder(StringElement::class, 'lastName')->setter()->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->setter()->buildChild(),
+        ]));
+
+        $person = $form
+            ->submit([
+                'firstName' => 'John',
+                'lastName' => 'Smith',
+                'id' => '4',
+            ])
+            ->attach(Person::class)
             ->value()
         ;
 
