@@ -4,8 +4,12 @@ namespace Bdf\Form\Leaf;
 
 /**
  * Element for an integer
+ *
+ * @see IntegerElementBuilder for build the element
+ *
+ * @extends LeafElement<int>
  */
-final class IntegerElement extends LeafElement
+class IntegerElement extends LeafElement
 {
     /**
      * {@inheritdoc}

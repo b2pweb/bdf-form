@@ -6,10 +6,11 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
-use Symfony\Component\Validator\Constraint;
 
 /**
  * Class CsrfValueValidator
+ *
+ * @implements ValueValidatorInterface<\Symfony\Component\Security\Csrf\CsrfToken>
  */
 final class CsrfValueValidator implements ValueValidatorInterface
 {

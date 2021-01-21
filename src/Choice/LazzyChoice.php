@@ -4,27 +4,30 @@ namespace Bdf\Form\Choice;
 
 /**
  * Proxy choice using a callback for generate the choices array
+ *
+ * @template T
+ * @implements ChoiceInterface<T>
  */
 final class LazzyChoice implements ChoiceInterface
 {
     /**
      * The lazzy callback with returns choices
      *
-     * @var callable
+     * @var callable():(T[]|ChoiceInterface<T>)
      */
     private $resolver;
 
     /**
      * The choice object
      *
-     * @var ChoiceInterface|null
+     * @var ChoiceInterface<T>|null
      */
     private $choices;
 
     /**
      * LazzyChoice constructor.
      *
-     * @param callable $resolver
+     * @param callable():(T[]|ChoiceInterface<T>) $resolver
      */
     public function __construct(callable $resolver)
     {
@@ -56,13 +59,12 @@ final class LazzyChoice implements ChoiceInterface
             return $this->choices;
         }
 
-        $callback = $this->resolver;
-        $this->choices = $callback();
+        $choices = ($this->resolver)();
 
-        if (!$this->choices instanceof ChoiceInterface) {
-            $this->choices = new ArrayChoice((array)$this->choices);
+        if (!$choices instanceof ChoiceInterface) {
+            $choices = new ArrayChoice((array) $choices);
         }
 
-        return $this->choices;
+        return $this->choices = $choices;
     }
 }

@@ -4,6 +4,9 @@ namespace Bdf\Form\Choice;
 
 /**
  * Implementation of choice using an array
+ *
+ * @template T
+ * @implements ChoiceInterface<T>
  */
 final class ArrayChoice implements ChoiceInterface
 {
@@ -13,14 +16,14 @@ final class ArrayChoice implements ChoiceInterface
      * Key: should be the label of the choice
      * Value: the value
      *
-     * @var array
+     * @var T[]
      */
     private $choices;
 
     /**
      * ArrayChoice constructor.
      *
-     * @param array $choices The choices. To declare label, use associative array with key as label
+     * @param T[] $choices The choices. To declare label, use associative array with key as label
      */
     public function __construct(array $choices)
     {

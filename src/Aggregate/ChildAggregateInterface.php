@@ -11,6 +11,9 @@ use IteratorAggregate;
  * Form element consists of an aggregation of sub-elements wrapped into a ChildInterface
  *
  * The children can be acceded using array access, with child's name as offset, or using the iterator
+ *
+ * @template T
+ * @extends ElementInterface<T>
  */
 interface ChildAggregateInterface extends ElementInterface, ArrayAccess, IteratorAggregate
 {

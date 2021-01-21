@@ -3,6 +3,7 @@
 namespace Bdf\Form\Leaf\View;
 
 use Bdf\Form\Csrf\CsrfElement;
+use Bdf\Form\Leaf\Helper\EmailElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\View\FieldViewInterface;
@@ -45,6 +46,7 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
         IntegerElement::class => 'number',
         PhoneElement::class => 'tel',
         CsrfElement::class => 'hidden',
+        EmailElement::class => 'email',
     ];
 
     /**

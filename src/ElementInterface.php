@@ -18,6 +18,8 @@ use Bdf\Form\View\ElementViewInterface;
  *      <div class="form-control-feedback"><?php echo $input->error(); ?></div>
  *  </div>
  * </code>
+ *
+ * @template T
  */
 interface ElementInterface
 {
@@ -79,7 +81,7 @@ interface ElementInterface
      * $userFormView = $userForm->import($user)->view();
      * </code>
      *
-     * @param mixed $entity
+     * @param T|null $entity
      *
      * @return $this
      *
@@ -92,7 +94,7 @@ interface ElementInterface
      * The returned value is the transformed one, and not the raw HTTP value
      * In case of form element without attached entity, a new entity is generates and returned
      *
-     * @return mixed
+     * @return T|null
      *
      * @see ElementInterface::httpValue() For get the raw HTTP value
      */

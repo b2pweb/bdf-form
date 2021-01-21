@@ -34,13 +34,18 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * Array element can be used as leaf element (like with CSV string), or root of embedded forms
  *
  * @see ArrayElementBuilder For build the element
+ *
+ * @template T
+ *
+ * @implements ChildAggregateInterface<T[]>
+ * @implements Choiceable<T>
  */
 final class ArrayElement implements ChildAggregateInterface, Countable, Choiceable
 {
     use ContainerTrait;
 
     /**
-     * @var ElementInterface
+     * @var ElementInterface<T>
      */
     private $templateElement;
 
@@ -78,10 +83,10 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     /**
      * ArrayElement constructor.
      *
-     * @param ElementInterface $templateElement Inner element
+     * @param ElementInterface<T> $templateElement Inner element
      * @param TransformerInterface|null $transformer
      * @param ValueValidatorInterface|null $validator
-     * @param ChoiceInterface|null $choices
+     * @param ChoiceInterface<T>|null $choices
      */
     public function __construct(ElementInterface $templateElement, ?TransformerInterface $transformer = null, ?ValueValidatorInterface $validator = null, ?ChoiceInterface $choices = null)
     {
@@ -239,8 +244,10 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
 
     /**
      * {@inheritdoc}
+     *
+     * @return T[]
      */
-    public function value()
+    public function value(): array
     {
         $value = [];
 

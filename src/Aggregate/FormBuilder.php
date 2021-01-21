@@ -14,6 +14,8 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\Leaf\Helper\EmailElement;
+use Bdf\Form\Leaf\Helper\UrlElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Phone\PhoneElement;
@@ -172,6 +174,50 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     public function csrf(string $name = '_token'): ChildBuilderInterface
     {
         return $this->add($name, CsrfElement::class);
+    }
+
+    /**
+     * Add a new email element
+     * Note: The email element is a simple string but with the email constraint
+     *
+     * <code>
+     * $builder->email('contact')
+     *     ->message('Invalid contact email')
+     * ;
+     * </code>
+     *
+     * @param string $name The name of the input
+     *
+     * @return ChildBuilderInterface|\Bdf\Form\Leaf\Helper\EmailElementBuilder
+     * @psalm-return ChildBuilderInterface<\Bdf\Form\Leaf\Helper\EmailElementBuilder>
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     */
+    public function email(string $name): ChildBuilderInterface
+    {
+        return $this->add($name, EmailElement::class);
+    }
+
+    /**
+     * Add a new url element
+     * Note: The url element is a simple string but with the url constraint
+     *
+     * <code>
+     * $builder->url('home')->protocols('https');
+     * </code>
+     *
+     * @param string $name The name of the input
+     *
+     * @return ChildBuilderInterface|\Bdf\Form\Leaf\Helper\UrlElementBuilder
+     * @psalm-return ChildBuilderInterface<\Bdf\Form\Leaf\Helper\UrlElementBuilder>
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     */
+    public function url(string $name): ChildBuilderInterface
+    {
+        return $this->add($name, UrlElement::class);
     }
 
     /**

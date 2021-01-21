@@ -37,7 +37,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  * @see ArrayElement
  * @see FormBuilderInterface::array()
  *
- * @implements ElementBuilderInterface<ArrayElement>
+ * @template T
+ * @implements ElementBuilderInterface<ArrayElement<T>>
  */
 class ArrayElementBuilder implements ElementBuilderInterface
 {
@@ -59,7 +60,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     private $registry;
 
     /**
-     * @var ElementBuilderInterface|null
+     * @var ElementBuilderInterface<ElementInterface<T>>|null
      */
     private $element;
 
@@ -122,13 +123,16 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * });
      * </code>
      *
-     * @param class-string<ElementInterface> $element The element class name
+     * @param class-string<ElementInterface<RT>> $element The element class name
      * @param callable|null $configurator Callback for configure the inner element builder. Takes as parameter the element builder
      *
-     * @return $this
+     * @template RT
+     *
+     * @return ArrayElementBuilder<RT>
      */
     public function element(string $element, ?callable $configurator = null): ArrayElementBuilder
     {
+        /** @var ArrayElementBuilder<RT> $this */
         // @todo exception if already defined ?
         $this->element = $this->registry->elementBuilder($element);
 
@@ -142,7 +146,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     /**
      * Get the inner element builder
      *
-     * @return ElementBuilderInterface
+     * @return ElementBuilderInterface<ElementInterface<T>>
      */
     public function getElementBuilder(): ElementBuilderInterface
     {
@@ -164,7 +168,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable|null $configurator Callback for configure the inner element builder
      *
-     * @return $this
+     * @return ArrayElementBuilder<string>
      */
     public function string(?callable $configurator = null): ArrayElementBuilder
     {
@@ -182,7 +186,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable|null $configurator Callback for configure the inner element builder
      *
-     * @return $this
+     * @return ArrayElementBuilder<int>
      */
     public function integer(?callable $configurator = null): ArrayElementBuilder
     {
@@ -200,7 +204,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable|null $configurator Callback for configure the inner element builder
      *
-     * @return $this
+     * @return ArrayElementBuilder<float>
      */
     public function float(?callable $configurator = null): ArrayElementBuilder
     {
@@ -216,7 +220,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable|null $configurator Callback for configure the inner element builder
      *
-     * @return $this
+     * @return ArrayElementBuilder<bool>
      */
     public function boolean(?callable $configurator = null): ArrayElementBuilder
     {
@@ -234,7 +238,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable|null $configurator Callback for configure the inner element builder
      *
-     * @return $this
+     * @return ArrayElementBuilder<\DateTimeInterface>
      */
     public function dateTime(?callable $configurator = null): ArrayElementBuilder
     {
@@ -252,7 +256,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable|null $configurator Callback for configure the inner element builder
      *
-     * @return $this
+     * @return ArrayElementBuilder<\libphonenumber\PhoneNumber>
      */
     public function phone(?callable $configurator = null): ArrayElementBuilder
     {
@@ -273,7 +277,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable|null $configurator Configure the embedded form
      *
-     * @return $this
+     * @return ArrayElementBuilder<mixed>
      */
     public function form(?callable $configurator = null): ArrayElementBuilder
     {
@@ -339,7 +343,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      *
-     * @return ArrayElement
+     * @return ArrayElement<T>
      */
     public function buildElement(): ElementInterface
     {

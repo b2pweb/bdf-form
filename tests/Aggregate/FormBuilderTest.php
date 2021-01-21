@@ -8,6 +8,8 @@ use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\Leaf\Helper\EmailElement;
+use Bdf\Form\Leaf\Helper\UrlElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
@@ -110,6 +112,32 @@ class FormBuilderTest extends TestCase
 
         $this->assertInstanceOf(Form::class, $form);
         $this->assertInstanceOf(PhoneElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_email()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->email('value'));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(EmailElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_url()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->url('value'));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(UrlElement::class, $form['value']->element());
     }
 
     /**

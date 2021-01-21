@@ -10,13 +10,15 @@ use Symfony\Component\Validator\Constraint;
  * Validator for an element value
  *
  * @see ElementInterface::submit()
+ *
+ * @template T
  */
 interface ValueValidatorInterface
 {
     /**
      * Validate the value
      *
-     * @param mixed $value Value to validate
+     * @param T|null $value Value to validate
      * @param ElementInterface $element The target element
      *
      * @return FormError The error. Return an empty error if the value is valid

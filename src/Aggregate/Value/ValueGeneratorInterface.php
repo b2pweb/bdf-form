@@ -9,6 +9,8 @@ use Bdf\Form\ElementInterface;
  * Generate generator for a form value
  *
  * @see ElementInterface::value()
+ *
+ * @template T
  */
 interface ValueGeneratorInterface
 {
@@ -16,7 +18,7 @@ interface ValueGeneratorInterface
      * Attach the entity to use by the generator
      * The attached will replace the previous one
      *
-     * @param mixed $entity
+     * @param T|callable():T|class-string<T> $entity
      * @see FormInterface::attach()
      */
     public function attach($entity): void;
@@ -27,7 +29,7 @@ interface ValueGeneratorInterface
      *
      * @param ElementInterface $element The source element
      *
-     * @return mixed
+     * @return T
      * @see FormInterface::value()
      */
     public function generate(ElementInterface $element);

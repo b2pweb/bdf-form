@@ -23,6 +23,10 @@ use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\FloatElementBuilder;
+use Bdf\Form\Leaf\Helper\EmailElement;
+use Bdf\Form\Leaf\Helper\EmailElementBuilder;
+use Bdf\Form\Leaf\Helper\UrlElement;
+use Bdf\Form\Leaf\Helper\UrlElementBuilder;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
@@ -51,6 +55,9 @@ final class Registry implements RegistryInterface
         IntegerElement::class => IntegerElementBuilder::class,
         FloatElement::class => FloatElementBuilder::class,
         BooleanElement::class => BooleanElementBuilder::class,
+
+        EmailElement::class => EmailElementBuilder::class,
+        UrlElement::class => UrlElementBuilder::class,
 
         CsrfElement::class => CsrfElementBuilder::class,
         PhoneElement::class => PhoneElementBuilder::class,

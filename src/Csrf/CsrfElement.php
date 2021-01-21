@@ -24,6 +24,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
  * The dependency "symfony/security-csrf" is required to use this element
  *
  * @see CsrfTokenManager
+ *
+ * @implements ElementInterface<CsrfToken>
  */
 final class CsrfElement implements ElementInterface
 {
@@ -100,6 +102,8 @@ final class CsrfElement implements ElementInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return CsrfToken
      */
     public function value(): CsrfToken
     {

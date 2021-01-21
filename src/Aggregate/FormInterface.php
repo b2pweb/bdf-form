@@ -6,6 +6,9 @@ namespace Bdf\Form\Aggregate;
  * The base form element type
  *
  * @method \Bdf\Form\Aggregate\View\FormView view(?\Bdf\Form\Child\Http\HttpFieldPath $fieldPath = null)
+ *
+ * @template T
+ * @extends ChildAggregateInterface<T>
  */
 interface FormInterface extends ChildAggregateInterface
 {
@@ -28,7 +31,7 @@ interface FormInterface extends ChildAggregateInterface
      * $this->repository->save($form->value());
      * </code>
      *
-     * @param object|string $entity The entity object, or class name
+     * @param T|class-string<T>|callable():T $entity The entity object, or class name
      *
      * @return $this
      *

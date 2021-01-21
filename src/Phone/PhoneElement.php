@@ -17,6 +17,7 @@ use libphonenumber\PhoneNumberUtil;
  * The PHP value of this element is a PhoneNumber instance. Constraints and hydrated entities should support this type.
  *
  * @method PhoneNumber value()
+ * @extends LeafElement<PhoneNumber>
  */
 final class PhoneElement extends LeafElement
 {

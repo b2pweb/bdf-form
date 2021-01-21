@@ -13,11 +13,14 @@ use Bdf\Form\ElementInterface;
  * (new ValueGenerator($entity))->generate($form); // Will clone the instance of $entity
  * (new ValueGenerator(function (FormInterface $form) { return new MyEntity(...); }))->generate($form); // Custom generator
  * </code>
+ *
+ * @template T
+ * @implements ValueGeneratorInterface<T>
  */
 final class ValueGenerator implements ValueGeneratorInterface
 {
     /**
-     * @var object|callable|array|class-string
+     * @var callable():T|T|class-string<T>
      */
     private $value;
 
@@ -25,10 +28,11 @@ final class ValueGenerator implements ValueGeneratorInterface
     /**
      * ValueGenerator constructor.
      *
-     * @param callable|object|class-string|array $value
+     * @param callable():T|T|class-string<T> $value
      */
     public function __construct($value = [])
     {
+        /** @psalm-suppress PropertyTypeCoercion */
         $this->value = $value;
     }
 
@@ -37,6 +41,7 @@ final class ValueGenerator implements ValueGeneratorInterface
      */
     public function attach($entity): void
     {
+        /** @psalm-suppress PropertyTypeCoercion */
         $this->value = $entity;
     }
 
@@ -46,6 +51,7 @@ final class ValueGenerator implements ValueGeneratorInterface
     public function generate(ElementInterface $element)
     {
         if (is_string($this->value)) {
+            /** @var T */
             return new $this->value;
         }
 

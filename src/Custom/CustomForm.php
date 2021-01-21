@@ -42,6 +42,8 @@ use Bdf\Form\View\ElementViewInterface;
  * </code>
  *
  * @todo implements root form interface ?
+ * @template T
+ * @implements FormInterface<T>
  */
 abstract class CustomForm implements FormInterface
 {
@@ -53,7 +55,7 @@ abstract class CustomForm implements FormInterface
     /**
      * The inner form
      *
-     * @var FormInterface|null
+     * @var FormInterface<T>|null
      */
     private $form;
 
@@ -235,7 +237,7 @@ abstract class CustomForm implements FormInterface
     /**
      * Get (or build) the inner form
      *
-     * @return FormInterface
+     * @return FormInterface<T>
      */
     final protected function form(): FormInterface
     {

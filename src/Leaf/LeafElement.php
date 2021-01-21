@@ -23,13 +23,18 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Form element containing a single value
+ *
+ * @template T
+ *
+ * @implements ElementInterface<T>
+ * @implements Choiceable<T>
  */
 abstract class LeafElement implements ElementInterface, Choiceable
 {
     use ContainerTrait;
 
     /**
-     * @var ValueValidatorInterface
+     * @var ValueValidatorInterface<T>
      */
     private $validator;
 
@@ -41,12 +46,12 @@ abstract class LeafElement implements ElementInterface, Choiceable
     private $transformer;
 
     /**
-     * @var ChoiceInterface|null
+     * @var ChoiceInterface<T>|null
      */
     private $choices;
 
     /**
-     * @var mixed
+     * @var T|null
      */
     private $value = null;
 
@@ -64,9 +69,9 @@ abstract class LeafElement implements ElementInterface, Choiceable
     /**
      * LeafElement constructor.
      *
-     * @param ValueValidatorInterface|null $validator
+     * @param ValueValidatorInterface<T>|null $validator
      * @param TransformerInterface|null $transformer
-     * @param ChoiceInterface|null $choices
+     * @param ChoiceInterface<T>|null $choices
      */
     public function __construct(?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ChoiceInterface $choices = null)
     {
@@ -188,7 +193,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
     /**
      * {@inheritdoc}
      */
-    public function choices(): ?ChoiceInterface
+    final public function choices(): ?ChoiceInterface
     {
         return $this->choices;
     }
@@ -198,14 +203,14 @@ abstract class LeafElement implements ElementInterface, Choiceable
      *
      * @param mixed $httpValue
      *
-     * @return mixed
+     * @return T|null
      */
     abstract protected function toPhp($httpValue);
 
     /**
      * Transform the PHP value to the HTTP representation
      *
-     * @param mixed $phpValue
+     * @param T|null $phpValue
      *
      * @return mixed
      */

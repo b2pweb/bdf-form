@@ -44,13 +44,16 @@ use Exception;
  *
  * $entity = $form->attach($entity)->value();
  * </code>
+ *
+ * @template T
+ * @implements FormInterface<T>
  */
 final class Form implements FormInterface
 {
     use ContainerTrait;
 
     /**
-     * @var ValueValidatorInterface
+     * @var ValueValidatorInterface<T>
      */
     private $validator;
 
@@ -67,7 +70,7 @@ final class Form implements FormInterface
     private $children;
 
     /**
-     * @var ValueGeneratorInterface
+     * @var ValueGeneratorInterface<T>
      */
     private $generator;
 
@@ -90,7 +93,7 @@ final class Form implements FormInterface
      * The generated value
      * This value is reset on submit to force regeneration
      *
-     * @var mixed|null
+     * @var T|null
      */
     private $value;
 
@@ -98,9 +101,9 @@ final class Form implements FormInterface
      * Form constructor.
      *
      * @param ChildrenCollectionInterface $children
-     * @param ValueValidatorInterface|null $validator
+     * @param ValueValidatorInterface<T>|null $validator
      * @param TransformerInterface|null $transformer
-     * @param ValueGeneratorInterface|null $generator
+     * @param ValueGeneratorInterface<T>|null $generator
      */
     public function __construct(ChildrenCollectionInterface $children, ?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ValueGeneratorInterface $generator = null)
     {
@@ -108,6 +111,7 @@ final class Form implements FormInterface
         $this->validator = $validator ?: NullValueValidator::instance();
         $this->transformer = $transformer ?: NullTransformer::instance();
         $this->error = FormError::null();
+        /** @var ValueGeneratorInterface<T> */
         $this->generator = $generator ?: new ValueGenerator();
     }
 
@@ -161,10 +165,16 @@ final class Form implements FormInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @param T|null $entity
+     * @return $this
      */
     public function import($entity): ElementInterface
     {
-        $this->generator->attach($entity);
+        if ($entity) {
+            $this->generator->attach($entity);
+        }
+
         $this->value = $entity;
 
         foreach ($this->children as $child) {
@@ -176,6 +186,8 @@ final class Form implements FormInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return T
      */
     public function value()
     {

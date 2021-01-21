@@ -5,13 +5,15 @@ namespace Bdf\Form\Choice;
 /**
  * Choice container
  * Store possible values for an element
+ *
+ * @template T
  */
 interface ChoiceInterface
 {
     /**
      * Get the available PHP values
      *
-     * @return array
+     * @return T[]
      */
     public function values(): array;
 

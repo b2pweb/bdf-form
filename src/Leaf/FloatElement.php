@@ -4,8 +4,12 @@ namespace Bdf\Form\Leaf;
 
 /**
  * Element for a float value
+ *
+ * @see FloatElementBuilder for build the element
+ *
+ * @extends LeafElement<float>
  */
-final class FloatElement extends LeafElement
+class FloatElement extends LeafElement
 {
     /**
      * {@inheritdoc}

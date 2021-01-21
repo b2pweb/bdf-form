@@ -4,8 +4,12 @@ namespace Bdf\Form\Leaf;
 
 /**
  * Element for a simple string field
+ *
+ * @see StringElementBuilder for build the element
+ *
+ * @extends LeafElement<string>
  */
-final class StringElement extends LeafElement
+class StringElement extends LeafElement
 {
     /**
      * {@inheritdoc}

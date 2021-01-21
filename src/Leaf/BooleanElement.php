@@ -15,9 +15,12 @@ use LogicException;
  * Handle a boolean value, like with checkbox input
  * A value is considered as true when a value is present, and equals to the defined value
  *
+ * @see BooleanElementBuilder for build the element
+ *
  * @method bool value()
+ * @extends LeafElement<bool>
  */
-final class BooleanElement extends LeafElement
+class BooleanElement extends LeafElement
 {
     /**
      * @var string

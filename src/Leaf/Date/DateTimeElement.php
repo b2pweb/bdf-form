@@ -16,6 +16,7 @@ use InvalidArgumentException;
  * The element use a formatted string as http value, and can return any implementation of DateTimeInterface
  *
  * @method DateTimeInterface value()
+ * @extends LeafElement<DateTimeInterface>
  */
 final class DateTimeElement extends LeafElement
 {
