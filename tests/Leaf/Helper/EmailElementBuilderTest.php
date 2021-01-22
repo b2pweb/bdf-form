@@ -12,7 +12,7 @@ class EmailElementBuilderTest extends TestCase
      */
     private $builder;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->builder = new EmailElementBuilder();
     }
