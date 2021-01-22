@@ -3,6 +3,7 @@
 namespace Bdf\Form\Custom;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Leaf\IntegerElement;
 use PHPUnit\Framework\TestCase;
@@ -125,7 +126,10 @@ class CustomFormBuilderTest extends TestCase
     {
         $builder = new CustomFormBuilder(MyCustomTestForm::class);
 
-        $form = $builder->integer('value')->buildElement();
+        $this->assertInstanceOf(ChildBuilder::class, $builder->integer('value'));
+        $form = $builder->buildElement();
+
+        $this->assertSame($builder, $builder->value([]));
 
         $this->assertArrayHasKey('value', $form);
         $this->assertInstanceOf(IntegerElement::class, $form['value']->element());

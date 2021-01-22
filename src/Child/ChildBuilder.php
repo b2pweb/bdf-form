@@ -33,6 +33,9 @@ use Bdf\Form\Registry\RegistryInterface;
  * @method $this value($value)
  * @method $this transformer($transformer, bool $append = true)
  * @method $this required($options = null)
+ *
+ * @template B as ElementBuilderInterface
+ * @implements ChildBuilderInterface<B>
  */
 class ChildBuilder implements ChildBuilderInterface
 {
@@ -75,6 +78,7 @@ class ChildBuilder implements ChildBuilderInterface
 
     /**
      * @var ElementBuilderInterface
+     * @psalm-var B
      */
     private $elementBuilder;
 
@@ -100,7 +104,7 @@ class ChildBuilder implements ChildBuilderInterface
      * AbstractChildBuilder constructor.
      *
      * @param string $name The element name
-     * @param ElementBuilderInterface $elementBuilder
+     * @param B $elementBuilder
      * @param RegistryInterface|null $registry
      */
     public function __construct(string $name, ElementBuilderInterface $elementBuilder, RegistryInterface $registry = null)
@@ -384,6 +388,26 @@ class ChildBuilder implements ChildBuilderInterface
     final public function trim(bool $active = true): self
     {
         $this->trim = $active;
+
+        return $this;
+    }
+
+    /**
+     * Configure the element builder using a callback
+     *
+     * <code>
+     * $builder->string('foo')->configure(function (StringElementBuilder $builder) {
+     *     $builder->length(['min' => 3]);
+     * });
+     * </code>
+     *
+     * @param callable(B):void $configurator
+     *
+     * @return $this
+     */
+    public function configure(callable $configurator): self
+    {
+        $configurator($this->elementBuilder);
 
         return $this;
     }

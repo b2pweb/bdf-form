@@ -328,6 +328,16 @@ class ChildBuilderTest extends TestCase
         $child->submit(['foo' => 'bar']);
         $this->assertSame('bar', $child->element()->value());
     }
+
+    /**
+     *
+     */
+    public function test_configure()
+    {
+        $this->builder->configure(function ($builder) use(&$param) { $param = $builder; });
+
+        $this->assertInstanceOf(StringElementBuilder::class, $param);
+    }
 }
 
 class MyCustomChild implements ChildInterface

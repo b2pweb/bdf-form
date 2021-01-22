@@ -104,10 +104,10 @@ class CustomFormBuilder implements ElementBuilderInterface
      *
      * @return $this
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments)
     {
-        $this->builder->$name(...$arguments);
+        $return = $this->builder->$name(...$arguments);
 
-        return $this;
+        return $return === $this->builder ? $this : $return;
     }
 }
