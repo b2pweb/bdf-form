@@ -83,4 +83,44 @@ class HttpFieldPathTest extends TestCase
         $this->assertEquals('bar', HttpFieldPath::empty()->add('bar')->get());
         $this->assertSame(HttpFieldPath::empty(), HttpFieldPath::empty());
     }
+
+    /**
+     *
+     */
+    public function test_concat()
+    {
+        $this->assertEquals(HttpFieldPath::empty(), HttpFieldPath::empty()->concat(HttpFieldPath::empty()));
+        $this->assertEquals(HttpFieldPath::named('foo'), HttpFieldPath::empty()->concat(HttpFieldPath::named('foo')));
+        $this->assertEquals(HttpFieldPath::named('foo'), HttpFieldPath::named('foo')->concat(HttpFieldPath::empty()));
+        $this->assertEquals(HttpFieldPath::named('foo')->add('bar'), HttpFieldPath::named('foo')->concat(HttpFieldPath::named('bar')));
+        $this->assertEquals(HttpFieldPath::prefixed('foo_')->add('bar'), HttpFieldPath::prefixed('foo_')->concat(HttpFieldPath::named('bar')));
+        $this->assertEquals(HttpFieldPath::named('foo')->add('bar'), HttpFieldPath::named('foo')->concat(HttpFieldPath::named('bar')));
+        $this->assertEquals(HttpFieldPath::named('foo')->add('bar')->add('baz')->add('oof'), HttpFieldPath::named('foo')->add('bar')->concat(HttpFieldPath::named('baz')->add('oof')));
+        $this->assertEquals(HttpFieldPath::named('foo')->prefix('bar')->add('baz')->prefix('oof'), HttpFieldPath::named('foo')->prefix('bar')->concat(HttpFieldPath::named('baz')->prefix('oof')));
+        $this->assertEquals(HttpFieldPath::named('foo')->prefix('bar')->prefix('baz'), HttpFieldPath::named('foo')->prefix('bar')->concat(HttpFieldPath::prefixed('baz')));
+    }
+
+    /**
+     *
+     */
+    public function test_isPrefix()
+    {
+        $this->assertFalse(HttpFieldPath::empty()->isPrefix());
+        $this->assertFalse(HttpFieldPath::named('foo')->isPrefix());
+        $this->assertFalse(HttpFieldPath::named('foo')->add('bar')->isPrefix());
+        $this->assertTrue(HttpFieldPath::prefixed('foo')->isPrefix());
+        $this->assertTrue(HttpFieldPath::named('foo')->prefix('bar')->isPrefix());
+    }
+
+    /**
+     *
+     */
+    public function test_isRootField()
+    {
+        $this->assertFalse(HttpFieldPath::empty()->isRootField());
+        $this->assertTrue(HttpFieldPath::named('foo')->isRootField());
+        $this->assertFalse(HttpFieldPath::named('foo')->add('bar')->isRootField());
+        $this->assertFalse(HttpFieldPath::prefixed('foo')->isRootField());
+        $this->assertTrue(HttpFieldPath::named('foo')->prefix('bar')->isRootField());
+    }
 }

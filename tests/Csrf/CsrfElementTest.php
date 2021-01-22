@@ -214,4 +214,20 @@ class CsrfElementTest extends TestCase
         $this->assertTrue($view->hasError());
         $this->assertEquals('The CSRF token is invalid.', $view->error());
     }
+
+    /**
+     *
+     */
+    public function test_error()
+    {
+        $element = new CsrfElement();
+        $element->submit('ok');
+
+        $error = $element->error(HttpFieldPath::named('foo'));
+
+        $this->assertEquals('foo', $error->field());
+        $this->assertEquals('The CSRF token is invalid.', $error->global());
+        $this->assertEquals('INVALID_TOKEN_ERROR', $error->code());
+        $this->assertEmpty($error->children());
+    }
 }

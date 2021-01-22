@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Error;
 
+use Bdf\Form\Child\Http\HttpFieldPath;
+
 /**
  * Implode all errors into a string
  * The printer will visit recursively all children
@@ -39,6 +41,14 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
     public function __construct(string $separator = PHP_EOL)
     {
         $this->separator = $separator;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function field(HttpFieldPath $field): void
+    {
+        // Ignore field name
     }
 
     /**

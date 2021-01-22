@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Error;
 
+use Bdf\Form\Child\Http\HttpFieldPath;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\ValidatorBuilder;
@@ -167,6 +168,22 @@ class FormErrorTest extends TestCase
     /**
      *
      */
+    public function test_print_field()
+    {
+        $error = FormError::message('global error')->withField(HttpFieldPath::named('foo'));
+
+        $printer = $this->createMock(FormErrorPrinterInterface::class);
+
+        $printer->expects($this->at(0))->method('field')->with(HttpFieldPath::named('foo'));
+        $printer->expects($this->at(1))->method('global')->with('global error');
+        $printer->expects($this->at(2))->method('print')->willReturn('formatted');
+
+        $this->assertEquals('formatted', $error->print($printer));
+    }
+
+    /**
+     *
+     */
     public function test_print_global_and_code()
     {
         $error = FormError::message('global error', 'MY_CODE');
@@ -227,5 +244,28 @@ class FormErrorTest extends TestCase
             'child' => FormError::message('child error'),
             'child2' => FormError::message('child2 error'),
         ]));
+    }
+
+    /**
+     *
+     */
+    public function test_withField()
+    {
+        $error = FormError::aggregate([
+            'a' => FormError::message('a error')->withField(HttpFieldPath::named('a')),
+            'b' => FormError::aggregate([
+                'c' => FormError::message('c error')->withField(HttpFieldPath::named('c')),
+                'd' => FormError::message('d error')->withField(HttpFieldPath::named('d')),
+            ])->withField(HttpFieldPath::named('b')),
+        ]);
+
+        $newErrors = $error->withField(HttpFieldPath::prefixed('root_'));
+
+        $this->assertNotSame($newErrors, $error);
+
+        $this->assertEquals('root_a', $newErrors->children()['a']->field());
+        $this->assertEquals('root_b', $newErrors->children()['b']->field());
+        $this->assertEquals('root_b[c]', $newErrors->children()['b']->children()['c']->field());
+        $this->assertEquals('root_b[d]', $newErrors->children()['b']->children()['d']->field());
     }
 }

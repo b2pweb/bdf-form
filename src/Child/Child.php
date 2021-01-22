@@ -204,9 +204,9 @@ final class Child implements ChildInterface
     /**
      * {@inheritdoc}
      */
-    public function error(): FormError
+    public function error(?HttpFieldPath $field = null): FormError
     {
-        return $this->element->error();
+        return $this->element->error($this->fields->get($field));
     }
 
     /**

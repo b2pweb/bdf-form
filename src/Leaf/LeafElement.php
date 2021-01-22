@@ -126,9 +126,9 @@ abstract class LeafElement implements ElementInterface, Choiceable
     /**
      * {@inheritdoc}
      */
-    final public function error(): FormError
+    final public function error(?HttpFieldPath $field = null): FormError
     {
-        return $this->error;
+        return $field ? $this->error->withField($field) : $this->error;
     }
 
     /**

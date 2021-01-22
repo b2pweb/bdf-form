@@ -25,6 +25,11 @@ final class HttpFieldPath
     /**
      * @var string
      */
+    private $root = '';
+
+    /**
+     * @var string
+     */
     private $path = '';
 
     /**
@@ -36,18 +41,20 @@ final class HttpFieldPath
      * HttpFieldPath constructor.
      * Note: prefer use the static methods instead of the constructor
      *
+     * @param string $root
      * @param string $path The path
      * @param string $prefix The prefix
      */
-    public function __construct(string $path = '', string $prefix = '')
+    public function __construct(string $root = '', string $path = '', string $prefix = '')
     {
+        $this->root = $root;
         $this->path = $path;
         $this->prefix = $prefix;
     }
 
     /**
      * Add a new sub array key to the field path :
-     * - If the current path is the root (i.e. empty path), will return a path consisting of the name
+     * - If the current path is the root (i.e. empty path), will return a path consisting of the name by setting the "root" field value
      * - If the path is not the root (i.e. not empty path), the name will be added at end, enclosed by "[]"
      * - In any case, if there is a prefix, it will be added before the name
      *
@@ -59,8 +66,45 @@ final class HttpFieldPath
     {
         $newPath = clone $this;
 
-        $newPath->path = empty($this->path) ? $this->prefix.$name : $this->path.'['.$this->prefix.$name.']';
+        if ($this->root === '') {
+            $newPath->root = $this->prefix.$name;
+        } else {
+            $newPath->path .= '['.$this->prefix.$name.']';
+        }
+
         $newPath->prefix = '';
+
+        return $newPath;
+    }
+
+    /**
+     * Concatenate two field paths
+     * The result consists of the current path followed by the $other path
+     *
+     * - If the other path has a root but not the current one, use the root and path of other, prefixed by the current prefix, and replace current prefix by the prefix of other
+     * - If the other path has a root and also the current one, append the root and the path of the other to the current, wrap the other's root with [], and replace current prefix by the prefix of other
+     * - The the other as no root, only append its prefix to the current one
+     *
+     * @param HttpFieldPath $other The next field path
+     *
+     * @return static The new path instance
+     */
+    public function concat(HttpFieldPath $other): self
+    {
+        $newPath = clone $this;
+
+        if ($other->root !== '') {
+            if ($this->root === '') {
+                $newPath->root = $this->prefix.$other->root;
+                $newPath->path = $other->path;
+            } else {
+                $newPath->path .= '['.$this->prefix.$other->root.']'.$other->path;
+            }
+
+            $newPath->prefix = $other->prefix;
+        } else {
+            $newPath->prefix .= $other->prefix;
+        }
 
         return $newPath;
     }
@@ -89,15 +133,37 @@ final class HttpFieldPath
      */
     public function get(): string
     {
-        if (empty($this->path)) {
+        $path = $this->root.$this->path;
+
+        if ($path === '') {
             return $this->prefix;
         }
 
         if (empty($this->prefix)) {
-            return $this->path;
+            return $path;
         }
 
-        return $this->path.'['.$this->prefix.']';
+        return $path.'['.$this->prefix.']';
+    }
+
+    /**
+     * Does the current path is a prefix path ?
+     *
+     * @return bool
+     */
+    public function isPrefix(): bool
+    {
+        return $this->prefix !== '';
+    }
+
+    /**
+     * Does the current field is a root field ?
+     *
+     * @return bool
+     */
+    public function isRootField(): bool
+    {
+        return $this->root !== '' && $this->path === '';
     }
 
     /**
@@ -145,6 +211,6 @@ final class HttpFieldPath
      */
     public static function prefixed(string $prefix): HttpFieldPath
     {
-        return new HttpFieldPath('', $prefix);
+        return new HttpFieldPath('', '', $prefix);
     }
 }

@@ -7,6 +7,7 @@ use Bdf\Form\Aggregate\Value\ValueGenerator;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
@@ -82,6 +83,14 @@ class FormTest extends TestCase
             'firstName' => 'This value is too short. It should have 2 characters or more.',
             'lastName' => 'This value is too short. It should have 2 characters or more.',
         ], $this->form->error()->toArray());
+        $this->assertEquals('firstName', $this->form->error()->children()['firstName']->field());
+        $this->assertEquals('lastName', $this->form->error()->children()['lastName']->field());
+
+        $this->assertEquals('root[firstName]', $this->form->error(HttpFieldPath::named('root'))->children()['firstName']->field());
+        $this->assertEquals('root[lastName]', $this->form->error(HttpFieldPath::named('root'))->children()['lastName']->field());
+
+        $this->assertEquals('root_firstName', $this->form->error(HttpFieldPath::prefixed('root_'))->children()['firstName']->field());
+        $this->assertEquals('root_lastName', $this->form->error(HttpFieldPath::prefixed('root_'))->children()['lastName']->field());
 
         $this->assertSame('J', $this->form['firstName']->element()->value());
         $this->assertFalse($this->form['firstName']->element()->valid());
@@ -780,6 +789,59 @@ class FormTest extends TestCase
         $this->assertEquals('<input type="text" name="name[first]" value="" />', (string) $view['name']['first']);
         $this->assertEquals('<input type="text" name="name[last]" value="" />', (string) $view['name']['last']);
         $this->assertEquals('<input type="number" name="id" value="" />', (string) $view['id']);
+    }
+
+    /**
+     *
+     */
+    public function test_error_fields_with_embedded_prefix()
+    {
+        $registry = new Registry();
+
+        $nameFormBuilder = $registry->childBuilder(Form::class, 'name');
+        $nameFormBuilder->prefix();
+        $nameFormBuilder->string('first')->required();
+        $nameFormBuilder->string('last')->required();
+
+        $form = new Form(new ChildrenCollection([
+            $nameFormBuilder->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->required()->buildChild(),
+        ]));
+
+        $form->submit([]);
+
+        $errors = $form->error();
+
+        $this->assertEquals('id', $errors->children()['id']->field());
+        $this->assertEquals('name_', $errors->children()['name']->field());
+        $this->assertEquals('name_first', $errors->children()['name']->children()['first']->field());
+        $this->assertEquals('name_last', $errors->children()['name']->children()['last']->field());
+    }
+
+    /**
+     *
+     */
+    public function test_error_with_embedded_array()
+    {
+        $registry = new Registry();
+
+        $nameFormBuilder = $registry->childBuilder(Form::class, 'name');
+        $nameFormBuilder->string('first')->required();
+        $nameFormBuilder->string('last')->required();
+
+        $form = new Form(new ChildrenCollection([
+            $nameFormBuilder->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->required()->buildChild(),
+        ]));
+
+        $form->submit([]);
+
+        $errors = $form->error();
+
+        $this->assertEquals('id', $errors->children()['id']->field());
+        $this->assertEquals('name', $errors->children()['name']->field());
+        $this->assertEquals('name[first]', $errors->children()['name']->children()['first']->field());
+        $this->assertEquals('name[last]', $errors->children()['name']->children()['last']->field());
     }
 }
 

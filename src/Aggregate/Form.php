@@ -158,9 +158,9 @@ final class Form implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function error(): FormError
+    public function error(?HttpFieldPath $field = null): FormError
     {
-        return $this->error;
+        return $field ? $this->error->withField($field) : $this->error;
     }
 
     /**

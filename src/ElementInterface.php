@@ -138,9 +138,11 @@ interface ElementInterface
      * }
      * </code>
      *
+     * @param HttpFieldPath|null $field The used HTTP field name
+     *
      * @return FormError
      */
-    public function error(): FormError;
+    public function error(?HttpFieldPath $field = null): FormError;
 
     /**
      * Get the element's container

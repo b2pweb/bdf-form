@@ -283,9 +283,9 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     /**
      * {@inheritdoc}
      */
-    public function error(): FormError
+    public function error(?HttpFieldPath $field = null): FormError
     {
-        return $this->error;
+        return $field ? $this->error->withField($field) : $this->error;
     }
 
     /**

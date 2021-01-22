@@ -210,4 +210,20 @@ class BooleanElementTest extends TestCase
 
         $this->assertEquals('<input type="checkbox" name="" value="1" />', (string) $element->view());
     }
+
+    /**
+     *
+     */
+    public function test_error()
+    {
+        $element = (new BooleanElementBuilder())->satisfy(function() { return false; })->buildElement();
+        $element->submit('ok');
+
+        $error = $element->error(HttpFieldPath::named('foo'));
+
+        $this->assertEquals('foo', $error->field());
+        $this->assertEquals('The value is invalid', $error->global());
+        $this->assertEquals('CUSTOM_ERROR', $error->code());
+        $this->assertEmpty($error->children());
+    }
 }

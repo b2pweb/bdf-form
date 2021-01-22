@@ -95,9 +95,9 @@ final class LeafRootElement implements RootElementInterface
     /**
      * {@inheritdoc}
      */
-    public function error(): FormError
+    public function error(?HttpFieldPath $field = null): FormError
     {
-        return $this->element->error();
+        return $this->element->error($field);
     }
 
     /**

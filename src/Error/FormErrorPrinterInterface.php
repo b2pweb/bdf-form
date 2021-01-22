@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Error;
 
+use Bdf\Form\Child\Http\HttpFieldPath;
+
 /**
  * Print and format form errors
  * Printer are single use objects
@@ -27,6 +29,15 @@ interface FormErrorPrinterInterface
      * @see FormError::code()
      */
     public function code(string $code): void;
+
+    /**
+     * Print the HTTP field
+     *
+     * @param HttpFieldPath $field
+     *
+     * @see FormError::field()
+     */
+    public function field(HttpFieldPath $field): void;
 
     /**
      * Print a child error

@@ -372,7 +372,7 @@ class MyCustomChild implements ChildInterface
     {
     }
 
-    public function error(): FormError
+    public function error(?HttpFieldPath $field = null): FormError
     {
     }
 

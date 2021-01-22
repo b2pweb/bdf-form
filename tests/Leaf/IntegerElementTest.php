@@ -344,4 +344,20 @@ class IntegerElementTest extends TestCase
             , (string) $view->foo('bar')
         );
     }
+
+    /**
+     *
+     */
+    public function test_error()
+    {
+        $element = (new IntegerElementBuilder())->satisfy(function() { return false; })->buildElement();
+        $element->submit('0');
+
+        $error = $element->error(HttpFieldPath::named('foo'));
+
+        $this->assertEquals('foo', $error->field());
+        $this->assertEquals('The value is invalid', $error->global());
+        $this->assertEquals('CUSTOM_ERROR', $error->code());
+        $this->assertEmpty($error->children());
+    }
 }

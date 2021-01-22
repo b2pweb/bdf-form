@@ -4,11 +4,14 @@ namespace Bdf\Form\Custom;
 
 use Bdf\Form\Aggregate\ArrayElement;
 use Bdf\Form\Aggregate\Form;
+use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Aggregate\RootForm;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Error\FormError;
+use Bdf\Form\Error\FormErrorPrinterInterface;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
 use PHPUnit\Framework\TestCase;
@@ -231,6 +234,114 @@ class CustomFormTest extends TestCase
         $this->assertSame('Mouse', $array->value()[0]->lastName);
         $this->assertSame('Minnie', $array->value()[1]->firstName);
         $this->assertSame('Mouse', $array->value()[1]->lastName);
+    }
+
+    /**
+     *
+     */
+    public function test_function_complex_form_error_and_view()
+    {
+        $form = new class extends CustomForm {
+            protected function configure(FormBuilderInterface $builder): void
+            {
+                $builder->string('foo')->required();
+                $builder->array('arr')->form(function (FormBuilder $builder) {
+                    $builder->embedded('emb', function ($builder) {
+                        $builder->string('aaa')->required();
+                        $builder->string('bbb')->required();
+                    })->prefix();
+
+                    $builder->embedded('other', function ($builder) {
+                        $builder->string('aaa')->required();
+                        $builder->string('bbb')->required();
+                    });
+                });
+            }
+        };
+
+        $form->submit([
+            'arr' => [[]],
+        ]);
+
+        $errors = $form->error()->print(new class implements FormErrorPrinterInterface {
+            private $errors = [];
+            private $global;
+            private $code;
+            private $field;
+
+            public function global(string $error): void
+            {
+                $this->global = $error;
+            }
+
+            public function code(string $code): void
+            {
+                $this->code = $code;
+            }
+
+            public function field(HttpFieldPath $field): void
+            {
+                $this->field = $field;
+            }
+
+            public function child(string $name, FormError $error): void
+            {
+                $error->print($this);
+            }
+
+            public function print()
+            {
+                if ($this->global || $this->code) {
+                    $this->errors[] = [
+                        'field' => $this->field->get(),
+                        'message' => $this->global,
+                        'code' => $this->code,
+                    ];
+
+                    $this->global = null;
+                    $this->field = null;
+                    $this->code = null;
+                }
+
+                return $this->errors;
+            }
+        });
+
+        $this->assertEquals([
+            [
+                'field' => 'foo',
+                'message' => 'This value should not be blank.',
+                'code' => 'IS_BLANK_ERROR',
+            ],
+            [
+                'field' => 'arr[0][emb_aaa]',
+                'message' => 'This value should not be blank.',
+                'code' => 'IS_BLANK_ERROR',
+            ],
+            [
+                'field' => 'arr[0][emb_bbb]',
+                'message' => 'This value should not be blank.',
+                'code' => 'IS_BLANK_ERROR',
+            ],
+            [
+                'field' => 'arr[0][other][aaa]',
+                'message' => 'This value should not be blank.',
+                'code' => 'IS_BLANK_ERROR',
+            ],
+            [
+                'field' => 'arr[0][other][bbb]',
+                'message' => 'This value should not be blank.',
+                'code' => 'IS_BLANK_ERROR',
+            ],
+        ], $errors);
+
+        $view = $form->view();
+
+        $this->assertEquals('<input type="text" name="foo" value="" required />', (string) $view['foo']);
+        $this->assertEquals('<input type="text" name="arr[0][emb_aaa]" value="" required />', (string) $view['arr'][0]['emb']['aaa']);
+        $this->assertEquals('<input type="text" name="arr[0][emb_bbb]" value="" required />', (string) $view['arr'][0]['emb']['bbb']);
+        $this->assertEquals('<input type="text" name="arr[0][other][aaa]" value="" required />', (string) $view['arr'][0]['other']['aaa']);
+        $this->assertEquals('<input type="text" name="arr[0][other][bbb]" value="" required />', (string) $view['arr'][0]['other']['bbb']);
     }
 
     /**

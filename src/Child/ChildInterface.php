@@ -131,13 +131,15 @@ interface ChildInterface
 
     /**
      * The child's errors
-     * Behave same as ElementInterface::error()
+     * Behave same as ElementInterface::error() but adds the http field
+     *
+     * @param HttpFieldPath|null $field The parent field name. The child should append it's HTTP field to generate the real element view
      *
      * @return FormError
      *
      * @see ElementInterface::error()
      */
-    public function error(): FormError;
+    public function error(?HttpFieldPath $field = null): FormError;
 
     /**
      * Get the view for the given child

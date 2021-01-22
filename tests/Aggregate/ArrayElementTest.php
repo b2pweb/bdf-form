@@ -208,6 +208,20 @@ class ArrayElementTest extends TestCase
     /**
      *
      */
+    public function test_patch_with_element_error_with_field()
+    {
+        $element = new ArrayElement(new StringElement(new ConstraintValueValidator([new NotEqualTo('foo')])));
+
+        $this->assertFalse($element->patch(['foo', 'bar'])->valid());
+
+        $error = $element->error(HttpFieldPath::named('arr'));
+        $this->assertEquals(HttpFieldPath::named('arr'), $error->field());
+        $this->assertEquals(HttpFieldPath::named('arr')->add(0), $error->children()[0]->field());
+    }
+
+    /**
+     *
+     */
     public function test_patch_with_transformer_error()
     {
         $element = new ArrayElement(new StringElement(), new ClosureTransformer(function () { throw new Exception('My error'); }));
@@ -226,6 +240,7 @@ class ArrayElementTest extends TestCase
 
         $this->assertFalse($element->patch(['foo', 'bar'])->valid());
         $this->assertEquals('This collection should contain 3 elements or more.', $element->error()->global());
+        $this->assertEquals(HttpFieldPath::named('arr'), $element->error(HttpFieldPath::named('arr'))->field());
 
         $this->assertTrue($element->patch(['foo', 'bar', 'rab'])->valid());
     }

@@ -3,6 +3,7 @@
 namespace Bdf\Form\Error;
 
 use Bdf\Form\Child\ChildInterface;
+use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use InvalidArgumentException;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -20,6 +21,11 @@ final class FormError
      * @var FormError|null
      */
     private static $null;
+
+    /**
+     * @var HttpFieldPath|null
+     */
+    private $field;
 
     /**
      * @var string|null
@@ -50,6 +56,16 @@ final class FormError
         $this->global = $global;
         $this->code = $code;
         $this->children = $children;
+    }
+
+    /**
+     * Get the HTTP field name of the current element
+     *
+     * @return HttpFieldPath|null The field path, or null is it's on the root element
+     */
+    public function field(): ?HttpFieldPath
+    {
+        return $this->field;
     }
 
     /**
@@ -135,6 +151,10 @@ final class FormError
      */
     public function print(FormErrorPrinterInterface $printer)
     {
+        if ($this->field) {
+            $printer->field($this->field);
+        }
+
         if ($this->global) {
             $printer->global($this->global);
         }
@@ -158,6 +178,28 @@ final class FormError
     public function __toString(): string
     {
         return $this->print(new StringErrorPrinter());
+    }
+
+    /**
+     * Add the HTTP field on the form error
+     * The field will be applied to all children as prefix
+     *
+     * @param HttpFieldPath $field The current element field
+     *
+     * @return FormError The new FormError instance
+     */
+    public function withField(HttpFieldPath $field): FormError
+    {
+        $error = clone $this;
+
+        $error->field = $field;
+        $error->children = [];
+
+        foreach ($this->children as $name => $child) {
+            $error->children[$name] = $child->withPrefixField($field);
+        }
+
+        return $error;
     }
 
     /**
@@ -220,5 +262,26 @@ final class FormError
         }
 
         return self::message($message, $code);
+    }
+
+    /**
+     * Add recursively a prefix field on children
+     *
+     * @param HttpFieldPath $prefix Prefix to add
+     *
+     * @return FormError
+     */
+    private function withPrefixField(HttpFieldPath $prefix)
+    {
+        $error = clone $this;
+
+        $error->field = $this->field ? $prefix->concat($this->field) : $prefix;
+        $error->children = [];
+
+        foreach ($this->children as $name => $child) {
+            $error->children[$name] = $child->withPrefixField($prefix);
+        }
+
+        return $error;
     }
 }

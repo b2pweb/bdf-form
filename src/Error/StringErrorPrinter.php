@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Error;
 
+use Bdf\Form\Child\Http\HttpFieldPath;
+
 /**
  * Format errors as a string
  */
@@ -36,6 +38,14 @@ final class StringErrorPrinter implements FormErrorPrinterInterface
      * @var string
      */
     private $output = '';
+
+    /**
+     * {@inheritdoc}
+     */
+    public function field(HttpFieldPath $field): void
+    {
+        // Ignore the field name
+    }
 
     /**
      * {@inheritdoc}

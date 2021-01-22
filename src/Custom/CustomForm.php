@@ -167,9 +167,9 @@ abstract class CustomForm implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function error(): FormError
+    public function error(?HttpFieldPath $field = null): FormError
     {
-        return $this->form()->error();
+        return $this->form()->error($field);
     }
 
     /**
