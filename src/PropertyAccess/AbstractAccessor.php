@@ -102,7 +102,7 @@ abstract class AbstractAccessor implements AccessorInterface
      */
     final protected function getPropertyName()
     {
-        if (empty($this->propertyName)) {
+        if ($this->propertyName === null) {
             $this->propertyName = $this->input->name();
         }
 

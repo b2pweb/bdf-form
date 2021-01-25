@@ -161,6 +161,23 @@ class SetterTest extends TestCase
 
         $this->assertSame('my value', $entity->foo->bar);
     }
+
+    /**
+     *
+     */
+    public function test_setter_with_array_offset_zero()
+    {
+        $builder = new ChildBuilder('private', new StringElementBuilder());
+        $builder->hydrator(new Setter('0'))->value('my value');
+
+        $input = $builder->buildChild();
+        $input->setParent(new Form(new ChildrenCollection()));
+
+        $out = [];
+        $input->fill($out);
+
+        $this->assertSame(['my value'], $out);
+    }
 }
 
 class SetterTestEntity

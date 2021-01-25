@@ -155,6 +155,22 @@ class GetterTest extends TestCase
 
         $this->assertSame('my value', $input->element()->value());
     }
+
+    /**
+     *
+     */
+    public function test_with_array_offset_zero()
+    {
+        $builder = new ChildBuilder('private', new StringElementBuilder());
+        $builder->extractor(new Getter('0'));
+
+        $input = $builder->buildChild();
+        $input->setParent(new Form(new ChildrenCollection()));
+
+        $input->import(['foo', 'bar']);
+
+        $this->assertSame('foo', $input->element()->value());
+    }
 }
 
 class GetterTestEntity
