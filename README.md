@@ -824,3 +824,77 @@ To use the custom element, simply call `FormBuilderInterface::add()` with the el
 ```php
 $builder->add('uri', UriElement::class);
 ```
+
+## Error Handling
+
+When an error occurs on the form, a [`FormError`](src/Error/FormError.php) object is created with all errors.
+
+### Simple usage 
+
+If an error is on a child, use `FormError::children()` to get the error.
+If there is no error on children, but on the parent element, use `FormError::global()` instead.
+To get a simple string representation of errors, cast the errors to string.
+To get an array representation in form [fieldName => error], use `FormError::toArray()`.
+
+```php
+if (!$form->error()->empty()) {
+    // Simple render errors as string
+    return new Response('<div class="alert alert-danger">'.$form->error().'</div>');
+    
+    // For simple API error system, use toArray()
+    return new JsonReponse(['error' => $form->error()->toArray()]);
+    
+    // Or use accessors
+    foreach ($form->error()->children() as $name => $error) {
+        echo $error->field().' : '.$error->global().' ('.$error->code().')'.PHP_EOL;
+    }
+}
+```
+
+### Printer
+
+To format errors with reusable way, a [`FormErrorPrinterInterface`](src/Error/FormErrorPrinterInterface.php) can be implemented.
+
+```php
+/**
+ * Print errors in format [httpField => ['code' => errorCode, 'message' => errorMessage]]
+ */
+class ApiPrinter implements \Bdf\Form\Error\FormErrorPrinterInterface
+{
+    private $errors = [];
+    private $current;
+
+    // Define the error message for the current element
+    public function global(string $error) : void
+    {
+        $this->errors[$this->current]['message'] = $error;
+    }
+    
+    // Define the error code for the current element
+    public function code(string $code) : void
+    {
+        $this->errors[$this->current]['code'] = $code;
+    }
+    
+    // Define the error element http field
+    public function field(\Bdf\Form\Child\Http\HttpFieldPath $field) : void
+    {
+        $this->current = $field->get();
+    }
+    
+    // Iterate on element's children
+    public function child(string $name,\Bdf\Form\Error\FormError $error) : void
+    {
+        $error->print($this);
+    }
+    
+    // Get all errors
+    public function print()
+    {
+        return $this->errors;
+    }
+}
+
+// Usage
+return new JsonReponse(['errors' => $form->error()->print(new ApiPrinter())]);
+```
