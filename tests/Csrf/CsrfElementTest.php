@@ -198,8 +198,8 @@ class CsrfElementTest extends TestCase
     {
         $element = new CsrfElement();
 
-        $token = $element->value();
         $view = $element->view(HttpFieldPath::named('token'));
+        $token = $view->value();
 
         $this->assertEquals(CsrfElement::class, $view->type());
         $this->assertEquals('<input type="hidden" name="token" value="'.$token.'" required />', (string) $view);
@@ -209,10 +209,13 @@ class CsrfElementTest extends TestCase
         $element->submit('invalid');
 
         $view = $element->view(HttpFieldPath::named('token'));
+        $token = $view->value();
 
         $this->assertEquals('<input type="hidden" name="token" value="'.$token.'" required />', (string) $view);
         $this->assertTrue($view->hasError());
         $this->assertEquals('The CSRF token is invalid.', $view->error());
+
+        $this->assertTrue($element->submit($token)->valid());
     }
 
     /**
