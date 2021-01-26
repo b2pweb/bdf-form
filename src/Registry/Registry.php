@@ -31,6 +31,8 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Phone\FormattedPhoneElement;
+use Bdf\Form\Phone\FormattedPhoneElementBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
@@ -77,6 +79,11 @@ final class Registry implements RegistryInterface
         $this->register(CustomForm::class, function (RegistryInterface $registry, string $formClass) {
             /** @psalm-suppress ArgumentTypeCoercion */
             return new CustomFormBuilder($formClass, $this->elementBuilder(Form::class));
+        });
+
+        $this->register(FormattedPhoneElement::class, function (RegistryInterface $registry) {
+            /** @psalm-suppress ArgumentTypeCoercion */
+            return new FormattedPhoneElementBuilder($registry->elementBuilder(PhoneElement::class));
         });
     }
 

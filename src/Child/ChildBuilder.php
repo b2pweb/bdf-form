@@ -13,6 +13,7 @@ use Bdf\Form\PropertyAccess\HydratorInterface;
 use Bdf\Form\PropertyAccess\Setter;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Registry\RegistryInterface;
+use Bdf\Form\Util\MagicCallForwarding;
 
 /**
  * Base builder for a child
@@ -39,6 +40,8 @@ use Bdf\Form\Registry\RegistryInterface;
  */
 class ChildBuilder implements ChildBuilderInterface
 {
+    use MagicCallForwarding;
+
     /**
      * @var string
      */
@@ -405,7 +408,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @return $this
      */
-    public function configure(callable $configurator): self
+    final public function configure(callable $configurator): self
     {
         $configurator($this->elementBuilder);
 
@@ -413,17 +416,10 @@ class ChildBuilder implements ChildBuilderInterface
     }
 
     /**
-     * Forward calls to the element builder
-     *
-     * @param string $name
-     * @param array $arguments
-     *
-     * @return $this|mixed
+     * {@inheritdoc}
      */
-    final public function __call($name, $arguments)
+    final protected function getElementBuilder(): ElementBuilderInterface
     {
-        $return = $this->elementBuilder->$name(...$arguments);
-
-        return $return === $this->elementBuilder ? $this : $return;
+        return $this->elementBuilder;
     }
 }

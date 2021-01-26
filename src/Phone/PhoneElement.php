@@ -44,7 +44,7 @@ final class PhoneElement extends LeafElement
     {
         parent::__construct($validator, $transformer);
 
-        $this->regionResolver = $regionResolver ?? function(): string { return PhoneNumberUtil::UNKNOWN_REGION; };
+        $this->regionResolver = $regionResolver;
         $this->formatter = $formatter ?? PhoneNumberUtil::getInstance();
     }
 
@@ -57,11 +57,7 @@ final class PhoneElement extends LeafElement
             return null;
         }
 
-        try {
-            return $this->formatter->parse($httpValue, strtoupper(($this->regionResolver)($this)), null, true);
-        } catch (NumberParseException $e) {
-            return (new PhoneNumber())->setRawInput($httpValue);
-        }
+        return $this->parseValue($httpValue);
     }
 
     /**
@@ -74,5 +70,44 @@ final class PhoneElement extends LeafElement
         }
 
         return $phpValue->getRawInput() ?: $this->formatter->format($phpValue, PhoneNumberFormat::E164);
+    }
+
+    /**
+     * Get the resolved region string
+     *
+     * @return string
+     */
+    private function resolveRegion(): string
+    {
+        if (!$this->regionResolver) {
+            return PhoneNumberUtil::UNKNOWN_REGION;
+        }
+
+        return strtoupper(($this->regionResolver)($this));
+    }
+
+    /**
+     * @internal
+     */
+    public function getFormatter(): PhoneNumberUtil
+    {
+        return $this->formatter;
+    }
+
+    /**
+     * Parse a phone number string
+     *
+     * @param string $rawPhoneNumber The string value of the phone number
+     * @return PhoneNumber The parsed instance
+     *
+     * @internal
+     */
+    public function parseValue(string $rawPhoneNumber): PhoneNumber
+    {
+        try {
+            return $this->formatter->parse($rawPhoneNumber, $this->resolveRegion(), null, true);
+        } catch (NumberParseException $e) {
+            return (new PhoneNumber())->setRawInput($rawPhoneNumber);
+        }
     }
 }

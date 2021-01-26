@@ -13,6 +13,7 @@ use Bdf\Form\Leaf\Helper\UrlElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Phone\FormattedPhoneElement;
 use Bdf\Form\Phone\PhoneElement;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -112,6 +113,19 @@ class FormBuilderTest extends TestCase
 
         $this->assertInstanceOf(Form::class, $form);
         $this->assertInstanceOf(PhoneElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_formattedPhone()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->formattedPhone('value'));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(FormattedPhoneElement::class, $form['value']->element());
     }
 
     /**

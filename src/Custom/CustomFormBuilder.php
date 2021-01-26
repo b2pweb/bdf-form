@@ -7,6 +7,7 @@ use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Registry\RegistryInterface;
+use Bdf\Form\Util\DelegateElementBuilderTrait;
 
 /**
  * Builder for extends a custom form
@@ -26,6 +27,8 @@ use Bdf\Form\Registry\RegistryInterface;
  */
 class CustomFormBuilder implements ElementBuilderInterface
 {
+    use DelegateElementBuilderTrait;
+
     /**
      * @var FormBuilderInterface
      */
@@ -51,36 +54,6 @@ class CustomFormBuilder implements ElementBuilderInterface
 
     /**
      * {@inheritdoc}
-     */
-    public function satisfy($constraint, $options = null, bool $append = true)
-    {
-        $this->builder->satisfy($constraint, $options, $append);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function transformer($transformer, bool $append = true)
-    {
-        $this->builder->transformer($transformer, $append);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function value($value)
-    {
-        $this->builder->value($value);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
      *
      * @return CustomForm
      */
@@ -97,17 +70,10 @@ class CustomFormBuilder implements ElementBuilderInterface
     }
 
     /**
-     * Forward call to inner builder
-     *
-     * @param string $name
-     * @param array $arguments
-     *
-     * @return $this
+     * {@inheritdoc}
      */
-    public function __call(string $name, array $arguments)
+    protected function getElementBuilder(): ElementBuilderInterface
     {
-        $return = $this->builder->$name(...$arguments);
-
-        return $return === $this->builder ? $this : $return;
+        return $this->builder;
     }
 }

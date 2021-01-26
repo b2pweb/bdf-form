@@ -16,6 +16,7 @@ use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Registry\RegistryInterface;
+use Bdf\Form\Util\MagicCallForwarding;
 use Bdf\Form\Util\TransformerBuilderTrait;
 use Bdf\Form\Util\ValidatorBuilderTrait;
 use Symfony\Component\Validator\Constraint;
@@ -42,6 +43,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class ArrayElementBuilder implements ElementBuilderInterface
 {
+    use MagicCallForwarding;
+
     use ChoiceBuilderTrait {
         ChoiceBuilderTrait::choices as protected baseChoices;
     }
@@ -144,7 +147,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     }
 
     /**
-     * Get the inner element builder
+     * {@inheritdoc}
      *
      * @return ElementBuilderInterface<ElementInterface<T>>
      */
@@ -359,21 +362,6 @@ class ArrayElementBuilder implements ElementBuilderInterface
         }
 
         return $element;
-    }
-
-    /**
-     * Forward call to the inner element builder
-     *
-     * @param string $name
-     * @param array $arguments
-     *
-     * @return $this
-     */
-    public function __call($name, $arguments)
-    {
-        $this->getElementBuilder()->$name(...$arguments);
-
-        return $this;
     }
 
     /**

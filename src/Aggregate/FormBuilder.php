@@ -18,6 +18,7 @@ use Bdf\Form\Leaf\Helper\EmailElement;
 use Bdf\Form\Leaf\Helper\UrlElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Phone\FormattedPhoneElement;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\RootElementInterface;
@@ -218,6 +219,29 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     public function url(string $name): ChildBuilderInterface
     {
         return $this->add($name, UrlElement::class);
+    }
+
+    /**
+     * Add a formatted phone element
+     * The formatted phone is stored as string instead of PhoneNumber object
+     *
+     * <code>
+     * $builder->formattedPhone('contact')->format(PhoneNumberFormat::INTERNATIONAL);
+     * </code>
+     *
+     * @param string $name The name of the input
+     *
+     * @return ChildBuilderInterface|\Bdf\Form\Phone\FormattedPhoneElementBuilder
+     * @psalm-return ChildBuilderInterface<\Bdf\Form\Phone\FormattedPhoneElementBuilder>
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     *
+     * @see FormBuilder::phone() For a phone object
+     */
+    public function formattedPhone(string $name): ChildBuilderInterface
+    {
+        return $this->add($name, FormattedPhoneElement::class);
     }
 
     /**

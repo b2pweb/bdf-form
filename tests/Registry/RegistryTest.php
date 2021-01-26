@@ -32,6 +32,8 @@ use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\LeafElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Phone\FormattedPhoneElement;
+use Bdf\Form\Phone\FormattedPhoneElementBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
@@ -173,6 +175,7 @@ class RegistryTest extends TestCase
         $this->assertInstanceOf(BooleanElementBuilder::class, $this->registry->elementBuilder(BooleanElement::class));
         $this->assertInstanceOf(CsrfElementBuilder::class, $this->registry->elementBuilder(CsrfElement::class));
         $this->assertInstanceOf(PhoneElementBuilder::class, $this->registry->elementBuilder(PhoneElement::class));
+        $this->assertInstanceOf(FormattedPhoneElementBuilder::class, $this->registry->elementBuilder(FormattedPhoneElement::class));
         $this->assertInstanceOf(DateTimeElementBuilder::class, $this->registry->elementBuilder(DateTimeElement::class));
         $this->assertInstanceOf(EmailElementBuilder::class, $this->registry->elementBuilder(EmailElement::class));
         $this->assertInstanceOf(UrlElementBuilder::class, $this->registry->elementBuilder(UrlElement::class));
