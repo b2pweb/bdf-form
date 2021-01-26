@@ -9,6 +9,34 @@ Library for handle form, and request validation.
 [![Total Downloads](https://img.shields.io/packagist/dt/b2pweb/bdf-form.svg)](https://packagist.org/packages/b2pweb/bdf-form)
 [![Type Coverage](https://shepherd.dev/github/b2pweb/bdf-form/coverage.svg)](https://shepherd.dev/github/b2pweb/bdf-form)
 
+## Table of content
+
+- [Installation using composer](#installation-using-composer)
+- [Basic usage](#basic-usage)
+- [Handle entities](#handle-entities)
+- [Embedded and array](#embedded-and-array)
+- [Field path and dependencies](#field-path-and-dependencies)
+- [Choices](#choices)
+- [Buttons](#buttons)
+- [Elements](#elements)
+    - [StringElement](#stringelement)
+        - [Email](#email)
+        - [Url](#url)
+    - [IntegerElement](#integerelement)
+    - [FloatElement](#floatelement)
+    - [BooleanElement](#booleanelement)
+    - [DateTimeElement](#datetimeelement)
+    - [PhoneElement](#phoneelement)
+    - [FormattedPhoneElement](#formattedphoneelement)
+    - [CsrfElement](#csrfelement)
+- [Create a custom element](#create-a-custom-element)
+    - [Using custom form](#using-custom-form)
+    - [Using LeafElement](#using-leafelement)
+    - [Usage](#usage)
+- [Error Handling](#error-handling)
+    - [Simple usage](#simple-usage)
+    - [Printer](#printer)
+
 ## Installation using composer
 
 ```
@@ -578,6 +606,22 @@ $builder->string('username')
 ;
 ```
 
+#### Email
+
+String element with Email constraint
+
+```php
+$builder->email('username')->mode(Email::VALIDATION_MODE_HTML5);
+```
+
+#### Url
+
+String element with Url constraint
+
+```php
+$builder->url('server')->protocols('ftp', 'sftp');
+```
+
 ### IntegerElement
 
 ```php
@@ -638,7 +682,7 @@ $builder->dateTime('eventDate')
 
 Handle phone number. The package `giggsey/libphonenumber-for-php` is required to use this element.
 This element will not return a `string` but a `PhoneNumber` instance. 
-If you want to save the phone as string, you can use a transformer on `setter()` which format the phone number.
+If you want to save the phone as string, use `FormattedPhoneElement` instead.
 
 ```php
 $builder->phone('contact')
@@ -649,6 +693,24 @@ $builder->phone('contact')
     ->regionInput('address/country') // Use a sibling input for parse the number (do not forget to call `depends()`)
     ->allowInvalidNumber(true) // Do not check the phone number
     ->validateNumber('My error message') // Enable validation, and define the validator options (here the error message)
+;
+```
+
+### FormattedPhoneElement
+
+Handle phone number but save a `string` instead of a `PhoneNumber` instance.
+This element and build will use internally `PhoneElement`, so `giggsey/libphonenumber-for-php` is required, 
+and all transformations or validations will takes a `PhoneNumber` object as parameter.
+
+```php
+$builder->formattedPhone('contact')
+    ->format(PhoneNumberFormat::NATIONAL) // Define the internal phone format
+    ->regionInput('address/country') // PhoneElementBuilder methods can be used
+    ->allowInvalidNumber(true)
+    // satisfy and transformer takes a PhoneNumber instance as value
+    ->satifsy(function (\libphonenumber\PhoneNumber $value) {
+        return $value->hasNationalNumber();
+    })
 ;
 ```
 
