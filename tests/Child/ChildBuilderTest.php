@@ -338,6 +338,30 @@ class ChildBuilderTest extends TestCase
 
         $this->assertInstanceOf(StringElementBuilder::class, $param);
     }
+
+    /**
+     *
+     */
+    public function test_modelTransformer()
+    {
+        $child = $this->builder
+            ->modelTransformer(function ($value, $input, $toPhp) {
+                return $toPhp ? base64_encode($value) : base64_decode($value);
+            })
+            ->setter('prop')->getter('prop')
+            ->buildChild()
+        ;
+        $child->setParent(new Form(new ChildrenCollection()));
+        $child->element()->import('value');
+
+        $target = [];
+        $child->fill($target);
+
+        $target = ['prop' => base64_encode('foo')];
+        $child->import($target);
+
+        $this->assertEquals('foo', $child->element()->value());
+    }
 }
 
 class MyCustomChild implements ChildInterface

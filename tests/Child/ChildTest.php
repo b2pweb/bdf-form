@@ -12,6 +12,7 @@ use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\PropertyAccess\Getter;
 use Bdf\Form\PropertyAccess\Setter;
+use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -81,6 +82,20 @@ class ChildTest extends TestCase
     /**
      *
      */
+    public function test_import_with_transformer()
+    {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter(), [], new ClosureTransformer(function($value) {
+            return base64_encode($value);
+        }));
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $child->import(['child' => 'my value']);
+        $this->assertSame(base64_encode('my value'), $child->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_fill_with_array()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), new Setter());
@@ -106,6 +121,23 @@ class ChildTest extends TestCase
         $child->fill($target);
 
         $this->assertEquals('my value', $target->child);
+    }
+
+    /**
+     *
+     */
+    public function test_fill_with_transformer()
+    {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), new Setter(), null, [], new ClosureTransformer(function($value) {
+            return base64_encode($value);
+        }));
+        $child->setParent(new Form(new ChildrenCollection()));
+        $child->element()->import('my value');
+
+        $target = (object) ['child' => null];
+        $child->fill($target);
+
+        $this->assertEquals(base64_encode('my value'), $target->child);
     }
 
     /**

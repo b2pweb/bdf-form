@@ -85,7 +85,7 @@ interface ElementBuilderInterface
      * // Register a custom transformer
      * // The first parameter is the value to transform
      * // The second is the current element
-     * // The third is a flag t: if true, the transformation is from HTTP to PHP, if false, it's from PHP to HTTP
+     * // The third is a flag : if true, the transformation is from HTTP to PHP, if false, it's from PHP to HTTP
      * $builder->transformer(function ($value, ElementInterface $input, bool $toPhp) {
      *     if ($toPhp) {
      *         return new Entity($value);
@@ -96,7 +96,7 @@ interface ElementBuilderInterface
      * </code>
      *
      * @param callable|TransformerInterface|DataTransformerInterface $transformer The transformer. Symfony transformer can be used
-     * @param bool $append Append the validator. Prepend if false
+     * @param bool $append Append the transformer. Prepend if false
      *
      * @return $this
      *

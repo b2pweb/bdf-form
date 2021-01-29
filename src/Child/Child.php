@@ -11,6 +11,8 @@ use Bdf\Form\Error\FormError;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
+use Bdf\Form\Transformer\NullTransformer;
+use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\View\ElementViewInterface;
 
 /**
@@ -63,6 +65,11 @@ final class Child implements ChildInterface
      */
     private $dependencies;
 
+    /**
+     * @var TransformerInterface
+     */
+    private $transformer;
+
 
     /**
      * ArrayOffsetChild constructor.
@@ -76,7 +83,7 @@ final class Child implements ChildInterface
      * @param ExtractorInterface|null $extractor
      * @param string[] $dependencies
      */
-    public function __construct(string $name, ElementInterface $element, ?HttpFieldsInterface $fields = null, array $filters = [], $defaultValue = null, ?HydratorInterface $hydrator = null, ?ExtractorInterface $extractor = null, array $dependencies = [])
+    public function __construct(string $name, ElementInterface $element, ?HttpFieldsInterface $fields = null, array $filters = [], $defaultValue = null, ?HydratorInterface $hydrator = null, ?ExtractorInterface $extractor = null, array $dependencies = [], ?TransformerInterface $transformer = null)
     {
         $this->name = $name;
         $this->element = $element->setContainer($this);
@@ -86,6 +93,7 @@ final class Child implements ChildInterface
         $this->hydrator = $hydrator;
         $this->extractor = $extractor;
         $this->dependencies = $dependencies;
+        $this->transformer = $transformer ?? NullTransformer::instance();
     }
 
     /**
@@ -150,7 +158,10 @@ final class Child implements ChildInterface
         $this->extractor->setPropertyAccessor($propertyAccessor);
         $this->extractor->setFormElement($this);
 
-        $this->element->import($this->extractor->extract($entity));
+        $value = $this->extractor->extract($entity);
+        $value = $this->transformer->transformToHttp($value, $this->element);
+
+        $this->element->import($value);
     }
 
     /**
@@ -167,7 +178,10 @@ final class Child implements ChildInterface
         $this->hydrator->setPropertyAccessor($propertyAccessor);
         $this->hydrator->setFormElement($this);
 
-        $this->hydrator->hydrate($entity, $this->element->value());
+        $value = $this->element->value();
+        $value = $this->transformer->transformFromHttp($value, $this->element);
+
+        $this->hydrator->hydrate($entity, $value);
     }
 
     /**

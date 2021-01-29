@@ -13,7 +13,10 @@ use Bdf\Form\PropertyAccess\HydratorInterface;
 use Bdf\Form\PropertyAccess\Setter;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Registry\RegistryInterface;
+use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\MagicCallForwarding;
+use Bdf\Form\Util\TransformerBuilderTrait;
+use Symfony\Component\Form\DataTransformerInterface;
 
 /**
  * Base builder for a child
@@ -41,6 +44,9 @@ use Bdf\Form\Util\MagicCallForwarding;
 class ChildBuilder implements ChildBuilderInterface
 {
     use MagicCallForwarding;
+    use TransformerBuilderTrait {
+        transformer as modelTransformer;
+    }
 
     /**
      * @var string
@@ -206,7 +212,8 @@ class ChildBuilder implements ChildBuilderInterface
                 $default,
                 $this->hydrator,
                 $this->extractor,
-                $this->viewDependencies
+                $this->viewDependencies,
+                $this->buildTransformer()
             );
         }
 
@@ -218,7 +225,8 @@ class ChildBuilder implements ChildBuilderInterface
             $default,
             $this->hydrator,
             $this->extractor,
-            $this->viewDependencies
+            $this->viewDependencies,
+            $this->buildTransformer()
         );
     }
 
@@ -416,10 +424,34 @@ class ChildBuilder implements ChildBuilderInterface
     }
 
     /**
+     * Forward call to element builder
+     *
+     * @param callable|TransformerInterface|DataTransformerInterface $transformer
+     * @param bool $append
+     * @return $this
+     *
+     * @see ElementBuilderInterface::transformer()
+     */
+    public function transformer($transformer, bool $append = true)
+    {
+        $this->elementBuilder->transformer($transformer, $append);
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     final protected function getElementBuilder(): ElementBuilderInterface
     {
         return $this->elementBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final protected function registry(): RegistryInterface
+    {
+        return $this->registry;
     }
 }

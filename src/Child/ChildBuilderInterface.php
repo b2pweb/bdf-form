@@ -6,6 +6,8 @@ use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
+use Bdf\Form\Transformer\TransformerInterface;
+use Symfony\Component\Form\DataTransformerInterface;
 
 /**
  * Builder type for instantiate a child
@@ -112,6 +114,40 @@ interface ChildBuilderInterface
      * @return $this
      */
     public function depends(string ...$inputNames);
+
+    /**
+     * Add a model transformer
+     * The model transformer as the responsability of transform the element value to model PHP value (i.e. fill()'ed value), and vice-versa
+     *
+     * When transform to PHP, the transformers are executed in reverse order (last registered is the first executed),
+     * and there are called in order for transform to HTTP (last registered is the last executed).
+     * The value parameter of each transformer is the previous transformer result
+     *
+     * <code>
+     * $builder->modelTransformer(new MyTransformer()); // Add a transformer (will be executed before previous ones on submit)
+     * $builder->modelTransformer(new MyTransformer(), false); // Prepend a transformer (will be executed after previous ones on submit)
+     *
+     * // Register a custom transformer
+     * // The first parameter is the value to transform
+     * // The second is the current element
+     * // The third is a flag : if true, the transformation is from element to model, if false, it's from PHP to HTTP
+     * $builder->modelTransformer(function ($value, ElementInterface $input, bool $toPhp) {
+     *     if ($toPhp) {
+     *         return new Entity($value);
+     *     } else {
+     *         return $value->export();
+     *     }
+     * });
+     * </code>
+     *
+     * @param callable|TransformerInterface|DataTransformerInterface $transformer The transformer. Symfony transformer can be used
+     * @param bool $append Append the transformer. Prepend if false
+     *
+     * @return $this
+     *
+     * @see TransformerInterface
+     */
+    public function modelTransformer($transformer, bool $append = true);
 
     /**
      * Creates the child instance
