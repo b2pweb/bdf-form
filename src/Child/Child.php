@@ -150,7 +150,7 @@ final class Child implements ChildInterface
         $this->extractor->setPropertyAccessor($propertyAccessor);
         $this->extractor->setFormElement($this);
 
-        $this->extractor->extract($entity);
+        $this->element->import($this->extractor->extract($entity));
     }
 
     /**
@@ -167,7 +167,7 @@ final class Child implements ChildInterface
         $this->hydrator->setPropertyAccessor($propertyAccessor);
         $this->hydrator->setFormElement($this);
 
-        $this->hydrator->hydrate($entity);
+        $this->hydrator->hydrate($entity, $this->element->value());
     }
 
     /**

@@ -28,7 +28,7 @@ use Bdf\Form\Util\MagicCallForwarding;
  * ;
  * </code>
  *
- * @mixin ElementBuilderInterface
+ * @mixin B
  *
  * @method $this satisfy($constraint, $options = null, bool $append = true)
  * @method $this value($value)

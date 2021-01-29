@@ -12,9 +12,10 @@ interface HydratorInterface extends AccessorInterface
     /**
      * Hydrate the target
      *
-     * @param array|object $target
+     * @param array|object $target Entity to hydrate
+     * @param mixed $value The value to set
      *
      * @return void
      */
-    public function hydrate(&$target)/*: void*/;
+    public function hydrate(&$target, $value)/*: void*/;
 }

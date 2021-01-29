@@ -35,10 +35,8 @@ final class Setter extends AbstractAccessor implements HydratorInterface
     /**
      * {@inheritdoc}
      */
-    public function hydrate(&$target): void
+    public function hydrate(&$target, $value): void
     {
-        $value = $this->input->element()->value();
-
         if ($this->transformer) {
             $value = ($this->transformer)($value, $this->input);
         }
