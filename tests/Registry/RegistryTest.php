@@ -10,6 +10,7 @@ use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildBuilder;
+use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
@@ -19,6 +20,7 @@ use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Filter\TrimFilter;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
@@ -162,6 +164,8 @@ class RegistryTest extends TestCase
         $this->assertInstanceOf(Child::class, $child);
         $this->assertEquals('child', $child->name());
         $this->assertInstanceOf(StringElement::class, $child->element());
+
+        $this->assertInstanceOf(DateTimeChildBuilder::class, $this->registry->childBuilder(DateTimeElement::class, 'child'));
     }
 
     /**
@@ -185,9 +189,11 @@ class RegistryTest extends TestCase
         $this->assertInstanceOf(MyCustomForm::class, $this->registry->elementBuilder(MyCustomForm::class)->buildElement());
 
         $builder = $this->createMock(ElementBuilderInterface::class);
-        $this->registry->register(MyCustomTestElement::class, function () use($builder) { return $builder; });
+        $childBuilder = $this->createMock(ChildBuilderInterface::class);
+        $this->registry->register(MyCustomTestElement::class, function () use($builder) { return $builder; }, function () use ($childBuilder) { return $childBuilder; });
 
         $this->assertSame($builder, $this->registry->elementBuilder(MyCustomTestElement::class));
+        $this->assertSame($childBuilder, $this->registry->childBuilder(MyCustomTestElement::class, 'child'));
     }
 
     /**

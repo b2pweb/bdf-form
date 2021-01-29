@@ -55,6 +55,26 @@ final class DateTimeElement extends LeafElement
     }
 
     /**
+     * Get the timezone of the element
+     *
+     * @return DateTimeZone|null The timezone, or null if not defined
+     */
+    public function timezone(): ?DateTimeZone
+    {
+        return $this->timezone;
+    }
+
+    /**
+     * Get the handled date time class name
+     *
+     * @return class-string<DateTimeInterface>
+     */
+    public function dateTimeClassName(): string
+    {
+        return $this->className;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function toPhp($httpValue): ?DateTimeInterface

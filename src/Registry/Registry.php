@@ -19,6 +19,7 @@ use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
@@ -50,7 +51,7 @@ use Symfony\Component\Validator\Constraint;
 final class Registry implements RegistryInterface
 {
     /**
-     * @var string[]|callable[]
+     * @var class-string<ElementBuilderInterface>[]|callable[]
      */
     private $elementBuilderFactories = [
         StringElement::class => StringElementBuilder::class,
@@ -70,6 +71,12 @@ final class Registry implements RegistryInterface
         Form::class => FormBuilder::class,
     ];
 
+    /**
+     * @var class-string<ChildBuilderInterface>[]|callable[]
+     */
+    private $childBuilderFactories = [
+        DateTimeElement::class => DateTimeChildBuilder::class,
+    ];
 
     /**
      * Registry constructor.
@@ -159,7 +166,16 @@ final class Registry implements RegistryInterface
      */
     public function childBuilder(string $element, string $name): ChildBuilderInterface
     {
-        return new ChildBuilder($name, $this->elementBuilder($element), $this);
+        $elementBuilder = $this->elementBuilder($element);
+
+        $builderFactory = $this->childBuilderFactories[$element] ?? ChildBuilder::class;
+
+        if (is_string($builderFactory)) {
+            /** @var class-string<ChildBuilderInterface> $builderFactory */
+            return new $builderFactory($name, $elementBuilder, $this);
+        }
+
+        return $builderFactory($name, $elementBuilder, $this);
     }
 
     /**
@@ -211,15 +227,25 @@ final class Registry implements RegistryInterface
      * $registry->register(MyCustomElement::class, function (Registry $registry, string $element) {
      *     return new MyCustomBuilder($registry);
      * });
+     *
+     * // Register with a custom child builder
+     * $registry->register(MyCustomElement::class, MyCustomBuilder::class, function (string $name, ElementBuilderInterface $builder, Registry $registry) {
+     *     return new MyCustomChildBuilder($registry, new ChildBuilder($name, $builder, $registry));
+     * });
      * </code>
      *
      * @param string $elementType The element class name
-     * @param string|callable $builderFactory The builder factory, or builder class name
+     * @param class-string<ElementBuilderInterface>|callable $builderFactory The builder factory, or builder class name
+     * @param class-string<ChildBuilderInterface>|callable|null $childBuilderFactory The builder factory for child, or builder class name. If null, use default child builder
      *
      * @see Registry::elementBuilder()
      */
-    public function register(string $elementType, $builderFactory): void
+    public function register(string $elementType, $builderFactory, $childBuilderFactory = null): void
     {
         $this->elementBuilderFactories[$elementType] = $builderFactory;
+
+        if ($childBuilderFactory !== null) {
+            $this->childBuilderFactories[$elementType] = $childBuilderFactory;
+        }
     }
 }

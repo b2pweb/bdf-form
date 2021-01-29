@@ -441,6 +441,8 @@ class ChildBuilder implements ChildBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return B
      */
     final protected function getElementBuilder(): ElementBuilderInterface
     {
