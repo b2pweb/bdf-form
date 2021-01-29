@@ -11,6 +11,7 @@ use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
@@ -36,12 +37,12 @@ use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\FormattedPhoneElement;
 use Bdf\Form\Phone\FormattedPhoneElementBuilder;
+use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerAggregate;
-use Bdf\Form\Constraint\Closure;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -166,6 +167,7 @@ class RegistryTest extends TestCase
         $this->assertInstanceOf(StringElement::class, $child->element());
 
         $this->assertInstanceOf(DateTimeChildBuilder::class, $this->registry->childBuilder(DateTimeElement::class, 'child'));
+        $this->assertInstanceOf(PhoneChildBuilder::class, $this->registry->childBuilder(PhoneElement::class, 'child'));
     }
 
     /**
@@ -179,7 +181,6 @@ class RegistryTest extends TestCase
         $this->assertInstanceOf(BooleanElementBuilder::class, $this->registry->elementBuilder(BooleanElement::class));
         $this->assertInstanceOf(CsrfElementBuilder::class, $this->registry->elementBuilder(CsrfElement::class));
         $this->assertInstanceOf(PhoneElementBuilder::class, $this->registry->elementBuilder(PhoneElement::class));
-        $this->assertInstanceOf(FormattedPhoneElementBuilder::class, $this->registry->elementBuilder(FormattedPhoneElement::class));
         $this->assertInstanceOf(DateTimeElementBuilder::class, $this->registry->elementBuilder(DateTimeElement::class));
         $this->assertInstanceOf(EmailElementBuilder::class, $this->registry->elementBuilder(EmailElement::class));
         $this->assertInstanceOf(UrlElementBuilder::class, $this->registry->elementBuilder(UrlElement::class));

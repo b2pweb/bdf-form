@@ -6,6 +6,7 @@ use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\Helper\EmailElement;
@@ -14,6 +15,7 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Phone\FormattedPhoneElement;
+use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -94,7 +96,7 @@ class FormBuilderTest extends TestCase
      */
     public function test_dateTime()
     {
-        $this->assertInstanceOf(ChildBuilder::class, $this->builder->dateTime('value'));
+        $this->assertInstanceOf(DateTimeChildBuilder::class, $this->builder->dateTime('value'));
 
         $form = $this->builder->buildElement();
 
@@ -107,25 +109,12 @@ class FormBuilderTest extends TestCase
      */
     public function test_phone()
     {
-        $this->assertInstanceOf(ChildBuilder::class, $this->builder->phone('value'));
+        $this->assertInstanceOf(PhoneChildBuilder::class, $this->builder->phone('value'));
 
         $form = $this->builder->buildElement();
 
         $this->assertInstanceOf(Form::class, $form);
         $this->assertInstanceOf(PhoneElement::class, $form['value']->element());
-    }
-
-    /**
-     *
-     */
-    public function test_formattedPhone()
-    {
-        $this->assertInstanceOf(ChildBuilder::class, $this->builder->formattedPhone('value'));
-
-        $form = $this->builder->buildElement();
-
-        $this->assertInstanceOf(Form::class, $form);
-        $this->assertInstanceOf(FormattedPhoneElement::class, $form['value']->element());
     }
 
     /**

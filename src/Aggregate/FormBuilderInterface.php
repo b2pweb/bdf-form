@@ -9,10 +9,12 @@ use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElementBuilder;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -121,7 +123,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      *
      * @param string $name The child name
      *
-     * @return ChildBuilderInterface|DateTimeElementBuilder
+     * @return DateTimeChildBuilder|DateTimeElementBuilder
      * @psalm-return ChildBuilderInterface<DateTimeElementBuilder>
      */
     public function dateTime(string $name): ChildBuilderInterface;
@@ -133,12 +135,16 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * Note: The package "giggsey/libphonenumber-for-php" is required to use this element
      *
      * <code>
-     * $builder->phone('contact')->allowInvalidNumber()->setter();
+     * $builder->phone('contact')
+     *     ->allowInvalidNumber()
+     *     ->setter()
+     *     ->saveAsString()
+     * ;
      * </code>
      *
      * @param string $name The child name
      *
-     * @return ChildBuilderInterface|PhoneElementBuilder
+     * @return PhoneChildBuilder|PhoneElementBuilder
      * @psalm-return ChildBuilderInterface<PhoneElementBuilder>
      */
     public function phone(string $name): ChildBuilderInterface;

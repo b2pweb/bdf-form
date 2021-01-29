@@ -10,6 +10,7 @@ use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
@@ -32,14 +33,12 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
-use Bdf\Form\Phone\FormattedPhoneElement;
-use Bdf\Form\Phone\FormattedPhoneElementBuilder;
+use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerInterface;
-use Bdf\Form\Constraint\Closure;
 use InvalidArgumentException;
 use LogicException;
 use Symfony\Component\Form\DataTransformerInterface;
@@ -76,6 +75,7 @@ final class Registry implements RegistryInterface
      */
     private $childBuilderFactories = [
         DateTimeElement::class => DateTimeChildBuilder::class,
+        PhoneElement::class => PhoneChildBuilder::class,
     ];
 
     /**
@@ -86,11 +86,6 @@ final class Registry implements RegistryInterface
         $this->register(CustomForm::class, function (RegistryInterface $registry, string $formClass) {
             /** @psalm-suppress ArgumentTypeCoercion */
             return new CustomFormBuilder($formClass, $this->elementBuilder(Form::class));
-        });
-
-        $this->register(FormattedPhoneElement::class, function (RegistryInterface $registry) {
-            /** @psalm-suppress ArgumentTypeCoercion */
-            return new FormattedPhoneElementBuilder($registry->elementBuilder(PhoneElement::class));
         });
     }
 
