@@ -43,10 +43,13 @@ class ArrayElementTest extends TestCase
      */
     public function test_submit_success()
     {
-        $element = new ArrayElement(new StringElement());
+        $element = new ArrayElement($inner = new StringElement());
 
         $this->assertTrue($element->submit(['foo', 'bar'])->valid());
         $this->assertSame(['foo', 'bar'], $element->value());
+
+        $this->assertNotSame($inner, $element[0]->element());
+        $this->assertNotSame($inner, $element[1]->element());
     }
 
     /**
@@ -107,6 +110,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(new StringElement(new ConstraintValueValidator([new NotEqualTo('foo')])));
 
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());
+        $this->assertEquals(['foo', 'bar'], $element->value());
         $this->assertEquals([0 => 'This value should not be equal to "foo".'], $element->error()->toArray());
     }
 

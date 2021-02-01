@@ -14,6 +14,7 @@ use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\PropertyAccess\Getter;
 use Bdf\Form\PropertyAccess\Setter;
+use Bdf\Form\Registry\Registry;
 use Bdf\Form\View\ElementViewInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -47,6 +48,23 @@ class ChildBuilderTest extends TestCase
         $this->assertEquals('child', $child->name());
         $this->assertInstanceOf(StringElement::class, $child->element());
         $this->assertEmpty($child->dependencies());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer()
+    {
+        $child = $this->builder
+            ->transformer(function ($value) { return $value.'A'; })
+            ->transformer(function ($value) { return $value.'B'; }, true)
+            ->transformer(function ($value) { return $value.'C'; }, false)
+            ->buildChild()
+        ;
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $child->submit(['child' => 'foo']);
+        $this->assertSame('fooBAC', $child->element()->value());
     }
 
     /**
@@ -361,6 +379,22 @@ class ChildBuilderTest extends TestCase
         $child->import($target);
 
         $this->assertEquals('foo', $child->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_protected_fields()
+    {
+        $builder = new class('child', new StringElementBuilder()) extends ChildBuilder {
+            public function test()
+            {
+                TestCase::assertInstanceOf(StringElementBuilder::class, $this->getElementBuilder());
+                TestCase::assertInstanceOf(Registry::class, $this->registry());
+            }
+        };
+
+        $builder->test();
     }
 }
 

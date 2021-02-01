@@ -247,6 +247,9 @@ class FloatElementBuilderTest extends TestCase
 
         $this->assertTrue($element->submit('10.1')->valid());
         $this->assertSame(10.1, $element->value());
+
+        $this->assertTrue($element->submit('10,1')->valid());
+        $this->assertSame(10.0, $element->value());
     }
 
     /**

@@ -53,6 +53,25 @@ class ChildrenCollectionTest extends TestCase
     /**
      *
      */
+    public function test_add_with_not_found_dependency_should_be_ignored()
+    {
+        $tree = new ChildrenCollection();
+
+        $e1 = new Child('e1', new StringElement());
+        $e2 = new Child('e2', new StringElement(), null, [], null, null, null, ['not_found', 'e1']);
+
+        $tree->add($e1);
+        $tree->add($e2);
+
+        $this->assertSame([
+            'e2' => $e2,
+            'e1' => $e1,
+        ], $tree->all());
+    }
+
+    /**
+     *
+     */
     public function test_add_shift_recursive_dep()
     {
         $tree = new ChildrenCollection();

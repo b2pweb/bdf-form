@@ -2,10 +2,12 @@
 
 namespace Bdf\Form\Child;
 
+use Bdf\Form\Aggregate\ArrayElement;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Http\ArrayOffsetHttpFields;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Child\Http\PrefixedHttpFields;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Leaf\StringElement;
@@ -228,6 +230,20 @@ class ChildTest extends TestCase
 
         $this->assertTrue($child->patch(['child' => '']));
         $this->assertSame('', $child->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_patch_null_with_prefix()
+    {
+        $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('p'), [], null, new Setter());
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $child->element()->import(['foo']);
+
+        $this->assertTrue($child->patch(null));
+        $this->assertSame(['foo'], $child->element()->value());
     }
 
     /**

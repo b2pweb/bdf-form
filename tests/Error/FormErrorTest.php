@@ -3,6 +3,7 @@
 namespace Bdf\Form\Error;
 
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Constraint\Closure;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\ValidatorBuilder;
@@ -50,7 +51,6 @@ class FormErrorTest extends TestCase
         $this->assertEmpty($error->children());
     }
 
-
     /**
      *
      */
@@ -64,6 +64,26 @@ class FormErrorTest extends TestCase
         $this->assertFalse($error->empty());
         $this->assertEquals('This value is too short. It should have 5 characters or more.', $error->global());
         $this->assertEquals('TOO_SHORT_ERROR', $error->code());
+        $this->assertEmpty($error->children());
+    }
+
+    /**
+     *
+     */
+    public function test_violation_with_stringable_error()
+    {
+        $validator = (new ValidatorBuilder)->getValidator();
+        $violation = $validator->validate('foo', new Closure(function() {
+            return new class {
+                public function __toString() { return 'my error'; }
+            };
+        }))->get(0);
+        $error = FormError::violation($violation);
+
+        $this->assertInstanceOf(FormError::class, $error);
+        $this->assertFalse($error->empty());
+        $this->assertEquals('my error', $error->global());
+        $this->assertEquals('CUSTOM_ERROR', $error->code());
         $this->assertEmpty($error->children());
     }
 
