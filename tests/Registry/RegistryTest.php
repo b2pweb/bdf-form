@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Registry;
 
+use Bdf\Form\Aggregate\ArrayChildBuilder;
 use Bdf\Form\Aggregate\ArrayElement;
 use Bdf\Form\Aggregate\ArrayElementBuilder;
 use Bdf\Form\Aggregate\Form;
@@ -168,6 +169,7 @@ class RegistryTest extends TestCase
 
         $this->assertInstanceOf(DateTimeChildBuilder::class, $this->registry->childBuilder(DateTimeElement::class, 'child'));
         $this->assertInstanceOf(PhoneChildBuilder::class, $this->registry->childBuilder(PhoneElement::class, 'child'));
+        $this->assertInstanceOf(ArrayChildBuilder::class, $this->registry->childBuilder(ArrayElement::class, 'child'));
     }
 
     /**

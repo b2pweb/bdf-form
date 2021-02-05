@@ -7,6 +7,8 @@ use TypeError;
 
 /**
  * Implements @see Renderable
+ *
+ * @psalm-require-implements Renderable
  */
 trait RenderableTrait
 {

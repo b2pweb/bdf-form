@@ -7,6 +7,8 @@ use BadMethodCallException;
 
 /**
  * Implements @see FieldSetViewInterface
+ *
+ * @psalm-require-implements FieldSetViewInterface
  */
 trait FieldSetViewTrait
 {

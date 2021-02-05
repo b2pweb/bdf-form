@@ -3,6 +3,7 @@
 namespace Bdf\Form\Leaf\Date\Transformer;
 
 use Bdf\Form\Aggregate\FormBuilder;
+use Bdf\Form\ElementInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -57,6 +58,17 @@ class DateTimeToTimestampTransformerTest extends TestCase
 
         $this->assertEquals(new CustomDateTime('@123'), $form['foo']->element()->value());
         $this->assertEquals(new \DateTimeZone('Asia/Shanghai'), $form['foo']->element()->value()->getTimezone());
+    }
+
+    /**
+     *
+     */
+    public function test_invalid_value()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $transformer = new DateTimeToTimestampTransformer();
+        $transformer->transformToHttp('invalid', $this->createMock(ElementInterface::class));
     }
 }
 

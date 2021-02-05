@@ -2,10 +2,12 @@
 
 namespace Bdf\Form\View;
 
+use Stringable;
+
 /**
  * Base type for a renderable element of the form view tree
  */
-interface Renderable
+interface Renderable extends Stringable
 {
     /**
      * Define an attribute value using magic method

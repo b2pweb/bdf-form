@@ -76,6 +76,11 @@ class ChildBuilder implements ChildBuilderInterface
     private $filters = [];
 
     /**
+     * @var list<callable(RegistryInterface):\Bdf\Form\Filter\FilterInterface[]>
+     */
+    private $filtersProviders = [];
+
+    /**
      * @var ChildCreationStrategyInterface|callable|class-string<ChildInterface>
      */
     private $factory = Child::class;
@@ -184,10 +189,14 @@ class ChildBuilder implements ChildBuilderInterface
      */
     final public function buildChild(): ChildInterface
     {
-        $filters = array_map([$this->registry, 'filter'], $this->filters);
+        $filters = $this->trim ? [TrimFilter::instance()] : [];
 
-        if ($this->trim) {
-            $filters[] = new TrimFilter();
+        foreach ($this->filtersProviders as $provider) {
+            $filters = array_merge($filters, $provider($this->registry));
+        }
+
+        foreach ($this->filters as $filter) {
+            $filters[] = $this->registry->filter($filter);
         }
 
         $fields = $this->fields ?: new ArrayOffsetHttpFields($this->name);
@@ -455,5 +464,17 @@ class ChildBuilder implements ChildBuilderInterface
     final protected function registry(): RegistryInterface
     {
         return $this->registry;
+    }
+
+    /**
+     * Add a new filter provider
+     * The filter provider permit to create a filter during the build of the element transformer
+     * So the filter can be configured by the child builder
+     *
+     * @param callable(RegistryInterface):\Bdf\Form\Filter\FilterInterface[] $provider
+     */
+    final protected function addFilterProvider(callable $provider): void
+    {
+        $this->filtersProviders[] = $provider;
     }
 }

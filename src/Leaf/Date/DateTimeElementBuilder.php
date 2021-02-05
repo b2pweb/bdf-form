@@ -60,6 +60,13 @@ class DateTimeElementBuilder extends AbstractElementBuilder
     private $timezone;
 
     /**
+     * Reset the fields value which are not provided by the format
+     *
+     * @var bool
+     */
+    private $resetNotProvidedFields = true;
+
+    /**
      * Define the date time class name to use
      *
      * <code>
@@ -252,12 +259,51 @@ class DateTimeElementBuilder extends AbstractElementBuilder
     }
 
     /**
+     * Does the fields which are not provided by the format will be reset (and set to UNIX time)
+     * When enabled, the character "|" will be added at the end of the format (see: https://www.php.net/datetime.createfromformat)
+     *
+     * Note: By default this option is enabled
+     *
+     * <code>
+     * // Reset fields (by default)
+     * $builder->dateTime('day')->resetNotProvidedFields(true)->format('Y-m-d');
+     * $form = $builder->buildElement();
+     * $form->submit(['day' => '2020-10-21']);
+     * $form['day']->element()->value(); // => new DateTime('2020-10-21 00:00:00'); // Time set to 0
+     *
+     * // Do not reset fields
+     * $builder->dateTime('day')->resetNotProvidedFields(false)->format('Y-m-d');
+     * $form = $builder->buildElement();
+     * $form->submit(['day' => '2020-10-21']);
+     * $form['day']->element()->value(); // => new DateTime('2020-10-21 15:25:36'); // Use current time
+     * </code>
+     *
+     * @param bool $flag Reset or not the fields
+     *
+     * @return $this
+     */
+    public function resetNotProvidedFields(bool $flag = true): self
+    {
+        $this->resetNotProvidedFields = $flag;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @return DateTimeElement
      */
     protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
     {
-        return new DateTimeElement($validator, $transformer, $this->getChoices(), $this->dateTimeClassName, $this->dateFormat, $this->timezone);
+        return new DateTimeElement(
+            $validator,
+            $transformer,
+            $this->getChoices(),
+            $this->dateTimeClassName,
+            $this->dateFormat,
+            $this->timezone,
+            $this->resetNotProvidedFields
+        );
     }
 }

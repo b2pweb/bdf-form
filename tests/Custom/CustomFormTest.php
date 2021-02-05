@@ -260,7 +260,7 @@ class CustomFormTest extends TestCase
         };
 
         $form->submit([
-            'arr' => [[]],
+            'arr' => [['']],
         ]);
 
         $errors = $form->error()->print(new class implements FormErrorPrinterInterface {

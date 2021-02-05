@@ -6,6 +6,8 @@ use Bdf\Form\Choice\ChoiceView;
 
 /**
  * Implements @see FieldViewInterface
+ *
+ * @psalm-require-implements FieldViewInterface
  */
 trait FieldViewTrait
 {

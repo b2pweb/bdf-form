@@ -161,7 +161,7 @@ class FormBuilderTest extends TestCase
      */
     public function test_array()
     {
-        $this->assertInstanceOf(ChildBuilder::class, $this->builder->array('value'));
+        $this->assertInstanceOf(ArrayChildBuilder::class, $this->builder->array('value'));
 
         $form = $this->builder->buildElement();
 

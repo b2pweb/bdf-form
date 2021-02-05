@@ -30,4 +30,10 @@ class TrimFilterTest extends TestCase
 
         $this->assertEquals(utf8_decode('é'), $filter->filter(utf8_decode(' é '), $this->createMock(ChildInterface::class)));
     }
+
+    public function test_instance()
+    {
+        $this->assertInstanceOf(TrimFilter::class, TrimFilter::instance());
+        $this->assertSame(TrimFilter::instance(), TrimFilter::instance());
+    }
 }

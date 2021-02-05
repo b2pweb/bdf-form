@@ -6,6 +6,7 @@ use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use InvalidArgumentException;
+use Stringable;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
  * @see ElementInterface::error()
  * @see ChildInterface::error()
  */
-final class FormError
+final class FormError implements Stringable
 {
     /**
      * @var FormError|null

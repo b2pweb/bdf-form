@@ -191,6 +191,21 @@ class PhoneElementBuilder extends AbstractElementBuilder
     }
 
     /**
+     * Define the error message if the phone number is invalid
+     *
+     * @param string $message
+     *
+     * @return $this
+     * @see ValidPhoneNumber::$message
+     */
+    public function errorMessage(string $message): self
+    {
+        $this->validPhoneNumberConstraintOptions['message'] = $message;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface

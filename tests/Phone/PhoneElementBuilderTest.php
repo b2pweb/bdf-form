@@ -76,6 +76,19 @@ class PhoneElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_errorMessage()
+    {
+        $element = $this->builder->errorMessage('my error')->buildElement();
+        $element->submit('1');
+
+        $this->assertFalse($element->valid());
+        $this->assertEquals('my error', $element->error()->global());
+        $this->assertEquals('INVALID_PHONE_NUMBER_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
     public function test_formatter()
     {
         $element = $this->builder->formatter($formatter = $this->createMock(PhoneNumberUtil::class))->buildElement();

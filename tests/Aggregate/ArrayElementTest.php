@@ -87,8 +87,19 @@ class ArrayElementTest extends TestCase
     {
         $element = new ArrayElement(new StringElement());
 
-        $this->assertTrue($element->submit(['foo', null, 'bar'])->valid());
-        $this->assertSame([0 => 'foo', 2 => 'bar'], $element->value());
+        $this->assertTrue($element->submit(['foo', null, [], 'bar'])->valid());
+        $this->assertSame([0 => 'foo', 3 => 'bar'], $element->value());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_should_ignore_null_element_errors()
+    {
+        $element = (new ArrayElementBuilder())->satisfy(function () { return 'error'; })->buildElement();
+
+        $this->assertFalse($element->submit([null, 'bar'])->valid());
+        $this->assertEquals([1 => 'error'], $element->error()->toArray());
     }
 
     /**

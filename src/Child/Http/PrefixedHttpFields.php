@@ -44,7 +44,7 @@ final class PrefixedHttpFields implements HttpFieldsInterface
             $value = [];
 
             foreach ($data as $name => $datum) {
-                if (strpos($name, $this->prefix) === 0) {
+                if (str_starts_with($name, $this->prefix)) {
                     $value[substr($name, $prefixLen)] = $datum;
                 }
             }

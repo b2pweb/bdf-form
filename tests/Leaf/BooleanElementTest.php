@@ -214,6 +214,29 @@ class BooleanElementTest extends TestCase
     /**
      *
      */
+    public function test_view_not_submitted()
+    {
+        $element = new BooleanElement();
+
+        $view = $element->view(HttpFieldPath::named('name'));
+
+        $this->assertEquals('<input type="checkbox" name="name" value="1" />', (string) $view);
+        $this->assertEquals('<input id="foo" class="form-element" type="checkbox" name="name" value="1" />', (string) $view->id('foo')->class('form-element'));
+        $this->assertNull($view->onError('my error'));
+
+        $this->assertFalse($view->checked());
+        $this->assertEquals('1', $view->httpValue());
+        $this->assertNull($view->value());
+        $this->assertEquals('name', $view->name());
+        $this->assertFalse($view->hasError());
+        $this->assertNull($view->error());
+        $this->assertFalse($view->required());
+        $this->assertEmpty($view->constraints());
+    }
+
+    /**
+     *
+     */
     public function test_error()
     {
         $element = (new BooleanElementBuilder())->satisfy(function() { return false; })->buildElement();

@@ -51,6 +51,33 @@ class DateTimeElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_without_time_should_be_reset_time_fields()
+    {
+        $element = new DateTimeElement(null, null, null, DateTime::class, 'Y-m-d');
+
+        $this->assertTrue($element->submit('2020-12-17')->valid());
+        $this->assertEquals(new DateTime('2020-12-17'), $element->value());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_without_time_without_reset_fields_should_keep_current_time_fields()
+    {
+        $element = new DateTimeElement(null, null, null, DateTime::class, 'Y-m-d', null, false);
+        $now = new DateTime();
+
+        $this->assertTrue($element->submit('2020-12-17')->valid());
+        $this->assertEquals('2020-12-17', $element->value()->format('Y-m-d'));
+        $this->assertEquals($now->format('H'), $element->value()->format('H'));
+        $this->assertEquals($now->format('i'), $element->value()->format('i'));
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
     public function test_submit_invalid_format()
     {
         $element = new DateTimeElement();

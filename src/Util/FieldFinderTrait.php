@@ -26,6 +26,8 @@ use Bdf\Form\ElementInterface;
  *     }
  * }
  * </code>
+ *
+ * @psalm-require-implements \Bdf\Form\ElementInterface
  */
 trait FieldFinderTrait
 {

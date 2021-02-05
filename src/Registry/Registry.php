@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Registry;
 
+use Bdf\Form\Aggregate\ArrayChildBuilder;
 use Bdf\Form\Aggregate\ArrayElement;
 use Bdf\Form\Aggregate\ArrayElementBuilder;
 use Bdf\Form\Aggregate\Form;
@@ -47,7 +48,7 @@ use Symfony\Component\Validator\Constraint;
 /**
  * Base registry interface
  */
-final class Registry implements RegistryInterface
+class Registry implements RegistryInterface
 {
     /**
      * @var class-string<ElementBuilderInterface>[]|callable[]
@@ -76,6 +77,7 @@ final class Registry implements RegistryInterface
     private $childBuilderFactories = [
         DateTimeElement::class => DateTimeChildBuilder::class,
         PhoneElement::class => PhoneChildBuilder::class,
+        ArrayElement::class => ArrayChildBuilder::class,
     ];
 
     /**

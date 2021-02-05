@@ -2,19 +2,18 @@
 
 namespace Bdf\Form\Filter;
 
-use Bdf\Form\Child\ChildBuilder;
+use Bdf\Form\Aggregate\ArrayChildBuilder;
 use Bdf\Form\Child\ChildInterface;
 
 /**
- * Perform a trim on the input value
- * Supports trim of utf-8 white spaces
+ * Filter empty values from an array
  *
- * @see ChildBuilder::trim() For enable trim filter
+ * @see ArrayChildBuilder::filterEmptyValues()
  */
-final class TrimFilter implements FilterInterface
+final class EmptyArrayValuesFilter implements FilterInterface
 {
     /**
-     * @var self
+     * @var EmptyArrayValuesFilter
      */
     private static $instance;
 
@@ -23,20 +22,21 @@ final class TrimFilter implements FilterInterface
      */
     public function filter($value, ChildInterface $input)
     {
-        if (!is_string($value)) {
+        if (!is_array($value)) {
             return $value;
         }
 
-        // unicode trim
-        if (null !== $result = @preg_replace('/^[\pZ\p{Cc}]+|[\pZ\p{Cc}]+$/u', '', $value)) {
-            return $result;
+        foreach ($value as $k => $v) {
+            if ($v === null || $v === [] || $v === '') {
+                unset($value[$k]);
+            }
         }
 
-        return trim($value);
+        return $value;
     }
 
     /**
-     * Get the trim filter instance
+     * Get the filter instance
      *
      * @return static
      */

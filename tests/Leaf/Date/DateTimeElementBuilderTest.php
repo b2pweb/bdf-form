@@ -267,4 +267,25 @@ class DateTimeElementBuilderTest extends TestCase
         $this->assertFalse($form['end']->element()->submit('2020-12-18T08:00:00+0100')->valid());
         $this->assertEquals('My error', $form['end']->element()->error()->global());
     }
+
+    /**
+     *
+     */
+    public function test_resetNotProvidedFields()
+    {
+        $now = new \DateTime();
+        $element = $this->builder->resetNotProvidedFields(false)->format('Y-m-d')->buildElement();
+
+        $element->submit('2020-12-13');
+        $this->assertSame('2020-12-13', $element->value()->format('Y-m-d'));
+        $this->assertEquals($now->format('H'), $element->value()->format('H'));
+        $this->assertEquals($now->format('i'), $element->value()->format('i'));
+
+        $element = $this->builder->resetNotProvidedFields()->buildElement();
+
+        $element->submit('2020-12-13');
+        $this->assertEquals(new \DateTime('2020-12-13'), $element->value());
+        $this->assertEquals(0, $element->value()->format('H'));
+        $this->assertEquals(0, $element->value()->format('i'));
+    }
 }

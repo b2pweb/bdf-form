@@ -8,6 +8,7 @@ use Bdf\Form\Transformer\TransformerInterface;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
+use InvalidArgumentException;
 
 /**
  * Transform a DateTime instance from a form element to a timestamp to a model
@@ -47,6 +48,10 @@ final class DateTimeToTimestampTransformer implements TransformerInterface
     {
         if ($value === null) {
             return null;
+        }
+
+        if (!is_numeric($value)) {
+            throw new InvalidArgumentException('Expected a numeric.');
         }
 
         $className = $this->className ?? ($input instanceof DateTimeElement ? $input->dateTimeClassName() : DateTime::class);

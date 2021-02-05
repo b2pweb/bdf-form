@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Child\Http;
 
+use Stringable;
+
 /**
  * Represents the HTTP field path to build
  * Handles prefix and array key fields
@@ -15,7 +17,7 @@ namespace Bdf\Form\Child\Http;
  * echo $path->prefix('p_')->add('bar')->get(); // Add a prefix for the sub element : "root[p_bar]"
  * </code>
  */
-final class HttpFieldPath
+final class HttpFieldPath implements Stringable
 {
     /**
      * @var HttpFieldPath|null

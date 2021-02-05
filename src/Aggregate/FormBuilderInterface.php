@@ -203,7 +203,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param class-string<ElementInterface>|null $elementType The inner element type
      * @param callable|null $elementConfigurator Callback for configure the inner element
      *
-     * @return ChildBuilderInterface|ArrayElementBuilder
+     * @return ArrayChildBuilder|ArrayElementBuilder
      * @psalm-return ChildBuilderInterface<ArrayElementBuilder>
      *
      * @see ArrayElementBuilder::element() For the $elementType and $elementConfigurator parameters

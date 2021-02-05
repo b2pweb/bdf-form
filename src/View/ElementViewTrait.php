@@ -4,6 +4,8 @@ namespace Bdf\Form\View;
 
 /**
  * Implements @see ElementViewInterface
+ *
+ * @psalm-require-implements ElementViewInterface
  */
 trait ElementViewTrait
 {

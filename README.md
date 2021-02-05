@@ -27,7 +27,6 @@ Library for handle form, and request validation.
     - [BooleanElement](#booleanelement)
     - [DateTimeElement](#datetimeelement)
     - [PhoneElement](#phoneelement)
-    - [FormattedPhoneElement](#formattedphoneelement)
     - [CsrfElement](#csrfelement)
 - [Create a custom element](#create-a-custom-element)
     - [Using custom form](#using-custom-form)
@@ -682,7 +681,6 @@ $builder->dateTime('eventDate')
 
 Handle phone number. The package `giggsey/libphonenumber-for-php` is required to use this element.
 This element will not return a `string` but a `PhoneNumber` instance. 
-If you want to save the phone as string, use `FormattedPhoneElement` instead.
 
 ```php
 $builder->phone('contact')
@@ -693,24 +691,7 @@ $builder->phone('contact')
     ->regionInput('address/country') // Use a sibling input for parse the number (do not forget to call `depends()`)
     ->allowInvalidNumber(true) // Do not check the phone number
     ->validateNumber('My error message') // Enable validation, and define the validator options (here the error message)
-;
-```
-
-### FormattedPhoneElement
-
-Handle phone number but save a `string` instead of a `PhoneNumber` instance.
-This element and build will use internally `PhoneElement`, so `giggsey/libphonenumber-for-php` is required, 
-and all transformations or validations will takes a `PhoneNumber` object as parameter.
-
-```php
-$builder->formattedPhone('contact')
-    ->format(PhoneNumberFormat::NATIONAL) // Define the internal phone format
-    ->regionInput('address/country') // PhoneElementBuilder methods can be used
-    ->allowInvalidNumber(true)
-    // satisfy and transformer takes a PhoneNumber instance as value
-    ->satifsy(function (\libphonenumber\PhoneNumber $value) {
-        return $value->hasNationalNumber();
-    })
+    ->setter()->saveAsString() // Save the phone number as string on the entity
 ;
 ```
 

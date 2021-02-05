@@ -167,6 +167,18 @@ class ChildTest extends TestCase
     }
 
     /**
+     * @dataProvider emptyValues
+     */
+    public function test_submit_empty_with_default_value_on_array_element($value)
+    {
+        $child = new Child('child', new ArrayElement(new StringElement()), new ArrayOffsetHttpFields('child'), [], ['default'], new Setter());
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $this->assertTrue($child->submit($value));
+        $this->assertEquals(['default'], $child->element()->value());
+    }
+
+    /**
      * @dataProvider notEmptyValues
      */
     public function test_submit_not_empty($value)

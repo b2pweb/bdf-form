@@ -36,6 +36,13 @@ final class DateTimeElement extends LeafElement
     private $timezone;
 
     /**
+     * Reset the fields value which are not provided by the format
+     *
+     * @var bool
+     */
+    private $resetNotProvidedFields;
+
+    /**
      * DateTimeType constructor.
      *
      * @param ValueValidatorInterface|null $validator
@@ -44,14 +51,16 @@ final class DateTimeElement extends LeafElement
      * @param class-string<DateTimeInterface> $className The date time class name to use
      * @param string $format The time format string
      * @param DateTimeZone|null $timezone Timezone to use. Use null to not define a timezone
+     * @param bool $resetNotProvidedFields Does the fields which are not provided by the format will be reset ? (and set to UNIX time)
      */
-    public function __construct(?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ChoiceInterface $choices = null, string $className = DateTime::class, string $format = DateTime::ATOM, ?DateTimeZone $timezone = null)
+    public function __construct(?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ChoiceInterface $choices = null, string $className = DateTime::class, string $format = DateTime::ATOM, ?DateTimeZone $timezone = null, bool $resetNotProvidedFields = true)
     {
         parent::__construct($validator, $transformer, $choices);
 
         $this->className = $className;
         $this->format = $format;
         $this->timezone = $timezone;
+        $this->resetNotProvidedFields = $resetNotProvidedFields;
     }
 
     /**
@@ -97,7 +106,13 @@ final class DateTimeElement extends LeafElement
                     throw new \LogicException('Invalid DateTime class name "'.$this->className.'" : method createFromFormat() is not found.');
                 }
 
-                $dateTime = ($this->className)::createFromFormat($this->format, $httpValue, $this->timezone);
+                $format = $this->format;
+
+                if ($this->resetNotProvidedFields && !str_contains($format, '|')) {
+                    $format .= '|';
+                }
+
+                $dateTime = ($this->className)::createFromFormat($format, $httpValue, $this->timezone);
         }
 
         if ($dateTime === false) {
