@@ -221,6 +221,20 @@ class ChildTest extends TestCase
     /**
      *
      */
+    public function test_submit_with_filters_which_return_null_should_use_the_default_value()
+    {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [new ClosureFilter(function ($value) { return strtoupper($value); }), new ClosureFilter(function () use(&$filterArgs) { $filterArgs = func_get_args(); return null; })], 'bar');
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $this->assertTrue($child->submit(['child' => 'hello world !']));
+        $this->assertEquals('bar', $child->element()->value());
+
+        $this->assertSame(['HELLO WORLD !', $child, 'bar'], $filterArgs);
+    }
+
+    /**
+     *
+     */
     public function test_patch_empty()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());

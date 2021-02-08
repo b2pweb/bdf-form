@@ -33,28 +33,14 @@ class ArrayOffsetHttpFieldsTest extends TestCase
     /**
      *
      */
-    public function test_empty_values_with_default()
-    {
-        $field = new ArrayOffsetHttpFields('child');
-
-        $this->assertSame('default', $field->extract([], 'default'));
-        $this->assertSame('default', $field->extract('', 'default'));
-        $this->assertSame('default', $field->extract(null, 'default'));
-        $this->assertSame('default', $field->extract(['child' => ''], 'default'));
-        $this->assertSame('0', $field->extract(['child' => '0'], 'default'));
-    }
-
-    /**
-     *
-     */
     public function test_empty_values_without_default()
     {
         $field = new ArrayOffsetHttpFields('child');
 
-        $this->assertSame(null, $field->extract([], null));
-        $this->assertSame(null, $field->extract('', null));
-        $this->assertSame(null, $field->extract(null, null));
-        $this->assertSame('', $field->extract(['child' => ''], null));
+        $this->assertSame(null, $field->extract([]));
+        $this->assertSame(null, $field->extract(''));
+        $this->assertSame(null, $field->extract(null));
+        $this->assertSame('', $field->extract(['child' => '']));
     }
 
     /**

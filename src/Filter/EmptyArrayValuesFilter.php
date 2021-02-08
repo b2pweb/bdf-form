@@ -20,7 +20,7 @@ final class EmptyArrayValuesFilter implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function filter($value, ChildInterface $input)
+    public function filter($value, ChildInterface $input, $default)
     {
         if (!is_array($value)) {
             return $value;

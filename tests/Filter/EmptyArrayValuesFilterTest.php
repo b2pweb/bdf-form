@@ -33,7 +33,7 @@ class EmptyArrayValuesFilterTest extends TestCase
             true,
             ['e'],
             '',
-        ], $this->createMock(ChildInterface::class)));
+        ], $this->createMock(ChildInterface::class), null));
     }
 
     public function test_instance()

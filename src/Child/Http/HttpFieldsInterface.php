@@ -13,11 +13,10 @@ interface HttpFieldsInterface
      * Extract the required HTTP fields from raw HTTP fields
      *
      * @param mixed $httpFields The raw HTTP fields
-     * @param mixed $defaultValue Default value to return when the input fields are missing
      *
      * @return mixed
      */
-    public function extract($httpFields, $defaultValue);
+    public function extract($httpFields);
 
     /**
      * Does the required field is contained into given http fields

@@ -19,7 +19,7 @@ class HtmlFilterTest extends TestCase
         $value = '<span="class">"Test"</span>';
         $filter = new FilterVar();
 
-        $this->assertEquals('"Test"', $filter->filter($value, $this->createMock(ChildInterface::class)));
+        $this->assertEquals('"Test"', $filter->filter($value, $this->createMock(ChildInterface::class), null));
     }
 
     /**
@@ -30,7 +30,7 @@ class HtmlFilterTest extends TestCase
         $value = ['foo' => '<span="class">"Test"</span>'];
         $filter = new FilterVar();
 
-        $this->assertEquals(['foo' => '"Test"'], $filter->filter($value, $this->createMock(ChildInterface::class)));
+        $this->assertEquals(['foo' => '"Test"'], $filter->filter($value, $this->createMock(ChildInterface::class), null));
     }
 
     /**

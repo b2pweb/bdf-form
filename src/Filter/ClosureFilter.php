@@ -7,10 +7,10 @@ use Bdf\Form\Child\ChildInterface;
 
 /**
  * Adapt a simple callback to FilterInterface
- * Takes the value and the ChildInterface as parameters
+ * Takes the value, the ChildInterface, and the default value as parameters
  *
  * <code>
- * $builder->filter(function ($value, ChildInterface $input) {
+ * $builder->filter(function ($value, ChildInterface $input, $default) {
  *     return $this->clean($value);
  * });
  * </code>
@@ -36,8 +36,8 @@ final class ClosureFilter implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function filter($value, ChildInterface $input)
+    public function filter($value, ChildInterface $input, $default)
     {
-        return ($this->callback)($value, $input);
+        return ($this->callback)($value, $input, $default);
     }
 }

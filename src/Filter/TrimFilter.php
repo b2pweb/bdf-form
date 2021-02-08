@@ -21,7 +21,7 @@ final class TrimFilter implements FilterInterface
     /**
      * {@inheritdoc}
      */
-    public function filter($value, ChildInterface $input)
+    public function filter($value, ChildInterface $input, $default)
     {
         if (!is_string($value)) {
             return $value;

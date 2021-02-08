@@ -18,8 +18,9 @@ interface FilterInterface
      * 
      * @param mixed $value The HTTP value
      * @param ChildInterface $input
+     * @param mixed|null $default The default value of the element
      * 
      * @return mixed Returns the filtered value
      */
-    public function filter($value, ChildInterface $input);
+    public function filter($value, ChildInterface $input, $default);
 }

@@ -19,6 +19,6 @@ class ClosureFilterTest extends TestCase
             return $value.'bar';
         });
 
-        $this->assertEquals('foobar', $filter->filter('foo', $this->createMock(ChildInterface::class)));
+        $this->assertEquals('foobar', $filter->filter('foo', $this->createMock(ChildInterface::class), null));
     }
 }

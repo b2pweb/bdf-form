@@ -341,7 +341,7 @@ class ChildBuilderTest extends TestCase
         $child = $this->builder->httpFields($fields)->buildChild();
         $child->setParent(new Form(new ChildrenCollection()));
 
-        $fields->expects($this->once())->method('extract')->with(['foo' => 'bar'], null)->willReturn('bar');
+        $fields->expects($this->once())->method('extract')->with(['foo' => 'bar'])->willReturn('bar');
 
         $child->submit(['foo' => 'bar']);
         $this->assertSame('bar', $child->element()->value());

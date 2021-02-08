@@ -13,6 +13,7 @@ use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
 use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
+use Bdf\Form\Util\HttpValue;
 use Bdf\Form\View\ElementViewInterface;
 
 /**
@@ -247,12 +248,13 @@ final class Child implements ChildInterface
      */
     private function extractValue($httpValue)
     {
-        $value = $this->fields->extract($httpValue, $this->defaultValue);
+        $value = $this->fields->extract($httpValue);
+        $default = $this->defaultValue;
 
         foreach ($this->filters as $filter) {
-            $value = $filter->filter($value, $this);
+            $value = $filter->filter($value, $this, $default);
         }
 
-        return $value;
+        return HttpValue::orDefault($value, $default);
     }
 }

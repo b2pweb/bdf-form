@@ -45,16 +45,22 @@ interface ChildBuilderInterface
 
     /**
      * Add a filter
+     *
      * The filter is the first transformation step. The value should be normalized here (or filtered when return null), before call of view transformers
+     * The default value is applied after all filters, so if a filter returns null, the default value will be used.
+     *
      * Note: The filter is only called during form binding (from HTTP value to PHP model value)
      *
      * <code>
-     * $builder->addFilter(function ($value, FormChildInterface $input) {
+     * // The first parameter is the http value
+     * // The second is the submitted child
+     * // The third is the default value of the child
+     * $builder->filter(function ($value, ChildInterface $input, $default) {
      *     return $this->checkValue($value) ? $value : null;
      * });
      * </code>
      *
-     * @param FilterInterface|callable $filter
+     * @param FilterInterface|callable(mixed,ChildInterface,mixed):mixed $filter
      * @param bool $append Append the filter. Prepend if false
      *
      * @return $this

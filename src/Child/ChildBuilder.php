@@ -191,12 +191,12 @@ class ChildBuilder implements ChildBuilderInterface
     {
         $filters = $this->trim ? [TrimFilter::instance()] : [];
 
-        foreach ($this->filtersProviders as $provider) {
-            $filters = array_merge($filters, $provider($this->registry));
-        }
-
         foreach ($this->filters as $filter) {
             $filters[] = $this->registry->filter($filter);
+        }
+
+        foreach ($this->filtersProviders as $provider) {
+            $filters = array_merge($filters, $provider($this->registry));
         }
 
         $fields = $this->fields ?: new ArrayOffsetHttpFields($this->name);

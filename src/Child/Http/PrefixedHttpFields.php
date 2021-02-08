@@ -35,7 +35,7 @@ final class PrefixedHttpFields implements HttpFieldsInterface
     /**
      * {@inheritdoc}
      */
-    public function extract($httpFields, $defaultValue)
+    public function extract($httpFields)
     {
         $data = (array) $httpFields;
         $prefixLen = strlen($this->prefix);
@@ -52,8 +52,7 @@ final class PrefixedHttpFields implements HttpFieldsInterface
             $value = $data;
         }
 
-        // Return default value only if provided
-        return $defaultValue !== null && empty($value) ? $defaultValue : $value;
+        return $value;
     }
 
     /**
