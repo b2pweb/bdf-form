@@ -6,6 +6,7 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Exception;
 
 /**
  * Class CsrfValueValidator
@@ -55,6 +56,15 @@ final class CsrfValueValidator implements ValueValidatorInterface
                 $element->invalidateToken();
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function onTransformerException(Exception $exception, $value, ElementInterface $element): FormError
+    {
+        // Ignore transformer exception: the CSRF token will be validated after
+        return FormError::null();
     }
 
     /**

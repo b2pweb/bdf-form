@@ -7,11 +7,13 @@ use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Leaf\LeafRootElement;
 use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
+use Bdf\Form\Validator\TransformerExceptionConstraint;
 use DateTime;
 use DateTimeZone;
 use PHPUnit\Framework\TestCase;
@@ -139,6 +141,26 @@ class DateTimeElementTest extends TestCase
         $this->assertFalse($element->submit('aa')->valid());
         $this->assertSame('aa', $element->value());
         $this->assertEquals('my error', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_exception_ignored_should_validate_other_constraints()
+    {
+        $transformer = $this->createMock(TransformerInterface::class);
+        $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
+        $element = new DateTimeElement(
+            new ConstraintValueValidator(
+                [new Closure(function () { return 'validation error'; })],
+                new TransformerExceptionConstraint(['ignoreException' => true])
+            ),
+            $transformer
+        );
+
+        $this->assertFalse($element->submit('aa')->valid());
+        $this->assertSame('aa', $element->value());
+        $this->assertEquals('validation error', $element->error()->global());
     }
 
     /**

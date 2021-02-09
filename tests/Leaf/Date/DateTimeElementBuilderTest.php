@@ -62,6 +62,20 @@ class DateTimeElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_default_transformer_error()
+    {
+        $element = $this->builder->buildElement();
+
+        $element->submit('invalid');
+
+        $this->assertFalse($element->valid());
+        $this->assertEquals('This value is not a valid datetime.', $element->error()->global());
+        $this->assertEquals('INVALID_DATETIME_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
     public function test_className()
     {
         $element = $this->builder->className(DateTimeImmutable::class)->buildElement();

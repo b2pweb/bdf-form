@@ -4,6 +4,7 @@ namespace Bdf\Form\Validator;
 
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
+use Exception;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -16,19 +17,31 @@ use Symfony\Component\Validator\Constraint;
 final class ConstraintValueValidator implements ValueValidatorInterface
 {
     /**
+     * @var self
+     */
+    private static $emptyInstance;
+
+    /**
      * @var Constraint[]
      */
     private $constraints;
+
+    /**
+     * @var TransformerExceptionConstraint
+     */
+    private $transformerExceptionConstraint;
 
 
     /**
      * ConstraintValueValidator constructor.
      *
      * @param Constraint[] $constraints
+     * @param TransformerExceptionConstraint|null $transformerExceptionConstraint
      */
-    public function __construct(array $constraints)
+    public function __construct(array $constraints = [], ?TransformerExceptionConstraint $transformerExceptionConstraint = null)
     {
         $this->constraints = $constraints;
+        $this->transformerExceptionConstraint = $transformerExceptionConstraint ?? new TransformerExceptionConstraint();
     }
 
     /**
@@ -36,6 +49,10 @@ final class ConstraintValueValidator implements ValueValidatorInterface
      */
     public function validate($value, ElementInterface $element): FormError
     {
+        if (!$this->constraints) {
+            return FormError::null();
+        }
+
         $root = $element->root();
 
         /** @psalm-suppress TooManyArguments */
@@ -55,20 +72,46 @@ final class ConstraintValueValidator implements ValueValidatorInterface
     /**
      * {@inheritdoc}
      */
+    public function onTransformerException(Exception $exception, $value, ElementInterface $element): FormError
+    {
+        if ($this->transformerExceptionConstraint->ignoreException) {
+            return FormError::null();
+        }
+
+        /** @psalm-suppress TooManyArguments */
+        $errors = $element->root()
+            ->getValidator()
+            ->startContext($element)
+            ->validate($value, $this->transformerExceptionConstraint->withException($exception))
+            ->getViolations()
+        ;
+
+        if ($errors->has(0)) {
+            return FormError::violation($errors->get(0));
+        }
+
+        return FormError::null();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function constraints(): array
     {
         return $this->constraints;
     }
 
     /**
-     * Create the value validator from list of symfony constraints
+     * Get the empty value validator instance
      *
-     * @param Constraint[] $constraints
-     *
-     * @return ValueValidatorInterface
+     * @return ConstraintValueValidator<mixed>
      */
-    public static function fromConstraints(array $constraints = []): ValueValidatorInterface
+    public static function empty(): self
     {
-        return empty($constraints) ? NullValueValidator::instance() : new self($constraints);
+        if (self::$emptyInstance) {
+            return self::$emptyInstance;
+        }
+
+        return self::$emptyInstance = new self();
     }
 }

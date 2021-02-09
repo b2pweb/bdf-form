@@ -8,10 +8,12 @@ use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Choice\ChoiceView;
+use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
+use Bdf\Form\Validator\TransformerExceptionConstraint;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
@@ -88,6 +90,42 @@ class FloatElementTest extends TestCase
         $this->assertFalse($element->submit('aa')->valid());
         $this->assertSame('aa', $element->value());
         $this->assertEquals('my error', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_exception_ignored()
+    {
+        $transformer = $this->createMock(TransformerInterface::class);
+        $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
+        $element = new FloatElement(
+            new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])),
+            $transformer
+        );
+
+        $this->assertTrue($element->submit('aa')->valid());
+        $this->assertSame('aa', $element->value());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_exception_ignored_should_validate_other_constraints()
+    {
+        $transformer = $this->createMock(TransformerInterface::class);
+        $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
+        $element = new FloatElement(
+            new ConstraintValueValidator(
+                [new Closure(function () { return 'validation error'; })],
+                new TransformerExceptionConstraint(['ignoreException' => true])
+            ),
+            $transformer
+        );
+
+        $this->assertFalse($element->submit('aa')->valid());
+        $this->assertSame('aa', $element->value());
+        $this->assertEquals('validation error', $element->error()->global());
     }
 
     /**

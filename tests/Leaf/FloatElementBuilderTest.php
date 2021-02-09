@@ -121,6 +121,20 @@ class FloatElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_default_transformer_error()
+    {
+        $element = $this->builder->buildElement();
+
+        $element->submit('invalid');
+
+        $this->assertFalse($element->valid());
+        $this->assertEquals('The value is not a valid number.', $element->error()->global());
+        $this->assertEquals('INVALID_NUMBER_ERROR', $element->error()->code());
+    }
+
+    /**
+     *
+     */
     public function test_value()
     {
         $element = $this->builder->value(15.2)->buildElement();

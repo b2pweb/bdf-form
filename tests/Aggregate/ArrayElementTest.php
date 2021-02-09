@@ -7,11 +7,13 @@ use Bdf\Form\Aggregate\View\ArrayElementView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Choice\ArrayChoice;
+use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Validator\ConstraintValueValidator;
+use Bdf\Form\Validator\TransformerExceptionConstraint;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Count;
@@ -135,6 +137,37 @@ class ArrayElementTest extends TestCase
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());
         $this->assertSame([], $element->value());
         $this->assertEquals('My error', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_error_ignored()
+    {
+        $element = new ArrayElement(
+            new StringElement(),
+            new ClosureTransformer(function () { throw new Exception('My error'); }),
+            new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true]))
+        );
+
+        $this->assertTrue($element->submit(['foo', 'bar'])->valid());
+        $this->assertSame([], $element->value());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_error_ignored_should_apply_other_constraints()
+    {
+        $element = new ArrayElement(
+            new StringElement(),
+            new ClosureTransformer(function () { throw new Exception('My error'); }),
+            new ConstraintValueValidator([new Closure(function () {return 'error';})], new TransformerExceptionConstraint(['ignoreException' => true]))
+        );
+
+        $this->assertFalse($element->submit(['foo', 'bar'])->valid());
+        $this->assertSame([], $element->value());
+        $this->assertEquals('error', $element->error()->global());
     }
 
     /**

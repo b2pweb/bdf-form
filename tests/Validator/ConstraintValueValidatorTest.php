@@ -26,6 +26,17 @@ class ConstraintValueValidatorTest extends TestCase
     /**
      *
      */
+    public function test_validate_without_constraints()
+    {
+        $element = new StringElement();
+        $validator = new ConstraintValueValidator([]);
+
+        $this->assertTrue($validator->validate('value', $element)->empty());
+    }
+
+    /**
+     *
+     */
     public function test_validate_error()
     {
         $element = new StringElement();
@@ -40,12 +51,43 @@ class ConstraintValueValidatorTest extends TestCase
     /**
      *
      */
-    public function test_fromConstraints()
+    public function test_onTransformerException()
     {
-        $this->assertEquals(new NullValueValidator(), ConstraintValueValidator::fromConstraints([]));
-        $this->assertEquals(new ConstraintValueValidator([new NotBlank()]), ConstraintValueValidator::fromConstraints([new NotBlank()]));
-        $this->assertEquals([new NotBlank()], ConstraintValueValidator::fromConstraints([new NotBlank()])->constraints());
-        $this->assertEquals(new ConstraintValueValidator([new NotBlank(), new NotEqualTo('foo')]), ConstraintValueValidator::fromConstraints([new NotBlank(), new NotEqualTo('foo')]));
-        $this->assertEquals([new NotBlank(), new NotEqualTo(['value' => 'foo'])], ConstraintValueValidator::fromConstraints([new NotBlank(), new NotEqualTo('foo')])->constraints());
+        $element = new StringElement();
+        $validator = new ConstraintValueValidator();
+
+        $error = $validator->onTransformerException(new \Exception('my error'), 'foo', $element);
+
+        $this->assertFalse($error->empty());
+        $this->assertEquals('my error', $error->global());
+        $this->assertEquals('TRANSFORM_ERROR', $error->code());
+    }
+
+    /**
+     *
+     */
+    public function test_onTransformerException_ignoreException()
+    {
+        $element = new StringElement();
+        $validator = new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true]));
+
+        $error = $validator->onTransformerException(new \Exception('my error'), 'foo', $element);
+
+        $this->assertTrue($error->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_onTransformerException_custom_message_and_code()
+    {
+        $element = new StringElement();
+        $validator = new ConstraintValueValidator([], new TransformerExceptionConstraint(['message' => 'message', 'code' => 'CODE_ERROR']));
+
+        $error = $validator->onTransformerException(new \Exception('my error'), 'foo', $element);
+
+        $this->assertFalse($error->empty());
+        $this->assertEquals('message', $error->global());
+        $this->assertEquals('CODE_ERROR', $error->code());
     }
 }

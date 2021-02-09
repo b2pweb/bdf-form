@@ -16,6 +16,7 @@ use Bdf\Form\Registry\Registry;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Constraint\Closure;
+use Bdf\Form\Validator\TransformerExceptionConstraint;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -170,6 +171,65 @@ class FormTest extends TestCase
         $this->assertFalse($form->valid());
         $this->assertFalse($form->error()->empty());
         $this->assertEquals('my error', $form->error()->global());
+
+        $this->assertNull($form['firstName']->element()->value());
+        $this->assertNull($form['lastName']->element()->value());
+        $this->assertNull($form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_exception_ignored()
+    {
+        $form = new Form(new ChildrenCollection([
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
+        ]), new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])), new ClosureTransformer(function () { throw new \Exception('my error'); }));
+
+        $form->import([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => 4,
+        ]);
+
+        $form->submit([]);
+
+        $this->assertTrue($form->valid());
+
+        $this->assertNull($form['firstName']->element()->value());
+        $this->assertNull($form['lastName']->element()->value());
+        $this->assertNull($form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_exception_ignored_should_validate_other_constraints()
+    {
+        $form = new Form(new ChildrenCollection([
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->required()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->required()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->required()->buildChild(),
+        ]), new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])), new ClosureTransformer(function () { throw new \Exception('my error'); }));
+
+        $form->import([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => 4,
+        ]);
+
+        $form->submit([]);
+
+        $this->assertFalse($form->valid());
+        $this->assertFalse($form->error()->empty());
+        $this->assertNull($form->error()->global());
+        $this->assertEquals([
+            'firstName' => 'This value should not be blank.',
+            'lastName' => 'This value should not be blank.',
+            'id' => 'This value should not be blank.',
+        ], $form->error()->toArray());
 
         $this->assertNull($form['firstName']->element()->value());
         $this->assertNull($form['lastName']->element()->value());

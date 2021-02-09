@@ -15,7 +15,7 @@ use Bdf\Form\RootElementInterface;
 use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\ContainerTrait;
-use Bdf\Form\Validator\NullValueValidator;
+use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Bdf\Form\View\ElementViewInterface;
 use Exception;
@@ -108,7 +108,7 @@ final class Form implements FormInterface
     public function __construct(ChildrenCollectionInterface $children, ?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ValueGeneratorInterface $generator = null)
     {
         $this->children = $children->duplicate($this);
-        $this->validator = $validator ?: NullValueValidator::instance();
+        $this->validator = $validator ?? ConstraintValueValidator::empty();
         $this->transformer = $transformer ?: NullTransformer::instance();
         $this->error = FormError::null();
         /** @var ValueGeneratorInterface<T> */
@@ -334,8 +334,8 @@ final class Form implements FormInterface
         try {
             $data = $this->transformer->transformFromHttp($data, $this);
         } catch (Exception $e) {
-            $this->error = FormError::message($e->getMessage(), 'TRANSFORM_ERROR');
-            $this->valid = false;
+            $this->error = $this->validator->onTransformerException($e, $data, $this);
+            $this->valid = $this->error->empty();
 
             // Reset children values
             foreach ($this->children->all() as $child) {

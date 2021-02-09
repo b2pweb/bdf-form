@@ -18,7 +18,7 @@ use Bdf\Form\RootElementInterface;
 use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\ContainerTrait;
-use Bdf\Form\Validator\NullValueValidator;
+use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Bdf\Form\View\ConstraintsNormalizer;
 use Bdf\Form\View\ElementViewInterface;
@@ -92,7 +92,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     {
         $this->templateElement = $templateElement;
         $this->transformer = $transformer ?: NullTransformer::instance();
-        $this->validator = $validator ?: NullValueValidator::instance();
+        $this->validator = $validator ?: ConstraintValueValidator::empty();
         $this->error = FormError::null();
         $this->choices = $choices;
     }
@@ -166,10 +166,13 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         try {
             $data = (array) $this->transformer->transformFromHttp($data, $this);
         } catch (Exception $e) {
-            $this->valid = false;
-            $this->error = FormError::message($e->getMessage(), 'TRANSFORM_ERROR');
+            $this->error = $this->validator->onTransformerException($e, $data, $this);
 
-            return $this;
+            if (!$this->valid = $this->error->empty()) {
+                return $this;
+            }
+
+            $data = [];
         }
 
         $errors = [];

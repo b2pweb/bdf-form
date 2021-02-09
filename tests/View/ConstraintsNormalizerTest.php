@@ -4,7 +4,6 @@ namespace Bdf\Form\View;
 
 use Bdf\Form\Csrf\CsrfValueValidator;
 use Bdf\Form\Validator\ConstraintValueValidator;
-use Bdf\Form\Validator\NullValueValidator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
@@ -18,7 +17,7 @@ class ConstraintsNormalizerTest extends TestCase
      */
     public function test_normalize()
     {
-        $this->assertEmpty(ConstraintsNormalizer::normalize(new NullValueValidator()));
+        $this->assertEmpty(ConstraintsNormalizer::normalize(new ConstraintValueValidator()));
         $this->assertEmpty(ConstraintsNormalizer::normalize(new CsrfValueValidator()));
         $this->assertEquals([NotBlank::class => []], ConstraintsNormalizer::normalize(new ConstraintValueValidator([new NotBlank()])));
         $this->assertEquals([], ConstraintsNormalizer::normalize(new ConstraintValueValidator([])));

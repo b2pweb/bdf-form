@@ -291,6 +291,17 @@ class DateTimeElementBuilder extends AbstractElementBuilder
 
     /**
      * {@inheritdoc}
+     */
+    protected function defaultTransformerExceptionConstraintOptions(): array
+    {
+        return [
+            'message' => 'This value is not a valid datetime.',
+            'code' => 'INVALID_DATETIME_ERROR',
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * @return DateTimeElement
      */

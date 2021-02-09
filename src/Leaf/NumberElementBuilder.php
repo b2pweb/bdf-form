@@ -115,6 +115,17 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function defaultTransformerExceptionConstraintOptions(): array
+    {
+        return [
+            'message' => 'The value is not a valid number.',
+            'code' => 'INVALID_NUMBER_ERROR',
+        ];
+    }
+
+    /**
      * Creates the localized number transformer
      *
      * @return TransformerInterface

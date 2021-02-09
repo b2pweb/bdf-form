@@ -4,6 +4,7 @@ namespace Bdf\Form\Validator;
 
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
+use Exception;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -24,6 +25,17 @@ interface ValueValidatorInterface
      * @return FormError The error. Return an empty error if the value is valid
      */
     public function validate($value, ElementInterface $element): FormError;
+
+    /**
+     * Handle a transformer exception
+     *
+     * @param Exception $exception The exception
+     * @param mixed $value The raw value (i.e. not transformed)
+     * @param ElementInterface $element The element
+     *
+     * @return FormError The real error
+     */
+    public function onTransformerException(Exception $exception, $value, ElementInterface $element): FormError;
 
     /**
      * Get validator constraints

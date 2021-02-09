@@ -127,10 +127,10 @@ class StringElementBuilderTest extends TestCase
      */
     public function test_regex()
     {
-        $element = $this->builder->regex('^j')->buildElement();
+        $element = $this->builder->regex('/^j/i')->buildElement();
 
         $this->assertFalse($element->submit('Bill')->valid());
-        $this->assertFalse($element->submit('John')->valid());
+        $this->assertTrue($element->submit('John')->valid());
     }
 
     /**

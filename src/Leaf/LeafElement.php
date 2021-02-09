@@ -13,7 +13,7 @@ use Bdf\Form\RootElementInterface;
 use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\ContainerTrait;
-use Bdf\Form\Validator\NullValueValidator;
+use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Bdf\Form\View\ConstraintsNormalizer;
 use Bdf\Form\View\ElementViewInterface;
@@ -75,7 +75,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
      */
     public function __construct(?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ChoiceInterface $choices = null)
     {
-        $this->validator = $validator ?: NullValueValidator::instance();
+        $this->validator = $validator ?: ConstraintValueValidator::empty();
         $this->transformer = $transformer ?: NullTransformer::instance();
         $this->error = FormError::null();
         $this->choices = $choices;
@@ -86,13 +86,20 @@ abstract class LeafElement implements ElementInterface, Choiceable
      */
     final public function submit($data): ElementInterface
     {
+        $shouldBeValidated = true;
+
         try {
             $this->submitted = true;
             $this->value = $this->toPhp($this->transformer->transformFromHttp($this->sanitize($data), $this));
-            $this->error = $this->validator->validate($this->value, $this);
         } catch (Exception $e) {
-            $this->error = FormError::message($e->getMessage(), 'TRANSFORM_ERROR');
+            $this->error = $this->validator->onTransformerException($e, $data, $this);
             $this->value = $data; // @todo null ? keep original ?
+            $shouldBeValidated = $this->error->empty();
+        }
+
+        // Only validate on successfully transformation or if the transformation error is ignored
+        if ($shouldBeValidated) {
+            $this->error = $this->validator->validate($this->value, $this);
         }
 
         return $this;
