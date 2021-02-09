@@ -136,10 +136,12 @@ class DateTimeElementTest extends TestCase
     {
         $transformer = $this->createMock(TransformerInterface::class);
         $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
+        $transformer->expects($this->once())->method('transformToHttp')->willReturnArgument(0);
         $element = new DateTimeElement(null, $transformer);
 
         $this->assertFalse($element->submit('aa')->valid());
         $this->assertSame('aa', $element->value());
+        $this->assertSame('aa', $element->httpValue());
         $this->assertEquals('my error', $element->error()->global());
     }
 
@@ -150,6 +152,7 @@ class DateTimeElementTest extends TestCase
     {
         $transformer = $this->createMock(TransformerInterface::class);
         $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
+        $transformer->expects($this->once())->method('transformToHttp')->willReturnArgument(0);
         $element = new DateTimeElement(
             new ConstraintValueValidator(
                 [new Closure(function () { return 'validation error'; })],
@@ -160,6 +163,7 @@ class DateTimeElementTest extends TestCase
 
         $this->assertFalse($element->submit('aa')->valid());
         $this->assertSame('aa', $element->value());
+        $this->assertSame('aa', $element->httpValue());
         $this->assertEquals('validation error', $element->error()->global());
     }
 

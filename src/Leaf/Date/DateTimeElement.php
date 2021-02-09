@@ -131,6 +131,10 @@ final class DateTimeElement extends LeafElement
      */
     protected function toHttp($phpValue)
     {
+        if (is_string($phpValue)) {
+            return $phpValue;
+        }
+
         if (!$phpValue instanceof DateTimeInterface) {
             return null;
         }
