@@ -127,7 +127,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * </code>
      *
      * @param class-string<ElementInterface<RT>> $element The element class name
-     * @param callable|null $configurator Callback for configure the inner element builder. Takes as parameter the element builder
+     * @param callable(ElementBuilderInterface<ElementInterface<RT>>):void|null $configurator Callback for configure the inner element builder. Takes as parameter the element builder
      *
      * @template RT
      *
@@ -171,7 +171,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * });
      * </code>
      *
-     * @param callable|null $configurator Callback for configure the inner element builder
+     * @param callable(ElementBuilderInterface<ElementInterface<string>>):void|null $configurator Callback for configure the inner element builder
      *
      * @return ArrayElementBuilder<string>
      */
@@ -189,7 +189,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * });
      * </code>
      *
-     * @param callable|null $configurator Callback for configure the inner element builder
+     * @param callable(ElementBuilderInterface<ElementInterface<int>>):void|null $configurator Callback for configure the inner element builder
      *
      * @return ArrayElementBuilder<int>
      */
@@ -207,7 +207,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * });
      * </code>
      *
-     * @param callable|null $configurator Callback for configure the inner element builder
+     * @param callable(ElementBuilderInterface<ElementInterface<float>>):void|null $configurator Callback for configure the inner element builder
      *
      * @return ArrayElementBuilder<float>
      */
@@ -223,7 +223,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * $builder->array('flags')->boolean();
      * </code>
      *
-     * @param callable|null $configurator Callback for configure the inner element builder
+     * @param callable(ElementBuilderInterface<ElementInterface<bool>>):void|null $configurator Callback for configure the inner element builder
      *
      * @return ArrayElementBuilder<bool>
      */
@@ -241,7 +241,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * });
      * </code>
      *
-     * @param callable|null $configurator Callback for configure the inner element builder
+     * @param callable(ElementBuilderInterface<ElementInterface<\DateTimeInterface>>):void|null $configurator Callback for configure the inner element builder
      *
      * @return ArrayElementBuilder<\DateTimeInterface>
      */
@@ -259,7 +259,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * });
      * </code>
      *
-     * @param callable|null $configurator Callback for configure the inner element builder
+     * @param callable(ElementBuilderInterface<ElementInterface<\libphonenumber\PhoneNumber>>):void|null $configurator Callback for configure the inner element builder
      *
      * @return ArrayElementBuilder<\libphonenumber\PhoneNumber>
      */

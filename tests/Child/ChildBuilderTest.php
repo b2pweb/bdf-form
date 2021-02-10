@@ -10,6 +10,7 @@ use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Child\Http\HttpFieldsInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
+use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\PropertyAccess\Getter;
@@ -249,19 +250,44 @@ class ChildBuilderTest extends TestCase
     /**
      *
      */
-    public function test_childFactory_with_class_name()
+    public function test_childClassName()
     {
-        $this->assertInstanceOf(MyCustomChild::class, $this->builder->childFactory(MyCustomChild::class)->buildChild());
+        $this->assertInstanceOf(MyCustomChild::class, $this->builder->childClassName(MyCustomChild::class)->buildChild());
     }
 
     /**
      *
      */
-    public function test_childFactory_with_closure()
+    public function test_addParametersConfigurator_with_child_instance()
     {
         $child = $this->createMock(ChildInterface::class);
 
-        $this->assertSame($child, $this->builder->childFactory(function () use($child) { return $child; })->buildChild());
+        $this->assertSame($child, $this->builder->addParametersConfigurator(function (ChildParameters $parameters) use($child) { $parameters->child = $child; })->buildChild());
+    }
+
+    /**
+     *
+     */
+    public function test_addParametersConfigurator_with_child_wrapper()
+    {
+        $this->assertSame($this->builder, $this->builder->addParametersConfigurator(function (ChildParameters $parameters) {
+            $parameters->factories[] = function (ChildParameters $parameters) {
+                return new MyCustomChild($parameters->child, 'A');
+            };
+        }));
+
+        $this->assertSame($this->builder, $this->builder->addParametersConfigurator(function (ChildParameters $parameters) {
+            $parameters->factories[] = function (ChildParameters $parameters) {
+                return new MyCustomChild($parameters->child, 'B');
+            };
+        }));
+
+        $child = $this->builder->buildChild();
+
+        $this->assertInstanceOf(MyCustomChild::class, $child);
+        $this->assertEquals('B', $child->name);
+        $this->assertEquals('A', $child->child->name);
+        $this->assertInstanceOf(Child::class, $child->child->child);
     }
 
     /**
@@ -396,10 +422,56 @@ class ChildBuilderTest extends TestCase
 
         $builder->test();
     }
+
+    /**
+     *
+     */
+    public function test_addFilterProvider()
+    {
+        $builder = new class('child', new StringElementBuilder()) extends ChildBuilder {
+            public function test()
+            {
+                $this->addFilterProvider(function($registry) {
+                    TestCase::assertInstanceOf(Registry::class, $registry);
+
+                    return [];
+                });
+
+                $this->addFilterProvider(function () {
+                    return [
+                        new ClosureFilter(function($v) { return $v.'A'; }),
+                        new ClosureFilter(function($v) { return $v.'B'; }),
+                    ];
+                });
+
+                $this->addFilterProvider(function () {
+                    return [
+                        new ClosureFilter(function($v) { return $v.'C'; }),
+                    ];
+                });
+            }
+        };
+
+        $builder->test();
+        $child = $builder->buildChild();
+        $child->setParent(new Form(new ChildrenCollection()));
+
+        $child->submit(['child' => '']);
+        $this->assertEquals('ABC', $child->element()->value());
+    }
 }
 
 class MyCustomChild implements ChildInterface
 {
+    public $child;
+    public $name;
+
+    public function __construct($child = null, $name = null)
+    {
+        $this->child = $child;
+        $this->name = $name;
+    }
+
     public function element(): ElementInterface
     {
     }

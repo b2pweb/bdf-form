@@ -90,13 +90,27 @@ interface ChildBuilderInterface
     public function default($default);
 
     /**
-     * Define the child creation factory or class name
+     * Add a configurator for child parameters
+     * The configure allow to handle wrapper of child builder
      *
-     * @param ChildCreationStrategyInterface|callable|class-string<ChildInterface> $factory The factory, or child class name
+     * Usage:
+     * <code>
+     * $builder->addParametersConfigurator(function (ChildParameters $parameters) {
+     *     $parameters->hydrator = $parameters->hydrator ?? $this->createDefaultHydrator(); // Define a default hydrator
+     *     $parameters->dependencies[] = 'myOtherField';
+     *
+     *     // Define a child decorator
+     *     $parameters->factories[] = function (ChildParameters $parameters) {
+     *         return new MyChildWrapper($parameters->child);
+     *     };
+     * });
+     * </code>
+     *
+     * @param callable(ChildParameters):void $configurator
      *
      * @return $this
      */
-    public function childFactory($factory);
+    public function addParametersConfigurator(callable $configurator);
 
     /**
      * Add an input dependency

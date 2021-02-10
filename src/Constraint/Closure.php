@@ -39,7 +39,7 @@ class Closure extends Constraint
     public $message = 'The value is invalid';
 
     /**
-     * @var callable(mixed,\Bdf\Form\ElementInterface,\Symfony\Component\Validator\Context\ExecutionContextInterface):bool|string|array{code?: string, message?: string}
+     * @var callable(mixed,\Bdf\Form\ElementInterface,\Symfony\Component\Validator\Context\ExecutionContextInterface):(bool|string|array{code?: string, message?: string})
      */
     public $callback;
 

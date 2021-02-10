@@ -81,9 +81,14 @@ class ChildBuilder implements ChildBuilderInterface
     private $filtersProviders = [];
 
     /**
-     * @var ChildCreationStrategyInterface|callable|class-string<ChildInterface>
+     * @var class-string<ChildInterface>
      */
-    private $factory = Child::class;
+    private $childClassName = Child::class;
+
+    /**
+     * @var list<callable(ChildParameters):void>
+     */
+    private $parametersConfigurators = [];
 
     /**
      * @var HttpFieldsInterface|null
@@ -187,56 +192,43 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * {@inheritdoc}
      */
+    public function addParametersConfigurator(callable $configurator)
+    {
+        $this->parametersConfigurators[] = $configurator;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     final public function buildChild(): ChildInterface
     {
-        $filters = $this->trim ? [TrimFilter::instance()] : [];
+        $parameters = $this->buildParameters();
 
-        foreach ($this->filters as $filter) {
-            $filters[] = $this->registry->filter($filter);
+        foreach ($this->parametersConfigurators as $configurator) {
+            $configurator($parameters);
         }
 
-        foreach ($this->filtersProviders as $provider) {
-            $filters = array_merge($filters, $provider($this->registry));
-        }
-
-        $fields = $this->fields ?: new ArrayOffsetHttpFields($this->name);
-        $element = $this->elementBuilder->buildElement();
-
-        // Apply element transformation to the default value
-        if ($this->default !== null) {
-            $lastValue = $element->value();
-            $default = $element->import($this->default)->httpValue();
-            $element->import($lastValue);
-        } else {
-            $default = null;
-        }
-
-        if (is_string($this->factory)) {
-            /** @var ChildInterface */
-            return new $this->factory(
+        if ($parameters->child === null) {
+            $parameters->child = new $parameters->className(
                 $this->name,
-                $element,
-                $fields,
-                $filters,
-                $default,
-                $this->hydrator,
-                $this->extractor,
-                $this->viewDependencies,
-                $this->buildTransformer()
+                $parameters->element,
+                $parameters->fields,
+                $parameters->filters,
+                $parameters->defaultValue,
+                $parameters->hydrator,
+                $parameters->extractor,
+                $parameters->dependencies,
+                $parameters->modelTransformer
             );
         }
 
-        return ($this->factory)(
-            $this->name,
-            $element,
-            $fields,
-            $filters,
-            $default,
-            $this->hydrator,
-            $this->extractor,
-            $this->viewDependencies,
-            $this->buildTransformer()
-        );
+        foreach ($parameters->factories as $factory) {
+            $parameters->child = $factory($parameters);
+        }
+
+        return $parameters->child;
     }
 
     /**
@@ -342,11 +334,15 @@ class ChildBuilder implements ChildBuilderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Define the child class name
+     *
+     * @param class-string<ChildInterface> $factory The child class name
+     *
+     * @return $this
      */
-    final public function childFactory($factory): self
+    final public function childClassName(string $factory): self
     {
-        $this->factory = $factory;
+        $this->childClassName = $factory;
 
         return $this;
     }
@@ -476,5 +472,46 @@ class ChildBuilder implements ChildBuilderInterface
     final protected function addFilterProvider(callable $provider): void
     {
         $this->filtersProviders[] = $provider;
+    }
+
+    /**
+     * Create the child parameters
+     *
+     * @return ChildParameters
+     */
+    private function buildParameters(): ChildParameters
+    {
+        $parameters = new ChildParameters();
+
+        $parameters->name = $this->name;
+        $parameters->hydrator = $this->hydrator;
+        $parameters->extractor = $this->extractor;
+        $parameters->dependencies = $this->viewDependencies;
+        $parameters->modelTransformer = $this->buildTransformer();
+        $parameters->className = $this->childClassName;
+
+        $parameters->filters = $this->trim ? [TrimFilter::instance()] : [];
+
+        foreach ($this->filters as $filter) {
+            $parameters->filters[] = $this->registry->filter($filter);
+        }
+
+        foreach ($this->filtersProviders as $provider) {
+            $parameters->filters = array_merge($parameters->filters, $provider($this->registry));
+        }
+
+        $parameters->fields = $this->fields ?: new ArrayOffsetHttpFields($this->name);
+        $parameters->element = $this->elementBuilder->buildElement();
+
+        // Apply element transformation to the default value
+        if ($this->default !== null) {
+            $lastValue = $parameters->element->value();
+            $parameters->defaultValue = $parameters->element->import($this->default)->httpValue();
+            $parameters->element->import($lastValue);
+        } else {
+            $parameters->defaultValue = null;
+        }
+
+        return $parameters;
     }
 }
