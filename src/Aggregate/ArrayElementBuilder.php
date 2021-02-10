@@ -150,6 +150,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * {@inheritdoc}
      *
      * @return ElementBuilderInterface<ElementInterface<T>>
+     * @psalm-suppress InvalidNullableReturnType
      */
     public function getElementBuilder(): ElementBuilderInterface
     {
@@ -157,6 +158,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
             $this->element(StringElement::class);
         }
 
+        /** @psalm-suppress NullableReturnStatement */
         return $this->element;
     }
 
