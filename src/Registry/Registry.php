@@ -19,6 +19,8 @@ use Bdf\Form\Custom\CustomFormBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Filter\FilterInterface;
+use Bdf\Form\Leaf\AnyElement;
+use Bdf\Form\Leaf\AnyElementBuilder;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
@@ -58,6 +60,7 @@ class Registry implements RegistryInterface
         IntegerElement::class => IntegerElementBuilder::class,
         FloatElement::class => FloatElementBuilder::class,
         BooleanElement::class => BooleanElementBuilder::class,
+        AnyElement::class => AnyElementBuilder::class,
 
         EmailElement::class => EmailElementBuilder::class,
         UrlElement::class => UrlElementBuilder::class,
