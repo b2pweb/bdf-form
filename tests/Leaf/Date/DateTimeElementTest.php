@@ -87,6 +87,8 @@ class DateTimeElementTest extends TestCase
         $this->assertFalse($element->submit('invalid')->valid());
         $this->assertEquals('Invalid date format', $element->error()->global());
         $this->assertEquals('TRANSFORM_ERROR', $element->error()->code());
+        $this->assertSame('invalid', $element->value());
+        $this->assertSame('invalid', $element->httpValue());
     }
 
     /**

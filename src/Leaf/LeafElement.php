@@ -161,7 +161,11 @@ abstract class LeafElement implements ElementInterface, Choiceable
      */
     final public function httpValue()
     {
-        return $this->transformer->transformToHttp($this->toHttp($this->value), $this);
+        try {
+            return $this->transformer->transformToHttp($this->toHttp($this->value), $this);
+        } catch (Exception $e) {
+            return $this->value;
+        }
     }
 
     /**
