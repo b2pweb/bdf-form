@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Validator;
 
+use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Leaf\StringElement;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -32,6 +33,40 @@ class ConstraintValueValidatorTest extends TestCase
         $validator = new ConstraintValueValidator([]);
 
         $this->assertTrue($validator->validate('value', $element)->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_validate_chain()
+    {
+        $calls = [];
+        $element = new StringElement();
+        $validator = new ConstraintValueValidator([
+            new Closure(function () use(&$calls) { $calls[] = 'A'; }),
+            new Closure(function () use(&$calls) { $calls[] = 'B'; }),
+            new Closure(function () use(&$calls) { $calls[] = 'C'; }),
+        ]);
+
+        $this->assertTrue($validator->validate('value', $element)->empty());
+        $this->assertSame(['A', 'B', 'C'], $calls);
+    }
+
+    /**
+     *
+     */
+    public function test_validate_chain_with_error_should_stop_on_first_error()
+    {
+        $calls = [];
+        $element = new StringElement();
+        $validator = new ConstraintValueValidator([
+            new Closure(function () use(&$calls) { $calls[] = 'A'; }),
+            new Closure(function () use(&$calls) { $calls[] = 'B'; return 'error'; }),
+            new Closure(function () use(&$calls) { $calls[] = 'C'; }),
+        ]);
+
+        $this->assertEquals('error', $validator->validate('value', $element)->global());
+        $this->assertSame(['A', 'B'], $calls);
     }
 
     /**

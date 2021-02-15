@@ -78,6 +78,18 @@ class PhoneElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_empty_string()
+    {
+        $element = new PhoneElement();
+
+        $this->assertTrue($element->submit('')->valid());
+        $this->assertSame('', $element->value()->getRawInput());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
     public function test_submit_with_constraint()
     {
         $element = new PhoneElement(new ConstraintValueValidator([new NotBlank()]));

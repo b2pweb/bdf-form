@@ -54,16 +54,17 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         }
 
         $root = $element->root();
+        $groups = $root->constraintGroups();
 
         /** @psalm-suppress TooManyArguments */
-        $errors = $root->getValidator()
-            ->startContext($element)
-            ->validate($value, $this->constraints, $root->constraintGroups())
-            ->getViolations()
-        ;
+        $context = $root->getValidator()->startContext($element);
 
-        if ($errors->has(0)) {
-            return FormError::violation($errors->get(0));
+        foreach ($this->constraints as $constraint) {
+            $errors = $context->validate($value, $constraint, $groups)->getViolations();
+
+            if ($errors->has(0)) {
+                return FormError::violation($errors->get(0));
+            }
         }
 
         return FormError::null();
