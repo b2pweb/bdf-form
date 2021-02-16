@@ -6,7 +6,6 @@ use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Leaf\StringElement;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotEqualTo;
 
 /**
  * Class ConstraintValueValidatorTest
@@ -22,6 +21,7 @@ class ConstraintValueValidatorTest extends TestCase
         $validator = new ConstraintValueValidator([new NotBlank()]);
 
         $this->assertTrue($validator->validate('value', $element)->empty());
+        $this->assertTrue($validator->hasConstraints());
     }
 
     /**
@@ -33,6 +33,7 @@ class ConstraintValueValidatorTest extends TestCase
         $validator = new ConstraintValueValidator([]);
 
         $this->assertTrue($validator->validate('value', $element)->empty());
+        $this->assertFalse($validator->hasConstraints());
     }
 
     /**

@@ -49,4 +49,20 @@ class PhoneNumberToStringTransformerTest extends TestCase
         $this->assertInstanceOf(PhoneNumber::class, $form['foo']->element()->value());
         $this->assertEquals('236547841', $form['foo']->element()->value()->getNationalNumber());
     }
+
+    /**
+     *
+     */
+    public function test_with_invalid_number_should_return_unformated_value()
+    {
+        $builder = new FormBuilder();
+        $builder->phone('foo')->modelTransformer(new PhoneNumberToStringTransformer())->getter()->setter();
+
+        $form = $builder->buildElement();
+
+        $form->submit(['foo' => 'invalid']);
+        $this->assertSame(['foo' => 'invalid'], $form->value());
+
+        $this->assertInstanceOf(PhoneNumber::class, $form['foo']->element()->value());
+    }
 }

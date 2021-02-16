@@ -74,4 +74,12 @@ final class CsrfValueValidator implements ValueValidatorInterface
     {
         return []; // Does CsrfConstraint should be returns ?
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasConstraints(): bool
+    {
+        return true;
+    }
 }

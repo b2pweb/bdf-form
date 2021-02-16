@@ -70,6 +70,32 @@ class FormTest extends TestCase
     /**
      *
      */
+    public function test_submit_without_constraints_should_not_generate_the_value_on_submit()
+    {
+        $called = false;
+        $this->form = new Form(new ChildrenCollection([
+            $this->registry->childBuilder(StringElement::class, 'firstName')->setter(function ($value) use(&$called) { $called = true; return $value; })->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->setter()->buildChild(),
+        ]));
+
+        $this->form->submit([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+        ]);
+
+        $this->assertTrue($this->form->valid());
+        $this->assertTrue($this->form->error()->empty());
+        $this->assertFalse($called);
+
+        $this->form->value();
+        $this->assertTrue($called);
+    }
+
+    /**
+     *
+     */
     public function test_submit_error_on_child()
     {
         $this->form->submit([

@@ -43,4 +43,11 @@ interface ValueValidatorInterface
      * @return Constraint[]
      */
     public function constraints(): array;
+
+    /**
+     * Check if the validator has constraints, and the value should be validated, or not
+     *
+     * @return bool true if there is no constraints, and validate() always returns en ampty error
+     */
+    public function hasConstraints(): bool;
 }

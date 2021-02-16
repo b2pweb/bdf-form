@@ -72,6 +72,7 @@ class PhoneElementTest extends TestCase
 
         $this->assertTrue($element->submit(null)->valid());
         $this->assertNull($element->value());
+        $this->assertNull($element->httpValue());
         $this->assertTrue($element->error()->empty());
     }
 
@@ -84,6 +85,7 @@ class PhoneElementTest extends TestCase
 
         $this->assertTrue($element->submit('')->valid());
         $this->assertSame('', $element->value()->getRawInput());
+        $this->assertSame('', $element->httpValue());
         $this->assertTrue($element->error()->empty());
     }
 

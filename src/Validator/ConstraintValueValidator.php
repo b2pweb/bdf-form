@@ -103,6 +103,14 @@ final class ConstraintValueValidator implements ValueValidatorInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function hasConstraints(): bool
+    {
+        return !empty($this->constraints);
+    }
+
+    /**
      * Get the empty value validator instance
      *
      * @return ConstraintValueValidator<mixed>

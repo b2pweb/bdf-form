@@ -360,7 +360,12 @@ final class Form implements FormInterface
             return;
         }
 
-        $this->error = $this->validator->validate($this->value(), $this);
+        // Do not generate value if it's not necessary
+        $this->error = $this->validator->hasConstraints()
+            ? $this->validator->validate($this->value(), $this)
+            : FormError::null()
+        ;
+
         $this->valid = $this->error->empty();
     }
 

@@ -62,6 +62,10 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
 
         $formatter = $this->formatter ?? ($input instanceof PhoneElement ? $input->getFormatter() : PhoneNumberUtil::getInstance());
 
+        if (!$formatter->isValidNumber($value)) {
+            return $value->getRawInput();
+        }
+
         return $formatter->format($value, $this->format);
     }
 }

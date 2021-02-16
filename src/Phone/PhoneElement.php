@@ -69,7 +69,7 @@ final class PhoneElement extends LeafElement
             return null;
         }
 
-        return $phpValue->getRawInput() ?: $this->formatter->format($phpValue, PhoneNumberFormat::E164);
+        return $phpValue->getRawInput() ?? $this->formatter->format($phpValue, PhoneNumberFormat::E164);
     }
 
     /**
