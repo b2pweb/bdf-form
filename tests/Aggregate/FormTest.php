@@ -284,6 +284,34 @@ class FormTest extends TestCase
     /**
      *
      */
+    public function test_value_should_call_hydrator_according_dependency_order()
+    {
+        $calls = [];
+        $builder = new FormBuilder();
+        $builder->string('firstName')->depends('id', 'lastName')->setter(function ($value) use(&$calls) { $calls[] = 'firstName'; return $value; });
+        $builder->string('lastName')->depends('id')->setter(function ($value) use(&$calls) { $calls[] = 'lastName'; return $value; });
+        $builder->integer('id')->setter(function ($value) use(&$calls) { $calls[] = 'id'; return $value; });
+
+        $form = $builder->buildElement();
+
+        $form->submit([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => 4,
+        ]);
+
+        $this->assertSame([
+            'id' => 4,
+            'lastName' => 'Smith',
+            'firstName' => 'John',
+        ], $form->value());
+
+        $this->assertSame(['id', 'lastName', 'firstName'], $calls);
+    }
+
+    /**
+     *
+     */
     public function test_import_and_patch_null()
     {
         $entity = new Person();
@@ -728,6 +756,35 @@ class FormTest extends TestCase
         ;
 
         $this->assertInstanceOf(Person::class, $person);
+        $this->assertEquals(4, $person->id);
+        $this->assertEquals('John', $person->firstName);
+        $this->assertEquals('Smith', $person->lastName);
+    }
+
+    /**
+     *
+     */
+    public function test_attach_with_entity_should_keep_the_instance()
+    {
+        $registry = new Registry();
+
+        $form = new Form(new ChildrenCollection([
+            $registry->childBuilder(StringElement::class, 'firstName')->setter()->buildChild(),
+            $registry->childBuilder(StringElement::class, 'lastName')->setter()->buildChild(),
+            $registry->childBuilder(IntegerElement::class, 'id')->setter()->buildChild(),
+        ]));
+
+        $generated = $form
+            ->attach($person = new Person())
+            ->submit([
+                'firstName' => 'John',
+                'lastName' => 'Smith',
+                'id' => '4',
+            ])
+            ->value()
+        ;
+
+        $this->assertSame($person, $generated);
         $this->assertEquals(4, $person->id);
         $this->assertEquals('John', $person->firstName);
         $this->assertEquals('Smith', $person->lastName);

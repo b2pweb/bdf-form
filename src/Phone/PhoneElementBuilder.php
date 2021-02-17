@@ -71,6 +71,24 @@ class PhoneElementBuilder extends AbstractElementBuilder
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @return $this
+     */
+    public function required($options = null)
+    {
+        if (!$options instanceof Constraint) {
+            if (is_string($options)) {
+                $options = ['message' => $options];
+            }
+
+            $options = new NotEmptyPhoneNumber($options);
+        }
+
+        return $this->satisfy($options);
+    }
+
+    /**
      * Define the region or country resolver
      *
      * <code>

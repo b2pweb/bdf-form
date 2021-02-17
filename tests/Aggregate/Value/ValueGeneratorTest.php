@@ -59,6 +59,46 @@ class ValueGeneratorTest extends TestCase
         $this->assertEquals(['foo' => 'bar'], $generated);
         $this->assertSame($element, $param);
     }
+
+    /**
+     *
+     */
+    public function test_attach_entity_should_return_the_same_instance()
+    {
+        $entity = new MyEntity();
+        $entity->foo = 'bar';
+
+        $element = $this->createMock(ElementInterface::class);
+        $generator = new ValueGenerator();
+        $generator->attach($entity);
+
+        $generated = $generator->generate($element);
+
+        $this->assertSame($entity, $generated);
+    }
+
+    /**
+     *
+     */
+    public function test_attach_with_callback()
+    {
+        $entity = new MyEntity();
+        $entity->foo = 'bar';
+
+        $element = $this->createMock(ElementInterface::class);
+        $generator = new ValueGenerator();
+        $generator->attach(function ($element) use(&$param) {
+            $param = $element;
+
+            return ['foo' => 'bar'];
+        });
+
+        $generated = $generator->generate($element);
+
+        $this->assertEquals(['foo' => 'bar'], $generated);
+        $this->assertSame($element, $param);
+    }
+
 }
 
 class MyEntity

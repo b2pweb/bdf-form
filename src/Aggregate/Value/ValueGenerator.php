@@ -24,6 +24,10 @@ final class ValueGenerator implements ValueGeneratorInterface
      */
     private $value;
 
+    /**
+     * @var callable():T|T|class-string<T>|null
+     */
+    private $attachment;
 
     /**
      * ValueGenerator constructor.
@@ -42,7 +46,7 @@ final class ValueGenerator implements ValueGeneratorInterface
     public function attach($entity): void
     {
         /** @psalm-suppress PropertyTypeCoercion */
-        $this->value = $entity;
+        $this->attachment = $entity;
     }
 
     /**
@@ -50,19 +54,22 @@ final class ValueGenerator implements ValueGeneratorInterface
      */
     public function generate(ElementInterface $element)
     {
-        if (is_string($this->value)) {
+        $value = $this->attachment ?? $this->value;
+
+        if (is_string($value)) {
             /** @var T */
-            return new $this->value;
+            return new $value;
         }
 
-        if (is_callable($this->value)) {
-            return ($this->value)($element);
+        if (is_callable($value)) {
+            return ($value)($element);
         }
 
-        if (is_object($this->value)) {
-            return clone $this->value;
+        // Only clone value if it's not attached
+        if (!$this->attachment && is_object($value)) {
+            return clone $value;
         }
 
-        return $this->value;
+        return $value;
     }
 }

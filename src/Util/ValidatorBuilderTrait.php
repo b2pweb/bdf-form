@@ -52,7 +52,7 @@ trait ValidatorBuilderTrait
      *
      * @see NotBlank The used constraint
      */
-    final public function required($options = null)
+    public function required($options = null)
     {
         if (!$options instanceof Constraint) {
             if (is_string($options)) {

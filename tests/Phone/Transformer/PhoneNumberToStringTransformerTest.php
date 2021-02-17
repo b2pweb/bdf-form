@@ -65,4 +65,19 @@ class PhoneNumberToStringTransformerTest extends TestCase
 
         $this->assertInstanceOf(PhoneNumber::class, $form['foo']->element()->value());
     }
+    /**
+     *
+     */
+    public function test_null()
+    {
+        $builder = new FormBuilder();
+        $builder->phone('foo')->modelTransformer(new PhoneNumberToStringTransformer())->getter()->setter();
+
+        $form = $builder->buildElement();
+
+        $form->import(['foo' => null]);
+        $this->assertSame(['foo' => null], $form->value());
+
+        $this->assertNull($form['foo']->element()->value());
+    }
 }

@@ -197,7 +197,7 @@ final class Form implements FormInterface
 
         $this->value = $this->generator->generate($this);
 
-        foreach ($this->children as $child) {
+        foreach ($this->children->reverseIterator() as $child) {
             $child->fill($this->value);
         }
 

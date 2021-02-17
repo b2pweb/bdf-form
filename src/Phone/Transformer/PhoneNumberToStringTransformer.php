@@ -42,6 +42,10 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
      */
     public function transformToHttp($value, ElementInterface $input): ?PhoneNumber
     {
+        if ($value === null) {
+            return null;
+        }
+
         if ($input instanceof PhoneElement) {
             return $input->parseValue($value);
         }

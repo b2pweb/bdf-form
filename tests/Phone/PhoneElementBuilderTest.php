@@ -136,14 +136,26 @@ class PhoneElementBuilderTest extends TestCase
     }
 
     /**
-     *
+     * @dataProvider emptyValues
      */
-    public function test_required()
+    public function test_required($value)
     {
-        $element = $this->builder->required()->buildElement();
+        $element = $this->builder->required()->allowInvalidNumber()->buildElement();
 
-        $element->submit(null);
+        $element->submit($value);
         $this->assertEquals('This value should not be blank.', $element->error()->global());
+    }
+
+    /**
+     * @return array
+     */
+    public function emptyValues()
+    {
+        return [
+            [null],
+            [''],
+            [[]],
+        ];
     }
 
     /**
