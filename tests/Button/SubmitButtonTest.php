@@ -53,6 +53,28 @@ class SubmitButtonTest extends TestCase
     /**
      *
      */
+    public function test_toHttp()
+    {
+        $btn = new SubmitButton('btn', 'aaa');
+
+        $this->assertSame([], $btn->toHttp());
+
+        $btn->submit(null);
+        $this->assertSame([], $btn->toHttp());
+
+        $btn->submit([]);
+        $this->assertSame([], $btn->toHttp());
+
+        $btn->submit(['btn' => 'bbb']);
+        $this->assertSame([], $btn->toHttp());
+
+        $btn->submit(['btn' => 'aaa']);
+        $this->assertSame(['btn' => 'aaa'], $btn->toHttp());
+    }
+
+    /**
+     *
+     */
     public function test_view()
     {
         $btn = new SubmitButton('btn', 'ok');

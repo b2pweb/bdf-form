@@ -82,6 +82,18 @@ final class SubmitButton implements ButtonInterface
     /**
      * {@inheritdoc}
      */
+    public function toHttp(): array
+    {
+        if (!$this->clicked) {
+            return [];
+        }
+
+        return [$this->name => $this->value];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function view(?HttpFieldPath $parent = null): ButtonViewInterface
     {
         return new ButtonView($parent ? $parent->add($this->name)->get() : $this->name, $this->value, $this->clicked());

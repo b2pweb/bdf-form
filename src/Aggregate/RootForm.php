@@ -135,7 +135,19 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function httpValue()
     {
-        return $this->form->httpValue();
+        $httpValue = $this->form->httpValue();
+
+        if (empty($this->buttons)) {
+            return $httpValue;
+        }
+
+        $httpValue = (array) $httpValue;
+
+        foreach ($this->buttons as $btn) {
+            $httpValue += $btn->toHttp();
+        }
+
+        return $httpValue;
     }
 
     /**

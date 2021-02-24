@@ -85,6 +85,10 @@ class CustomButton implements ButtonInterface
     {
     }
 
+    public function toHttp(): array
+    {
+    }
+
     public function view(?HttpFieldPath $parent = null): ButtonViewInterface
     {
         // TODO: Implement view() method.

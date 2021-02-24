@@ -52,6 +52,12 @@ class RootFormTest extends TestCase
 
         $this->assertSame($btn1, $root->submitButton());
         $this->assertEquals(['btn1'], $root->constraintGroups());
+        $this->assertEquals([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+            'btn1' => 'ok',
+        ], $root->httpValue());
 
         $root->submit([
             'firstName' => 'John',
@@ -62,6 +68,12 @@ class RootFormTest extends TestCase
 
         $this->assertSame($btn2, $root->submitButton());
         $this->assertEquals(['btn2'], $root->constraintGroups());
+        $this->assertEquals([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+            'btn2' => 'ok',
+        ], $root->httpValue());
 
         $root->submit([
             'firstName' => 'John',
@@ -72,6 +84,11 @@ class RootFormTest extends TestCase
 
         $this->assertNull($root->submitButton());
         $this->assertEquals([Constraint::DEFAULT_GROUP], $root->constraintGroups());
+        $this->assertEquals([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+        ], $root->httpValue());
 
         $root->submit([
             'firstName' => 'John',
@@ -81,6 +98,12 @@ class RootFormTest extends TestCase
         ]);
 
         $this->assertEquals([Constraint::DEFAULT_GROUP], $root->constraintGroups());
+        $this->assertEquals([
+            'firstName' => 'John',
+            'lastName' => 'Smith',
+            'id' => '4',
+            'btn3' => 'ok',
+        ], $root->httpValue());
     }
 
     /**

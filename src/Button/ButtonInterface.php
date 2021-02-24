@@ -37,6 +37,16 @@ interface ButtonInterface
     public function submit($data): bool;
 
     /**
+     * Get the http value of the button
+     *
+     * If the button is not clicked, should return an empty array
+     * Else, should return an associative array with the button name as key associated to the button value
+     *
+     * @return array
+     */
+    public function toHttp(): array;
+
+    /**
      * Get the constraint groups related the the button
      *
      * @return string[]
