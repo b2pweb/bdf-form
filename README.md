@@ -14,6 +14,7 @@ Library for handle form, and request validation.
 - [Installation using composer](#installation-using-composer)
 - [Basic usage](#basic-usage)
 - [Handle entities](#handle-entities)
+- [Transformation process](#transformation-process)
 - [Embedded and array](#embedded-and-array)
 - [Field path and dependencies](#field-path-and-dependencies)
 - [Choices](#choices)
@@ -28,10 +29,12 @@ Library for handle form, and request validation.
     - [DateTimeElement](#datetimeelement)
     - [PhoneElement](#phoneelement)
     - [CsrfElement](#csrfelement)
+    - [AnyElement](#anyelement)
 - [Create a custom element](#create-a-custom-element)
     - [Using custom form](#using-custom-form)
     - [Using LeafElement](#using-leafelement)
     - [Usage](#usage)
+    - [Custom child builder](#custom-child-builder)
 - [Error Handling](#error-handling)
     - [Simple usage](#simple-usage)
     - [Printer](#printer)
@@ -251,6 +254,279 @@ class PersonController extends Controller
 }
 ```
 
+## Transformation process
+
+Here a description, step by step, of the transformation process, from HTTP value to model value.
+This process is reversible to generate HTTP value from model.
+
+> Note: This example is for leaf element contained into a form. 
+> For an embedded for or array, simply replace the leaf element process by the form process.
+
+### 1 - Submit to buttons (scope: RootForm)
+
+The first step perform by the `RootForm` is to check the submit buttons. 
+If the HTTP data contains the button name, and the value match with the configured one, the button is marked as clicked.
+
+> Note: in reverse process, the clicked button value will be added to HTTP value
+
+See :
+- `ButtonInterface::submit()` 
+- `ButtonInterface::clicked()`
+- `RootFormInterface::submitButton()`
+
+### 2 - Call transformers of the form (scope: Form)
+
+Transformers of the container form are called. There are used to normalize input HTTP data to usable array value.
+
+> Note: the transformers are called in reverse order (i.e. last registered is first executed) when transform from HTTP to PHP
+> and called in order for PHP to HTTP transformation
+
+```php
+// Declare a transformer
+class JsonTransformer implements \Bdf\Form\Transformer\TransformerInterface
+{
+    public function transformToHttp($value,\Bdf\Form\ElementInterface $input)
+    {
+        return json_encode($value);
+    }
+
+    public function transformFromHttp($value,\Bdf\Form\ElementInterface $input)
+    {
+        return json_decode($value, true);
+    }
+}
+
+class MyForm extends CustomForm
+{
+    protected function configure(FormBuilderInterface $builder): void
+    {
+        // Transform JSON input to associative array
+        $builder->transformer(new JsonTransformer());
+    }
+}
+```
+
+See:
+- `TransformerInterface`
+- `FormBuilderInterface::transformer()`
+
+### 3 - Extract the HTTP field value (scope: Child)
+
+At this step, the normalized HTTP value is passed to the child, and the current field value is extracted.
+If the value is not available, null is returned.
+
+There is two extraction strategy :
+- Array offset: This is the default strategy. Extract the field value using a simple array access like `$httpValue[$name]`. By default the HTTP field name is same as the child name.
+- Array prefix: This strategy can only be used for aggregate elements like for or array. Filter the HTTP value, and keep only fields which starts with the given prefix.
+
+See:
+- `HttpFieldsInterface::extract()`
+- `ChildBuilder::httpFields()`
+- `ChildBuilder::prefix()`
+- `ChildInterface::submit()`
+ 
+### 4 - Apply filters (scope: Child)
+
+Once the field value is extracted, filters are applied. There are used for normalize and remove illegal values. 
+It's a destructive operation by definition (cannot be reversed), unlike transformers. There can be used for perform `trim` or `array_filter`.
+
+> Note: Unlike transformers, filters are only applied during transformation from HTTP to PHP.
+> Do not use if it's a "view" operation, like decoding a string.
+
+```php
+// Filter for keep only alpha numeric characters
+class AlphaNumFilter implements \Bdf\Form\Filter\FilterInterface
+{
+    public function filter($value,\Bdf\Form\Child\ChildInterface $input,$default)
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        return preg_replace('/[^a-z0-9]/i', '', $value);
+    }
+}
+
+class MyForm extends CustomForm
+{
+    protected function configure(FormBuilderInterface $builder): void
+    {
+        $builder->string('foo')->filter(new AlphaNumFilter())->setter();
+    }
+}
+
+$form = new MyForm();
+$form->submit(['foo' => '$$$abc123___']);
+$form->value()['foo'] === 'abc123'; // The string is filtered
+```
+
+See:
+- `FilterInterface`
+- `ChildBuilderInterface::filter()`
+
+### 5 - Set default value (scope: Child)
+
+Set the default value is the filtered field value is considered as empty and a default value is provided.
+A value is empty is it's an empty string `''` or array `[]`, or it's  `null`. `0`, `0.0` or `false` are not considered as empty.
+If not default value is given, the filtered value will be used.
+
+> Note: To set a default value, you should call `ChildBuilderInterface::default()` with PHP value
+
+See:
+- `HttpValue::orDefault()`
+- `ChildBuilderInterface::default()`
+
+### 6 - Call element transformers (scope: Element)
+
+Works like Form transformers (step 2), but on the element value.
+If a transformer throws an exception, the submit process will be stopped, the raw HTTP value will be kept,
+and the element will be marked as invalid with the exception message as error.
+
+The transformer exception behavior can be changed on the `ElementBuilder`. 
+If the exception is ignored by calling `ignoreTransformerException()` on the builder, the validation process will be performed on the raw HTTP value.
+
+```php
+// Declare a transformer
+class Base64Transformer implements \Bdf\Form\Transformer\TransformerInterface
+{
+    public function transformToHttp($value,\Bdf\Form\ElementInterface $input)
+    {
+        return base64_encode($value);
+    }
+
+    public function transformFromHttp($value,\Bdf\Form\ElementInterface $input)
+    {
+        $value = base64_decode($value);
+        
+        // Throw exception on invalid value
+        if ($value === false) {
+            throw new InvalidArgumentException('Invalid base64 data');
+        }
+
+        return $value;
+    }
+}
+
+class MyForm extends CustomForm
+{
+    protected function configure(FormBuilderInterface $builder): void
+    {
+        // "foo" is a base64 string input
+        $builder
+            ->string('foo')
+            ->transformer(new Base64Transformer())
+            ->transformerErrorMessage('Expecting base 64 data') // Define custom transformer error code and message
+            ->transformerErrorCode('INVALID_BASE64_ERROR')
+        ;
+    }
+}
+```
+
+See:
+- `ElementBuilderInterface::transformer()`
+- `ValidatorBuilderTrait::ignoreTransformerException()`
+- `ValidatorBuilderTrait::transformerErrorMessage()`
+- `ValidatorBuilderTrait::transformerErrorCode()`
+
+### 7 - Cast to PHP value (scope: Element)
+
+The value is converted from HTTP value to usable PHP value, like a cast to int on `IntegerElement`.
+
+> Note: this step is only performed on `LeafElement` implementations
+
+See:
+- `LeafElement::toPhp()`
+- `LeafElement::fromPhp()`
+
+### 8 - Validation (scope: Element)
+
+Validate the PHP value of the element, using constraints.
+
+See:
+- `ElementInterface::error()`
+- `ElementInterface::valid()`
+- `ElementBuilderInterface::satisfy()`
+
+### 9 - Generate the form value (scope: Form)
+
+Create the entity to fill by form values.
+
+See:
+- `ValueGeneratorInterface`
+- `FormInterface::value()`
+- `FormBuilderInterface::generator()`
+- `FormBuilderInterface::generates()`
+
+### 10 - Apply model transformer (scope: Child)
+
+Call the model transformer, for transform input data to model data.
+
+```php
+class MyForm extends CustomForm
+{
+    protected function configure(FormBuilderInterface $builder): void
+    {
+        // The date should be saved as timestamp on the entity
+        $builder
+            ->dateTime('date')
+            ->saveAsTimestamp()
+            ->setter()
+        ;
+
+        // Save data as mongodb Binary        
+        $builder
+            ->string('data')
+            ->modelTransformer(function ($value, $input, $toModel) {
+                return $toModel ? new Binary($value, Binary::TYPE_GENERIC) : $value->getData();
+            })
+            ->setter()
+        ;
+    }
+}
+```
+
+See:
+- `ChildBuilderInterface::modelTransformer()`
+
+### 11 - Call accessor (scope: Child)
+
+The accessor is used to fill the entity (in case of HTTP to PHP), or form import from entity (in case of PHP to form).
+
+See:
+- `ChildBuilder::setter()`
+- `ChildBuilder::getter()`
+- `ChildBuilder::hydrator()`
+- `ChildBuilder::extractor()`
+
+### 12 - Validate the form value (scope: Form)
+
+Once the value is hydrated, it will be validated by the form constraints.
+
+```php
+class MyForm extends CustomForm
+{
+    protected function configure(FormBuilderInterface $builder): void
+    {
+        $builder->generates(MyEntity::class);
+
+        $builder->string('foo')->setter();
+        $builder->string('bar')->setter();
+        
+        $builder->satisfy(function (MyEntity $entity) {
+            // Validate the hydrated entity
+            if (!$entity->isValid()) {
+                return 'Invalid entity';
+            }
+        });
+    }
+}
+```
+
+See:
+- `FormInterface::valid()`
+- `FormInterface::error()`
+- `FormBuilderInterface::satisfy()`
+
 ## Embedded and array
 
 Complex form structure can be created using embedded form and generic array element.
@@ -261,7 +537,7 @@ Embedded form is useful for reuse a form into another.
 
 class UserForm extends \Bdf\Form\Custom\CustomForm
 {
-    protected function configure(\Bdf\Form\Aggregate\FormBuilderInterface $builder) : void
+    protected function configure(\Bdf\Form\Aggregate\FormBuilderInterface $builder): void
     {
         // Define a sub-form "credentials", which generates a Credentials object
         $builder->embedded('credentials', function (\Bdf\Form\Child\ChildBuilderInterface $builder) {
@@ -709,6 +985,18 @@ $builder->csrf() // No need to set a name. by default "_token"
 ;
 ```
 
+### AnyElement
+
+An element for handle any value types. This is useful for create an inline custom element.
+But it's strongly discouraged : prefer use one of the native element, or create a custom one.
+
+```php
+$builder->add('foo', AnyElement::class) // No helper method are present
+    ->satisfy(function ($value) { ... }) // Configure the element
+    ->transform(function ($value) { ... })
+;
+```
+
 ## Create a custom element
 
 You can declare custom elements to handle complex types, and reuse into any forms.
@@ -853,7 +1141,7 @@ class UriElementBuilder extends AbstractElementBuilder
     }
 }
 
-// Register the element build on the registry
+// Register the element builder on the registry
 // Use container to inject dependencies (here the UriFactoryInterface)
 $registry->register(UriElement::class, function(Registry $registry) use($container) {
     return new UriElementBuilder($registry, $container->get(UriFactoryInterface::class));
@@ -866,6 +1154,39 @@ To use the custom element, simply call `FormBuilderInterface::add()` with the el
 
 ```php
 $builder->add('uri', UriElement::class);
+```
+
+### Custom child builder
+
+In some case, defining a custom child builder can be relevant, like for register model transformers.
+To declare the child, simply extends `ChildBuilder` class, and register to the `Registry` :
+
+```php
+class MyCustomChildBuilder extends ChildBuilder
+{
+    public function __construct(string $name, ElementBuilderInterface $elementBuilder, RegistryInterface $registry = null)
+    {
+        parent::__construct($name, $elementBuilder, $registry);
+
+        // Add a filter provider
+        $this->addFilterProvider([$this, 'provideFilter']);
+    }
+    
+    // Model transformer helper method
+    public function saveAsCustom()
+    {
+        return $this->modelTransformer(new MyCustomTransformer());
+    }
+    
+    // Provide default filter
+    protected function provideFilter()
+    {
+        return [new MyFilter()];
+    }
+}
+
+// Now you can register the child builder with the element builder
+$registry->register(CustomElement::class, CustomElementBuilder::class, MyCustomChildBuilder::class);
 ```
 
 ## Error Handling
