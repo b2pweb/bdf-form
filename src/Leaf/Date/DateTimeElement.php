@@ -10,6 +10,7 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
+use TypeError;
 
 /**
  * Handle DateTime form element
@@ -140,5 +141,21 @@ final class DateTimeElement extends LeafElement
         }
 
         return $phpValue->format($this->format);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function tryCast($value): ?DateTimeInterface
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (!$value instanceof $this->className) {
+            throw new TypeError('The import()\'ed value of a '.static::class.' must be an instance of '.$this->className.' or null');
+        }
+
+        return $value;
     }
 }

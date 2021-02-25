@@ -143,7 +143,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
      */
     final public function import($entity): ElementInterface
     {
-        $this->value = $entity;
+        $this->value = $this->tryCast($entity);
 
         return $this;
     }
@@ -226,6 +226,23 @@ abstract class LeafElement implements ElementInterface, Choiceable
      * @return mixed
      */
     abstract protected function toHttp($phpValue);
+
+    /**
+     * Try to convert the value into the element type
+     *
+     * @param mixed $value Value to cast
+     * @psalm-assert T|null $value
+     *
+     * @return T|null
+     *
+     * @throws \TypeError If the value type is not supported by the element
+     *
+     * @see LeafElement::import()
+     */
+    protected function tryCast($value)
+    {
+        return $value;
+    }
 
     /**
      * Sanitize the raw HTTP value

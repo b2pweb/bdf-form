@@ -150,6 +150,45 @@ class PhoneElementTest extends TestCase
     /**
      *
      */
+    public function test_import_null()
+    {
+        $element = new PhoneElement();
+
+        $this->assertNull($element->import(null)->value());
+    }
+
+    /**
+     * @dataProvider provideInvalidValue
+     */
+    public function test_import_invalid_values($value)
+    {
+        $this->expectException(\TypeError::class);
+        $element = new PhoneElement();
+
+        $element->import($value);
+    }
+
+    /**
+     *
+     */
+    public function provideInvalidValue()
+    {
+        return [
+            [[]],
+            [new \stdClass()],
+            [STDIN],
+            [''],
+            ['foo'],
+            [true],
+            [false],
+            [1],
+            [1.2],
+        ];
+    }
+
+    /**
+     *
+     */
     public function test_httpValue_with_raw_input()
     {
         $element = new PhoneElement();

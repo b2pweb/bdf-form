@@ -186,13 +186,51 @@ class IntegerElementTest extends TestCase
     }
 
     /**
-     *
+     * @dataProvider provideValidValues
      */
-    public function test_import()
+    public function test_import($value, $expected)
     {
         $element = new IntegerElement();
 
-        $this->assertSame(5, $element->import(5)->value());
+        $this->assertSame($expected, $element->import($value)->value());
+    }
+
+    public function provideValidValues()
+    {
+        return [
+            [15, 15],
+            [1.5, 1],
+            [null, null],
+            ['0', 0],
+            ['1.2', 1],
+        ];
+    }
+
+    /**
+     * @dataProvider provideInvalidValue
+     */
+    public function test_import_invalid_type($value)
+    {
+        $this->expectException(\TypeError::class);
+        $element = new IntegerElement();
+
+        $element->import($value);
+    }
+
+    /**
+     *
+     */
+    public function provideInvalidValue()
+    {
+        return [
+            [[]],
+            [new \stdClass()],
+            [STDIN],
+            [''],
+            ['foo'],
+            [true],
+            [false],
+        ];
     }
 
     /**

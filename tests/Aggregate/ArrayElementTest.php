@@ -311,12 +311,55 @@ class ArrayElementTest extends TestCase
     /**
      *
      */
-    public function test_import_not_array_should_be_casted_to_array()
+    public function test_import_iterable()
     {
         $element = new ArrayElement(new StringElement());
 
+        $this->assertSame($element, $element->import(new \ArrayIterator(['foo', 'bar'])));
+        $this->assertSame(['foo', 'bar'], $element->value());
+        $this->assertEquals('foo', $element[0]->element()->value());
+        $this->assertSame($element, $element[0]->parent());
+        $this->assertEquals('bar', $element[1]->element()->value());
+        $this->assertSame($element, $element[1]->parent());
+    }
+
+    /**
+     *
+     */
+    public function test_import_null()
+    {
+        $element = new ArrayElement(new StringElement());
+
+        $element->import(['foo', 'bar']);
         $this->assertSame([], $element->import(null)->value());
-        $this->assertSame(['foo'], $element->import('foo')->value());
+    }
+
+    /**
+     * @dataProvider provideInvalidValue
+     */
+    public function test_import_invalid_values($value)
+    {
+        $this->expectException(\TypeError::class);
+        $element = new ArrayElement(new StringElement());
+
+        $element->import($value);
+    }
+
+    /**
+     *
+     */
+    public function provideInvalidValue()
+    {
+        return [
+            [''],
+            ['foo'],
+            [1],
+            [1.2],
+            [true],
+            [false],
+            [new \stdClass()],
+            [STDIN],
+        ];
     }
 
     /**

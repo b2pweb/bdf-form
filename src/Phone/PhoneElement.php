@@ -9,6 +9,7 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use TypeError;
 
 /**
  * Element for handle phone number input
@@ -70,6 +71,22 @@ final class PhoneElement extends LeafElement
         }
 
         return $phpValue->getRawInput() ?? $this->formatter->format($phpValue, PhoneNumberFormat::E164);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function tryCast($value): ?PhoneNumber
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (!$value instanceof PhoneNumber) {
+            throw new TypeError('The import()\'ed value of a '.static::class.' must be an instance of '.PhoneNumber::class.' or null');
+        }
+
+        return $value;
     }
 
     /**

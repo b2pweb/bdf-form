@@ -183,13 +183,49 @@ class StringElementTest extends TestCase
     }
 
     /**
-     *
+     * @dataProvider provideValidValues
      */
-    public function test_import()
+    public function test_import($value, $expected)
     {
         $element = new StringElement();
 
-        $this->assertSame('hello', $element->import('hello')->value());
+        $this->assertSame($expected, $element->import($value)->value());
+    }
+
+    public function provideValidValues()
+    {
+        return [
+            ['hello', 'hello'],
+            [15, '15'],
+            [1.5, '1.5'],
+            [null, null],
+            [false, ''],
+            [true, '1'],
+            [new class { public function __toString() { return 'hello'; }}, 'hello'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideInvalidValue
+     */
+    public function test_import_invalid_type($value)
+    {
+        $this->expectException(\TypeError::class);
+        $element = new StringElement();
+
+        $element->import($value);
+    }
+
+    /**
+     *
+     */
+    public function provideInvalidValue()
+    {
+        return [
+            [[]],
+            [new \stdClass()],
+            [STDIN],
+        ];
     }
 
     /**

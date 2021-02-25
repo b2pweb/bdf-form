@@ -186,13 +186,51 @@ class FloatElementTest extends TestCase
     }
 
     /**
-     *
+     * @dataProvider provideValidValues
      */
-    public function test_import()
+    public function test_import($value, $expected)
     {
         $element = new FloatElement();
 
-        $this->assertSame(5.1, $element->import(5.1)->value());
+        $this->assertSame($expected, $element->import($value)->value());
+    }
+
+    public function provideValidValues()
+    {
+        return [
+            [15, 15.0],
+            [1.5, 1.5],
+            [null, null],
+            ['0', 0.0],
+            ['1.2', 1.2],
+        ];
+    }
+
+    /**
+     * @dataProvider provideInvalidValue
+     */
+    public function test_import_invalid_type($value)
+    {
+        $this->expectException(\TypeError::class);
+        $element = new FloatElement();
+
+        $element->import($value);
+    }
+
+    /**
+     *
+     */
+    public function provideInvalidValue()
+    {
+        return [
+            [[]],
+            [new \stdClass()],
+            [STDIN],
+            [''],
+            ['foo'],
+            [true],
+            [false],
+        ];
     }
 
     /**

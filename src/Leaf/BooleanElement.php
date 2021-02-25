@@ -59,6 +59,22 @@ class BooleanElement extends LeafElement
 
     /**
      * {@inheritdoc}
+     */
+    protected function tryCast($value): ?bool
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_scalar($value)) {
+            throw new \TypeError('The import()\'ed value of a '.static::class.' must be a scalar value or null');
+        }
+
+        return (bool) $value;
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * @return FieldViewInterface
      */

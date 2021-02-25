@@ -25,6 +25,7 @@ use Bdf\Form\View\ElementViewInterface;
 use Countable;
 use Exception;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use TypeError;
 
 /**
  * Dynamic collection of elements
@@ -234,10 +235,16 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
      */
     public function import($entity): ElementInterface
     {
+        if ($entity === null) {
+            $entity = [];
+        } elseif (!is_iterable($entity)) {
+            throw new TypeError('The import()\'ed value of a '.static::class.' must be iterable or null');
+        }
+
         $this->children = [];
 
         // @todo optimise ? Do not recreate children
-        foreach ((array) $entity as $key => $value) {
+        foreach ($entity as $key => $value) {
             $child = new Child($key, $this->templateElement);
             $child->setParent($this);
             $child->element()->import($value);

@@ -149,13 +149,50 @@ class BooleanElementTest extends TestCase
     }
 
     /**
-     *
+     * @dataProvider provideValidValues
      */
-    public function test_import()
+    public function test_import($value, $expected)
     {
         $element = new BooleanElement();
 
-        $this->assertTrue($element->import(true)->value());
+        $this->assertSame($expected, $element->import($value)->value());
+    }
+
+    public function provideValidValues()
+    {
+        return [
+            ['hello', true],
+            [15, true],
+            [1.5, true],
+            [null, null],
+            ['', false],
+            [true, true],
+            [false, false],
+            ['0', false],
+        ];
+    }
+
+    /**
+     * @dataProvider provideInvalidValue
+     */
+    public function test_import_invalid_type($value)
+    {
+        $this->expectException(\TypeError::class);
+        $element = new BooleanElement();
+
+        $element->import($value);
+    }
+
+    /**
+     *
+     */
+    public function provideInvalidValue()
+    {
+        return [
+            [[]],
+            [new \stdClass()],
+            [STDIN],
+        ];
     }
 
     /**

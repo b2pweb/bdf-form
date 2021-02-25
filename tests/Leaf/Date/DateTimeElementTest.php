@@ -254,6 +254,56 @@ class DateTimeElementTest extends TestCase
     /**
      *
      */
+    public function test_import_null()
+    {
+        $element = new DateTimeElement();
+
+        $this->assertNull($element->import(null)->value());
+    }
+
+    /**
+     *
+     */
+    public function test_import_invalid_class()
+    {
+        $this->expectException(\TypeError::class);
+        $element = new DateTimeElement(null, null, null, \DateTimeImmutable::class);
+
+        $element->import(new DateTime('2000-01-05 15:00:00'));
+    }
+
+    /**
+     * @dataProvider provideInvalidValue
+     */
+    public function test_import_invalid($value)
+    {
+        $this->expectException(\TypeError::class);
+        $element = new DateTimeElement();
+
+        $element->import($value);
+    }
+
+    /**
+     *
+     */
+    public function provideInvalidValue()
+    {
+        return [
+            [[]],
+            [new \stdClass()],
+            [STDIN],
+            [''],
+            ['foo'],
+            [true],
+            [false],
+            [1],
+            [1.2],
+        ];
+    }
+
+    /**
+     *
+     */
     public function test_httpValue()
     {
         $element = new DateTimeElement();
