@@ -12,7 +12,7 @@ jobs:
       php: 7.4
       env: XDEBUG_MODE=coverage
       before_script:
-        - composer global require infection/infection
+        - composer global require "infection/infection:0.15.*"
       script:
         - composer psalm
         - ~/.config/composer/vendor/bin/infection --min-msi=90
