@@ -48,6 +48,40 @@ class PhoneChildBuilderTest extends TestCase
         $this->assertInstanceOf(PhoneNumber::class, $target['child']);
     }
 
+    /**
+     *
+     */
+    public function test_formatIfInvalid()
+    {
+        $target = [];
+
+        $builder = new PhoneChildBuilder('child', new PhoneElementBuilder());
+        $builder->saveAsString()->getter()->setter()->region('FR');
+        $child = $builder->buildChild();
+        $child->setParent(new Form(new ChildrenCollection()));
+        $child->submit(['child' => '145 5/4']);
+        $child->fill($target);
+        $this->assertSame(['child' => '145 5/4'], $target);
+
+        $child = $builder->formatIfInvalid()->buildChild();
+        $child->setParent(new Form(new ChildrenCollection()));
+        $child->submit(['child' => '145 5/4']);
+        $child->fill($target);
+        $this->assertSame(['child' => '+3314554'], $target);
+
+        $child = $builder->formatIfInvalid(false)->buildChild();
+        $child->setParent(new Form(new ChildrenCollection()));
+        $child->submit(['child' => '145 5/4']);
+        $child->fill($target);
+        $this->assertSame(['child' => '145 5/4'], $target);
+
+        $child = $builder->formatIfInvalid(true)->buildChild();
+        $child->setParent(new Form(new ChildrenCollection()));
+        $child->submit(['child' => '145 5/4']);
+        $child->fill($target);
+        $this->assertSame(['child' => '+3314554'], $target);
+    }
+
     public function provideFormats()
     {
         return [

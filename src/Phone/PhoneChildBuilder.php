@@ -19,6 +19,11 @@ class PhoneChildBuilder extends ChildBuilder
     private $saveFormat;
 
     /**
+     * @var bool
+     */
+    private $formatIfInvalid = false;
+
+    /**
      * {@inheritdoc}
      *
      * @param PhoneElementBuilder $elementBuilder
@@ -28,6 +33,25 @@ class PhoneChildBuilder extends ChildBuilder
         parent::__construct($name, $elementBuilder, $registry);
 
         $this->addTransformerProvider([$this, 'provideModelTransformer']);
+    }
+
+    /**
+     * Format the phone number even if it's invalid
+     * If not, the raw input value will be used instead of the formatted one
+     *
+     * Note: Works only if `saveAsString()` is called
+     *
+     * @param bool $formatIfInvalid
+     *
+     * @return $this
+     *
+     * @see PhoneChildBuilder::saveAsString() To enable string formating when filling the entity
+     */
+    public function formatIfInvalid(bool $formatIfInvalid = true): self
+    {
+        $this->formatIfInvalid = $formatIfInvalid;
+
+        return $this;
     }
 
     /**
@@ -71,6 +95,6 @@ class PhoneChildBuilder extends ChildBuilder
             return [];
         }
 
-        return [new PhoneNumberToStringTransformer($this->saveFormat)];
+        return [new PhoneNumberToStringTransformer($this->saveFormat, $this->formatIfInvalid)];
     }
 }

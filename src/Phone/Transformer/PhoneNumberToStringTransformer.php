@@ -21,6 +21,11 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
     private $format;
 
     /**
+     * @var bool
+     */
+    private $formatIfInvalid;
+
+    /**
      * @var PhoneNumberUtil|null
      */
     private $formatter;
@@ -29,11 +34,13 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
      * PhoneNumberToStringTransformer constructor.
      *
      * @param PhoneNumberFormat::* $format
+     * @param bool $formatIfInvalid
      * @param PhoneNumberUtil|null $formatter
      */
-    public function __construct(int $format = PhoneNumberFormat::E164, ?PhoneNumberUtil $formatter = null)
+    public function __construct(int $format = PhoneNumberFormat::E164, bool $formatIfInvalid = false, ?PhoneNumberUtil $formatter = null)
     {
         $this->format = $format;
+        $this->formatIfInvalid = $formatIfInvalid;
         $this->formatter = $formatter;
     }
 
@@ -66,7 +73,7 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
 
         $formatter = $this->formatter ?? ($input instanceof PhoneElement ? $input->getFormatter() : PhoneNumberUtil::getInstance());
 
-        if (!$formatter->isValidNumber($value)) {
+        if (!$this->formatIfInvalid && !$formatter->isValidNumber($value)) {
             return $value->getRawInput();
         }
 

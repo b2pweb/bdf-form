@@ -163,6 +163,7 @@ class PhoneElementTest extends TestCase
     public function test_import_invalid_values($value)
     {
         $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('The import()\'ed value of a Bdf\Form\Phone\PhoneElement must be an instance of libphonenumber\PhoneNumber or null');
         $element = new PhoneElement();
 
         $element->import($value);

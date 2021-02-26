@@ -69,5 +69,34 @@ class ArrayChildBuilderTest extends TestCase
                 4 => ['foo' => 'bar'],
             ]
         ], $form->value());
+
+        $builder = new FormBuilder();
+        $builder->array('arr')
+            ->filterEmptyValues()
+            ->form(function ($builder) { $builder->string('foo')->required()->setter(); })
+            ->setter()
+        ;
+        $form = $builder->buildElement();
+
+        $form->submit([
+            'arr' => [
+                null,
+                [],
+                ['foo' => ''],
+                '',
+                ['foo' => 'bar'],
+            ]
+        ]);
+
+        $this->assertEquals(['arr' => [
+            2 => ['foo' => 'This value should not be blank.'],
+        ]], $form->error()->toArray());
+
+        $this->assertSame([
+            'arr' => [
+                2 => ['foo' => ''],
+                4 => ['foo' => 'bar'],
+            ]
+        ], $form->value());
     }
 }

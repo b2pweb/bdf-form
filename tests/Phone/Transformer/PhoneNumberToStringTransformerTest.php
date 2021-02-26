@@ -33,7 +33,7 @@ class PhoneNumberToStringTransformerTest extends TestCase
     {
         $builder = new FormBuilder();
         $builder->phone('foo')
-            ->modelTransformer(new PhoneNumberToStringTransformer(PhoneNumberFormat::NATIONAL, PhoneNumberUtil::getInstance()))
+            ->modelTransformer(new PhoneNumberToStringTransformer(PhoneNumberFormat::NATIONAL, false, PhoneNumberUtil::getInstance()))
             ->getter()->setter()
             ->region('FR')
         ;
@@ -65,6 +65,23 @@ class PhoneNumberToStringTransformerTest extends TestCase
 
         $this->assertInstanceOf(PhoneNumber::class, $form['foo']->element()->value());
     }
+
+    /**
+     *
+     */
+    public function test_with_invalid_force_format_the_value()
+    {
+        $builder = new FormBuilder();
+        $builder->phone('foo')->modelTransformer(new PhoneNumberToStringTransformer(PhoneNumberFormat::E164, true))->getter()->setter()->region('FR');
+
+        $form = $builder->buildElement();
+
+        $form->submit(['foo' => '12 3/2']);
+        $this->assertSame(['foo' => '+331232'], $form->value());
+
+        $this->assertInstanceOf(PhoneNumber::class, $form['foo']->element()->value());
+    }
+
     /**
      *
      */
