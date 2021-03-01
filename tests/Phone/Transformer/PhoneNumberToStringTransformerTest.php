@@ -83,6 +83,31 @@ class PhoneNumberToStringTransformerTest extends TestCase
     }
 
     /**
+     * @dataProvider provideEmptyValue
+     */
+    public function test_with_empty_value_should_return_empty_value($empty)
+    {
+        $builder = new FormBuilder();
+        $builder->phone('foo')->modelTransformer(new PhoneNumberToStringTransformer(PhoneNumberFormat::E164, true))->getter()->setter()->region('FR');
+
+        $form = $builder->buildElement();
+
+        $form->submit(['foo' => $empty]);
+        $this->assertSame(['foo' => $empty], $form->value());
+    }
+
+    /**
+     *
+     */
+    public function provideEmptyValue()
+    {
+        return [
+            [null],
+            [''],
+        ];
+    }
+
+    /**
      *
      */
     public function test_null()
