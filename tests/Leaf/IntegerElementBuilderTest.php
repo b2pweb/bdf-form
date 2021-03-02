@@ -3,6 +3,8 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Choice\ArrayChoice;
+use Locale;
+use NumberFormatter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
@@ -18,9 +20,18 @@ class IntegerElementBuilderTest extends TestCase
      */
     private $builder;
 
+    private $lastLocale;
+
     protected function setUp(): void
     {
         $this->builder = new IntegerElementBuilder();
+        $this->lastLocale = Locale::getDefault();
+        Locale::setDefault('fr');
+    }
+
+    protected function tearDown(): void
+    {
+        Locale::setDefault($this->lastLocale);
     }
 
     /**
@@ -212,7 +223,7 @@ class IntegerElementBuilderTest extends TestCase
      */
     public function test_roundingMode()
     {
-        $element = $this->builder->roundingMode(IntegerToLocalizedStringTransformer::ROUND_UP)->buildElement();
+        $element = $this->builder->roundingMode(NumberFormatter::ROUND_UP)->buildElement();
 
         $this->assertTrue($element->submit('10,1')->valid());
         $this->assertSame(11, $element->value());

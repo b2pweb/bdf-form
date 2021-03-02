@@ -3,6 +3,7 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Choice\ArrayChoice;
+use Locale;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
@@ -18,9 +19,18 @@ class FloatElementBuilderTest extends TestCase
      */
     private $builder;
 
+    private $lastLocale;
+
     protected function setUp(): void
     {
         $this->builder = new FloatElementBuilder();
+        $this->lastLocale = Locale::getDefault();
+        Locale::setDefault('fr');
+    }
+
+    protected function tearDown(): void
+    {
+        Locale::setDefault($this->lastLocale);
     }
 
     /**

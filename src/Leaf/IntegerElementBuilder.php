@@ -4,10 +4,10 @@ namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\ElementInterface;
-use Bdf\Form\Transformer\DataTransformerAdapter;
+use Bdf\Form\Leaf\Transformer\LocalizedIntegerTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
-use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
+use NumberFormatter;
 
 /**
  * Builder for an integer element
@@ -33,9 +33,9 @@ class IntegerElementBuilder extends NumberElementBuilder
     private $grouping = false;
 
     /**
-     * @var int
+     * @var NumberFormatter::ROUND_*
      */
-    private $roundingMode = IntegerToLocalizedStringTransformer::ROUND_DOWN;
+    private $roundingMode = NumberFormatter::ROUND_DOWN;
 
 
     /**
@@ -59,7 +59,7 @@ class IntegerElementBuilder extends NumberElementBuilder
      *
      * Note: The element must not in raw() mode to works
      *
-     * @param int $mode One of the IntegerToLocalizedStringTransformer::ROUND_ constant
+     * @param NumberFormatter::ROUND_* $mode One of the IntegerToLocalizedStringTransformer::ROUND_ constant
      *
      * @return $this
      */
@@ -83,12 +83,6 @@ class IntegerElementBuilder extends NumberElementBuilder
      */
     protected function numberTransformer(): TransformerInterface
     {
-        // Handle null and scalar types
-        return new DataTransformerAdapter(new class($this->grouping, $this->roundingMode) extends IntegerToLocalizedStringTransformer {
-            public function reverseTransform($value)
-            {
-                return parent::reverseTransform(is_scalar($value) || $value === null ? (string) $value : $value);
-            }
-        });
+        return new LocalizedIntegerTransformer($this->grouping, $this->roundingMode);
     }
 }
