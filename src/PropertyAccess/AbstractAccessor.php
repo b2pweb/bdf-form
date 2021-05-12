@@ -31,7 +31,7 @@ abstract class AbstractAccessor implements AccessorInterface
     protected $propertyAccessor;
 
     /**
-     * @var ChildInterface
+     * @var ChildInterface|null
      */
     protected $input;
 
@@ -67,7 +67,7 @@ abstract class AbstractAccessor implements AccessorInterface
     /**
      * {@inheritdoc}
      */
-    final public function setFormElement(ChildInterface $formElement): void
+    final public function setFormElement(?ChildInterface $formElement): void
     {
         $this->input = $formElement;
     }
@@ -102,10 +102,10 @@ abstract class AbstractAccessor implements AccessorInterface
      */
     final protected function getPropertyName()
     {
-        if ($this->propertyName === null) {
+        if ($this->propertyName === null && $this->input) {
             $this->propertyName = $this->input->name();
         }
 
-        return $this->propertyName;
+        return (string) $this->propertyName;
     }
 }

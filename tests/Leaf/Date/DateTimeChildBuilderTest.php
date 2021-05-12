@@ -22,7 +22,7 @@ class DateTimeChildBuilderTest extends TestCase
             ->buildChild()
         ;
 
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->import(['child' => 123]);
 
         $this->assertInstanceOf(\DateTimeImmutable::class, $child->element()->value());

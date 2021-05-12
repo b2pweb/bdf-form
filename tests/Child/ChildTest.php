@@ -63,7 +63,7 @@ class ChildTest extends TestCase
     public function test_import_with_array()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->import(['child' => 'my value']);
         $this->assertSame('my value', $child->element()->value());
@@ -75,7 +75,7 @@ class ChildTest extends TestCase
     public function test_import_with_object()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->import((object) ['child' => 'my value']);
         $this->assertSame('my value', $child->element()->value());
@@ -89,7 +89,7 @@ class ChildTest extends TestCase
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter(), [], new ClosureTransformer(function($value) {
             return base64_encode($value);
         }));
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->import(['child' => 'my value']);
         $this->assertSame(base64_encode('my value'), $child->element()->value());
@@ -101,7 +101,7 @@ class ChildTest extends TestCase
     public function test_fill_with_array()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('my value');
 
         $target = [];
@@ -116,7 +116,7 @@ class ChildTest extends TestCase
     public function test_fill_with_object()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('my value');
 
         $target = (object) ['child' => null];
@@ -133,7 +133,7 @@ class ChildTest extends TestCase
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), new Setter(), null, [], new ClosureTransformer(function($value) {
             return base64_encode($value);
         }));
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('my value');
 
         $target = (object) ['child' => null];
@@ -148,7 +148,7 @@ class ChildTest extends TestCase
     public function test_submit_empty($value)
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
         $this->assertEmpty($child->element()->value());
@@ -160,7 +160,7 @@ class ChildTest extends TestCase
     public function test_submit_empty_with_default_value($value)
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], 'default', new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
         $this->assertEquals('default', $child->element()->value());
@@ -172,7 +172,7 @@ class ChildTest extends TestCase
     public function test_submit_empty_with_default_value_on_array_element($value)
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new ArrayOffsetHttpFields('child'), [], ['default'], new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
         $this->assertEquals(['default'], $child->element()->value());
@@ -184,7 +184,7 @@ class ChildTest extends TestCase
     public function test_submit_not_empty($value)
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit(['child' => $value]));
         $this->assertEquals($value, $child->element()->value());
@@ -196,7 +196,7 @@ class ChildTest extends TestCase
     public function test_submit_element_constraint_error()
     {
         $child = new Child('child', new StringElement(new ConstraintValueValidator([new NotEqualTo('value')])), new ArrayOffsetHttpFields('child'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertFalse($child->submit(['child' => 'value']));
         $this->assertEquals('value', $child->element()->value());
@@ -212,7 +212,7 @@ class ChildTest extends TestCase
     public function test_submit_with_filters()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [new ClosureFilter(function ($value) { return strtoupper($value); }), new ClosureFilter(function ($value) { return substr($value, 0, 3); })]);
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit(['child' => 'hello world !']));
         $this->assertEquals('HEL', $child->element()->value());
@@ -224,7 +224,7 @@ class ChildTest extends TestCase
     public function test_submit_with_filters_which_return_null_should_use_the_default_value()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [new ClosureFilter(function ($value) { return strtoupper($value); }), new ClosureFilter(function () use(&$filterArgs) { $filterArgs = func_get_args(); return null; })], 'bar');
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit(['child' => 'hello world !']));
         $this->assertEquals('bar', $child->element()->value());
@@ -238,7 +238,7 @@ class ChildTest extends TestCase
     public function test_patch_empty()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->element()->import('foo');
 
@@ -264,7 +264,7 @@ class ChildTest extends TestCase
     public function test_patch_null_with_prefix()
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('p'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->element()->import(['foo']);
 
@@ -278,7 +278,7 @@ class ChildTest extends TestCase
     public function test_patch_not_empty()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->element()->import('foo');
 
@@ -292,7 +292,7 @@ class ChildTest extends TestCase
     public function test_httpFields()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [new ClosureFilter(function ($value) { return strtoupper($value); }), new ClosureFilter(function ($value) { return substr($value, 0, 3); })]);
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('value');
 
         $this->assertSame(['child' => 'value'], $child->httpFields());
@@ -304,7 +304,7 @@ class ChildTest extends TestCase
     public function test_view()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [new ClosureFilter(function ($value) { return strtoupper($value); }), new ClosureFilter(function ($value) { return substr($value, 0, 3); })]);
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('value');
 
         $view = $child->view();

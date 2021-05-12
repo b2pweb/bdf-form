@@ -5,6 +5,7 @@ namespace Bdf\Form\Constraint;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use WeakReference;
 
 /**
  * Validator for @see Closure
@@ -20,7 +21,9 @@ class ClosureValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Closure::class);
         }
 
-        $error = ($constraint->callback)($value, $this->context->getRoot(), $this->context);
+        $element = $this->context->getRoot() instanceof WeakReference ? $this->context->getRoot()->get() : null;
+        /** @psalm-suppress PossiblyNullArgument */
+        $error = ($constraint->callback)($value, $element, $this->context);
         $code = null;
 
         if ($error === true) {

@@ -173,12 +173,12 @@ abstract class LeafElement implements ElementInterface, Choiceable
      */
     final public function root(): RootElementInterface
     {
-        // @todo save the root ?
-        if (!$this->container) {
-            return new LeafRootElement($this);
+        if ($container = $this->container()) {
+            return $container->parent()->root();
         }
 
-        return $this->container->parent()->root();
+        // @todo save the root ?
+        return new LeafRootElement($this);
     }
 
     /**

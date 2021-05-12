@@ -15,6 +15,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ValidatorBuilder;
+use WeakReference;
 
 /**
  * Adapt a form element as root element
@@ -49,7 +50,7 @@ use Symfony\Component\Validator\ValidatorBuilder;
 final class RootForm implements RootElementInterface, ChildAggregateInterface
 {
     /**
-     * @var Form
+     * @var WeakReference<Form>
      */
     private $form;
 
@@ -84,7 +85,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function __construct(Form $form, array $buttons = [], ?PropertyAccessorInterface $propertyAccessor = null, ?ValidatorInterface $validator = null)
     {
-        $this->form = $form;
+        $this->form = WeakReference::create($form);
         $this->buttons = $buttons;
         $this->propertyAccessor = $propertyAccessor;
         $this->validator = $validator;
@@ -96,7 +97,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     public function submit($data): ElementInterface
     {
         $this->submitToButtons($data);
-        $this->form->submit($data);
+        /** @psalm-suppress PossiblyNullReference */
+        $this->form->get()->submit($data);
 
         return $this;
     }
@@ -107,7 +109,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     public function patch($data): ElementInterface
     {
         $this->submitToButtons($data);
-        $this->form->patch($data);
+        /** @psalm-suppress PossiblyNullReference */
+        $this->form->get()->patch($data);
 
         return $this;
     }
@@ -117,7 +120,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function import($entity): ElementInterface
     {
-        $this->form->import($entity);
+        /** @psalm-suppress PossiblyNullReference */
+        $this->form->get()->import($entity);
 
         return $this;
     }
@@ -127,7 +131,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function value()
     {
-        return $this->form->value();
+        /** @psalm-suppress PossiblyNullReference */
+        return $this->form->get()->value();
     }
 
     /**
@@ -135,7 +140,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function httpValue()
     {
-        $httpValue = $this->form->httpValue();
+        /** @psalm-suppress PossiblyNullReference */
+        $httpValue = $this->form->get()->httpValue();
 
         if (empty($this->buttons)) {
             return $httpValue;
@@ -155,7 +161,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function valid(): bool
     {
-        return $this->form->valid();
+        /** @psalm-suppress PossiblyNullReference */
+        return $this->form->get()->valid();
     }
 
     /**
@@ -163,7 +170,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function error(?HttpFieldPath $field = null): FormError
     {
-        return $this->form->error($field);
+        /** @psalm-suppress PossiblyNullReference */
+        return $this->form->get()->error($field);
     }
 
     /**
@@ -201,7 +209,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
             $buttons[$button->name()] = $button->view($field);
         }
 
-        $view = $this->form->view($field);
+        /** @psalm-suppress PossiblyNullReference */
+        $view = $this->form->get()->view($field);
         $view->setButtons($buttons);
 
         return $view;
@@ -253,10 +262,15 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress InvalidNullableReturnType
+     * @psalm-suppress PossiblyNullReference
+     * @psalm-suppress PossiblyNullArrayAccess
+     * @psalm-suppress NullableReturnStatement
      */
     public function offsetGet($offset): ChildInterface
     {
-        return $this->form[$offset];
+        return $this->form->get()[$offset];
     }
 
     /**
@@ -264,7 +278,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function offsetExists($offset): bool
     {
-        return isset($this->form[$offset]);
+        /** @psalm-suppress PossiblyNullReference */
+        return isset($this->form->get()[$offset]);
     }
 
     /**
@@ -272,15 +287,19 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function offsetSet($offset, $value)
     {
-        $this->form[$offset] = $value;
+        /** @psalm-suppress PossiblyNullReference */
+        $this->form->get()[$offset] = $value;
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress PossiblyNullReference
+     * @psalm-suppress PossiblyNullArrayAccess
      */
     public function offsetUnset($offset)
     {
-        unset($this->form[$offset]);
+        unset($this->form->get()[$offset]);
     }
 
     /**
@@ -288,7 +307,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      */
     public function getIterator()
     {
-        return $this->form->getIterator();
+        /** @psalm-suppress PossiblyNullReference */
+        return $this->form->get()->getIterator();
     }
 
     /**

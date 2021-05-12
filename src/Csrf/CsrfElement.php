@@ -143,7 +143,7 @@ final class CsrfElement implements ElementInterface
      */
     public function root(): RootElementInterface
     {
-        return $this->container() ? $this->container()->parent()->root() : new LeafRootElement($this);
+        return ($container = $this->container()) ? $container->parent()->root() : new LeafRootElement($this);
     }
 
     /**

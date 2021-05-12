@@ -12,7 +12,6 @@ final class TransformerExceptionConstraint extends Constraint
 {
     const TRANSFORM_ERROR = 'b5acab45-80b0-4808-8784-6577e37ac869';
 
-    /** @var array<string, string> */
     protected static $errorNames = [
         self::TRANSFORM_ERROR => 'TRANSFORM_ERROR',
     ];

@@ -57,7 +57,8 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         $groups = $root->constraintGroups();
 
         /** @psalm-suppress TooManyArguments */
-        $context = $root->getValidator()->startContext($element);
+        // Note: Wrapping the element into a WeakReference will cause a BC break
+        $context = $root->getValidator()->startContext(\WeakReference::create($element));
 
         foreach ($this->constraints as $constraint) {
             $errors = $context->validate($value, $constraint, $groups)->getViolations();

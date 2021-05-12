@@ -239,7 +239,7 @@ class AnyElementTest extends TestCase
         $this->assertNull($element->container());
 
         $container = new Child('name', $element);
-        $container->setParent(new Form(new ChildrenCollection()));
+        $container->setParent($form = new Form(new ChildrenCollection()));
 
         $element = $element->setContainer($container);
 

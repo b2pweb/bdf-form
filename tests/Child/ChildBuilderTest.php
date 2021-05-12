@@ -62,7 +62,7 @@ class ChildBuilderTest extends TestCase
             ->transformer(function ($value) { return $value.'C'; }, false)
             ->buildChild()
         ;
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => 'foo']);
         $this->assertSame('fooBAC', $child->element()->value());
@@ -74,7 +74,7 @@ class ChildBuilderTest extends TestCase
     public function test_required()
     {
         $child = $this->builder->required()->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit([]);
         $this->assertEquals('This value should not be blank.', $child->error()->global());
@@ -86,7 +86,7 @@ class ChildBuilderTest extends TestCase
     public function test_required_with_custom_message()
     {
         $child = $this->builder->required('my message')->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit([]);
         $this->assertEquals('my message', $child->error()->global());
@@ -98,7 +98,7 @@ class ChildBuilderTest extends TestCase
     public function test_required_with_custom_constraint()
     {
         $child = $this->builder->required(new Positive())->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => '-1']);
         $this->assertEquals('This value should be positive.', $child->error()->global());
@@ -110,7 +110,7 @@ class ChildBuilderTest extends TestCase
     public function test_hydrator()
     {
         $child = $this->builder->hydrator(new Setter('prop'))->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('value');
 
         $target = [];
@@ -125,7 +125,7 @@ class ChildBuilderTest extends TestCase
     public function test_extractor()
     {
         $child = $this->builder->extractor(new Getter('prop'))->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $target = ['prop' => 'value'];
         $child->import($target);
@@ -142,7 +142,7 @@ class ChildBuilderTest extends TestCase
             ->filter(function ($value) { return $value.'a'; })
             ->filter(function ($value) { return $value.'b'; })
             ->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => '']);
         $this->assertEquals('ab', $child->element()->value());
@@ -157,7 +157,7 @@ class ChildBuilderTest extends TestCase
             ->filter(function ($value) { return $value.'a'; }, false)
             ->filter(function ($value) { return $value.'b'; }, false)
             ->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => '']);
         $this->assertEquals('ba', $child->element()->value());
@@ -169,7 +169,7 @@ class ChildBuilderTest extends TestCase
     public function test_default()
     {
         $child = $this->builder->default('default')->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit([]);
 
@@ -182,7 +182,7 @@ class ChildBuilderTest extends TestCase
     public function test_default_with_value()
     {
         $child = $this->builder->default('default')->value('value')->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertEquals('value', $child->element()->value());
 
@@ -200,7 +200,7 @@ class ChildBuilderTest extends TestCase
             ->buildChild()
         ;
 
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit([]);
 
@@ -224,7 +224,7 @@ class ChildBuilderTest extends TestCase
     public function test_setter()
     {
         $child = $this->builder->setter('prop')->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('value');
 
         $target = [];
@@ -239,7 +239,7 @@ class ChildBuilderTest extends TestCase
     public function test_getter()
     {
         $child = $this->builder->getter('prop')->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $target = ['prop' => 'value'];
         $child->import($target);
@@ -296,19 +296,19 @@ class ChildBuilderTest extends TestCase
     public function test_trim()
     {
         $child = $this->builder->trim(true)->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => '  a  ']);
         $this->assertEquals('a', $child->element()->value());
 
         $child = $this->builder->trim(false)->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => '  a  ']);
         $this->assertEquals('  a  ', $child->element()->value());
 
         $child = $this->builder->trim()->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => '  a  ']);
         $this->assertEquals('a', $child->element()->value());
@@ -324,7 +324,7 @@ class ChildBuilderTest extends TestCase
         $child = $this->builder->prefix()->buildChild();
 
         $this->assertInstanceOf(Child::class, $child);
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->submit(['child_0' => 'foo', 'child_1' => 'bar']);
         $this->assertSame(['foo', 'bar'], $child->element()->value());
     }
@@ -338,7 +338,7 @@ class ChildBuilderTest extends TestCase
         $child = $this->builder->prefix('prefix_')->buildChild();
 
         $this->assertInstanceOf(Child::class, $child);
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->submit(['prefix_0' => 'foo', 'prefix_1' => 'bar']);
         $this->assertSame(['foo', 'bar'], $child->element()->value());
     }
@@ -352,7 +352,7 @@ class ChildBuilderTest extends TestCase
         $child = $this->builder->prefix('')->buildChild();
 
         $this->assertInstanceOf(Child::class, $child);
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->submit(['foo', 'bar']);
         $this->assertSame(['foo', 'bar'], $child->element()->value());
     }
@@ -365,7 +365,7 @@ class ChildBuilderTest extends TestCase
         $fields = $this->createMock(HttpFieldsInterface::class);
 
         $child = $this->builder->httpFields($fields)->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $fields->expects($this->once())->method('extract')->with(['foo' => 'bar'])->willReturn('bar');
 
@@ -395,7 +395,7 @@ class ChildBuilderTest extends TestCase
             ->setter('prop')->getter('prop')
             ->buildChild()
         ;
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('value');
 
         $target = [];
@@ -454,7 +454,7 @@ class ChildBuilderTest extends TestCase
 
         $builder->test();
         $child = $builder->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => '']);
         $this->assertEquals('ABC', $child->element()->value());

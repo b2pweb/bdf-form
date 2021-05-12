@@ -25,7 +25,7 @@ class PrefixedHttpFieldsTest extends TestCase
     public function test_submit_empty($value)
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
         $this->assertSame([], $child->element()->value());
@@ -37,7 +37,7 @@ class PrefixedHttpFieldsTest extends TestCase
     public function test_submit_empty_with_default_value($value)
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], ['default'], new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit($value));
         $this->assertEquals(['default'], $child->element()->value());
@@ -57,7 +57,7 @@ class PrefixedHttpFieldsTest extends TestCase
     public function test_submit_not_empty()
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit(['child_0' => 'foo', 'child_bar' => 'baz', 'other' => 42]));
         $this->assertSame([0 => 'foo', 'bar' => 'baz'], $child->element()->value());
@@ -69,7 +69,7 @@ class PrefixedHttpFieldsTest extends TestCase
     public function test_submit_not_empty_with_default()
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], ['default'], new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit(['child_0' => 'foo', 'child_bar' => 'baz', 'other' => 42]));
         $this->assertSame([0 => 'foo', 'bar' => 'baz'], $child->element()->value());
@@ -81,7 +81,7 @@ class PrefixedHttpFieldsTest extends TestCase
     public function test_submit_element_constraint_error()
     {
         $child = new Child('child', new ArrayElement(new StringElement(), null, new ConstraintValueValidator([new Count(['min' => 2])])), new PrefixedHttpFields('child_'), [], null, new Setter());
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertFalse($child->submit(['child_0' => 'value']));
         $this->assertEquals(['value'], $child->element()->value());
@@ -97,7 +97,7 @@ class PrefixedHttpFieldsTest extends TestCase
     public function test_submit_with_filters()
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [new ClosureFilter(function ($value) { return array_change_key_case($value, CASE_UPPER); })]);
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $this->assertTrue($child->submit(['child_message' => 'hello world !']));
         $this->assertEquals(['MESSAGE' => 'hello world !'], $child->element()->value());
@@ -109,7 +109,7 @@ class PrefixedHttpFieldsTest extends TestCase
     public function test_httpFields()
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'));
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import(['value', 'foo' => 'bar']);
 
         $this->assertSame(['child_0' => 'value', 'child_foo' => 'bar'], $child->httpFields());

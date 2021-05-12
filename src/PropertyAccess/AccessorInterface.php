@@ -20,7 +20,7 @@ interface AccessorInterface
     /**
      * Set form element
      * 
-     * @param ChildInterface $formElement
+     * @param ChildInterface|null $formElement
      */
-    public function setFormElement(ChildInterface $formElement): void;
+    public function setFormElement(?ChildInterface $formElement): void;
 }
