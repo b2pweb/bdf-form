@@ -22,7 +22,7 @@ class GetterTest extends TestCase
         $builder->extractor(new Getter());
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $input->import(new GetterTestEntity('my value'));
 
@@ -38,7 +38,7 @@ class GetterTest extends TestCase
         $builder->extractor(new Getter('public'));
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $input->import(new GetterTestEntity('my value'));
 
@@ -58,7 +58,7 @@ class GetterTest extends TestCase
         }));
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $input->import(new GetterTestEntity('my value'));
 
@@ -80,7 +80,7 @@ class GetterTest extends TestCase
         }));
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $input->import(new GetterTestEntity('my value'));
 
@@ -102,7 +102,7 @@ class GetterTest extends TestCase
         }));
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $input->import(new GetterTestEntity('my value'));
 
@@ -122,7 +122,7 @@ class GetterTest extends TestCase
         $builder->extractor(new Getter());
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $input->import(new GetterTestEntity(null, 'my value'));
 
@@ -138,7 +138,7 @@ class GetterTest extends TestCase
         $builder->extractor(new Getter('foo.bar'));
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $entity = new class {
             public $foo;
@@ -165,7 +165,7 @@ class GetterTest extends TestCase
         $builder->extractor(new Getter('0'));
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $input->import(['foo', 'bar']);
 

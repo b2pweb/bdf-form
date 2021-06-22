@@ -22,7 +22,7 @@ class SetterTest extends TestCase
         $builder->hydrator(new Setter())->value('my value');
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $entity = new SetterTestEntity();
         $input->fill($entity);
@@ -39,7 +39,7 @@ class SetterTest extends TestCase
         $builder->hydrator(new Setter('public'))->value('my value');
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $entity = new SetterTestEntity();
         $input->fill($entity);
@@ -60,7 +60,7 @@ class SetterTest extends TestCase
         }))->value('my value');
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $entity = new SetterTestEntity();
         $input->fill($entity);
@@ -83,7 +83,7 @@ class SetterTest extends TestCase
         }))->value('my value');
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $entity = new SetterTestEntity();
         $input->fill($entity);
@@ -106,7 +106,7 @@ class SetterTest extends TestCase
         }))->value('my value');
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $entity = new SetterTestEntity();
         $input->fill($entity);
@@ -126,7 +126,7 @@ class SetterTest extends TestCase
         $builder->hydrator(new Setter())->value('my value');
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $entity = new SetterTestEntity();
         $input->fill($entity);
@@ -143,7 +143,7 @@ class SetterTest extends TestCase
         $builder->hydrator(new Setter('foo.bar'));
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $entity = new class {
             public $foo;
@@ -171,7 +171,7 @@ class SetterTest extends TestCase
         $builder->hydrator(new Setter('0'))->value('my value');
 
         $input = $builder->buildChild();
-        $input->setParent(new Form(new ChildrenCollection()));
+        $input->setParent($form = new Form(new ChildrenCollection()));
 
         $out = [];
         $input->fill($out);

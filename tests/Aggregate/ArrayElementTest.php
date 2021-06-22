@@ -383,7 +383,7 @@ class ArrayElementTest extends TestCase
     {
         $element = new ArrayElement(new StringElement());
         $parent = new Form(new ChildrenCollection());
-        $element = $element->setContainer(new Child('child', $element));
+        $element = $element->setContainer($container = new Child('child', $element));
         $element->container()->setParent($parent);
 
         $this->assertSame($parent->root(), $element->root());

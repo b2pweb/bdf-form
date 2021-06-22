@@ -200,7 +200,7 @@ class PhoneElementBuilderTest extends TestCase
         $formBuilder->string('country');
         $form = $formBuilder->buildElement();
 
-        $element = $element->setContainer(new Child('phone', $element));
+        $element = $element->setContainer($container = new Child('phone', $element));
         $element->container()->setParent($form);
 
         $form['country']->element()->import('fr');

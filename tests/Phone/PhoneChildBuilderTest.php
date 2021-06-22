@@ -19,7 +19,7 @@ class PhoneChildBuilderTest extends TestCase
         $builder->saveAsString($format)->getter()->setter()->region('FR');
 
         $child = $builder->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->import(['child' => '0142563698']);
 
@@ -38,7 +38,7 @@ class PhoneChildBuilderTest extends TestCase
         $builder->saveAsString()->saveAsString(null)->getter()->setter()->region('FR');
 
         $child = $builder->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->submit(['child' => '0142563698']);
 
@@ -58,25 +58,25 @@ class PhoneChildBuilderTest extends TestCase
         $builder = new PhoneChildBuilder('child', new PhoneElementBuilder());
         $builder->saveAsString()->getter()->setter()->region('FR');
         $child = $builder->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->submit(['child' => '145 5/4']);
         $child->fill($target);
         $this->assertSame(['child' => '145 5/4'], $target);
 
         $child = $builder->formatIfInvalid()->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->submit(['child' => '145 5/4']);
         $child->fill($target);
         $this->assertSame(['child' => '+3314554'], $target);
 
         $child = $builder->formatIfInvalid(false)->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->submit(['child' => '145 5/4']);
         $child->fill($target);
         $this->assertSame(['child' => '145 5/4'], $target);
 
         $child = $builder->formatIfInvalid(true)->buildChild();
-        $child->setParent(new Form(new ChildrenCollection()));
+        $child->setParent($form = new Form(new ChildrenCollection()));
         $child->submit(['child' => '145 5/4']);
         $child->fill($target);
         $this->assertSame(['child' => '+3314554'], $target);

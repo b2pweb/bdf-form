@@ -15,6 +15,7 @@ use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\HttpValue;
 use Bdf\Form\View\ElementViewInterface;
+use WeakReference;
 
 /**
  * Child which extract HTTP field value from a simple array access
@@ -27,7 +28,7 @@ final class Child implements ChildInterface
     private $element;
 
     /**
-     * @var ChildAggregateInterface
+     * @var WeakReference<ChildAggregateInterface>
      */
     private $parent;
 
@@ -107,10 +108,13 @@ final class Child implements ChildInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress NullableReturnStatement
+     * @psalm-suppress InvalidNullableReturnType
      */
     public function parent(): ChildAggregateInterface
     {
-        return $this->parent;
+        return $this->parent->get();
     }
 
     /**
@@ -119,12 +123,12 @@ final class Child implements ChildInterface
     public function setParent(ChildAggregateInterface $parent): ChildInterface
     {
         if ($this->parent === null) {
-            $this->parent = $parent;
+            $this->parent = WeakReference::create($parent);
             return $this;
         }
 
         $child = clone $this;
-        $child->parent = $parent;
+        $child->parent = WeakReference::create($parent);
 
         return $child;
     }
@@ -154,13 +158,15 @@ final class Child implements ChildInterface
             return;
         }
 
-        $propertyAccessor = $this->parent->root()->getPropertyAccessor();
+        /** @psalm-suppress PossiblyNullReference */
+        $propertyAccessor = $this->parent->get()->root()->getPropertyAccessor();
 
         $this->extractor->setPropertyAccessor($propertyAccessor);
         $this->extractor->setFormElement($this);
 
         $value = $this->extractor->extract($entity);
         $value = $this->transformer->transformToHttp($value, $this->element);
+        $this->extractor->setFormElement(null);
 
         $this->element->import($value);
     }
@@ -174,7 +180,8 @@ final class Child implements ChildInterface
             return;
         }
 
-        $propertyAccessor = $this->parent->root()->getPropertyAccessor();
+        /** @psalm-suppress PossiblyNullReference */
+        $propertyAccessor = $this->parent->get()->root()->getPropertyAccessor();
 
         $this->hydrator->setPropertyAccessor($propertyAccessor);
         $this->hydrator->setFormElement($this);
@@ -183,6 +190,7 @@ final class Child implements ChildInterface
         $value = $this->transformer->transformFromHttp($value, $this->element);
 
         $this->hydrator->hydrate($entity, $value);
+        $this->hydrator->setFormElement(null);
     }
 
     /**

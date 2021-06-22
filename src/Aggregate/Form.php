@@ -223,8 +223,8 @@ final class Form implements FormInterface
      */
     public function root(): RootElementInterface
     {
-        if ($this->container) {
-            return $this->container->parent()->root();
+        if ($container = $this->container()) {
+            return $container->parent()->root();
         }
 
         if ($this->root) {

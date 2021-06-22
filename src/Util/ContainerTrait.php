@@ -4,6 +4,7 @@ namespace Bdf\Form\Util;
 
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\ElementInterface;
+use WeakReference;
 
 /**
  * Implements get and set container methods for an element
@@ -11,7 +12,7 @@ use Bdf\Form\ElementInterface;
 trait ContainerTrait
 {
     /**
-     * @var ChildInterface|null
+     * @var WeakReference<ChildInterface>|null
      */
     private $container;
 
@@ -21,7 +22,7 @@ trait ContainerTrait
      */
     final public function container(): ?ChildInterface
     {
-        return $this->container;
+        return $this->container ? $this->container->get() : null;
     }
 
     /**
@@ -33,7 +34,7 @@ trait ContainerTrait
     final public function setContainer(ChildInterface $container): ElementInterface
     {
         $element = clone $this;
-        $element->container = $container;
+        $element->container = WeakReference::create($container);
 
         return $element;
     }

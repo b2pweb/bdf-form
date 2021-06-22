@@ -306,8 +306,8 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
      */
     public function root(): RootElementInterface
     {
-        if ($this->container) {
-            return $this->container->parent()->root();
+        if ($container = $this->container()) {
+            return $container->parent()->root();
         }
 
         // @todo Use root form ?

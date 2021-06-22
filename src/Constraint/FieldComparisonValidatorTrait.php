@@ -24,7 +24,7 @@ trait FieldComparisonValidatorTrait
     {
         /** @var FieldComparisonTrait $constraint */
         /** @var ElementInterface $element */
-        $element = $this->context->getRoot();
+        $element = $this->context->getRoot()->get();
         $field = $constraint->field;
 
         if (!$field instanceof FieldPath) {

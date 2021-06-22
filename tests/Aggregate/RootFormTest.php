@@ -200,7 +200,7 @@ class RootFormTest extends TestCase
      */
     public function test_delegation()
     {
-        $form = new RootForm(new Form(new ChildrenCollection([
+        $form = new RootForm($inner = new Form(new ChildrenCollection([
             new Child('value', new IntegerElement(), new ArrayOffsetHttpFields('value'))
         ])));
 
