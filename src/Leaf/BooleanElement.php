@@ -59,6 +59,8 @@ class BooleanElement extends LeafElement
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool|null
      */
     protected function tryCast($value): ?bool
     {

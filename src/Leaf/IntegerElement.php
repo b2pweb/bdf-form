@@ -15,6 +15,8 @@ class IntegerElement extends LeafElement
 {
     /**
      * {@inheritdoc}
+     *
+     * @return int|null
      */
     protected function toPhp($httpValue): ?int
     {
@@ -31,6 +33,8 @@ class IntegerElement extends LeafElement
 
     /**
      * {@inheritdoc}
+     *
+     * @return int|null
      */
     protected function tryCast($value): ?int
     {

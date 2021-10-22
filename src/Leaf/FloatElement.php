@@ -15,6 +15,8 @@ class FloatElement extends LeafElement
 {
     /**
      * {@inheritdoc}
+     *
+     * @return float|null
      */
     protected function toPhp($httpValue): ?float
     {
@@ -31,6 +33,8 @@ class FloatElement extends LeafElement
 
     /**
      * {@inheritdoc}
+     *
+     * @return float|null
      */
     protected function tryCast($value): ?float
     {

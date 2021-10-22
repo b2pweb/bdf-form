@@ -145,6 +145,8 @@ final class DateTimeElement extends LeafElement
 
     /**
      * {@inheritdoc}
+     *
+     * @return DateTimeInterface|null
      */
     protected function tryCast($value): ?DateTimeInterface
     {

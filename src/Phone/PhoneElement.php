@@ -75,6 +75,8 @@ final class PhoneElement extends LeafElement
 
     /**
      * {@inheritdoc}
+     *
+     * @return PhoneNumber|null
      */
     protected function tryCast($value): ?PhoneNumber
     {

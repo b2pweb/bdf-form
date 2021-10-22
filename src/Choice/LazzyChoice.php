@@ -45,9 +45,9 @@ final class LazzyChoice implements ChoiceInterface
     /**
      * {@inheritdoc}
      */
-    public function view(?callable $configurator = null): array
+    public function view(?callable $configuration = null): array
     {
-        return $this->build()->view($configurator);
+        return $this->build()->view($configuration);
     }
 
     /**

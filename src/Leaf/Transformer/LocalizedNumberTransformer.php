@@ -93,7 +93,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      */
     final public function transformFromHttp($value, ElementInterface $input)
     {
-        if ($value !== null && !is_scalar($value)) {
+        if ($value !== null && !is_int($value) && !is_float($value) && !is_string($value)) {
             throw new InvalidArgumentException('Expected a scalar or null.');
         }
 

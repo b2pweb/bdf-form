@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraint;
 /**
  * Builder for instantiate a form element
  *
- * @template E as ElementInterface
+ * @template-covariant E as ElementInterface
  */
 interface ElementBuilderInterface
 {

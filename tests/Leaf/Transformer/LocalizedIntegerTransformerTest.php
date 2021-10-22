@@ -148,7 +148,7 @@ class LocalizedIntegerTransformerTest extends TestCase
             ['foo', 'Number parsing failed: U_PARSE_ERROR'],
             ['1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000', 'Number parsing failed: U_INVALID_FORMAT_ERROR'],
             [[], 'Expected a scalar or null.'],
-            [false, 'Number parsing failed: U_PARSE_ERROR'],
+            [false, 'Expected a scalar or null.'],
             [new \stdClass(), 'Expected a scalar or null.'],
         ];
     }

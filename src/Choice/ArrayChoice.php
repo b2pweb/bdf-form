@@ -41,15 +41,15 @@ final class ArrayChoice implements ChoiceInterface
     /**
      * {@inheritdoc}
      */
-    public function view(?callable $configurator = null): array
+    public function view(?callable $configuration = null): array
     {
         $view = [];
 
         foreach ($this->choices as $label => $value) {
             $view[] = $choice = new ChoiceView($value, $label);
 
-            if ($configurator) {
-                $configurator($choice);
+            if ($configuration) {
+                $configuration($choice);
             }
         }
 

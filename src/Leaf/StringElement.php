@@ -16,6 +16,8 @@ class StringElement extends LeafElement
 {
     /**
      * {@inheritdoc}
+     *
+     * @return string|null
      */
     protected function toPhp($httpValue): ?string
     {
@@ -36,6 +38,8 @@ class StringElement extends LeafElement
 
     /**
      * {@inheritdoc}
+     *
+     * @return string|null
      */
     protected function tryCast($value): ?string
     {
