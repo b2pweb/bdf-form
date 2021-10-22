@@ -39,6 +39,11 @@
     "symfony/security-csrf": "For enable CSRF element",
     "giggsey/libphonenumber-for-php": "Required to use phone type (~8.0)"
   },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  },
   "scripts": {
     "tests": "phpunit",
     "tests-with-coverage": "phpunit --coverage-clover coverage.xml",
