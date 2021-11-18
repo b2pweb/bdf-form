@@ -20,13 +20,13 @@ use Bdf\Form\Child\ChildInterface;
 final class ClosureFilter implements FilterInterface
 {
     /**
-     * @var callable
+     * @var callable(mixed, ChildInterface, mixed):mixed
      */
     protected $callback;
 
 
     /**
-     * @param callable $callback
+     * @param callable(mixed, ChildInterface, mixed):mixed $callback
      */
     public function __construct(callable $callback)
     {

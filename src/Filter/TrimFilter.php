@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Filter;
 
+use Attribute;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildInterface;
 
@@ -11,6 +12,7 @@ use Bdf\Form\Child\ChildInterface;
  *
  * @see ChildBuilder::trim() For enable trim filter
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class TrimFilter implements FilterInterface
 {
     /**

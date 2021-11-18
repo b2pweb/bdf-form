@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf\Transformer;
 
+use Attribute;
 use NumberFormatter;
 
 /**
@@ -9,6 +10,7 @@ use NumberFormatter;
  *
  * @extends LocalizedNumberTransformer<int>
  */
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 class LocalizedIntegerTransformer extends LocalizedNumberTransformer
 {
     /**

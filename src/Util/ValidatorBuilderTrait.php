@@ -196,7 +196,7 @@ trait ValidatorBuilderTrait
      *
      * @return TransformerExceptionConstraint
      */
-    final private function getTransformerExceptionConstraint(): TransformerExceptionConstraint
+    private function getTransformerExceptionConstraint(): TransformerExceptionConstraint
     {
         if ($this->transformerExceptionConstraint) {
             return $this->transformerExceptionConstraint;

@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf\Date\Transformer;
 
+use Attribute;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -13,6 +14,7 @@ use InvalidArgumentException;
 /**
  * Transform a DateTime instance from a form element to a timestamp to a model
  */
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class DateTimeToTimestampTransformer implements TransformerInterface
 {
     /**

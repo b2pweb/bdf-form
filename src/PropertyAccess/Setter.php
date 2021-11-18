@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\PropertyAccess;
 
+use Attribute;
+
 /**
  * Set the property value using the element value
  *
@@ -30,6 +32,7 @@ namespace Bdf\Form\PropertyAccess;
  *
  * @see ChildBuilder::setter()
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class Setter extends AbstractAccessor implements HydratorInterface
 {
     /**

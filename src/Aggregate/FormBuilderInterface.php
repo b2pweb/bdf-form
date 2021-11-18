@@ -46,7 +46,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * $builder->add('embed', MyEmbeddedForm::class)->required();
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      * @param class-string<E> $element The element class name. May be a custom form
      *
      * @template E as ElementInterface
@@ -62,7 +62,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * $builder->string('id', 'aaa-aaa-aaa')->regex('/[a-z]{3}(-[a-z]{3}){2}/i')->length(['max' => 35]);
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      * @param string|null $default Default value to submit
      *
      * @return ChildBuilderInterface|StringElementBuilder
@@ -77,7 +77,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * $builder->integer('value', 42)->min(6)->max(66);
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      * @param integer|null $default Default value to submit
      *
      * @return ChildBuilderInterface|IntegerElementBuilder
@@ -92,7 +92,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * $builder->float('value', 42)->scale(2);
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      * @param float|null $default Default value to submit
      *
      * @return ChildBuilderInterface|FloatElementBuilder
@@ -107,7 +107,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * $builder->boolean('accept');
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      *
      * @return ChildBuilderInterface|BooleanElementBuilder
      * @psalm-return ChildBuilderInterface<BooleanElementBuilder>
@@ -121,7 +121,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * $builder->dateTime('eventDate')->after(new DateTime());
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      *
      * @return DateTimeChildBuilder|DateTimeElementBuilder
      * @psalm-return ChildBuilderInterface<DateTimeElementBuilder>
@@ -142,7 +142,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * ;
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      *
      * @return PhoneChildBuilder|PhoneElementBuilder
      * @psalm-return ChildBuilderInterface<PhoneElementBuilder>
@@ -156,7 +156,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * $builder->csrf()->tokenId('my_csrf_token');
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      *
      * @return ChildBuilderInterface|CsrfElementBuilder
      * @psalm-return ChildBuilderInterface<CsrfElementBuilder>
@@ -181,7 +181,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      *
      * Note: It's advisable sur create a custom form, and add as embedded using `$this->add($name, $formType)` than use embedded()
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      * @param callable|null $configurator Configure the embedded form
      *
      * @return ChildBuilderInterface|FormBuilder
@@ -199,7 +199,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * });
      * </code>
      *
-     * @param string $name The child name
+     * @param non-empty-string $name The child name
      * @param class-string<ElementInterface>|null $elementType The inner element type
      * @param callable|null $elementConfigurator Callback for configure the inner element
      *
@@ -219,7 +219,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      *
      * Note: The submit button only applies on the root form
      *
-     * @param string $name The button name
+     * @param non-empty-string $name The button name
      *
      * @return ButtonBuilderInterface
      */

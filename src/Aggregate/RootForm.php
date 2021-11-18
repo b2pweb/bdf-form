@@ -10,6 +10,7 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\View\ElementViewInterface;
+use OutOfBoundsException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraint;
@@ -55,7 +56,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     private $form;
 
     /**
-     * @var ButtonInterface[]
+     * @var array<non-empty-string, ButtonInterface>
      */
     private $buttons;
 
@@ -79,7 +80,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      * RootForm constructor.
      *
      * @param Form $form
-     * @param ButtonInterface[] $buttons
+     * @param array<non-empty-string, ButtonInterface> $buttons Buttons, indexed by there name
      * @param PropertyAccessorInterface|null $propertyAccessor
      * @param ValidatorInterface|null $validator
      */
@@ -222,6 +223,18 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     public function submitButton(): ?ButtonInterface
     {
         return $this->submitButton;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function button(string $name): ButtonInterface
+    {
+        if ($btn = $this->buttons[$name] ?? null) {
+            return $btn;
+        }
+
+        throw new OutOfBoundsException("The button '{$name}' is not found");
     }
 
     /**

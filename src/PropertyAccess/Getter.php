@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\PropertyAccess;
 
+use Attribute;
+
 /**
  * Extract a property value and import it into the form element
  *
@@ -30,6 +32,7 @@ namespace Bdf\Form\PropertyAccess;
  *
  * @see ChildBuilder::getter()
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class Getter extends AbstractAccessor implements ExtractorInterface
 {
     /**

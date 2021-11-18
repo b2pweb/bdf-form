@@ -125,6 +125,18 @@ class LeafRootElementTest extends TestCase
     /**
      *
      */
+    public function test_button()
+    {
+        $this->expectException(\OutOfBoundsException::class);
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $root->button('btn');
+    }
+
+    /**
+     *
+     */
     public function test_root()
     {
         $element = $this->createMock(ElementInterface::class);

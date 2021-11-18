@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Filter;
 
+use Attribute;
 use Bdf\Form\Aggregate\ArrayChildBuilder;
 use Bdf\Form\Child\ChildInterface;
 
@@ -10,6 +11,7 @@ use Bdf\Form\Child\ChildInterface;
  *
  * @see ArrayChildBuilder::filterEmptyValues()
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class EmptyArrayValuesFilter implements FilterInterface
 {
     /**
