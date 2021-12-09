@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\ArrayElement;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Aggregate\RootForm;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
@@ -434,6 +435,31 @@ class CustomFormTest extends TestCase
         };
 
         $this->form->test();
+    }
+
+    /**
+     *
+     */
+    public function test_postConfigure()
+    {
+        $form = new class extends CustomForm {
+            public $param;
+
+            protected function configure(FormBuilderInterface $builder): void
+            {
+                $builder->string('foo');
+            }
+
+            public function postConfigure(FormInterface $form): void
+            {
+                $this->param = $form;
+            }
+        };
+
+        $form->submit([]); // Build the form
+
+        $this->assertInstanceOf(Form::class, $form->param);
+        $this->assertInstanceOf(StringElement::class, $form->param['foo']->element());
     }
 }
 

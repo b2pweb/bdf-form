@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf\Transformer;
 
+use Attribute;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use InvalidArgumentException;
@@ -15,6 +16,7 @@ use NumberFormatter;
  *
  * @template T as numeric
  */
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 class LocalizedNumberTransformer implements TransformerInterface
 {
     /**

@@ -122,8 +122,8 @@ class RootFormTest extends TestCase
         $root = new RootForm(
             $form,
             [
-                $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
-                $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
+                'btn1' => $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
+                'btn2' => $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
             ]
         );
 
@@ -217,6 +217,42 @@ class RootFormTest extends TestCase
     /**
      *
      */
+    public function test_button()
+    {
+        $form = new Form(new ChildrenCollection([]));
+        $root = new RootForm(
+            $form,
+            [
+                'btn1' => $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
+                'btn2' => $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
+            ]
+        );
+
+        $this->assertSame($btn1, $root->button('btn1'));
+        $this->assertSame($btn2, $root->button('btn2'));
+    }
+
+    /**
+     *
+     */
+    public function test_button_not_found()
+    {
+        $this->expectException(\OutOfBoundsException::class);
+        $form = new Form(new ChildrenCollection([]));
+        $root = new RootForm(
+            $form,
+            [
+                'btn1' => $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
+                'btn2' => $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
+            ]
+        );
+
+        $root->button('btn3');
+    }
+
+    /**
+     *
+     */
     public function test_view()
     {
         $registry = new Registry();
@@ -230,8 +266,8 @@ class RootFormTest extends TestCase
         $root = new RootForm(
             $form,
             [
-                $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
-                $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
+                'btn1' => $btn1 = new SubmitButton('btn1', 'ok', ['btn1']),
+                'btn2' => $btn2 = new SubmitButton('btn2', 'ok', ['btn2']),
             ]
         );
 

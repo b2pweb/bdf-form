@@ -15,6 +15,26 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 interface RootElementInterface extends ElementInterface
 {
     /**
+     * Get a button by its name
+     *
+     * <code>
+     * $root = $form->root();
+     * $root->submit($request->post());
+     *
+     * if ($root->button('continue')->clicked()) {
+     *     return $this->redirectTo($this->nextPage());
+     * }
+     * </code>
+     *
+     * @param non-empty-string $name The button name
+     *
+     * @throws \OutOfBoundsException When the button is not found
+     *
+     * @see RootElementInterface::submitButton() To only get the clicked button
+     */
+    public function button(string $name): ButtonInterface;
+
+    /**
      * The button used to submit the form
      *
      * <code>
@@ -33,6 +53,8 @@ interface RootElementInterface extends ElementInterface
      * </code>
      *
      * @return ButtonInterface|null The button, or null if not defined
+     *
+     * @see RootElementInterface::button() To get a button by its name
      */
     public function submitButton(): ?ButtonInterface;
 

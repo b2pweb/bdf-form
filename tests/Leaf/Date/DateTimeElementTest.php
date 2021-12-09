@@ -8,6 +8,7 @@ use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\Constraint\Closure;
+use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\LeafRootElement;
 use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\Transformer\ClosureTransformer;
@@ -15,6 +16,7 @@ use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
 use DateTime;
+use DateTimeImmutable;
 use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -172,6 +174,58 @@ class DateTimeElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_with_transformer_with_return_a_datetime_object()
+    {
+        $element = new DateTimeElement(null, new class implements TransformerInterface {
+            public function transformToHttp($value, ElementInterface $input) { }
+            public function transformFromHttp($value, ElementInterface $input)
+            {
+                return new DateTime('1234-12-23 12:34:56');
+            }
+        });
+        $element->submit('???');
+        $this->assertEquals(new DateTime('1234-12-23 12:34:56'), $element->value());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_with_return_a_datetime_of_non_matching_type_should_create_new_date_of_correct_type()
+    {
+        $element = new DateTimeElement(null, new class implements TransformerInterface {
+            public function transformToHttp($value, ElementInterface $input) { }
+            public function transformFromHttp($value, ElementInterface $input)
+            {
+                return new DateTime('1934-12-23 12:34:56');
+            }
+        }, null, DateTimeImmutable::class);
+        $element->submit('???');
+
+        $this->assertEquals(new DateTimeImmutable('1934-12-23 12:34:56'), $element->value());
+    }
+
+
+    /**
+     *
+     */
+    public function test_submit_with_transformer_with_return_a_datetime_with_invalid_timezone_should_change_timezone()
+    {
+        $element = new DateTimeElement(null, new class implements TransformerInterface {
+            public function transformToHttp($value, ElementInterface $input) { }
+            public function transformFromHttp($value, ElementInterface $input)
+            {
+                return new DateTime('1934-12-23 12:34:56');
+            }
+        }, null, DateTimeImmutable::class, DateTime::ATOM, new DateTimeZone('+05:00'));
+        $element->submit('???');
+
+        $this->assertEquals(new DateTimeImmutable('1934-12-23 12:34:56'), $element->value());
+        $this->assertEquals(new DateTimeZone('+05:00'), $element->value()->getTimezone());
+    }
+
+    /**
+     *
+     */
     public function test_patch_null()
     {
         $element = new DateTimeElement();
@@ -267,7 +321,7 @@ class DateTimeElementTest extends TestCase
     public function test_import_invalid_class()
     {
         $this->expectException(\TypeError::class);
-        $element = new DateTimeElement(null, null, null, \DateTimeImmutable::class);
+        $element = new DateTimeElement(null, null, null, DateTimeImmutable::class);
 
         $element->import(new DateTime('2000-01-05 15:00:00'));
     }

@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Filter;
 
+use Attribute;
 use Bdf\Form\Child\ChildInterface;
 
 /**
@@ -10,6 +11,7 @@ use Bdf\Form\Child\ChildInterface;
  *
  * @see filter_var()
  */
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class FilterVar implements FilterInterface
 {
     /**

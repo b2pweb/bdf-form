@@ -3,6 +3,7 @@
 
 namespace Bdf\Form\Phone\Transformer;
 
+use Attribute;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -13,6 +14,7 @@ use libphonenumber\PhoneNumberUtil;
 /**
  * Transformer PhoneNumber instance to string with a format
  */
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class PhoneNumberToStringTransformer implements TransformerInterface
 {
     /**

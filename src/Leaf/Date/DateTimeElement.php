@@ -98,6 +98,7 @@ final class DateTimeElement extends LeafElement
                 $dateTime = $httpValue; // Clone ?
                 break;
 
+            /** @psalm-suppress ParadoxicalCondition */
             case $httpValue instanceof DateTimeInterface:
                 $httpValue = $httpValue->format($this->format);
                 // No break
@@ -120,8 +121,9 @@ final class DateTimeElement extends LeafElement
             throw new InvalidArgumentException('Invalid date format');
         }
 
+        /** @var DateTime|\DateTimeImmutable $dateTime */
         if ($this->timezone !== null) {
-            $dateTime->setTimezone($this->timezone);
+            $dateTime = $dateTime->setTimezone($this->timezone);
         }
 
         return $dateTime;

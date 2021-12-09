@@ -56,12 +56,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 {
     /**
-     * @var ChildBuilderInterface[]
+     * @var array<non-empty-string, ChildBuilderInterface>
      */
     private $children = [];
 
     /**
-     * @var ButtonBuilderInterface[]
+     * @var array<non-empty-string, ButtonBuilderInterface>
      */
     private $buttons = [];
 
@@ -186,7 +186,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * ;
      * </code>
      *
-     * @param string $name The name of the input
+     * @param non-empty-string $name The name of the input
      *
      * @return ChildBuilderInterface|\Bdf\Form\Leaf\Helper\EmailElementBuilder
      * @psalm-return ChildBuilderInterface<\Bdf\Form\Leaf\Helper\EmailElementBuilder>
@@ -207,7 +207,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * $builder->url('home')->protocols('https');
      * </code>
      *
-     * @param string $name The name of the input
+     * @param non-empty-string $name The name of the input
      *
      * @return ChildBuilderInterface|\Bdf\Form\Leaf\Helper\UrlElementBuilder
      * @psalm-return ChildBuilderInterface<\Bdf\Form\Leaf\Helper\UrlElementBuilder>
@@ -343,8 +343,8 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     {
         $buttons = [];
 
-        foreach ($this->buttons as $button) {
-            $buttons[] = $button->buildButton();
+        foreach ($this->buttons as $name => $button) {
+            $buttons[$name] = $button->buildButton();
         }
 
         return new RootForm($form, $buttons, $this->propertyAccessor, $this->validator);

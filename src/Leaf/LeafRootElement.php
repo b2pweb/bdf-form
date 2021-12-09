@@ -10,6 +10,7 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\View\ElementViewInterface;
+use OutOfBoundsException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraint;
@@ -138,6 +139,14 @@ final class LeafRootElement implements RootElementInterface
     public function submitButton(): ?ButtonInterface
     {
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function button(string $name): ButtonInterface
+    {
+        throw new OutOfBoundsException('A leaf element do not have any buttons');
     }
 
     /**

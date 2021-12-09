@@ -48,7 +48,7 @@ trait ChoiceBuilderTrait
     final public function choices($choices, $options = null): self
     {
         if (!$choices instanceof ChoiceInterface) {
-            $choices = is_array($choices) ? new ArrayChoice($choices) : new LazzyChoice($choices);
+            $choices = is_array($choices) ? new ArrayChoice($choices) : new LazyChoice($choices);
         }
 
         if (is_string($options)) {

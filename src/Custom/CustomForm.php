@@ -235,6 +235,33 @@ abstract class CustomForm implements FormInterface
     abstract protected function configure(FormBuilderInterface $builder): void;
 
     /**
+     * Override this method to hook the inner form build
+     *
+     * <code>
+     * class MyForm extends CustomForm
+     * {
+     *     public $foo;
+     *     public function configure(FormBuilderInterface $builder): void
+     *     {
+     *         $builder->string('foo');
+     *     }
+     *
+     *     public function postConfigure(FormInterface $form): void
+     *     {
+     *         // Get the "foo" children
+     *         $this->foo = $form['foo'];
+     *     }
+     * }
+     * </code>
+     *
+     * @param FormInterface $form The inner form built instance
+     */
+    public function postConfigure(FormInterface $form): void
+    {
+        // to overrides
+    }
+
+    /**
      * Get (or build) the inner form
      *
      * @return FormInterface<T>
@@ -247,7 +274,10 @@ abstract class CustomForm implements FormInterface
 
         $this->configure($this->builder);
 
-        return $this->form = $this->builder->buildElement();
+        $form = $this->form = $this->builder->buildElement();
+        $this->postConfigure($form);
+
+        return $form;
     }
 
     /**
