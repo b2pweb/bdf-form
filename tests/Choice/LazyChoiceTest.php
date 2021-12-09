@@ -5,19 +5,16 @@ namespace Bdf\Form\Choice;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @group Bdf
- * @group Bdf_Form
- * @group Bdf_Form_Choice
- * @group Bdf_Form_Choice_LazzyChoice
+ *
  */
-class LazzyChoiceTest extends TestCase
+class LazyChoiceTest extends TestCase
 {
     /**
      *
      */
     public function test_default_construct()
     {
-        $choice = new LazzyChoice(function() {
+        $choice = new LazyChoice(function() {
             return ['label' => 'value'];
         });
 
@@ -33,7 +30,7 @@ class LazzyChoiceTest extends TestCase
         $mock->expects($this->once())->method('values');
         $mock->expects($this->once())->method('view');
 
-        $choice = new LazzyChoice(function() use($mock) {
+        $choice = new LazyChoice(function() use($mock) {
             return $mock;
         });
 

@@ -5,7 +5,7 @@ namespace Bdf\Form\Aggregate;
 use Bdf\Form\Choice\ArrayChoice;
 use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\Choice\ChoiceInterface;
-use Bdf\Form\Choice\LazzyChoice;
+use Bdf\Form\Choice\LazyChoice;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElement;
@@ -330,7 +330,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     {
         // @fixme c/c choice from trait
         if (!$choices instanceof ChoiceInterface) {
-            $choices = is_array($choices) ? new ArrayChoice($choices) : new LazzyChoice($choices);
+            $choices = is_array($choices) ? new ArrayChoice($choices) : new LazyChoice($choices);
         }
 
         if (is_string($options)) {
