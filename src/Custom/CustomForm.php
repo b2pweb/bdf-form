@@ -67,7 +67,7 @@ abstract class CustomForm implements FormInterface
      */
     public function __construct(?FormBuilderInterface $builder = null)
     {
-        $this->builder = $builder ?: new FormBuilder();
+        $this->builder = $builder ?? new FormBuilder();
     }
 
     /**
@@ -230,7 +230,7 @@ abstract class CustomForm implements FormInterface
     /**
      * Configure the form using the builder
      *
-     * @param FormBuilderInterface $builder
+     * @param FormBuilder $builder
      */
     abstract protected function configure(FormBuilderInterface $builder): void;
 
@@ -272,6 +272,7 @@ abstract class CustomForm implements FormInterface
             return $this->form;
         }
 
+        /** @psalm-suppress ArgumentTypeCoercion */
         $this->configure($this->builder);
 
         $form = $this->form = $this->builder->buildElement();

@@ -7,17 +7,26 @@ use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Value\ValueGenerator;
 use Bdf\Form\Aggregate\Value\ValueGeneratorInterface;
 use Bdf\Form\Button\ButtonBuilderInterface;
+use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Csrf\CsrfElement;
+use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
+use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElement;
+use Bdf\Form\Leaf\BooleanElementBuilder;
+use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\Helper\EmailElement;
 use Bdf\Form\Leaf\Helper\UrlElement;
 use Bdf\Form\Leaf\IntegerElement;
+use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\RootElementInterface;
@@ -56,7 +65,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 {
     /**
-     * @var array<non-empty-string, ChildBuilderInterface>
+     * @var array<non-empty-string, ChildBuilder>
      */
     private $children = [];
 
@@ -93,6 +102,17 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-param non-empty-string $name
+     * @psalm-param class-string<E> $element
+     *
+     * @template E as ElementInterface
+     *
+     * @psalm-return ChildBuilder<ElementBuilderInterface<E>>
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress PropertyTypeCoercion
      */
     public function add(string $name, string $element): ChildBuilderInterface
     {
@@ -101,6 +121,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-param non-empty-string $name
+     * @psalm-return ChildBuilder<StringElementBuilder>
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
@@ -113,6 +136,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      *
+     * @psalm-param non-empty-string $name
+     * @psalm-return ChildBuilder<IntegerElementBuilder>
+     *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
@@ -123,6 +149,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-param non-empty-string $name
+     * @psalm-return ChildBuilder<FloatElementBuilder>
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
@@ -135,6 +164,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      *
+     * @psalm-param non-empty-string $name
+     * @psalm-return ChildBuilder<BooleanElementBuilder>
+     *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
@@ -145,6 +177,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-param non-empty-string $name
+     * @psalm-return DateTimeChildBuilder
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
@@ -157,6 +192,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      *
+     * @psalm-param non-empty-string $name
+     * @psalm-return PhoneChildBuilder
+     *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
@@ -167,6 +205,9 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-param non-empty-string $name
+     * @psalm-return ChildBuilder<CsrfElementBuilder>
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
@@ -188,8 +229,8 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      *
      * @param non-empty-string $name The name of the input
      *
-     * @return ChildBuilderInterface|\Bdf\Form\Leaf\Helper\EmailElementBuilder
-     * @psalm-return ChildBuilderInterface<\Bdf\Form\Leaf\Helper\EmailElementBuilder>
+     * @return ChildBuilder|\Bdf\Form\Leaf\Helper\EmailElementBuilder
+     * @psalm-return ChildBuilder<\Bdf\Form\Leaf\Helper\EmailElementBuilder>
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
@@ -209,8 +250,8 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      *
      * @param non-empty-string $name The name of the input
      *
-     * @return ChildBuilderInterface|\Bdf\Form\Leaf\Helper\UrlElementBuilder
-     * @psalm-return ChildBuilderInterface<\Bdf\Form\Leaf\Helper\UrlElementBuilder>
+     * @return ChildBuilder|\Bdf\Form\Leaf\Helper\UrlElementBuilder
+     * @psalm-return ChildBuilder<\Bdf\Form\Leaf\Helper\UrlElementBuilder>
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
@@ -222,6 +263,10 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-param non-empty-string $name
+     * @psalm-param callable|null $configurator
+     * @psalm-return ChildBuilder<FormBuilder>
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
@@ -240,12 +285,17 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      *
+     * @psalm-param non-empty-string $name
+     * @psalm-param class-string<ElementInterface>|null $elementType
+     * @psalm-param callable|null $elementConfigurator
+     * @psalm-return ArrayChildBuilder&ChildBuilderInterface<ArrayElementBuilder>
+     *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
     public function array(string $name, ?string $elementType = null, ?callable $elementConfigurator = null): ChildBuilderInterface
     {
-        /** @var ChildBuilderInterface<ArrayElementBuilder> $builder */
+        /** @var ChildBuilderInterface<ArrayElementBuilder>&ArrayChildBuilder $builder */
         $builder = $this->add($name, ArrayElement::class);
 
         if ($elementType) {

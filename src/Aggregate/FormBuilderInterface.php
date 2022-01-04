@@ -4,6 +4,7 @@ namespace Bdf\Form\Aggregate;
 
 use Bdf\Form\Aggregate\Value\ValueGeneratorInterface;
 use Bdf\Form\Button\ButtonBuilderInterface;
+use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\ElementBuilderInterface;
@@ -65,7 +66,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param non-empty-string $name The child name
      * @param string|null $default Default value to submit
      *
-     * @return ChildBuilderInterface|StringElementBuilder
+     * @return ChildBuilder|StringElementBuilder
      * @psalm-return ChildBuilderInterface<StringElementBuilder>
      */
     public function string(string $name, ?string $default = null): ChildBuilderInterface;
@@ -80,7 +81,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param non-empty-string $name The child name
      * @param integer|null $default Default value to submit
      *
-     * @return ChildBuilderInterface|IntegerElementBuilder
+     * @return ChildBuilder|IntegerElementBuilder
      * @psalm-return ChildBuilderInterface<IntegerElementBuilder>
      */
     public function integer(string $name, ?int $default = null): ChildBuilderInterface;
@@ -95,7 +96,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param non-empty-string $name The child name
      * @param float|null $default Default value to submit
      *
-     * @return ChildBuilderInterface|FloatElementBuilder
+     * @return ChildBuilder|FloatElementBuilder
      * @psalm-return ChildBuilderInterface<FloatElementBuilder>
      */
     public function float(string $name, ?float $default = null): ChildBuilderInterface;
@@ -109,7 +110,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      *
      * @param non-empty-string $name The child name
      *
-     * @return ChildBuilderInterface|BooleanElementBuilder
+     * @return ChildBuilder|BooleanElementBuilder
      * @psalm-return ChildBuilderInterface<BooleanElementBuilder>
      */
     public function boolean(string $name): ChildBuilderInterface;
@@ -158,7 +159,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      *
      * @param non-empty-string $name The child name
      *
-     * @return ChildBuilderInterface|CsrfElementBuilder
+     * @return ChildBuilder|CsrfElementBuilder
      * @psalm-return ChildBuilderInterface<CsrfElementBuilder>
      */
     public function csrf(string $name = '_token'): ChildBuilderInterface;
@@ -184,7 +185,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param non-empty-string $name The child name
      * @param callable|null $configurator Configure the embedded form
      *
-     * @return ChildBuilderInterface|FormBuilder
+     * @return ChildBuilder|FormBuilder
      * @psalm-return ChildBuilderInterface<FormBuilder>
      */
     public function embedded(string $name, ?callable $configurator = null): ChildBuilderInterface;
