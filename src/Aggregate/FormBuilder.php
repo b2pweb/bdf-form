@@ -18,6 +18,7 @@ use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\Helper\EmailElement;
@@ -28,6 +29,7 @@ use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
+use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -179,7 +181,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * {@inheritdoc}
      *
      * @psalm-param non-empty-string $name
-     * @psalm-return DateTimeChildBuilder
+     * @psalm-return DateTimeChildBuilder&ChildBuilder<DateTimeElementBuilder>
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
@@ -193,7 +195,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * {@inheritdoc}
      *
      * @psalm-param non-empty-string $name
-     * @psalm-return PhoneChildBuilder
+     * @psalm-return PhoneChildBuilder&ChildBuilder<PhoneElementBuilder>
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
