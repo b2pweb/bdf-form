@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 /**
  *
  */
-class HtmlFilterTest extends TestCase
+class FilterVarTest extends TestCase
 {
     /**
      *
@@ -20,6 +20,28 @@ class HtmlFilterTest extends TestCase
         $filter = new FilterVar();
 
         $this->assertEquals('"Test"', $filter->filter($value, $this->createMock(ChildInterface::class), null));
+    }
+
+    /**
+     *
+     */
+    public function test_html_filter_utf8()
+    {
+        $value = '"éà@è\'';
+        $filter = new FilterVar(FilterVar::HTML_FILTER);
+
+        $this->assertEquals('"éà@è\'', $filter->filter($value, $this->createMock(ChildInterface::class), null));
+    }
+
+    /**
+     *
+     */
+    public function test_html_filter_utf8_with_encode_flags()
+    {
+        $value = '"éà@è\'';
+        $filter = new FilterVar(FilterVar::HTML_FILTER, FILTER_FLAG_ENCODE_HIGH | FILTER_FLAG_ENCODE_LOW);
+
+        $this->assertEquals('&#34;&#195;&#169;&#195;&#160;@&#195;&#168;&#39;', $filter->filter($value, $this->createMock(ChildInterface::class), null));
     }
 
     /**
@@ -45,5 +67,15 @@ class HtmlFilterTest extends TestCase
         $form->submit(['foo' => '<span="class">"Test"</span>']);
 
         $this->assertEquals('"Test"', $form['foo']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_custom_filter()
+    {
+        $filter = new FilterVar(FILTER_SANITIZE_EMAIL);
+
+        $this->assertEquals('foo@example.com', $filter->filter('   ))foo@example.com', $this->createMock(ChildInterface::class), null));
     }
 }

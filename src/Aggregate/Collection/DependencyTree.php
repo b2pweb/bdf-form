@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Aggregate\Collection;
 
+use ArrayIterator;
 use Bdf\Form\Aggregate\ChildAggregateInterface;
 use Bdf\Form\Child\ChildInterface;
 use Iterator;
@@ -111,7 +112,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
     /**
      * {@inheritdoc}
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->has($offset);
     }
@@ -119,7 +120,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): ChildInterface
     {
         return $this->children[$offset];
     }
@@ -127,7 +128,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->add($value);
     }
@@ -135,7 +136,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->remove($offset);
     }
@@ -143,7 +144,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->children);
     }
@@ -153,7 +154,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      */
     public function getIterator(): Iterator
     {
-        return new \ArrayIterator($this->children);
+        return new ArrayIterator($this->children);
     }
 
     /**
@@ -208,7 +209,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      * @psalm-suppress InvalidNullableReturnType
      * @psalm-suppress NullableReturnStatement
      */
-    protected function level($child)
+    private function level($child)
     {
         if (!is_string($child)) {
             $child = $child->name();
@@ -234,7 +235,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      * @param string $name
      * @param ChildInterface $child
      */
-    protected function addNamed($name, ChildInterface $child): void
+    private function addNamed($name, ChildInterface $child): void
     {
         $this->children[$name] = $child;
 
@@ -257,7 +258,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      *
      * @return string[]
      */
-    protected function extractDependencies(ChildInterface $child, Level $level)
+    private function extractDependencies(ChildInterface $child, Level $level)
     {
         $dependencies = [];
 

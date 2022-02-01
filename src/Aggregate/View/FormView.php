@@ -59,6 +59,7 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
      *
      * @return ElementViewInterface|ButtonViewInterface
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->elements[$offset] ?? $this->buttons[$offset];

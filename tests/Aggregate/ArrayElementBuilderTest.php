@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Aggregate;
 
+use Bdf\Form\Choice\LazyChoice;
 use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\FloatElementBuilder;
@@ -326,6 +327,13 @@ class ArrayElementBuilderTest extends TestCase
     public function test_choices()
     {
         $element = $this->builder->choices(['foo', 'bar', 'baz'])->buildElement();
+
+        $this->assertFalse($element->submit(['foo', 'baz', 'aaa'])->valid());
+        $this->assertEquals('One or more of the given values is invalid.', $element->error()->global());
+
+        $this->assertTrue($element->submit(['foo', 'baz'])->valid());
+
+        $element = $this->builder->choices(new LazyChoice(function () { return ['foo', 'bar', 'baz']; }))->buildElement();
 
         $this->assertFalse($element->submit(['foo', 'baz', 'aaa'])->valid());
         $this->assertEquals('One or more of the given values is invalid.', $element->error()->global());

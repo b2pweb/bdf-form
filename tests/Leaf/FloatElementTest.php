@@ -212,6 +212,7 @@ class FloatElementTest extends TestCase
     public function test_import_invalid_type($value)
     {
         $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('The import()\'ed value of a Bdf\Form\Leaf\FloatElement must be numeric or null');
         $element = new FloatElement();
 
         $element->import($value);

@@ -340,6 +340,7 @@ class ArrayElementTest extends TestCase
     public function test_import_invalid_values($value)
     {
         $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('The import()\'ed value of a Bdf\Form\Aggregate\ArrayElement must be iterable or null');
         $element = new ArrayElement(new StringElement());
 
         $element->import($value);
@@ -663,5 +664,27 @@ class ArrayElementTest extends TestCase
         $this->assertEquals('YWFh', $view->choices()[0]->value());
         $this->assertEquals('YmJi', $view->choices()[1]->value());
         $this->assertEquals('Y2Nj', $view->choices()[2]->value());
+    }
+
+    /**
+     *
+     */
+    public function test_view_with_choice_should_not_modify_inner_element()
+    {
+        $element = (new ArrayElementBuilder())
+            ->choices(['aaa', 'bbb', 'ccc'])
+            ->buildElement()
+        ;
+
+        $view = $element->view();
+
+        $this->assertEquals('aaa', $view->choices()[0]->value());
+        $this->assertEquals('bbb', $view->choices()[1]->value());
+        $this->assertEquals('ccc', $view->choices()[2]->value());
+
+        $r = new \ReflectionProperty(ArrayElement::class, 'templateElement');
+        $r->setAccessible(true);
+
+        $this->assertNull($r->getValue($element)->value());
     }
 }

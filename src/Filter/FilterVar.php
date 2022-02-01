@@ -14,6 +14,8 @@ use Bdf\Form\Child\ChildInterface;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class FilterVar implements FilterInterface
 {
+    const HTML_FILTER = -1;
+
     /**
      * The filter option given to filter_var
      *
@@ -34,7 +36,7 @@ final class FilterVar implements FilterInterface
      * @param int $filter  The filter option. Sanitize HTML by default.
      * @param int $flags
      */
-    public function __construct(int $filter = FILTER_SANITIZE_STRING, int $flags = FILTER_FLAG_NO_ENCODE_QUOTES)
+    public function __construct(int $filter = self::HTML_FILTER, int $flags = FILTER_FLAG_NO_ENCODE_QUOTES)
     {
         $this->filter = $filter;
         $this->flags = $flags;
@@ -46,11 +48,33 @@ final class FilterVar implements FilterInterface
     public function filter($value, ChildInterface $input, $default)
     {
         if (!is_array($value)) {
-            return filter_var($value, $this->filter, $this->flags);
+            return $this->apply($value);
         }
 
         foreach ($value as &$item) {
-            $item = filter_var($item, $this->filter, $this->flags);
+            $item = $this->apply($item);
+        }
+
+        return $value;
+    }
+
+    private function apply($value)
+    {
+        if ($this->filter !== self::HTML_FILTER) {
+            return filter_var($value, $this->filter, $this->flags);
+        }
+
+        // FILTER_SANITIZE_STRING is deprecated in PHP 8.1
+        $value = strip_tags($value);
+
+        // Apply "strip" filters
+        if (($this->flags & ~FILTER_FLAG_NO_ENCODE_QUOTES) !== 0) {
+            $value = filter_var($value, FILTER_UNSAFE_RAW, $this->flags);
+        }
+
+        // Encode quotes
+        if (($this->flags & FILTER_FLAG_NO_ENCODE_QUOTES) === 0) {
+            $value = str_replace(['"', "'"], ['&#34;', '&#39;'], $value);
         }
 
         return $value;

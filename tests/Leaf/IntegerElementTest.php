@@ -212,6 +212,7 @@ class IntegerElementTest extends TestCase
     public function test_import_invalid_type($value)
     {
         $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('The import()\'ed value of a Bdf\Form\Leaf\IntegerElement must be numeric or null');
         $element = new IntegerElement();
 
         $element->import($value);

@@ -4,6 +4,7 @@ namespace Bdf\Form\View;
 
 use ArrayIterator;
 use BadMethodCallException;
+use Iterator;
 
 /**
  * Implements @see FieldSetViewInterface
@@ -28,7 +29,7 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): ElementViewInterface
     {
         return $this->elements[$offset];
     }
@@ -36,7 +37,7 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new BadMethodCallException('FormView is read only');
     }
@@ -44,7 +45,7 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new BadMethodCallException('FormView is read only');
     }
@@ -70,10 +71,10 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      *
-     * @return \Iterator<string, ElementViewInterface>
+     * @return Iterator<string, ElementViewInterface>
      * @psalm-suppress ImplementedReturnTypeMismatch
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new ArrayIterator($this->elements);
     }

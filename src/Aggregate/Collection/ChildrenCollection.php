@@ -75,7 +75,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->has($offset);
     }
@@ -83,7 +83,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): ChildInterface
     {
         return $this->children[$offset];
     }
@@ -91,7 +91,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->add($value);
     }
@@ -99,7 +99,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->remove($offset);
     }
@@ -107,7 +107,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
     /**
      * {@inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return count($this->children);
     }

@@ -28,7 +28,7 @@ final class HtmlRenderer
             $out .= ' '.htmlentities($k);
 
             if ($v !== true) {
-                $out .= '="'.htmlentities($v).'"';
+                $out .= '="'.htmlentities((string) $v).'"';
             }
         }
 

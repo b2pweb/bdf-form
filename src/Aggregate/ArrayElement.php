@@ -24,6 +24,7 @@ use Bdf\Form\View\ConstraintsNormalizer;
 use Bdf\Form\View\ElementViewInterface;
 use Countable;
 use Exception;
+use Iterator;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use TypeError;
 
@@ -117,7 +118,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new BadMethodCallException('Use import() or submit() for set an offset value');
     }
@@ -125,7 +126,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new BadMethodCallException('Use import() or submit() for set an offset value');
     }
@@ -133,7 +134,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new ArrayIterator($this->children);
     }

@@ -10,6 +10,7 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\View\ElementViewInterface;
+use Iterator;
 use OutOfBoundsException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -298,7 +299,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         /** @psalm-suppress PossiblyNullReference */
         $this->form->get()[$offset] = $value;
@@ -310,7 +311,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      * @psalm-suppress PossiblyNullReference
      * @psalm-suppress PossiblyNullArrayAccess
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->form->get()[$offset]);
     }
@@ -318,7 +319,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         /** @psalm-suppress PossiblyNullReference */
         return $this->form->get()->getIterator();
