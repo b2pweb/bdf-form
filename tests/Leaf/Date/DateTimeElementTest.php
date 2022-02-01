@@ -321,6 +321,7 @@ class DateTimeElementTest extends TestCase
     public function test_import_invalid_class()
     {
         $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('The import()\'ed value of a Bdf\Form\Leaf\Date\DateTimeElement must be an instance of DateTimeImmutable or null');
         $element = new DateTimeElement(null, null, null, DateTimeImmutable::class);
 
         $element->import(new DateTime('2000-01-05 15:00:00'));
@@ -332,6 +333,7 @@ class DateTimeElementTest extends TestCase
     public function test_import_invalid($value)
     {
         $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('The import()\'ed value of a Bdf\Form\Leaf\Date\DateTimeElement must be an instance of DateTime or null');
         $element = new DateTimeElement();
 
         $element->import($value);

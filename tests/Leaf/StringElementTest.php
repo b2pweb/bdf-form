@@ -211,6 +211,7 @@ class StringElementTest extends TestCase
     public function test_import_invalid_type($value)
     {
         $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('The import()\'ed value of a Bdf\Form\Leaf\StringElement must be stringable or null');
         $element = new StringElement();
 
         $element->import($value);
