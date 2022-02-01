@@ -19,6 +19,7 @@ use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Bdf\Form\View\ElementViewInterface;
 use Exception;
+use Iterator;
 
 /**
  * The base form element
@@ -253,7 +254,7 @@ final class Form implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return $this->children->forwardIterator();
     }
@@ -277,7 +278,7 @@ final class Form implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new BadMethodCallException(__CLASS__.' is immutable');
     }
@@ -285,7 +286,7 @@ final class Form implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new BadMethodCallException(__CLASS__.' is immutable');
     }

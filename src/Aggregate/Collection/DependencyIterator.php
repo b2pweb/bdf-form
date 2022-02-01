@@ -57,7 +57,7 @@ final class DependencyIterator implements Iterator
      *
      * @return ChildInterface
      */
-    public function current()
+    public function current(): ChildInterface
     {
         return $this->children[$this->key()];
     }
@@ -68,7 +68,7 @@ final class DependencyIterator implements Iterator
      * @psalm-suppress PossiblyNullReference
      * @psalm-suppress PossiblyNullReference
      */
-    public function next()
+    public function next(): void
     {
         $this->levelIterator->next();
 
@@ -100,6 +100,7 @@ final class DependencyIterator implements Iterator
      *
      * @psalm-suppress PossiblyNullReference
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->levelIterator->key();
@@ -108,7 +109,7 @@ final class DependencyIterator implements Iterator
     /**
      * {@inheritdoc}
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->levelIterator !== null && $this->levelIterator->valid();
     }
@@ -116,7 +117,7 @@ final class DependencyIterator implements Iterator
     /**
      * {@inheritdoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->currentLevel  = $this->first;
         $this->levelIterator = $this->currentLevel->getIterator();

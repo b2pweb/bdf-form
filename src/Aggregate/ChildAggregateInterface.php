@@ -5,6 +5,7 @@ namespace Bdf\Form\Aggregate;
 use ArrayAccess;
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\ElementInterface;
+use Iterator;
 use IteratorAggregate;
 
 /**
@@ -40,21 +41,21 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @throws \BadMethodCallException
      */
-    public function offsetSet($offset, $value);
+    public function offsetSet($offset, $value): void;
 
     /**
      * Operation not allowed
      *
      * @throws \BadMethodCallException
      */
-    public function offsetUnset($offset);
+    public function offsetUnset($offset): void;
 
     /**
      * {@inheritdoc}
      *
      * Iterates over children
      *
-     * @return \Iterator<string, ChildInterface>
+     * @return Iterator<string, ChildInterface>
      */
-    public function getIterator();
+    public function getIterator(): Iterator;
 }

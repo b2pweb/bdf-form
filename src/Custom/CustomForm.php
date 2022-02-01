@@ -12,6 +12,7 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\View\ElementViewInterface;
+use Iterator;
 
 /**
  * Utility class for simply create a custom form element
@@ -89,7 +90,7 @@ abstract class CustomForm implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->form()[$offset] = $value;
     }
@@ -97,7 +98,7 @@ abstract class CustomForm implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->form()[$offset]);
     }
@@ -105,7 +106,7 @@ abstract class CustomForm implements FormInterface
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return $this->form()->getIterator();
     }

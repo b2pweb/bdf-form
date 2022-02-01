@@ -3,6 +3,7 @@
 namespace Bdf\Form\Aggregate\Collection;
 
 use ArrayIterator;
+use Iterator;
 use IteratorAggregate;
 
 /**
@@ -160,9 +161,9 @@ final class Level implements IteratorAggregate
     /**
      * {@inheritdoc}
      *
-     * @return \Iterator<string, string[]>
+     * @return Iterator<string, string[]>
      */
-    public function getIterator()
+    public function getIterator(): Iterator
     {
         return new ArrayIterator($this->elements);
     }
