@@ -209,7 +209,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      * @psalm-suppress InvalidNullableReturnType
      * @psalm-suppress NullableReturnStatement
      */
-    protected function level($child)
+    private function level($child)
     {
         if (!is_string($child)) {
             $child = $child->name();
@@ -235,7 +235,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      * @param string $name
      * @param ChildInterface $child
      */
-    protected function addNamed($name, ChildInterface $child): void
+    private function addNamed($name, ChildInterface $child): void
     {
         $this->children[$name] = $child;
 
@@ -258,7 +258,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      *
      * @return string[]
      */
-    protected function extractDependencies(ChildInterface $child, Level $level)
+    private function extractDependencies(ChildInterface $child, Level $level)
     {
         $dependencies = [];
 
