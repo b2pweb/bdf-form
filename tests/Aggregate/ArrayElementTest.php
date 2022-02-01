@@ -340,6 +340,7 @@ class ArrayElementTest extends TestCase
     public function test_import_invalid_values($value)
     {
         $this->expectException(\TypeError::class);
+        $this->expectExceptionMessage('The import()\'ed value of a Bdf\Form\Aggregate\ArrayElement must be iterable or null');
         $element = new ArrayElement(new StringElement());
 
         $element->import($value);

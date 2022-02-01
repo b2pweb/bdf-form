@@ -4,6 +4,7 @@ namespace Bdf\Form\Leaf\View;
 
 use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\Leaf\StringElement;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,6 +27,19 @@ class SelectHtmlRendererTest extends TestCase
             '<select class="my-custom-style" name="foo" required><option value="foo">Foo</option><option value="bar" selected>Bar</option></select>',
             $renderer->render($view, ['class' => 'my-custom-style'])
         );
+    }
+
+    /**
+     *
+     */
+    public function test_render_without_choice_should_fail()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Choices must be provided for render a select element.');
+
+        $view = new SimpleElementView(StringElement::class, 'foo', 'bar', null, true, [], []);
+        $renderer = new SelectHtmlRenderer();
+        $renderer->render($view, ['class' => 'my-custom-style']);
     }
 
     /**

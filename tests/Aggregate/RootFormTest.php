@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Aggregate;
 
+use BadMethodCallException;
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Button\SubmitButton;
 use Bdf\Form\Button\View\ButtonView;
@@ -278,5 +279,25 @@ class RootFormTest extends TestCase
         $this->assertInstanceOf(SimpleElementView::class, $view['id']);
         $this->assertInstanceOf(ButtonView::class, $view['btn1']);
         $this->assertInstanceOf(ButtonView::class, $view['btn2']);
+    }
+
+    /**
+     * @return void
+     */
+    public function test_container()
+    {
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionMessage('Cannot wrap a root element into a container');
+
+        $registry = new Registry();
+
+        $form = new Form(new ChildrenCollection([
+            $registry->childBuilder(StringElement::class, 'firstName')->buildChild(),
+        ]));
+
+        $root = new RootForm($form);
+
+        $this->assertNull($root->container());
+        $root->setContainer(new Child('foo', new StringElement()));
     }
 }

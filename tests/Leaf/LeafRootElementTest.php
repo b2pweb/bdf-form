@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Leaf;
 
+use BadMethodCallException;
+use Bdf\Form\Child\Child;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use PHPUnit\Framework\TestCase;
@@ -109,6 +111,11 @@ class LeafRootElementTest extends TestCase
         $root = new LeafRootElement($element);
 
         $this->assertNull($root->container());
+
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionMessage('Cannot set a container on a root element');
+
+        $root->setContainer(new Child('foo', new StringElement()));
     }
 
     /**

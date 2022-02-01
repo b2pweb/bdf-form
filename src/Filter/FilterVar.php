@@ -64,10 +64,6 @@ final class FilterVar implements FilterInterface
             return filter_var($value, $this->filter, $this->flags);
         }
 
-        if (PHP_VERSION_ID < 80100) {
-            return filter_var($value, FILTER_SANITIZE_STRING, $this->flags);
-        }
-
         // FILTER_SANITIZE_STRING is deprecated in PHP 8.1
         $value = strip_tags($value);
 

@@ -68,4 +68,14 @@ class FilterVarTest extends TestCase
 
         $this->assertEquals('"Test"', $form['foo']->element()->value());
     }
+
+    /**
+     *
+     */
+    public function test_custom_filter()
+    {
+        $filter = new FilterVar(FILTER_SANITIZE_EMAIL);
+
+        $this->assertEquals('foo@example.com', $filter->filter('   ))foo@example.com', $this->createMock(ChildInterface::class), null));
+    }
 }

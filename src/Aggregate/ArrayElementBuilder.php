@@ -337,7 +337,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
         }
 
         if (is_string($options)) {
-            $options = ['message' => $options, 'multipleMessage' => $options];
+            $options = ['multipleMessage' => $options];
         }
 
         $options['callback'] = [$choices, 'values'];
