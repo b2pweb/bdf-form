@@ -30,7 +30,7 @@ trait FieldComparisonTrait
     /**
      * {@inheritdoc}
      */
-    public function getDefaultOption()
+    public function getDefaultOption(): ?string
     {
         return 'field';
     }
