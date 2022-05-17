@@ -15,6 +15,7 @@ use IteratorAggregate;
  *
  * @template T
  * @extends ElementInterface<T>
+ * @extends ArrayAccess<string, ChildInterface>
  */
 interface ChildAggregateInterface extends ElementInterface, ArrayAccess, IteratorAggregate
 {
@@ -37,13 +38,20 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
     public function offsetExists($offset): bool;
 
     /**
+     * {@inheritdoc}
+     *
      * Operation not allowed
+     *
+     * @param string $offset The child name
+     * @param ChildInterface $value
      *
      * @throws \BadMethodCallException
      */
     public function offsetSet($offset, $value): void;
 
     /**
+     * {@inheritdoc}
+     *
      * Operation not allowed
      *
      * @throws \BadMethodCallException
