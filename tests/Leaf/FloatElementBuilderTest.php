@@ -245,7 +245,7 @@ class FloatElementBuilderTest extends TestCase
      */
     public function test_roundingMode()
     {
-        $element = $this->builder->scale(1)->roundingMode(IntegerToLocalizedStringTransformer::ROUND_UP)->buildElement();
+        $element = $this->builder->scale(1)->roundingMode(\NumberFormatter::ROUND_UP)->buildElement();
 
         $this->assertTrue($element->submit('10.11')->valid());
         $this->assertSame(10.2, $element->value());

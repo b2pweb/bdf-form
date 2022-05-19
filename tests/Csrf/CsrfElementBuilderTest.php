@@ -3,6 +3,8 @@
 namespace Bdf\Form\Csrf;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
@@ -23,7 +25,18 @@ class CsrfElementBuilderTest extends TestCase
     protected function setUp(): void
     {
         $this->builder = new CsrfElementBuilder();
-        $this->builder->tokenManager(new CsrfTokenManager(null, new SessionTokenStorage(new Session(new MockArraySessionStorage()))));
+
+        if ((new \ReflectionClass(SessionTokenStorage::class))->getConstructor()->getParameters()[0]->getType()->getName() === RequestStack::class) {
+            $stack = new RequestStack();
+            $request = Request::create('http://127.0.0.1');
+            $request->setSession(new Session(new MockArraySessionStorage()));
+            $stack->push($request);
+            $storage = new SessionTokenStorage($stack);
+        } else {
+            $storage = new SessionTokenStorage(new Session(new MockArraySessionStorage()));
+        }
+
+        $this->builder->tokenManager(new CsrfTokenManager(null, $storage));
     }
 
     /**
