@@ -26,7 +26,9 @@ class CsrfElementBuilderTest extends TestCase
     {
         $this->builder = new CsrfElementBuilder();
 
-        if ((new \ReflectionClass(SessionTokenStorage::class))->getConstructor()->getParameters()[0]->getType()->getName() === RequestStack::class) {
+        $firstParameter = (new \ReflectionClass(SessionTokenStorage::class))->getConstructor()->getParameters()[0];
+
+        if ($firstParameter->getType() && $firstParameter->getType()->getName()  === RequestStack::class) {
             $stack = new RequestStack();
             $request = Request::create('http://127.0.0.1');
             $request->setSession(new Session(new MockArraySessionStorage()));
