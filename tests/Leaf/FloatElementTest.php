@@ -182,7 +182,7 @@ class FloatElementTest extends TestCase
 
         $element->submit(1.2)->valid();
         $this->assertSame(3.2, $element->value());
-        $this->assertEquals(1.2, $element->httpValue());
+        $this->assertEqualsWithDelta(1.2, $element->httpValue(), 0.00001);
     }
 
     /**
