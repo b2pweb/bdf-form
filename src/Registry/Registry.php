@@ -180,6 +180,10 @@ class Registry implements RegistryInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-param class-string<E> $element
+     * @psalm-template E as \Bdf\Form\ElementInterface
+     * @psalm-return ElementBuilderInterface<E>
      */
     public function elementBuilder(string $element): ElementBuilderInterface
     {
@@ -201,7 +205,7 @@ class Registry implements RegistryInterface
         }
 
         if (is_string($builderFactory)) {
-            /** @var class-string<ElementBuilderInterface> $builderFactory */
+            /** @var class-string<ElementBuilderInterface<E>> $builderFactory */
             return new $builderFactory($this, $element);
         }
 
