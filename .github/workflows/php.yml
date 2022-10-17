@@ -64,8 +64,8 @@ jobs:
 
     - name: Install Infection
       run: |
-        wget https://github.com/infection/infection/releases/download/0.26.6/infection.phar
-        wget https://github.com/infection/infection/releases/download/0.26.6/infection.phar.asc
+        wget https://github.com/infection/infection/releases/download/0.21.5/infection.phar
+        wget https://github.com/infection/infection/releases/download/0.21.5/infection.phar.asc
         chmod +x infection.phar
         gpg --recv-keys C6D76C329EBADE2FB9C458CFC5095986493B4AA0
         gpg --with-fingerprint --verify infection.phar.asc infection.phar
