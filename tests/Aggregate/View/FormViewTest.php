@@ -65,6 +65,7 @@ class FormViewTest extends TestCase
         $this->assertEquals($elements, iterator_to_array($view));
         $this->assertSame($buttons, $view->buttons());
         $this->assertSame($buttons['btn1'], $view->button('btn1'));
+        $this->assertNull($view->button('not_found'));
     }
 
     /**
@@ -211,6 +212,7 @@ class FormViewTest extends TestCase
                 'a' => new SimpleElementView('', 'bar[a]', 'bbb', null, false, [], null),
                 'b' => new SimpleElementView('', 'bar_b', 'ccc', null, false, [], null),
             ]),
+            'ignored' => $this->createMock(ElementViewInterface::class),
         ]);
 
         $this->assertSame([
