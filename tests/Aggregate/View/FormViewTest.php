@@ -4,6 +4,7 @@ namespace Bdf\Form\Aggregate\View;
 
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Button\View\ButtonView;
+use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\View\ElementViewInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -64,6 +65,7 @@ class FormViewTest extends TestCase
         $this->assertEquals($elements, iterator_to_array($view));
         $this->assertSame($buttons, $view->buttons());
         $this->assertSame($buttons['btn1'], $view->button('btn1'));
+        $this->assertNull($view->button('not_found'));
     }
 
     /**
@@ -200,5 +202,23 @@ class FormViewTest extends TestCase
         }));
 
         $this->assertNull($out);
+    }
+
+    public function test_value()
+    {
+        $view = new FormView(Form::class, null, [
+            'foo' => new SimpleElementView('', 'foo', 'aaa', null, false, [], null),
+            'bar' => new FormView('', null, [
+                'a' => new SimpleElementView('', 'bar[a]', 'bbb', null, false, [], null),
+                'b' => new SimpleElementView('', 'bar_b', 'ccc', null, false, [], null),
+            ]),
+            'ignored' => $this->createMock(ElementViewInterface::class),
+        ]);
+
+        $this->assertSame([
+            'foo' => 'aaa',
+            'bar[a]' => 'bbb',
+            'bar_b' => 'ccc',
+        ], $view->value());
     }
 }

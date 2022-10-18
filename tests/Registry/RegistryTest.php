@@ -18,6 +18,7 @@ use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
 use Bdf\Form\Custom\CustomFormBuilder;
 use Bdf\Form\ElementBuilderInterface;
+use Bdf\Form\ElementInterface;
 use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Filter\TrimFilter;
 use Bdf\Form\Leaf\AnyElement;
@@ -38,14 +39,13 @@ use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\LeafElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
-use Bdf\Form\Phone\FormattedPhoneElement;
-use Bdf\Form\Phone\FormattedPhoneElementBuilder;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerAggregate;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -158,6 +158,17 @@ class RegistryTest extends TestCase
     /**
      *
      */
+    public function test_transformer_invalid()
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Invalid view transformer given for input \'foo\'');
+
+        $this->registry->transformer('foo');
+    }
+
+    /**
+     *
+     */
     public function test_childBuilder()
     {
         $builder = $this->registry->childBuilder(StringElement::class, 'child');
@@ -200,6 +211,31 @@ class RegistryTest extends TestCase
 
         $this->assertSame($builder, $this->registry->elementBuilder(MyCustomTestElement::class));
         $this->assertSame($childBuilder, $this->registry->childBuilder(MyCustomTestElement::class, 'child'));
+    }
+
+    /**
+     *
+     */
+    public function test_elementBuilder_should_priorize_first_registered_element()
+    {
+        $builder1 = $this->createMock(ElementBuilderInterface::class);
+        $builder2 = $this->createMock(ElementBuilderInterface::class);
+
+        $this->registry->register(LeafElement::class, function () use($builder1) { return $builder1; });
+        $this->registry->register(ElementInterface::class, function () use($builder2) { return $builder2; });
+
+        $this->assertSame($builder1, $this->registry->elementBuilder(MyCustomTestElement::class));
+    }
+
+    /**
+     *
+     */
+    public function test_elementBuilder_not_found()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The element '.MyCustomTestElement::class.' is not registered');
+
+        $this->registry->elementBuilder(MyCustomTestElement::class);
     }
 
     /**

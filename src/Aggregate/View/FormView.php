@@ -3,11 +3,13 @@
 namespace Bdf\Form\Aggregate\View;
 
 use Bdf\Form\Aggregate\Form;
+use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Button\View\ButtonViewInterface;
 use Bdf\Form\View\ElementViewInterface;
 use Bdf\Form\View\ElementViewTrait;
 use Bdf\Form\View\FieldSetViewInterface;
 use Bdf\Form\View\FieldSetViewTrait;
+use Bdf\Form\View\FieldViewInterface;
 use IteratorAggregate;
 
 /**
@@ -109,6 +111,17 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
     }
 
     /**
+     * Get HTTP fields and values for all inputs
+     *
+     * @return array<string, mixed>
+     * @see FormInterface::httpValue() This value should be same as calling this method
+     */
+    public function value(): array
+    {
+        return self::extractValue($this);
+    }
+
+    /**
      * Change the form type
      * Used internally by CustomForm
      *
@@ -129,5 +142,20 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
     public function setButtons(array $buttons): void
     {
         $this->buttons = $buttons;
+    }
+
+    private static function extractValue(FieldSetViewInterface $aggregate): array
+    {
+        $values = [];
+
+        foreach ($aggregate as $child) {
+            if ($child instanceof FieldViewInterface) {
+                $values[$child->name()] = $child->value();
+            } elseif ($child instanceof FieldSetViewInterface) {
+                $values += self::extractValue($child);
+            }
+        }
+
+        return $values;
     }
 }

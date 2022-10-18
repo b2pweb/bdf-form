@@ -160,11 +160,13 @@ class FormErrorTest extends TestCase
 
         $printer = $this->createMock(FormErrorPrinterInterface::class);
 
-        $printer->expects($this->at(0))->method('global')->with('global error');
-        $printer->expects($this->at(1))->method('code')->with('MY_CODE');
-        $printer->expects($this->at(2))->method('child')->with('child', FormError::message('child error'));
-        $printer->expects($this->at(3))->method('child')->with('child2', FormError::message('child2 error'));
-        $printer->expects($this->at(4))->method('print')->willReturn('formatted');
+        $printer->expects($this->once())->method('global')->with('global error');
+        $printer->expects($this->once())->method('code')->with('MY_CODE');
+        $printer->expects($this->exactly(2))->method('child')->withConsecutive(
+            ['child', FormError::message('child error')],
+            ['child2', FormError::message('child2 error')]
+        );
+        $printer->expects($this->once())->method('print')->willReturn('formatted');
 
         $this->assertEquals('formatted', $error->print($printer));
     }
@@ -178,8 +180,8 @@ class FormErrorTest extends TestCase
 
         $printer = $this->createMock(FormErrorPrinterInterface::class);
 
-        $printer->expects($this->at(0))->method('global')->with('global error');
-        $printer->expects($this->at(1))->method('print')->willReturn('formatted');
+        $printer->expects($this->once())->method('global')->with('global error');
+        $printer->expects($this->once())->method('print')->willReturn('formatted');
         $printer->expects($this->never())->method('child');
 
         $this->assertEquals('formatted', $error->print($printer));
@@ -194,9 +196,9 @@ class FormErrorTest extends TestCase
 
         $printer = $this->createMock(FormErrorPrinterInterface::class);
 
-        $printer->expects($this->at(0))->method('field')->with(HttpFieldPath::named('foo'));
-        $printer->expects($this->at(1))->method('global')->with('global error');
-        $printer->expects($this->at(2))->method('print')->willReturn('formatted');
+        $printer->expects($this->once())->method('field')->with(HttpFieldPath::named('foo'));
+        $printer->expects($this->once())->method('global')->with('global error');
+        $printer->expects($this->once())->method('print')->willReturn('formatted');
 
         $this->assertEquals('formatted', $error->print($printer));
     }
@@ -210,9 +212,9 @@ class FormErrorTest extends TestCase
 
         $printer = $this->createMock(FormErrorPrinterInterface::class);
 
-        $printer->expects($this->at(0))->method('global')->with('global error');
-        $printer->expects($this->at(1))->method('code')->with('MY_CODE');
-        $printer->expects($this->at(2))->method('print')->willReturn('formatted');
+        $printer->expects($this->once())->method('global')->with('global error');
+        $printer->expects($this->once())->method('code')->with('MY_CODE');
+        $printer->expects($this->once())->method('print')->willReturn('formatted');
         $printer->expects($this->never())->method('child');
 
         $this->assertEquals('formatted', $error->print($printer));
@@ -231,9 +233,11 @@ class FormErrorTest extends TestCase
         $printer = $this->createMock(FormErrorPrinterInterface::class);
 
         $printer->expects($this->never())->method('global');
-        $printer->expects($this->at(0))->method('child')->with('child', FormError::message('child error'));
-        $printer->expects($this->at(1))->method('child')->with('child2', FormError::message('child2 error'));
-        $printer->expects($this->at(2))->method('print')->willReturn('formatted');
+        $printer->expects($this->exactly(2))->method('child')->withConsecutive(
+            ['child', FormError::message('child error')],
+            ['child2', FormError::message('child2 error')]
+        );
+        $printer->expects($this->once())->method('print')->willReturn('formatted');
 
         $this->assertEquals('formatted', $error->print($printer));
     }
