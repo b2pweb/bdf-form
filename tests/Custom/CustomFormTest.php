@@ -354,10 +354,10 @@ class CustomFormTest extends TestCase
         $person->firstName = 'John';
         $person->lastName = 'Doe';
         $person->birthDate = new \DateTime('1992-05-22');
-        $person->foo = 'bar';
+        $person->notDeclaredOnForm = 'foo';
 
         $this->assertSame($this->form, $this->form->attach($person));
-        $this->assertEquals('bar', $this->form->value()->foo);
+        $this->assertSame('foo', $this->form->value()->notDeclaredOnForm);
         $this->assertNull($this->form['firstName']->element()->value());
         $this->assertNull($this->form['lastName']->element()->value());
         $this->assertNull($this->form['birthDate']->element()->value());
@@ -505,4 +505,6 @@ class Person
     public $firstName;
     public $lastName;
     public $birthDate;
+
+    public $notDeclaredOnForm;
 }

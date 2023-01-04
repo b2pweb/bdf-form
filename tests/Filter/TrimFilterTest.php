@@ -28,7 +28,7 @@ class TrimFilterTest extends TestCase
     {
         $filter = new TrimFilter();
 
-        $this->assertEquals(utf8_decode('é'), $filter->filter(utf8_decode(' é '), $this->createMock(ChildInterface::class), null));
+        $this->assertEquals(mb_convert_encoding('é', 'ISO-8859-1'), $filter->filter(mb_convert_encoding(' é ', 'ISO-8859-1'), $this->createMock(ChildInterface::class), null));
     }
 
     public function test_instance()
