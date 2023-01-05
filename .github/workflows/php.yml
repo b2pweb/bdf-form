@@ -26,7 +26,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
-        extensions: json
+        extensions: json, intl
         ini-values: date.timezone=Europe/Paris
     - name: Check PHP Version
       run: php -v
