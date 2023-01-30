@@ -3,9 +3,11 @@
 namespace Bdf\Form\Custom;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Leaf\IntegerElement;
+use Bdf\Form\MyCustomForm;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -134,6 +136,51 @@ class CustomFormBuilderTest extends TestCase
         $this->assertArrayHasKey('value', $form);
         $this->assertInstanceOf(IntegerElement::class, $form['value']->element());
     }
+
+    /**
+     *
+     */
+    public function test_preConfigure()
+    {
+        $builder = new CustomFormBuilder(MyCustomTestForm::class);
+
+        $builder->preConfigure(function (MyCustomTestForm $form) {
+            $form->setOtherField(true);
+        });
+
+        $builder->preConfigure(function (MyCustomTestForm $form, FormBuilderInterface $builder) {
+            $builder->integer('azerty');
+        });
+
+        $form = $builder->buildElement();
+        $this->assertInstanceOf(MyCustomTestForm::class, $form);
+        $this->assertArrayHasKey('foo', $form);
+        $this->assertArrayHasKey('other', $form);
+        $this->assertArrayHasKey('azerty', $form);
+    }
+
+    /**
+     *
+     */
+    public function test_postConfigure()
+    {
+        $builder = new CustomFormBuilder(MyCustomTestForm::class);
+
+        $builder->postConfigure(function (MyCustomTestForm $form, FormInterface $inner) use(&$called) {
+            $this->assertArrayHasKey('foo', $form);
+            $this->assertArrayNotHasKey('other', $form);
+
+            $this->assertArrayHasKey('foo', $inner);
+            $this->assertArrayNotHasKey('other', $inner);
+
+            $called = true;
+        });
+
+        $form = $builder->buildElement();
+        $form->value(); // Trigger form configuration
+        $this->assertInstanceOf(MyCustomTestForm::class, $form);
+        $this->assertTrue($called);
+    }
 }
 
 class MyCustomTestForm extends CustomForm
@@ -147,6 +194,11 @@ class MyCustomTestForm extends CustomForm
     {
         parent::__construct($builder);
 
+        $this->otherField = $otherField;
+    }
+
+    public function setOtherField(bool $otherField): void
+    {
         $this->otherField = $otherField;
     }
 

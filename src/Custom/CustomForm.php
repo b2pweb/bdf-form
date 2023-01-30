@@ -60,6 +60,15 @@ abstract class CustomForm implements FormInterface
      */
     private $form;
 
+    /**
+     * @var list<callable(static, FormBuilderInterface): void>
+     */
+    private $preConfigureHooks = [];
+
+    /**
+     * @var list<callable(static, FormInterface<T>): void>
+     */
+    private $postConfigureHooks = [];
 
     /**
      * CustomForm constructor.
@@ -263,6 +272,28 @@ abstract class CustomForm implements FormInterface
     }
 
     /**
+     * Define hooks called before the form is built
+     * @param list<callable(static, FormBuilderInterface):void> $hooks
+     * @return void
+     * @internal This method should be called by the {@see CustomFormBuilder}
+     */
+    final public function setPreConfigureHooks(array $hooks): void
+    {
+        $this->preConfigureHooks = $hooks;
+    }
+
+    /**
+     * Define hooks hook called after the form is built
+     * @param list<callable(static, FormInterface<T>):void> $hooks
+     * @return void
+     * @internal This method should be called by the {@see CustomFormBuilder}
+     */
+    final public function setPostConfigureHooks(array $hooks): void
+    {
+        $this->postConfigureHooks = $hooks;
+    }
+
+    /**
      * Get (or build) the inner form
      *
      * @return FormInterface<T>
@@ -273,11 +304,21 @@ abstract class CustomForm implements FormInterface
             return $this->form;
         }
 
+        /** @var static $this Psalm cannot infer this type */
+
+        foreach ($this->preConfigureHooks as $hook) {
+            $hook($this, $this->builder);
+        }
+
         /** @psalm-suppress ArgumentTypeCoercion */
         $this->configure($this->builder);
 
         $form = $this->form = $this->builder->buildElement();
         $this->postConfigure($form);
+
+        foreach ($this->postConfigureHooks as $hook) {
+            $hook($this, $form);
+        }
 
         return $form;
     }
