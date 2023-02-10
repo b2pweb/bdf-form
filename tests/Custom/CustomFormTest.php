@@ -3,6 +3,8 @@
 namespace Bdf\Form\Custom;
 
 use Bdf\Form\Aggregate\ArrayElement;
+use Bdf\Form\Aggregate\Collection\ChildrenCollection;
+use Bdf\Form\Aggregate\FooForm;
 use Bdf\Form\Aggregate\Form;
 use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
@@ -10,11 +12,14 @@ use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Aggregate\RootForm;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
+use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Error\FormErrorPrinterInterface;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Util\FieldFinderTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\LessThan;
 
@@ -461,6 +466,47 @@ class CustomFormTest extends TestCase
         $this->assertInstanceOf(Form::class, $form->param);
         $this->assertInstanceOf(StringElement::class, $form->param['foo']->element());
     }
+
+    public function test_sibling_into_an_embedded_custom_form()
+    {
+        $form = new class extends CustomForm {
+            protected function configure(FormBuilderInterface $builder): void
+            {
+                $builder->add('foo', EmbeddedWithFieldFinderForm::class);
+            }
+        };
+
+        $form->submit(['foo' => ['bar' => 'abc', 'baz' => ['a', 'b', 'c']]]);
+
+        $this->assertTrue($form->valid());
+
+        $form->submit(['foo' => ['bar' => 'abcd', 'baz' => ['a', 'b', 'c']]]);
+        $this->assertFalse($form->valid());
+    }
+
+    public function test_setContainer_should_rebuild_form()
+    {
+        $form = new class extends CustomForm {
+            public $value = 'foo';
+
+            protected function configure(FormBuilderInterface $builder): void
+            {
+                $builder->string('foo')->setter(function () { return $this->value; });
+            }
+        };
+
+        $form->value = 'bar';
+        $this->assertEquals('bar', $form->submit([])->value()['foo']);
+
+        $parent = new Form(new ChildrenCollection());
+        $child = new Child('a', $form);
+        $child->setParent($parent);
+
+        $newForm = $form->setContainer($child);
+        $newForm->value = 'baz';
+        $this->assertEquals('bar', $form->submit([])->value()['foo']);
+        $this->assertEquals('baz', $newForm->submit([])->value()['foo']);
+    }
 }
 
 /**
@@ -507,4 +553,23 @@ class Person
     public $birthDate;
 
     public $notDeclaredOnForm;
+}
+
+class EmbeddedWithFieldFinderForm extends CustomForm
+{
+    use FieldFinderTrait;
+
+    protected function configure(FormBuilderInterface $builder): void
+    {
+        $builder
+            ->array('baz')
+            ->depends('bar')
+            ->arrayConstraint(function ($value) {
+                $bar = $this->findFieldValue('bar');
+
+                return count($value) === strlen($bar);
+            })
+        ;
+        $builder->string('bar');
+    }
 }
