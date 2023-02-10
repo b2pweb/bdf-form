@@ -325,8 +325,8 @@ abstract class CustomForm implements FormInterface
 
         $form = $builder->buildElement();
 
-        if ($this->container) {
-            $form = $form->setContainer($this->container->get());
+        if ($this->container && $container = $this->container->get()) {
+            $form = $form->setContainer($container);
         }
 
         $this->form = $form;
