@@ -1013,11 +1013,13 @@ class FormTest extends TestCase
             'firstName' => null,
             'lastName' => null,
         ], $this->form->value());
+        $this->assertSame(42, $this->form['id']->element()->value());
 
         $this->form->submit([]);
         $this->assertTrue($this->form->valid());
         $this->assertTrue($this->form->error()->empty());
         $this->assertNull($this->form->value());
+        $this->assertNull($this->form['id']->element()->value());
 
         $this->assertTrue($this->form->submit(null)->valid());
         $this->assertTrue($this->form->submit('')->valid());
@@ -1051,11 +1053,13 @@ class FormTest extends TestCase
             'firstName' => null,
             'lastName' => null,
         ], $this->form->value());
+        $this->assertSame(42, $this->form['id']->element()->value());
 
         $this->form->patch([]);
         $this->assertTrue($this->form->valid());
         $this->assertTrue($this->form->error()->empty());
         $this->assertNull($this->form->value());
+        $this->assertNull($this->form['id']->element()->value());
 
         $this->assertTrue($this->form->patch(null)->valid());
         $this->assertTrue($this->form->patch('')->valid());
