@@ -91,6 +91,11 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      */
     private $generator;
 
+    /**
+     * @var bool
+     */
+    private $optional = false;
+
 
     /**
      * FormBuilder constructor.
@@ -356,6 +361,16 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
+    public function optional(bool $flag = true): FormBuilderInterface
+    {
+        $this->optional = $flag;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     final protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
     {
         $children = new ChildrenCollection();
@@ -364,7 +379,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
             $children->add($child->buildChild());
         }
 
-        $form = new Form($children, $validator, $transformer, $this->generator);
+        $form = new Form($children, $validator, $transformer, $this->generator, $this->optional);
 
         // The root form is configured by the builder : set into the form
         if ($this->hasRootFormConfiguration()) {
