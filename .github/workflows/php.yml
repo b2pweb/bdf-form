@@ -103,6 +103,9 @@ jobs:
         extensions: json
         ini-values: date.timezone=Europe/Paris
 
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
     - name: Run test coverage
       run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
 
