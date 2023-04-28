@@ -33,6 +33,16 @@ class BooleanElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_buildElement_booleanString()
+    {
+        $element = $this->builder->booleanString()->buildElement();
+
+        $this->assertInstanceOf(BooleanStringElement::class, $element);
+    }
+
+    /**
+     *
+     */
     public function test_satisfy()
     {
         $element = $this->builder->satisfy(new NotBlank())->buildElement();
@@ -96,6 +106,20 @@ class BooleanElementBuilderTest extends TestCase
 
         $element->import(false);
         $this->assertNull($element->httpValue());
+    }
+
+    /**
+     *
+     */
+    public function test_httpValue_is_ignored_with_booleanString()
+    {
+        $element = $this->builder->httpValue('ok')->booleanString()->buildElement();
+
+        $element->import(true);
+        $this->assertSame('true', $element->httpValue());
+
+        $element->import(false);
+        $this->assertSame('false', $element->httpValue());
     }
 
     /**
