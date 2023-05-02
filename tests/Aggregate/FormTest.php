@@ -986,6 +986,86 @@ class FormTest extends TestCase
         $this->assertEquals('name[first]', $errors->children()['name']->children()['first']->field());
         $this->assertEquals('name[last]', $errors->children()['name']->children()['last']->field());
     }
+
+    public function test_optional_submit()
+    {
+        $this->form = new Form(new ChildrenCollection([
+            $this->registry->childBuilder(StringElement::class, 'firstName')->required()->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->required()->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->required()->getter()->setter()->buildChild(),
+        ]), null, null, null, true);
+
+        $this->form->submit([]);
+
+        $this->assertTrue($this->form->valid());
+        $this->assertTrue($this->form->error()->empty());
+        $this->assertNull($this->form->value());
+
+        $this->form->submit(['id' => 42]);
+
+        $this->assertFalse($this->form->valid());
+        $this->assertEquals([
+            'firstName' => 'This value should not be blank.',
+            'lastName' => 'This value should not be blank.',
+        ], $this->form->error()->toArray());
+        $this->assertEquals([
+            'id' => 42,
+            'firstName' => null,
+            'lastName' => null,
+        ], $this->form->value());
+        $this->assertSame(42, $this->form['id']->element()->value());
+
+        $this->form->submit([]);
+        $this->assertTrue($this->form->valid());
+        $this->assertTrue($this->form->error()->empty());
+        $this->assertNull($this->form->value());
+        $this->assertNull($this->form['id']->element()->value());
+
+        $this->assertTrue($this->form->submit(null)->valid());
+        $this->assertTrue($this->form->submit('')->valid());
+        $this->assertFalse($this->form->submit(0)->valid());
+        $this->assertFalse($this->form->submit(false)->valid());
+    }
+
+    public function test_optional_patch()
+    {
+        $this->form = new Form(new ChildrenCollection([
+            $this->registry->childBuilder(StringElement::class, 'firstName')->required()->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->required()->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(IntegerElement::class, 'id')->required()->getter()->setter()->buildChild(),
+        ]), null, null, null, true);
+
+        $this->form->patch([]);
+
+        $this->assertTrue($this->form->valid());
+        $this->assertTrue($this->form->error()->empty());
+        $this->assertNull($this->form->value());
+
+        $this->form->patch(['id' => 42]);
+
+        $this->assertFalse($this->form->valid());
+        $this->assertEquals([
+            'firstName' => 'This value should not be blank.',
+            'lastName' => 'This value should not be blank.',
+        ], $this->form->error()->toArray());
+        $this->assertEquals([
+            'id' => 42,
+            'firstName' => null,
+            'lastName' => null,
+        ], $this->form->value());
+        $this->assertSame(42, $this->form['id']->element()->value());
+
+        $this->form->patch([]);
+        $this->assertTrue($this->form->valid());
+        $this->assertTrue($this->form->error()->empty());
+        $this->assertNull($this->form->value());
+        $this->assertNull($this->form['id']->element()->value());
+
+        $this->assertTrue($this->form->patch(null)->valid());
+        $this->assertTrue($this->form->patch('')->valid());
+        $this->assertFalse($this->form->patch(0)->valid());
+        $this->assertFalse($this->form->patch(false)->valid());
+    }
 }
 
 class Person

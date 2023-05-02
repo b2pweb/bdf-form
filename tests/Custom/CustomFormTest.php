@@ -461,6 +461,31 @@ class CustomFormTest extends TestCase
         $this->assertInstanceOf(Form::class, $form->param);
         $this->assertInstanceOf(StringElement::class, $form->param['foo']->element());
     }
+
+    public function test_optional_embedded()
+    {
+        $form = new class extends CustomForm {
+            public $param;
+
+            protected function configure(FormBuilderInterface $builder): void
+            {
+                $builder->add('person', PersonForm::class)
+                    ->setter()
+                    ->optional()
+                ;
+            }
+        };
+
+        $this->assertTrue($form->submit([])->valid());
+        $this->assertTrue($form->submit(['person' => []])->valid());
+        $this->assertSame(['person' => null], $form->value());
+
+        $this->assertArrayHasKey('firstName', $form['person']->element());
+        $this->assertArrayHasKey('lastName', $form['person']->element());
+        $this->assertArrayHasKey('birthDate', $form['person']->element());
+
+        $this->assertFalse($form->submit(['person' => ['firstName' => 'John']])->valid());
+    }
 }
 
 /**
