@@ -298,6 +298,36 @@ class FormBuilderTest extends TestCase
         $element->submit([]);
         $this->assertEquals('This collection should contain 2 elements or more.', $element->error()->global());
     }
+
+    public function test_optional_embedded()
+    {
+        $this->builder
+            ->embedded('foo', function ($builder) {
+                $builder->string('bar')->required();
+                $builder->string('baz')->required();
+            })
+            ->optional()
+        ;
+
+        $form = $this->builder->buildElement();
+
+        $this->assertTrue($form->submit([])->valid());
+        $this->assertTrue($form->submit(['foo' => ['bar' => 'bar', 'baz' => 'baz']])->valid());
+        $this->assertFalse($form->submit(['foo' => ['bar' => 'bar']])->valid());
+    }
+
+    public function test_optional_self()
+    {
+        $this->builder->string('bar')->required();
+        $this->builder->string('baz')->required();
+        $this->builder->optional();
+
+        $form = $this->builder->buildElement();
+
+        $this->assertTrue($form->submit([])->valid());
+        $this->assertTrue($form->submit(['bar' => 'bar', 'baz' => 'baz'])->valid());
+        $this->assertFalse($form->submit(['bar' => 'bar'])->valid());
+    }
 }
 
 class GenerateTestEntity

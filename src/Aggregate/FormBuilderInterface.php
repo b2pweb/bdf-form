@@ -286,6 +286,29 @@ interface FormBuilderInterface extends ElementBuilderInterface
     public function generates($entity): FormBuilderInterface;
 
     /**
+     * Mark the form as optional
+     * An optional form will not be validated if the form is empty, and its value will be null
+     *
+     * <code>
+     * $builder->string('firstName')->required()->setter();
+     * $builder->string('lastName')->required()->setter();
+     * $builder->optional();
+     *
+     * $form = $builder->buildElement();
+     *
+     * $form->submit([])->valid(); // true
+     * $form->value(); // null
+     *
+     * $form->submit(['firstName' => 'John'])->valid(); // false : lastName is required
+     * </code>
+     *
+     * @param bool $flag true to mark the form as optional, false otherwise
+     *
+     * @return $this
+     */
+    public function optional(bool $flag = true): FormBuilderInterface;
+
+    /**
      * {@inheritdoc}
      *
      * @return FormInterface

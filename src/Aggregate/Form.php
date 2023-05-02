@@ -76,6 +76,14 @@ final class Form implements FormInterface
     private $generator;
 
     /**
+     * Does the form is optional ?
+     * An optional form will not be validated if the form is empty, and its value will be null
+     *
+     * @var bool
+     */
+    private $optional;
+
+    /**
      * @var RootElementInterface|null
      */
     private $root;
@@ -99,14 +107,23 @@ final class Form implements FormInterface
     private $value;
 
     /**
+     * Does the form has been submitted ?
+     * In case of optional form, the form is not submitted if the value is empty
+     *
+     * @var bool
+     */
+    private $submitted = false;
+
+    /**
      * Form constructor.
      *
      * @param ChildrenCollectionInterface $children
      * @param ValueValidatorInterface<T>|null $validator
      * @param TransformerInterface|null $transformer
      * @param ValueGeneratorInterface<T>|null $generator
+     * @param bool $optional
      */
-    public function __construct(ChildrenCollectionInterface $children, ?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ValueGeneratorInterface $generator = null)
+    public function __construct(ChildrenCollectionInterface $children, ?ValueValidatorInterface $validator = null, ?TransformerInterface $transformer = null, ?ValueGeneratorInterface $generator = null, bool $optional = false)
     {
         $this->children = $children->duplicate($this);
         $this->validator = $validator ?? ConstraintValueValidator::empty();
@@ -114,6 +131,7 @@ final class Form implements FormInterface
         $this->error = FormError::null();
         /** @var ValueGeneratorInterface<T> */
         $this->generator = $generator ?: new ValueGenerator();
+        $this->optional = $optional;
     }
 
     /**
@@ -124,9 +142,14 @@ final class Form implements FormInterface
         $this->valid = true;
         $this->value = null;
 
+        if ($this->handleOptional($data)) {
+            return $this;
+        }
+
         $data = $this->transformHttpValue($data);
 
         $this->submitToChildrenAndValidate($data, 'submit');
+        $this->submitted = true;
 
         return $this;
     }
@@ -139,11 +162,16 @@ final class Form implements FormInterface
         $this->valid = true;
         $this->value = null;
 
+        if ($this->handleOptional($data)) {
+            return $this;
+        }
+
         if ($data !== null) {
             $data = $this->transformHttpValue($data);
         }
 
         $this->submitToChildrenAndValidate($data, 'patch');
+        $this->submitted = true;
 
         return $this;
     }
@@ -194,6 +222,10 @@ final class Form implements FormInterface
     {
         if ($this->value !== null) {
             return $this->value;
+        }
+
+        if (!$this->submitted && $this->optional) {
+            return null;
         }
 
         $this->value = $this->generator->generate($this);
@@ -397,6 +429,31 @@ final class Form implements FormInterface
             $this->error = FormError::aggregate($errors);
 
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Handle the optional case
+     * If the form is optional and the data is empty, the form will be considered as not submitted and validation will be ignored
+     *
+     * @param mixed $data Submitted HTTP data
+     *
+     * @return bool true if the form is optional and not submitted, false otherwise
+     */
+    private function handleOptional($data): bool
+    {
+        if (!$this->optional || $data !== null && $data !== [] && $data !== '') {
+            return false;
+        }
+
+        $this->submitted = false;
+        $this->error = FormError::null();
+
+        // Reset children value
+        foreach ($this->children as $child) {
+            $child->element()->import(null);
         }
 
         return true;
