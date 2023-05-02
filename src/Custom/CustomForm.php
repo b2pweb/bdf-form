@@ -13,6 +13,7 @@ use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\View\ElementViewInterface;
 use Iterator;
+use WeakReference;
 
 /**
  * Utility class for simply create a custom form element
@@ -59,6 +60,11 @@ abstract class CustomForm implements FormInterface
      * @var FormInterface<T>|null
      */
     private $form;
+
+    /**
+     * @var WeakReference<ChildInterface>|null
+     */
+    private $container;
 
     /**
      * @var list<callable(static, FormBuilderInterface): void>
@@ -187,7 +193,7 @@ abstract class CustomForm implements FormInterface
      */
     public function container(): ?ChildInterface
     {
-        return $this->form()->container();
+        return $this->container ? $this->container->get() : null;
     }
 
     /**
@@ -196,7 +202,8 @@ abstract class CustomForm implements FormInterface
     public function setContainer(ChildInterface $container): ElementInterface
     {
         $form = clone $this;
-        $form->form = $this->form()->setContainer($container);
+        $form->container = WeakReference::create($container);
+        $form->form = null; // Reset the form to ensure that $this references will be regenerated
 
         return $form;
     }
@@ -304,16 +311,26 @@ abstract class CustomForm implements FormInterface
             return $this->form;
         }
 
+        // Form can be rebuilt, so we need to clone the builder to avoid side effects
+        $builder = clone $this->builder;
+
         /** @var static $this Psalm cannot infer this type */
 
         foreach ($this->preConfigureHooks as $hook) {
-            $hook($this, $this->builder);
+            $hook($this, $builder);
         }
 
         /** @psalm-suppress ArgumentTypeCoercion */
-        $this->configure($this->builder);
+        $this->configure($builder);
 
-        $form = $this->form = $this->builder->buildElement();
+        $form = $builder->buildElement();
+
+        if ($this->container && $container = $this->container->get()) {
+            $form = $form->setContainer($container);
+        }
+
+        $this->form = $form;
+
         $this->postConfigure($form);
 
         foreach ($this->postConfigureHooks as $hook) {
