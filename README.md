@@ -3,7 +3,7 @@
 Library for handle form, and request validation.
 
 [![build](https://github.com/b2pweb/bdf-form/actions/workflows/php.yml/badge.svg)](https://github.com/b2pweb/bdf-form/actions/workflows/php.yml)
-[![codecov](https://codecov.io/github/b2pweb/bdf-form/branch/master/graph/badge.svg?token=VOFSPEWYKX)](https://app.codecov.io/github/b2pweb/bdf-form)
+[![codecov](https://codecov.io/github/b2pweb/bdf-form/branch/1.4/graph/badge.svg?token=VOFSPEWYKX)](https://app.codecov.io/github/b2pweb/bdf-form)
 [![Packagist Version](https://img.shields.io/packagist/v/b2pweb/bdf-form.svg)](https://packagist.org/packages/b2pweb/bdf-form)
 [![Total Downloads](https://img.shields.io/packagist/dt/b2pweb/bdf-form.svg)](https://packagist.org/packages/b2pweb/bdf-form)
 [![Type Coverage](https://shepherd.dev/github/b2pweb/bdf-form/coverage.svg)](https://shepherd.dev/github/b2pweb/bdf-form)
