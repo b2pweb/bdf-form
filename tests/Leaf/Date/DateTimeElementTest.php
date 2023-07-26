@@ -120,6 +120,22 @@ class DateTimeElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_empty()
+    {
+        $element = new DateTimeElement();
+
+        $this->assertTrue($element->submit('')->valid());
+        $this->assertNull($element->value());
+        $this->assertTrue($element->error()->empty());
+
+        $this->assertTrue($element->submit([])->valid());
+        $this->assertNull($element->value());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
     public function test_submit_with_constraint()
     {
         $element = new DateTimeElement(new ConstraintValueValidator([new LessThan(new DateTime('2000-01-05 15:00:00'))]));
