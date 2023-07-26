@@ -20,6 +20,9 @@ class BooleanStringElement extends AbstractBooleanElement
 {
     /**
      * {@inheritdoc}
+     *
+     * @return scalar|null
+     * @psalm-suppress ImplementedReturnTypeMismatch
      */
     protected function sanitize($rawValue)
     {
