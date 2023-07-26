@@ -92,6 +92,22 @@ class BooleanStringElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_empty()
+    {
+        $element = new BooleanStringElement();
+
+        $this->assertTrue($element->submit('')->valid());
+        $this->assertNull($element->value());
+        $this->assertTrue($element->error()->empty());
+
+        $this->assertTrue($element->submit([])->valid());
+        $this->assertNull($element->value());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
     public function test_submit_with_constraint()
     {
         $element = new BooleanStringElement(new ConstraintValueValidator([new NotBlank()]));
