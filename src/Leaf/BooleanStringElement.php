@@ -20,12 +20,21 @@ class BooleanStringElement extends AbstractBooleanElement
 {
     /**
      * {@inheritdoc}
+     */
+    protected function sanitize($rawValue)
+    {
+        // Does not cast to string, to allow boolean value
+        return is_scalar($rawValue) ? $rawValue : null;
+    }
+
+    /**
+     * {@inheritdoc}
      *
      * @return bool|null
      */
     protected function toPhp($httpValue): ?bool
     {
-        if ($httpValue === null) {
+        if ($httpValue === null || $httpValue === '') {
             return null;
         }
 
@@ -34,7 +43,7 @@ class BooleanStringElement extends AbstractBooleanElement
         }
 
         /** @var bool|null */
-        return filter_var($httpValue, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        return filter_var((string) $httpValue, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
 
     /**

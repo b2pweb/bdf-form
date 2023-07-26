@@ -89,7 +89,7 @@ final class DateTimeElement extends LeafElement
      */
     protected function toPhp($httpValue): ?DateTimeInterface
     {
-        if ($httpValue === null) {
+        if ($httpValue === null || $httpValue === '') {
             return null;
         }
 
