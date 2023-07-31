@@ -14,6 +14,7 @@ use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Csrf\CsrfValueValidator;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\Error\FormErrorPrinterInterface;
@@ -533,6 +534,26 @@ class CustomFormTest extends TestCase
         $this->assertArrayHasKey('birthDate', $form['person']->element());
 
         $this->assertFalse($form->submit(['person' => ['firstName' => 'John']])->valid());
+    }
+
+    public function test_disableCsrfValidation()
+    {
+        $form = new class extends CustomForm {
+            public function configure(FormBuilderInterface $builder): void
+            {
+                $builder->string('foo')->getter()->setter();
+                $builder->csrf();
+            }
+        };
+
+        $form->submit(['foo' => 'bar']);
+        $this->assertFalse($form->valid());
+        $this->assertEquals(['_token' => 'The CSRF token is invalid.'], $form->error()->toArray());
+
+        $form->disableCsrfValidation();
+
+        $form->submit(['foo' => 'bar']);
+        $this->assertTrue($form->valid());
     }
 }
 

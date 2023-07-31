@@ -4,8 +4,10 @@ namespace Bdf\Form\Csrf;
 
 use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
+use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Child\Child;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Custom\CustomForm;
 use Bdf\Form\Leaf\LeafRootElement;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -232,5 +234,25 @@ class CsrfElementTest extends TestCase
         $this->assertEquals('The CSRF token is invalid.', $error->global());
         $this->assertEquals('INVALID_TOKEN_ERROR', $error->code());
         $this->assertEmpty($error->children());
+    }
+
+    public function test_disable_validation_flag()
+    {
+        $form = new class extends CustomForm {
+            public function configure(FormBuilderInterface $builder): void
+            {
+                $builder->string('foo')->getter()->setter();
+                $builder->csrf();
+            }
+        };
+
+        $form->submit(['foo' => 'bar']);
+        $this->assertFalse($form->valid());
+        $this->assertEquals(['_token' => 'The CSRF token is invalid.'], $form->error()->toArray());
+
+        $form->root()->set(CsrfValueValidator::FLAG_DISABLE_CSRF_VALIDATION, true);
+
+        $form->submit(['foo' => 'bar']);
+        $this->assertTrue($form->valid());
     }
 }
