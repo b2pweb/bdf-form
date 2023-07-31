@@ -9,6 +9,7 @@ use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
+use Bdf\Form\Util\RootFlagsTrait;
 use Bdf\Form\View\ElementViewInterface;
 use Iterator;
 use OutOfBoundsException;
@@ -51,6 +52,8 @@ use WeakReference;
  */
 final class RootForm implements RootElementInterface, ChildAggregateInterface
 {
+    use RootFlagsTrait;
+
     /**
      * @var WeakReference<Form>
      */

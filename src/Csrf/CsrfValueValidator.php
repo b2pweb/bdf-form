@@ -4,9 +4,12 @@ namespace Bdf\Form\Csrf;
 
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
+use Bdf\Form\RootElementInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Exception;
+
+use function method_exists;
 
 /**
  * Class CsrfValueValidator
@@ -15,6 +18,17 @@ use Exception;
  */
 final class CsrfValueValidator implements ValueValidatorInterface
 {
+    /**
+     * Flag for disable the CSRF validation
+     *
+     * Use this flag on the root form to disable the CSRF validation
+     * Note: The CSRF token will be still generated, and the element will be still present on the form
+     *
+     * @see RootElementInterface::set() For define the flag
+     * @see RootElementInterface::is() For check the flag
+     */
+    public const FLAG_DISABLE_CSRF_VALIDATION = 'disable_csrf_validation';
+
     /**
      * Invalidate the token after verification ?
      *
@@ -49,6 +63,12 @@ final class CsrfValueValidator implements ValueValidatorInterface
      */
     public function validate($value, ElementInterface $element): FormError
     {
+        $root = $element->root();
+
+        if (method_exists($root, 'is') && $root->is(self::FLAG_DISABLE_CSRF_VALIDATION)) {
+            return FormError::null();
+        }
+
         try {
             return (new ConstraintValueValidator([new CsrfConstraint($this->options + ['manager' => $element->getTokenManager()])]))->validate($value, $element);
         } finally {

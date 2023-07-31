@@ -11,6 +11,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * This element contains all the HTTP fields
  *
  * @see ElementInterface::root() To get the root instance
+ *
+ * @method void set(string $flag, mixed $value) Define a flag value
+ * @method bool is(string $flag) Check if a flag is defined
  */
 interface RootElementInterface extends ElementInterface
 {
@@ -75,9 +78,29 @@ interface RootElementInterface extends ElementInterface
     public function getPropertyAccessor(): PropertyAccessorInterface;
 
     /**
-     * Get the constraint groups related the the button
+     * Get the constraint groups related to the button
      *
      * @return string[]
      */
     public function constraintGroups(): array;
+
+    /**
+     * Set a flag value
+     *
+     * @param string $flag Flag name
+     * @param bool $value Flag value
+     *
+     * @return void
+     */
+    //public function set(string $flag, bool $value): void;
+
+    /**
+     * Check a flag value
+     * If a flag is not defined, it returns false
+     *
+     * @param string $flag Flag name
+     *
+     * @return bool Flag value
+     */
+    //public function is(string $flag): bool;
 }

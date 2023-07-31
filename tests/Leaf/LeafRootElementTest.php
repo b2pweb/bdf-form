@@ -184,4 +184,24 @@ class LeafRootElementTest extends TestCase
 
         $this->assertEquals([Constraint::DEFAULT_GROUP], $root->constraintGroups());
     }
+
+    /**
+     *
+     */
+    public function test_flags()
+    {
+        $element = $this->createMock(ElementInterface::class);
+        $root = new LeafRootElement($element);
+
+        $this->assertFalse($root->is('foo'));
+        $this->assertFalse($root->is('bar'));
+
+        $root->set('foo', true);
+        $this->assertTrue($root->is('foo'));
+        $this->assertFalse($root->is('bar'));
+
+        $root->set('foo', false);
+        $this->assertFalse($root->is('foo'));
+        $this->assertFalse($root->is('bar'));
+    }
 }

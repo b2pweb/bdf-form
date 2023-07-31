@@ -300,4 +300,23 @@ class RootFormTest extends TestCase
         $this->assertNull($root->container());
         $root->setContainer(new Child('foo', new StringElement()));
     }
+
+    /**
+     *
+     */
+    public function test_flags()
+    {
+        $form = new RootForm(new Form(new ChildrenCollection()));
+
+        $this->assertFalse($form->is('foo'));
+        $this->assertFalse($form->is('bar'));
+
+        $form->set('foo', true);
+        $this->assertTrue($form->is('foo'));
+        $this->assertFalse($form->is('bar'));
+
+        $form->set('foo', false);
+        $this->assertFalse($form->is('foo'));
+        $this->assertFalse($form->is('bar'));
+    }
 }

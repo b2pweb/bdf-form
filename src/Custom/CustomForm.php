@@ -8,12 +8,15 @@ use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Bdf\Form\Csrf\CsrfValueValidator;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\View\ElementViewInterface;
 use Iterator;
 use WeakReference;
+
+use function method_exists;
 
 /**
  * Utility class for simply create a custom form element
@@ -298,6 +301,23 @@ abstract class CustomForm implements FormInterface
     final public function setPostConfigureHooks(array $hooks): void
     {
         $this->postConfigureHooks = $hooks;
+    }
+
+    /**
+     * Disable the CSRF validation
+     * The CSRF token will be still generated, and the element will be still present on the form
+     *
+     * Note: the CSRF will be disabled on the root form, so all the sub-forms will be affected
+     *
+     * @return void
+     */
+    final public function disableCsrfValidation(): void
+    {
+        $root = $this->root();
+
+        if (method_exists($root, 'set')) {
+            $root->set(CsrfValueValidator::FLAG_DISABLE_CSRF_VALIDATION, true);
+        }
     }
 
     /**
