@@ -50,6 +50,14 @@ class CsrfElementBuilder implements ElementBuilderInterface
     private $tokenManager;
 
     /**
+     * Only validate the csrf token if the element is on the root form
+     * If false, all csrf tokens on sub forms will be validated
+     *
+     * @var bool
+     */
+    private $onlyValidateRoot = true;
+
+    /**
      * CsrfElementBuilder constructor.
      */
     public function __construct()
@@ -119,6 +127,23 @@ class CsrfElementBuilder implements ElementBuilderInterface
     }
 
     /**
+     * Enable or disable the validation of the csrf token on sub forms
+     * By default, the csrf token is validated only on the root form
+     *
+     * Note: The CSRF element and value will always be generated, even if the validation is disabled
+     *
+     * @param bool $validateOnSubForms If true, the csrf token will be validated on sub forms
+     *
+     * @return $this
+     */
+    public function validateOnSubForms(bool $validateOnSubForms = true): self
+    {
+        $this->onlyValidateRoot = !$validateOnSubForms;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function satisfy($constraint, $options = null, bool $append = true)
@@ -149,7 +174,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     {
         return new CsrfElement(
             $this->tokenId,
-            new CsrfValueValidator($this->invalidate, $this->message ? ['message' => $this->message] : []),
+            new CsrfValueValidator($this->invalidate, $this->message ? ['message' => $this->message] : [], $this->onlyValidateRoot),
             $this->tokenManager
         );
     }

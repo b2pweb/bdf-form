@@ -255,4 +255,36 @@ class CsrfElementTest extends TestCase
         $form->submit(['foo' => 'bar']);
         $this->assertTrue($form->valid());
     }
+
+    public function test_token_validation_on_embedded()
+    {
+        $form = new class extends CustomForm {
+            public function configure(FormBuilderInterface $builder): void
+            {
+                $builder->string('foo')->getter()->setter();
+                $builder->embedded('embedded', function ($builder) {
+                    $builder->string('bar')->getter()->setter();
+                    $builder->csrf()->validateOnSubForms();
+                });
+            }
+        };
+
+        $form->submit(['foo' => 'a', 'embedded' => ['bar' => 'b']]);
+        $this->assertFalse($form->valid());
+        $this->assertEquals(['embedded' => ['_token' => 'The CSRF token is invalid.']], $form->error()->toArray());
+
+        $form = new class extends CustomForm {
+            public function configure(FormBuilderInterface $builder): void
+            {
+                $builder->string('foo')->getter()->setter();
+                $builder->embedded('embedded', function ($builder) {
+                    $builder->string('bar')->getter()->setter();
+                    $builder->csrf();
+                });
+            }
+        };
+
+        $form->submit(['foo' => 'a', 'embedded' => ['bar' => 'b']]);
+        $this->assertTrue($form->valid());
+    }
 }

@@ -44,15 +44,25 @@ final class CsrfValueValidator implements ValueValidatorInterface
     private $options;
 
     /**
+     * Only validate the csrf token if the element is on the root form
+     * If false, all csrf tokens on sub forms will be validated
+     *
+     * @var bool
+     */
+    private $onlyValidateRoot;
+
+    /**
      * CsrfValueValidator constructor.
      *
      * @param bool $invalidate Always invalidate the token after validation
      * @param array $options Constraints options
+     * @param bool $onlyValidateRoot Only validate the csrf token if the element is on the root form
      */
-    public function __construct(bool $invalidate = false, array $options = [])
+    public function __construct(bool $invalidate = false, array $options = [], bool $onlyValidateRoot = false)
     {
         $this->invalidate = $invalidate;
         $this->options = $options;
+        $this->onlyValidateRoot = $onlyValidateRoot;
     }
 
     /**
@@ -66,6 +76,10 @@ final class CsrfValueValidator implements ValueValidatorInterface
         $root = $element->root();
 
         if (method_exists($root, 'is') && $root->is(self::FLAG_DISABLE_CSRF_VALIDATION)) {
+            return FormError::null();
+        }
+
+        if ($this->onlyValidateRoot && !self::belongsToRoot($element)) {
             return FormError::null();
         }
 
@@ -101,5 +115,18 @@ final class CsrfValueValidator implements ValueValidatorInterface
     public function hasConstraints(): bool
     {
         return true;
+    }
+
+    /**
+     * Check if the given element is the root element
+     *
+     * @param ElementInterface $element
+     * @return bool
+     */
+    private static function belongsToRoot(ElementInterface $element): bool
+    {
+        $container = $element->container();
+
+        return $container === null || $container->parent()->container() === null;
     }
 }
