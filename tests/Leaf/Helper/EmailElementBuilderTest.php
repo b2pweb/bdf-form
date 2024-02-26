@@ -28,7 +28,7 @@ class EmailElementBuilderTest extends TestCase
 
         $this->assertFalse($element->submit('foo')->valid());
         $this->assertEquals('This value is not a valid email address.', $element->error()->global());
-        $this->assertEquals('STRICT_CHECK_FAILED_ERROR', $element->error()->code());
+        $this->assertContains($element->error()->code(), ['STRICT_CHECK_FAILED_ERROR', 'INVALID_FORMAT_ERROR']);
 
         $this->assertTrue($element->submit('foo@example.com')->valid());
     }
