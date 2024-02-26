@@ -142,7 +142,7 @@ class DateTimeElementTest extends TestCase
 
         $this->assertFalse($element->submit('2020-12-17T10:40:00+1000')->valid());
         $this->assertEquals(new DateTime('2020-12-17 10:40:00', new DateTimeZone('+1000')), $element->value());
-        $this->assertEquals('This value should be less than Jan 5, 2000, 3:00 PM.', $element->error()->global());
+        $this->assertEquals('This value should be less than Jan 5, 2000, 3:00 PM.', str_replace("\u{202F}", ' ', $element->error()->global()));
 
         $this->assertTrue($element->submit('1980-12-17T10:40:00+1000')->valid());
         $this->assertEquals(new DateTime('1980-12-17 10:40:00', new DateTimeZone('+1000')), $element->value());
@@ -264,7 +264,7 @@ class DateTimeElementTest extends TestCase
         $this->assertSame($element, $element->patch(null));
         $this->assertEquals(new DateTime('2020-10-14 15:00:00'), $element->value());
         $this->assertFalse($element->valid());
-        $this->assertEquals('This value should be greater than Oct 14, 2030, 3:00 PM.', $element->error()->global());
+        $this->assertEquals('This value should be greater than Oct 14, 2030, 3:00 PM.', str_replace("\u{202F}", ' ', $element->error()->global()));
     }
 
     /**
@@ -521,7 +521,7 @@ class DateTimeElementTest extends TestCase
         $this->assertEquals('2020-10-14T12:00:00+00:00', $view->value());
         $this->assertEquals('name', $view->name());
         $this->assertTrue($view->hasError());
-        $this->assertEquals('This value should be less than Oct 14, 1980, 3:00 PM.', $view->error());
+        $this->assertEquals('This value should be less than Oct 14, 1980, 3:00 PM.', str_replace("\u{202F}", ' ', $view->error()));
     }
 
     /**
