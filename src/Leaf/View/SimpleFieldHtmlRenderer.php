@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 /**
  * Default render for @see SimpleElementView
+ *
+ * @implements FieldViewRendererInterface<SimpleElementView>
  */
 final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
 {

@@ -23,6 +23,11 @@ use Traversable;
  * </code>
  *
  * @see \Bdf\Form\Aggregate\ChildAggregateInterface
+ *
+ * @template E
+ *
+ * @extends ArrayAccess<array-key, E>
+ * @extends Traversable<array-key, E>
  */
 interface FieldSetViewInterface extends ElementViewInterface, ArrayAccess, Traversable
 {

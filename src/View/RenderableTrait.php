@@ -26,7 +26,9 @@ trait RenderableTrait
             throw new ArgumentCountError('Missing the attribute value.');
         }
 
-        return $this->set($name, $arguments[0]);
+        $this->set($name, $arguments[0]);
+
+        return $this;
     }
 
     /**

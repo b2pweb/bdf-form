@@ -134,7 +134,10 @@ final class DateTimeElement extends LeafElement
      */
     protected function toHttp($phpValue)
     {
+        // Because of legacy behavior, the raw value can be saved when a transformer failed
+        // So the raw string is kept as is
         if (is_string($phpValue)) {
+            /** @psalm-suppress NoValue */
             return $phpValue;
         }
 

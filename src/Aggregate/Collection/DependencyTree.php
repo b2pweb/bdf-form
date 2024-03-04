@@ -24,6 +24,9 @@ use Iterator;
  * add(E4(E2, E3)) -> lvl0(E1, E4), lvl1(E3), lvl2(E2)  [E4 added to lvl0, E3 shift to lvl1, E2 shift to lvl2]
  *
  * The iterator of the dependency tree will iterate over "higher" dependencies before, and "root" children at the end
+ *
+ * @implements \ArrayAccess<string, ChildInterface>
+ * @implements \IteratorAggregate<string, ChildInterface>
  */
 final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countable, ChildrenCollectionInterface
 {

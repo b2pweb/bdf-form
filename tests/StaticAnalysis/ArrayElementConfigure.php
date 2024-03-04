@@ -7,6 +7,9 @@ use Bdf\Form\Aggregate\ArrayElementBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Custom\CustomForm;
 
+/**
+ * @extends CustomForm<array>
+ */
 class ArrayElementConfigure extends CustomForm
 {
     /**
@@ -14,6 +17,12 @@ class ArrayElementConfigure extends CustomForm
      */
     protected function configure(FormBuilderInterface $builder): void
     {
-        $builder->array('values')->element(ArrayElement::class, function (ArrayElementBuilder $builder) {});
+        $builder->array('values')->element(
+            ArrayElement::class,
+            /**
+             * @param ArrayElementBuilder<mixed> $builder
+             */
+            function (ArrayElementBuilder $builder) {}
+        );
     }
 }

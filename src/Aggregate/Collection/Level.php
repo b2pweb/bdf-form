@@ -10,6 +10,7 @@ use IteratorAggregate;
  * The dependency tree level
  *
  * @internal
+ * @implements IteratorAggregate<string, string[]>
  */
 final class Level implements IteratorAggregate
 {

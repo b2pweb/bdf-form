@@ -7,12 +7,16 @@ use Bdf\Form\Aggregate\ChildAggregateInterface;
 use Bdf\Form\Child\ChildInterface;
 use Countable;
 use Iterator;
+use IteratorAggregate;
 
 /**
  * Collection of form child elements
  * Handle dependency tree
+ *
+ * @extends IteratorAggregate<string, ChildInterface>
+ * @extends ArrayAccess<string, ChildInterface>
  */
-interface ChildrenCollectionInterface extends \IteratorAggregate, ArrayAccess, Countable
+interface ChildrenCollectionInterface extends IteratorAggregate, ArrayAccess, Countable
 {
     /**
      * Add a child to the dependency tree

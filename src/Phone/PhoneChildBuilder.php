@@ -89,7 +89,7 @@ class PhoneChildBuilder extends ChildBuilder
     /**
      * @return PhoneNumberToStringTransformer[]
      */
-    protected function provideModelTransformer(): array
+    protected function provideModelTransformer(RegistryInterface $registry): array
     {
         if ($this->saveFormat === null) {
             return [];

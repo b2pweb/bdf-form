@@ -5,6 +5,12 @@ namespace Bdf\Form\Filter;
 use Attribute;
 use Bdf\Form\Child\ChildInterface;
 
+use function filter_var;
+use function is_array;
+use function is_scalar;
+use function str_replace;
+use function strip_tags;
+
 /**
  * Adapt filter_var() to FilterInterface
  * By default, configured to filter HTML values
@@ -60,6 +66,8 @@ final class FilterVar implements FilterInterface
 
     private function apply($value)
     {
+        $value = is_scalar($value) ? (string) $value : '';
+
         if ($this->filter !== self::HTML_FILTER) {
             return filter_var($value, $this->filter, $this->flags);
         }
@@ -74,7 +82,8 @@ final class FilterVar implements FilterInterface
 
         // Encode quotes
         if (($this->flags & FILTER_FLAG_NO_ENCODE_QUOTES) === 0) {
-            $value = str_replace(['"', "'"], ['&#34;', '&#39;'], $value);
+            /** @psalm-suppress PossiblyInvalidCast */
+            $value = str_replace(['"', "'"], ['&#34;', '&#39;'], (string) $value);
         }
 
         return $value;

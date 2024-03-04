@@ -10,6 +10,8 @@ use InvalidArgumentException;
 /**
  * Renderer for select element
  * Should be used for element with choices
+ *
+ * @implements FieldViewRendererInterface<FieldViewInterface>
  */
 final class SelectHtmlRenderer implements FieldViewRendererInterface
 {

@@ -131,7 +131,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      * $builder->dateTime('eventDate')->timezone(new DateTimeZone('+0200');
      * </code>
      *
-     * @param string|DateTimeZone|null $timezone The timezone. If string is given, a new DateTimeZone will be created.
+     * @param non-empty-string|DateTimeZone|null $timezone The timezone. If string is given, a new DateTimeZone will be created.
      *
      * @return $this
      */

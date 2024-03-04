@@ -16,6 +16,7 @@ use IteratorAggregate;
  * @template T
  * @extends ElementInterface<T>
  * @extends ArrayAccess<string, ChildInterface>
+ * @extends IteratorAggregate<string, ChildInterface>
  */
 interface ChildAggregateInterface extends ElementInterface, ArrayAccess, IteratorAggregate
 {

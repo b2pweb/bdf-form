@@ -51,7 +51,7 @@ class ArrayChildBuilder extends ChildBuilder
         return $this;
     }
 
-    protected function provideEmptyValueFilter(): array
+    protected function provideEmptyValueFilter(RegistryInterface $registry): array
     {
         if (!$this->filterEmptyValues) {
             return [];

@@ -63,6 +63,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *
  * @see Form
  * @see CustomForm::configure()
+ *
+ * @extends AbstractElementBuilder<Form>
  */
 class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
 {

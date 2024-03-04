@@ -27,6 +27,7 @@ use function is_string;
  * @see CustomForm::configure()
  *
  * @mixin FormBuilderInterface
+ * @implements ElementBuilderInterface<CustomForm>
  */
 class CustomFormBuilder implements ElementBuilderInterface
 {

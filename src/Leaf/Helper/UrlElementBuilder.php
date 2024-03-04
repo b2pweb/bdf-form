@@ -150,7 +150,7 @@ class UrlElementBuilder extends StringElementBuilder
     /**
      * @return \Symfony\Component\Validator\Constraint[]
      */
-    protected function createUrlConstraint(): array
+    protected function createUrlConstraint(RegistryInterface $registry): array
     {
         if (!$this->useConstraint) {
             return [];

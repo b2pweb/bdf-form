@@ -23,6 +23,7 @@ class BooleanStringElement extends AbstractBooleanElement
      *
      * @return scalar|null
      * @psalm-suppress ImplementedReturnTypeMismatch
+     * @psalm-suppress LessSpecificImplementedReturnType
      */
     protected function sanitize($rawValue)
     {

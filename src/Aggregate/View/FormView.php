@@ -29,6 +29,9 @@ use IteratorAggregate;
  * </code>
  *
  * @see Form::view()
+ *
+ * @implements IteratorAggregate<string, ElementViewInterface|ButtonViewInterface>
+ * @implements FieldSetViewInterface<ElementViewInterface|ButtonViewInterface>
  */
 final class FormView implements IteratorAggregate, FieldSetViewInterface
 {

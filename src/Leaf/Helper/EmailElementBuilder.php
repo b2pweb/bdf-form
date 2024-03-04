@@ -139,7 +139,7 @@ class EmailElementBuilder extends StringElementBuilder
     /**
      * @return \Symfony\Component\Validator\Constraint[]
      */
-    protected function createEmailConstraint(): array
+    protected function createEmailConstraint(RegistryInterface $registry): array
     {
         if (!$this->useConstraint) {
             return [];

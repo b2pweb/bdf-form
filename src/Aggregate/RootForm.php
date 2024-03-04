@@ -49,6 +49,7 @@ use WeakReference;
  * </code>
  *
  * @todo delegation trait
+ * @implements ChildAggregateInterface<mixed>
  */
 final class RootForm implements RootElementInterface, ChildAggregateInterface
 {

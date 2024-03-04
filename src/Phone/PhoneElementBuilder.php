@@ -236,7 +236,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      *
      * @return Constraint[]
      */
-    protected function providePhoneConstraint(): array
+    protected function providePhoneConstraint(RegistryInterface $registry): array
     {
         if ($this->allowInvalidNumber) {
             return [];

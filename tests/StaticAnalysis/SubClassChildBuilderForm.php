@@ -5,6 +5,9 @@ namespace Bdf\Form\StaticAnalysis;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Custom\CustomForm;
 
+/**
+ * @extends CustomForm<array>
+ */
 class SubClassChildBuilderForm extends CustomForm
 {
     /**

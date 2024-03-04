@@ -132,7 +132,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
      */
     abstract protected function numberTransformer(): TransformerInterface;
 
-    final protected function provideNumberTransformer(): array
+    final protected function provideNumberTransformer(RegistryInterface $registry): array
     {
         if (!$this->raw) {
             return [$this->numberTransformer()];

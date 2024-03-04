@@ -14,6 +14,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *
  * @method void set(string $flag, mixed $value) Define a flag value
  * @method bool is(string $flag) Check if a flag is defined
+ *
+ * @extends ElementInterface<mixed>
  */
 interface RootElementInterface extends ElementInterface
 {

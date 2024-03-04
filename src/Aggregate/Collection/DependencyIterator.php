@@ -9,6 +9,8 @@ use Iterator;
  * Iterate over @see DependencyTree
  *
  * Iterate first on the last level, and go to lower levels, to root
+ *
+ * @implements Iterator<ChildInterface>
  */
 final class DependencyIterator implements Iterator
 {

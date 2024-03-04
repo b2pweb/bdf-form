@@ -31,6 +31,9 @@ use IteratorAggregate;
  * </code>
  *
  * @see ArrayElement::view()
+ *
+ * @implements IteratorAggregate<array-key, ElementViewInterface>
+ * @implements FieldSetViewInterface<ElementViewInterface>
  */
 final class ArrayElementView implements IteratorAggregate, FieldViewInterface, FieldSetViewInterface, Countable
 {

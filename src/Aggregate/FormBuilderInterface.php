@@ -35,7 +35,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * $form = $builder->buildElement();
  * </code>
  *
- * @implements ElementBuilderInterface<FormInterface>
+ * @extends ElementBuilderInterface<FormInterface>
  */
 interface FormBuilderInterface extends ElementBuilderInterface
 {
