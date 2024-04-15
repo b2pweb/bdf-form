@@ -196,14 +196,14 @@ abstract class LeafElement implements ElementInterface, Choiceable
      */
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
-        $normalizedConstraints = ConstraintsNormalizer::normalize($this->validator);
+        [$required, $normalizedConstraints] = $this->parseConstraints($this->validator);
 
         return new SimpleElementView(
             static::class,
             (string) $field,
             $this->httpValue(),
             $this->error->global(),
-            isset($normalizedConstraints[NotBlank::class]),
+            $required,
             $normalizedConstraints,
             $this->choiceView()
         );
@@ -285,5 +285,23 @@ abstract class LeafElement implements ElementInterface, Choiceable
             $view->setSelected($view->value() == $this->value());
             $view->setValue($this->transformer->transformToHttp($this->toHttp($view->value()), $this));
         });
+    }
+
+    /**
+     * Parse constraints and required value
+     *
+     * By default, will use {@see ConstraintsNormalizer} to extract constraints,
+     * and check the presence of {@see NotBlank} constraint to determine if the field is required
+     *
+     * @return list{bool, array}
+     */
+    protected function parseConstraints(ValueValidatorInterface $validator): array
+    {
+        $normalizedConstraints = ConstraintsNormalizer::normalize($validator);
+
+        return [
+            isset($normalizedConstraints[NotBlank::class]),
+            $normalizedConstraints
+        ];
     }
 }

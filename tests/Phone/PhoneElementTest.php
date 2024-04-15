@@ -292,5 +292,22 @@ class PhoneElementTest extends TestCase
         $this->assertEquals('<input type="tel" name="tel" value="0123456789" />', (string) $view);
         $this->assertEquals('tel', $view->name());
         $this->assertFalse($view->hasError());
+        $this->assertFalse($view->required());
+    }
+
+    /**
+     *
+     */
+    public function test_view_required()
+    {
+        $element = (new PhoneElementBuilder())->required()->buildElement();
+
+        $view = $element->view(HttpFieldPath::named('tel'));
+
+        $this->assertEquals(PhoneElement::class, $view->type());
+        $this->assertEquals('<input type="tel" name="tel" value="" required />', (string) $view);
+        $this->assertEquals('tel', $view->name());
+        $this->assertTrue($view->required());
+        $this->assertFalse($view->hasError());
     }
 }

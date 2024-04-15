@@ -32,6 +32,17 @@ class SimpleFieldHtmlRendererTest extends TestCase
     }
 
     /**
+     *
+     */
+    public function test_render_allow_override_required()
+    {
+        $view = new SimpleElementView(StringElement::class, 'foo', 'bar', null, true, [Length::class => ['min' => 5]]);
+        $renderer = new SimpleFieldHtmlRenderer();
+
+        $this->assertEquals('<input type="email" name="foo" value="bar" minlength="5" />', $renderer->render($view, ['type' => 'email', 'required' => false]));
+    }
+
+    /**
      * @dataProvider provideType
      */
     public function test_render_type($elementType, $htmlType)
