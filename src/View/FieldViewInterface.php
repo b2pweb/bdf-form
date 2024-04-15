@@ -9,6 +9,8 @@ use Bdf\Form\Choice\ChoiceView;
 /**
  * Base type for HTTP input / field
  * The implementations must be renderable
+ *
+ * @method self setValue($value) Override the value
  */
 interface FieldViewInterface extends ElementViewInterface, Renderable
 {
@@ -25,6 +27,18 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      * @return mixed
      */
     public function value();
+
+    /**
+     * Override the value
+     * The given value MUST be an HTTP value
+     *
+     * @param mixed $value The new value
+     *
+     * @return $this Return the current instance
+     * @since 1.5
+     * @todo uncomment in 2.0
+     */
+    //public function setValue($value): self;
 
     /**
      * Does the current field is required (i.e. the value must not be empty)

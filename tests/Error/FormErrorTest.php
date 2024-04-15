@@ -21,6 +21,8 @@ class FormErrorTest extends TestCase
         $this->assertInstanceOf(FormError::class, FormError::null());
         $this->assertTrue(FormError::null()->empty());
         $this->assertSame(FormError::null(), FormError::null());
+        $this->assertNull(FormError::null()->get('foo'));
+        $this->assertSame(FormError::null(), FormError::null()->child('foo'));
     }
 
     /**
@@ -35,6 +37,8 @@ class FormErrorTest extends TestCase
         $this->assertEquals('my error', $error->global());
         $this->assertNull($error->code());
         $this->assertEmpty($error->children());
+        $this->assertNull($error->get('foo'));
+        $this->assertSame(FormError::null(), $error->child('foo'));
     }
 
     /**
@@ -99,6 +103,10 @@ class FormErrorTest extends TestCase
         $this->assertNull($error->global());
         $this->assertNull($error->code());
         $this->assertSame($errors, $error->children());
+        $this->assertSame('child error', $error->get('child'));
+        $this->assertSame($errors['child'], $error->child('child'));
+        $this->assertNull($error->get('not_found'));
+        $this->assertSame(FormError::null(), $error->child('not_found'));
     }
 
     /**

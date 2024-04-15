@@ -35,6 +35,7 @@ class DateTimeElementTest extends TestCase
         $element = new DateTimeElement();
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertNull($element->value());
         $this->assertNull($element->httpValue());
         $this->assertTrue($element->error()->empty());
@@ -48,6 +49,7 @@ class DateTimeElementTest extends TestCase
         $element = new DateTimeElement();
 
         $this->assertTrue($element->submit('2020-12-17T10:40:00+1000')->valid());
+        $this->assertFalse($element->failed());
         $this->assertEquals(new DateTime('2020-12-17 10:40:00', new DateTimeZone('+1000')), $element->value());
         $this->assertTrue($element->error()->empty());
     }
@@ -264,6 +266,7 @@ class DateTimeElementTest extends TestCase
         $this->assertSame($element, $element->patch(null));
         $this->assertEquals(new DateTime('2020-10-14 15:00:00'), $element->value());
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('This value should be greater than Oct 14, 2030, 3:00 PM.', str_replace("\u{202F}", ' ', $element->error()->global()));
     }
 

@@ -153,6 +153,7 @@ class ValidatorBuilderTraitTest extends TestCase
         $element->submit('foo');
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
         $this->assertEquals('TRANSFORM_ERROR', $element->error()->code());
     }
@@ -168,6 +169,7 @@ class ValidatorBuilderTraitTest extends TestCase
         $element->submit('foo');
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('custom message', $element->error()->global());
         $this->assertEquals('TRANSFORM_ERROR', $element->error()->code());
     }
@@ -183,6 +185,7 @@ class ValidatorBuilderTraitTest extends TestCase
         $element->submit('foo');
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
         $this->assertEquals('CUSTOM_ERROR', $element->error()->code());
     }

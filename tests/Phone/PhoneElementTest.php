@@ -29,6 +29,7 @@ class PhoneElementTest extends TestCase
         $element = new PhoneElement();
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertNull($element->value());
         $this->assertTrue($element->error()->empty());
     }
@@ -41,6 +42,7 @@ class PhoneElementTest extends TestCase
         $element = new PhoneElement();
 
         $this->assertTrue($element->submit('+330142563698')->valid());
+        $this->assertFalse($element->failed());
         $this->assertInstanceOf(PhoneNumber::class, $element->value());
         $this->assertEquals(33, $element->value()->getCountryCode());
         $this->assertEquals('142563698', $element->value()->getNationalNumber());

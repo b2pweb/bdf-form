@@ -20,6 +20,8 @@ use Bdf\Form\View\ElementViewInterface;
  * </code>
  *
  * @template T
+ *
+ * @method bool failed()
  */
 interface ElementInterface
 {
@@ -123,6 +125,22 @@ interface ElementInterface
      * @see ElementInterface::error() To get error
      */
     public function valid(): bool;
+
+    /**
+     * Check if the element value validation has failed
+     * On aggregate element, if at least on child is invalid, this method will return true
+     *
+     * This method is a shortcut for `!$element->valid()`
+     *
+     * Note: A non-submit()'ed element will return true
+     *
+     * @return bool
+     *
+     * @see ElementInterface::error() To get error
+     * @since 1.5
+     * @todo uncomment in 2.0
+     */
+    //public function failed(): bool;
 
     /**
      * Get the errors related to the element

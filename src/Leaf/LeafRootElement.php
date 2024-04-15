@@ -99,6 +99,15 @@ final class LeafRootElement implements RootElementInterface
     /**
      * {@inheritdoc}
      */
+    public function failed(): bool
+    {
+        // Do not use $this->element->failed() because it may be not implemented
+        return !$this->valid();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $this->element->error($field);

@@ -31,6 +31,7 @@ class StringElementTest extends TestCase
         $element = new StringElement();
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertNull($element->value());
         $this->assertNull($element->httpValue());
         $this->assertTrue($element->error()->empty());
@@ -68,6 +69,7 @@ class StringElementTest extends TestCase
         $element = new StringElement(new ConstraintValueValidator([new Length(['max' => 2])]));
 
         $this->assertFalse($element->submit('hello')->valid());
+        $this->assertTrue($element->failed());
         $this->assertSame('hello', $element->value());
         $this->assertEquals('This value is too long. It should have 2 characters or less.', $element->error()->global());
 
@@ -151,6 +153,7 @@ class StringElementTest extends TestCase
         $this->assertSame($element, $element->patch(null));
         $this->assertSame('foo', $element->value());
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('This value is too short. It should have 5 characters or more.', $element->error()->global());
     }
 

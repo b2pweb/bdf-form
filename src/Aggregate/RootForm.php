@@ -174,6 +174,15 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     /**
      * {@inheritdoc}
      */
+    public function failed(): bool
+    {
+        // Do not use $this->form->get()->failed() because it may be not implemented
+        return !$this->valid();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function error(?HttpFieldPath $field = null): FormError
     {
         /** @psalm-suppress PossiblyNullReference */

@@ -40,6 +40,25 @@ class FormViewTest extends TestCase
     /**
      *
      */
+    public function test_setError()
+    {
+        $view = new FormView(Form::class, null, $elements = [
+            'foo' => $this->createMock(ElementViewInterface::class),
+            'bar' => $this->createMock(ElementViewInterface::class),
+        ]);
+
+        $this->assertSame(Form::class, $view->type());
+        $this->assertFalse($view->hasError());
+        $this->assertNull($view->error());
+
+        $view->setError('my error');
+        $this->assertTrue($view->hasError());
+        $this->assertSame('my error', $view->error());
+    }
+
+    /**
+     *
+     */
     public function test_with_buttons()
     {
         $view = new FormView(Form::class, 'my error', $elements = [
@@ -118,6 +137,54 @@ class FormViewTest extends TestCase
 
         $child->expects($this->once())->method('hasError')->willReturn(true);
         $this->assertTrue($view->hasError());
+    }
+
+    /**
+     *
+     */
+    public function test_errors_with_error_on_child_should()
+    {
+        $view = new FormView(Form::class, null, [
+            'foo' => $child = $this->createMock(ElementViewInterface::class),
+            'bar' => $this->createMock(ElementViewInterface::class),
+        ]);
+
+        $child->expects($this->once())->method('hasError')->willReturn(true);
+        $child->expects($this->once())->method('error')->willReturn('my error');
+        $this->assertEquals(['foo' => 'my error'], $view->errors());
+    }
+
+    /**
+     *
+     */
+    public function test_errors_without_error()
+    {
+        $view = new FormView(Form::class, null, [
+            'foo' => $this->createMock(ElementViewInterface::class),
+            'bar' => $this->createMock(ElementViewInterface::class),
+        ]);
+
+        $this->assertEquals([], $view->errors());
+    }
+
+    /**
+     *
+     */
+    public function test_errors_with_fieldset_errors()
+    {
+        $inner = new FormView(Form::class, null, [
+            'foo' => $foo = $this->createMock(ElementViewInterface::class),
+            'bar' => $this->createMock(ElementViewInterface::class),
+        ]);
+
+        $view = new FormView(Form::class, null, [
+            'foo' => $inner,
+            'bar' => $this->createMock(ElementViewInterface::class),
+        ]);
+
+        $foo->expects($this->exactly(2))->method('hasError')->willReturn(true);
+        $foo->expects($this->once())->method('error')->willReturn('my error');
+        $this->assertEquals(['foo' => ['foo' => 'my error']], $view->errors());
     }
 
     /**

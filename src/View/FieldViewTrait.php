@@ -57,6 +57,16 @@ trait FieldViewTrait
     /**
      * {@inheritdoc}
      */
+    public function setValue($value): FieldViewInterface
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function required(): bool
     {
         return $this->required;

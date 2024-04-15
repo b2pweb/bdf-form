@@ -33,6 +33,7 @@ class IntegerElementTest extends TestCase
         $element = new IntegerElement();
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertNull($element->value());
         $this->assertNull($element->httpValue());
         $this->assertTrue($element->error()->empty());
@@ -70,6 +71,7 @@ class IntegerElementTest extends TestCase
         $element = new IntegerElement(new ConstraintValueValidator([new LessThan(2)]));
 
         $this->assertFalse($element->submit('5')->valid());
+        $this->assertTrue($element->failed());
         $this->assertSame(5, $element->value());
         $this->assertEquals('This value should be less than 2.', $element->error()->global());
 
@@ -153,6 +155,7 @@ class IntegerElementTest extends TestCase
         $this->assertSame($element, $element->patch(null));
         $this->assertSame(1, $element->value());
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('This value should be greater than or equal to 3.', $element->error()->global());
     }
 

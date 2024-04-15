@@ -14,6 +14,8 @@ use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\AnyElement;
+use Bdf\Form\Leaf\AnyElementBuilder;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
@@ -126,6 +128,20 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     public function add(string $name, string $element): ChildBuilderInterface
     {
         return $this->children[$name] = $this->registry()->childBuilder($element, $name);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @psalm-param non-empty-string $name
+     * @psalm-return ChildBuilder<AnyElementBuilder>
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     */
+    public function any(string $name): ChildBuilderInterface
+    {
+        return $this->add($name, AnyElement::class);
     }
 
     /**

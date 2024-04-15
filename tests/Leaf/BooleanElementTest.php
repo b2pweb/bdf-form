@@ -31,6 +31,7 @@ class BooleanElementTest extends TestCase
         $element = new BooleanElement();
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertNull($element->value());
         $this->assertTrue($element->error()->empty());
     }
@@ -43,6 +44,7 @@ class BooleanElementTest extends TestCase
         $element = new BooleanElement();
 
         $this->assertTrue($element->submit('1')->valid());
+        $this->assertFalse($element->failed());
         $this->assertTrue($element->value());
         $this->assertTrue($element->error()->empty());
     }

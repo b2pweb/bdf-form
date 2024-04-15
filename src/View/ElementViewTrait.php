@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\View;
 
+use function is_string;
+
 /**
  * Implements @see ElementViewInterface
  *
@@ -33,6 +35,16 @@ trait ElementViewTrait
     public function error(): ?string
     {
         return $this->error;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setError(?string $error): ElementViewInterface
+    {
+        $this->error = $error;
+
+        return $this;
     }
 
     /**

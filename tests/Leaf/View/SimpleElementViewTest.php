@@ -33,6 +33,40 @@ class SimpleElementViewTest extends TestCase
     /**
      *
      */
+    public function test_setError()
+    {
+        $view = new SimpleElementView(StringElement::class, 'foo', 'bar', null, true, [Length::class => ['min' => 5]]);
+
+        $this->assertSame(StringElement::class, $view->type());
+        $this->assertSame('foo', $view->name());
+        $this->assertSame('bar', $view->value());
+        $this->assertNull($view->error());
+        $this->assertFalse($view->hasError());
+        $this->assertTrue($view->required());
+        $this->assertEquals([Length::class => ['min' => 5]], $view->constraints());
+        $this->assertSame([], $view->attributes());
+
+        $view->setError('my error');
+        $this->assertSame('my error', $view->error());
+        $this->assertTrue($view->hasError());
+    }
+
+    /**
+     *
+     */
+    public function test_setValue()
+    {
+        $view = new SimpleElementView(StringElement::class, 'foo', 'bar', null, true, [Length::class => ['min' => 5]]);
+
+        $this->assertSame('bar', $view->value());
+
+        $view->setValue('baz');
+        $this->assertSame('baz', $view->value());
+    }
+
+    /**
+     *
+     */
     public function test_serialization_should_ignore_attributes()
     {
         $view = new SimpleElementView(StringElement::class, 'foo', 'bar', 'my error', true, [Length::class => ['min' => 5]]);
@@ -97,6 +131,28 @@ class SimpleElementViewTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $view->set('foo', 'bar')->attributes());
         $this->assertSame([], $view->unset('foo')->attributes());
         $this->assertSame(['foo' => 'bar', 'rab' => 'oof'], $view->foo('bar')->rab('oof')->attributes());
+    }
+
+    /**
+     *
+     */
+    public function test_with()
+    {
+        $view = new SimpleElementView(StringElement::class, 'foo', 'bar', null, true, [Length::class => ['min' => 5]]);
+
+        $this->assertSame(['foo' => 'bar', 'baz' => true], $view->with(['foo' => 'bar', 'baz'])->attributes());
+    }
+
+    /**
+     *
+     */
+    public function test_with_invalid_type()
+    {
+        $this->expectException(\TypeError::class);
+
+        $view = new SimpleElementView(StringElement::class, 'foo', 'bar', null, true, [Length::class => ['min' => 5]]);
+
+        $view->with(['foo' => 'bar', new \stdClass()]);
     }
 
     /**

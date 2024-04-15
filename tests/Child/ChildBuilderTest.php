@@ -250,6 +250,24 @@ class ChildBuilderTest extends TestCase
     /**
      *
      */
+    public function test_getset()
+    {
+        $child = $this->builder->getset('prop')->buildChild();
+        $child->setParent($form = new Form(new ChildrenCollection()));
+
+        $target = ['prop' => 'value'];
+        $child->import($target);
+        $this->assertEquals('value', $child->element()->value());
+
+        $target = [];
+        $child->fill($target);
+
+        $this->assertEquals(['prop' => 'value'], $target);
+    }
+
+    /**
+     *
+     */
     public function test_childClassName()
     {
         $this->assertInstanceOf(MyCustomChild::class, $this->builder->childClassName(MyCustomChild::class)->buildChild());

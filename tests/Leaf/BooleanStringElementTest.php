@@ -28,6 +28,7 @@ class BooleanStringElementTest extends TestCase
         $element = new BooleanStringElement();
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertNull($element->value());
         $this->assertTrue($element->error()->empty());
     }
@@ -113,6 +114,7 @@ class BooleanStringElementTest extends TestCase
         $element = new BooleanStringElement(new ConstraintValueValidator([new NotBlank()]));
 
         $this->assertFalse($element->submit('invalid')->valid());
+        $this->assertTrue($element->failed());
         $this->assertNull($element->value());
         $this->assertEquals('This value should not be blank.', $element->error()->global());
 

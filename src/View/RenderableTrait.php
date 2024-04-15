@@ -5,6 +5,9 @@ namespace Bdf\Form\View;
 use ArgumentCountError;
 use TypeError;
 
+use function is_int;
+use function is_scalar;
+
 /**
  * Implements @see Renderable
  *
@@ -41,6 +44,26 @@ trait RenderableTrait
         }
 
         $this->attributes[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function with(array $attributes)
+    {
+        foreach ($attributes as $name => $value) {
+            if (!is_scalar($value)) {
+                throw new TypeError('The attribute value must be a scalar value.');
+            }
+
+            if (is_int($name)) {
+                $this->attributes[(string) $value] = true;
+            } else {
+                $this->attributes[$name] = $value;
+            }
+        }
 
         return $this;
     }

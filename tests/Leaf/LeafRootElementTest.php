@@ -84,8 +84,9 @@ class LeafRootElementTest extends TestCase
         $element = $this->createMock(ElementInterface::class);
         $root = new LeafRootElement($element);
 
-        $element->expects($this->once())->method('valid')->willReturn(true);
+        $element->expects($this->exactly(2))->method('valid')->willReturn(true);
         $this->assertTrue($root->valid());
+        $this->assertFalse($root->failed());
     }
 
     /**

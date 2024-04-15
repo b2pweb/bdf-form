@@ -2,10 +2,13 @@
 
 namespace Bdf\Form\View;
 
+use phpDocumentor\Reflection\Types\Scalar;
 use Stringable;
 
 /**
  * Base type for a renderable element of the form view tree
+ *
+ * @method self with(array $attributes)
  */
 interface Renderable extends Stringable
 {
@@ -28,6 +31,22 @@ interface Renderable extends Stringable
      * @return $this
      */
     public function set(string $name, $value);
+
+    /**
+     * Define multiple attributes
+     * Use key-value for simple attributes, and only value for flag attributes
+     *
+     * Example:
+     * <code>
+     *     $element->with(['id' => 'my-id', 'required']);
+     * </code>
+     *
+     * @param array<scalar> $attributes
+     * @return $this
+     * @since 1.5
+     * @todo uncomment in 2.0
+     */
+    //public function with(array $attributes);
 
     /**
      * Remove an attribute

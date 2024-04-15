@@ -49,6 +49,7 @@ class CustomFormTest extends TestCase
     {
         $this->assertSame($this->form, $this->form->submit(['firstName' => 'John', 'lastName' => 'Doe', 'birthDate' => (new \DateTime('1992-05-22'))->getTimestamp()]));
         $this->assertTrue($this->form->valid());
+        $this->assertFalse($this->form->failed());
 
         $person = $this->form->value();
 
@@ -108,6 +109,7 @@ class CustomFormTest extends TestCase
             'btn' => 'ok',
         ]));
         $this->assertTrue($this->form->valid());
+        $this->assertFalse($this->form->failed());
 
         $person = $this->form->value();
 
@@ -125,6 +127,7 @@ class CustomFormTest extends TestCase
     {
         $this->assertSame($this->form, $this->form->submit(['firstName' => 'John']));
         $this->assertFalse($this->form->valid());
+        $this->assertTrue($this->form->failed());
         $this->assertEquals(['lastName' => 'This value should not be blank.'], $this->form->error()->toArray());
     }
 
@@ -142,6 +145,7 @@ class CustomFormTest extends TestCase
 
         $this->assertSame($this->form, $this->form->patch(['firstName' => 'Paul']));
         $this->assertTrue($this->form->valid());
+        $this->assertFalse($this->form->failed());
 
         $person = $this->form->value();
 
@@ -234,6 +238,7 @@ class CustomFormTest extends TestCase
         ]);
 
         $this->assertTrue($array->valid());
+        $this->assertFalse($array->failed());
         $this->assertCount(2, $array);
 
         $this->assertContainsOnly(Person::class, $array->value());
@@ -548,12 +553,14 @@ class CustomFormTest extends TestCase
 
         $form->submit(['foo' => 'bar']);
         $this->assertFalse($form->valid());
+        $this->assertTrue($form->failed());
         $this->assertEquals(['_token' => 'The CSRF token is invalid.'], $form->error()->toArray());
 
         $form->disableCsrfValidation();
 
         $form->submit(['foo' => 'bar']);
         $this->assertTrue($form->valid());
+        $this->assertFalse($form->failed());
     }
 }
 
@@ -569,8 +576,8 @@ class PersonForm extends CustomForm
     {
         $builder->generates(Person::class);
 
-        $builder->string('firstName')->required()->getter()->setter();
-        $builder->string('lastName')->required()->getter()->setter();
+        $builder->string('firstName')->required()->getset();
+        $builder->string('lastName')->required()->getset();
         $builder->integer('birthDate')
             ->raw()
             ->satisfy(new LessThan(time()))
