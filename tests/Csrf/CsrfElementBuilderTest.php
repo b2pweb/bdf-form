@@ -82,7 +82,9 @@ class CsrfElementBuilderTest extends TestCase
         $value = $element->value()->getValue();
 
         $this->assertTrue($element->submit($value)->valid());
+        $this->assertFalse($element->failed());
         $this->assertFalse($element->submit($value)->valid());
+        $this->assertTrue($element->failed());
     }
 
     /**

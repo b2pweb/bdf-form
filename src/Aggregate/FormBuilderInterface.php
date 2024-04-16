@@ -9,6 +9,7 @@ use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\AnyElementBuilder;
 use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
@@ -36,6 +37,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * </code>
  *
  * @extends ElementBuilderInterface<FormInterface>
+ *
+ * @method ChildBuilderInterface any(string $name)
  */
 interface FormBuilderInterface extends ElementBuilderInterface
 {
@@ -55,6 +58,25 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @return ChildBuilderInterface<ElementBuilderInterface<E>> The child builder
      */
     public function add(string $name, string $element): ChildBuilderInterface;
+
+    /**
+     * Add a new child element which can be of any type
+     *
+     * Note: the any element remove all type safety, and should be used with caution
+     *
+     * <code>
+     * $builder->any('value', IntegerElement::class)->required();
+     * </code>
+     *
+     * @param non-empty-string $name The child name
+     *
+     * @return ChildBuilder|AnyElementBuilder
+     * @return ChildBuilderInterface<AnyElementBuilder> The child builder
+     *
+     * @since 1.5
+     * @todo uncomment in 2.0
+     */
+    //public function any(string $name): ChildBuilderInterface;
 
     /**
      * Add a new string element on the form

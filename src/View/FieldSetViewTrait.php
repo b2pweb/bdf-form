@@ -6,6 +6,8 @@ use ArrayIterator;
 use BadMethodCallException;
 use Iterator;
 
+use function method_exists;
+
 /**
  * Implements @see FieldSetViewInterface
  *
@@ -66,6 +68,28 @@ trait FieldSetViewTrait
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function errors(): array
+    {
+        $errors = [];
+
+        foreach ($this->elements as $name => $element) {
+            if (!$element->hasError()) {
+                continue;
+            }
+
+            if ($element instanceof FieldSetViewInterface && method_exists($element, 'errors')) {
+                $errors[$name] = $element->errors();
+            } elseif ($error = $element->error()) {
+                $errors[$name] = $error;
+            }
+        }
+
+        return $errors;
     }
 
     /**

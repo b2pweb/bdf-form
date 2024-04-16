@@ -139,6 +139,7 @@ class IntegerElementBuilderTest extends TestCase
         $element->submit('invalid');
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('The value is not a valid number.', $element->error()->global());
         $this->assertEquals('INVALID_NUMBER_ERROR', $element->error()->code());
     }
@@ -287,6 +288,7 @@ class IntegerElementBuilderTest extends TestCase
 
         $element->submit(22);
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
     }
 
@@ -299,6 +301,7 @@ class IntegerElementBuilderTest extends TestCase
 
         $element->submit('14');
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
     }
 }

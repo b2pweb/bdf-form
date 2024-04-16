@@ -129,4 +129,25 @@ final class PhoneElement extends LeafElement
             return (new PhoneNumber())->setRawInput($rawPhoneNumber);
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function parseConstraints(ValueValidatorInterface $validator): array
+    {
+        $result = parent::parseConstraints($validator);
+
+        if (!$result[0]) {
+            // PhoneElement use NotEmptyPhoneNumber instead of NotBlank
+            // So we need to check if this constraint is present
+            foreach ($validator->constraints() as $constraint) {
+                if ($constraint instanceof NotEmptyPhoneNumber) {
+                    $result[0] = true;
+                    break;
+                }
+            }
+        }
+
+        return $result;
+    }
 }

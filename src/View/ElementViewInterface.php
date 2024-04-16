@@ -4,6 +4,8 @@ namespace Bdf\Form\View;
 
 /**
  * Base form element view type
+ *
+ * @method self setError(?string $error)
  */
 interface ElementViewInterface
 {
@@ -21,6 +23,21 @@ interface ElementViewInterface
      * @return string|null
      */
     public function error(): ?string;
+
+    /**
+     * Overwrite the current element error
+     * In case of aggregate element, this method should set the global error and not the children errors
+     *
+     * This method can be used to display error from an external source, for example from an API error.
+     * Set to null to remove the error
+     *
+     * @param string|null $error The error message, or null to mark the element as valid
+     *
+     * @return $this
+     * @since 1.5
+     * @todo uncomment in 2.0
+     */
+    //public function setError(?string $error): self;
 
     /**
      * Check if the current element is on error

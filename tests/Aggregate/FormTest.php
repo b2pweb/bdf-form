@@ -60,6 +60,7 @@ class FormTest extends TestCase
         ]);
 
         $this->assertTrue($this->form->valid());
+        $this->assertFalse($this->form->failed());
         $this->assertTrue($this->form->error()->empty());
 
         $this->assertSame('John', $this->form['firstName']->element()->value());
@@ -86,6 +87,7 @@ class FormTest extends TestCase
         ]);
 
         $this->assertTrue($this->form->valid());
+        $this->assertFalse($this->form->failed());
         $this->assertTrue($this->form->error()->empty());
         $this->assertFalse($called);
 
@@ -105,6 +107,7 @@ class FormTest extends TestCase
         ]);
 
         $this->assertFalse($this->form->valid());
+        $this->assertTrue($this->form->failed());
         $this->assertFalse($this->form->error()->empty());
         $this->assertEquals([
             'firstName' => 'This value is too short. It should have 2 characters or more.',
@@ -121,6 +124,7 @@ class FormTest extends TestCase
 
         $this->assertSame('J', $this->form['firstName']->element()->value());
         $this->assertFalse($this->form['firstName']->element()->valid());
+        $this->assertTrue($this->form['firstName']->element()->failed());
         $this->assertSame('S', $this->form['lastName']->element()->value());
         $this->assertFalse($this->form['lastName']->element()->valid());
         $this->assertSame(4, $this->form['id']->element()->value());

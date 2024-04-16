@@ -34,6 +34,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(new StringElement());
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertTrue($element->error()->empty());
         $this->assertArrayNotHasKey(0, $element);
         $this->assertSame([], $element->value());
@@ -62,6 +63,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(new StringElement());
 
         $this->assertTrue($element->submit(null)->valid());
+        $this->assertFalse($element->failed());
         $this->assertSame([], $element->value());
     }
 
@@ -90,6 +92,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(new StringElement());
 
         $this->assertTrue($element->submit(['foo', null, [], 'bar'])->valid());
+        $this->assertFalse($element->failed());
         $this->assertSame([0 => 'foo', 3 => 'bar'], $element->value());
     }
 
@@ -101,6 +104,7 @@ class ArrayElementTest extends TestCase
         $element = (new ArrayElementBuilder())->satisfy(function () { return 'error'; })->buildElement();
 
         $this->assertFalse($element->submit([null, 'bar'])->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals([1 => 'error'], $element->error()->toArray());
     }
 
@@ -112,6 +116,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(new StringElement());
 
         $this->assertTrue($element->submit('foo')->valid());
+        $this->assertFalse($element->failed());
         $this->assertSame(['foo'], $element->value());
     }
 
@@ -123,6 +128,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(new StringElement(new ConstraintValueValidator([new NotEqualTo('foo')])));
 
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals(['foo', 'bar'], $element->value());
         $this->assertEquals([0 => 'This value should not be equal to "foo".'], $element->error()->toArray());
     }
@@ -135,6 +141,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(new StringElement(), new ClosureTransformer(function () { throw new Exception('My error'); }));
 
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());
+        $this->assertTrue($element->failed());
         $this->assertSame([], $element->value());
         $this->assertEquals('My error', $element->error()->global());
     }

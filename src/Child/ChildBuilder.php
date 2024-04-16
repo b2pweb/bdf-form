@@ -334,6 +334,34 @@ class ChildBuilder implements ChildBuilderInterface
     }
 
     /**
+     * Helper method for define both simple getter and setter
+     * This method is a shortcut for `$builder->getter($name)->setter($name)`
+     *
+     * This method does not supports transformer and custom accessor.
+     * To define one of them, use the getter() and setter() methods.
+     *
+     * <code>
+     * $builder->string('foo')->getset(); // fill() and import()  the "foo" property
+     * $builder->string('foo')->getset('bar'); // fill() and import() the "bar" property
+     * </code>
+     *
+     * @param string|null $propertyName The property name. If null use the child name.
+     *
+     * @return $this
+     *
+     * @see Setter
+     * @see Getter
+     * @see ChildBuilder::getter()
+     * @see ChildBuilder::setter()
+     *
+     * @since 1.5
+     */
+    final public function getset(?string $propertyName = null): self
+    {
+        return $this->getter($propertyName)->setter($propertyName);
+    }
+
+    /**
      * Define the child class name
      *
      * @param class-string<ChildInterface> $factory The child class name

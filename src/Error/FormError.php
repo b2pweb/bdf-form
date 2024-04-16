@@ -115,6 +115,37 @@ final class FormError implements Stringable
     }
 
     /**
+     * Get a single error message
+     *
+     * Note: if the error is an aggregate error, the method will return null,
+     *       so it must not be used to check if a child has an error
+     *
+     * @param string $child The child name
+     *
+     * @return string|null The child error message, or null if the child has no global error, or is not found
+     * @since 1.5
+     */
+    public function get(string $child): ?string
+    {
+        $child = $this->children[$child] ?? null;
+
+        return $child ? $child->global : null;
+    }
+
+    /**
+     * Get the error of a child
+     * An object is always returned, even if the child has no error, so check {@see FormError::empty()} to know if the child has an error
+     * @param string $child The child name
+     *
+     * @return FormError The child error
+     * @since 1.5
+     */
+    public function child(string $child): FormError
+    {
+        return $this->children[$child] ?? self::null();
+    }
+
+    /**
      * Export the errors into an array
      *
      * - The errors are indexed by the children's name

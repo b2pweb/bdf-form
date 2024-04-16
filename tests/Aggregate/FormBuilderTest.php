@@ -5,6 +5,7 @@ namespace Bdf\Form\Aggregate;
 use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Csrf\CsrfElement;
+use Bdf\Form\Leaf\AnyElement;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
@@ -35,6 +36,21 @@ class FormBuilderTest extends TestCase
     protected function setUp(): void
     {
         $this->builder = new FormBuilder();
+    }
+
+    /**
+     *
+     */
+    public function test_any()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->any('firstName'));
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->any('lastName'));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(AnyElement::class, $form['firstName']->element());
+        $this->assertInstanceOf(AnyElement::class, $form['lastName']->element());
     }
 
     /**

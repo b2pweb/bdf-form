@@ -35,6 +35,43 @@ class BooleanElementViewTest extends TestCase
     /**
      *
      */
+    public function test_setValue()
+    {
+        $view = new BooleanElementView(BooleanElement::class, 'foo', 'true', 'true', true, 'my error');
+
+        $this->assertSame('foo', $view->name());
+        $this->assertSame('true', $view->value());
+
+        $view->setValue('false');
+        $this->assertSame('false', $view->value());
+    }
+
+    /**
+     *
+     */
+    public function test_setError()
+    {
+        $view = new BooleanElementView(BooleanElement::class, 'foo', 'true', 'true', true, null);
+
+        $this->assertSame(BooleanElement::class, $view->type());
+        $this->assertSame('foo', $view->name());
+        $this->assertSame('true', $view->value());
+        $this->assertNull($view->error());
+        $this->assertFalse($view->hasError());
+        $this->assertFalse($view->required());
+        $this->assertEquals([], $view->constraints());
+        $this->assertSame([], $view->attributes());
+        $this->assertTrue($view->checked());
+        $this->assertSame('true', $view->httpValue());
+
+        $view->setError('my error');
+        $this->assertEquals('my error', $view->error());
+        $this->assertTrue($view->hasError());
+    }
+
+    /**
+     *
+     */
     public function test_serialization_should_ignore_attributes()
     {
         $view = new BooleanElementView(BooleanElement::class, 'foo', 'true', 'true', true, 'my error');
@@ -101,6 +138,16 @@ class BooleanElementViewTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $view->set('foo', 'bar')->attributes());
         $this->assertSame([], $view->unset('foo')->attributes());
         $this->assertSame(['foo' => 'bar', 'rab' => 'oof'], $view->foo('bar')->rab('oof')->attributes());
+    }
+
+    /**
+     *
+     */
+    public function test_with()
+    {
+        $view = new BooleanElementView(BooleanElement::class, 'foo', 'true', 'true', true, null);
+
+        $this->assertSame(['foo' => 'bar', 'baz' => true], $view->with(['foo' => 'bar', 'baz'])->attributes());
     }
 
     /**

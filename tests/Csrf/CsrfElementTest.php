@@ -25,6 +25,7 @@ class CsrfElementTest extends TestCase
         $element = new CsrfElement();
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertTrue($element->error()->empty());
         $this->assertInstanceOf(CsrfToken::class, $element->value());
         $this->assertEquals(CsrfElement::class, $element->value()->getId());

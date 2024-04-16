@@ -31,6 +31,7 @@ class AnyElementTest extends TestCase
         $element = new AnyElement();
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertNull($element->value());
         $this->assertNull($element->httpValue());
         $this->assertTrue($element->error()->empty());
@@ -57,6 +58,7 @@ class AnyElementTest extends TestCase
         $element = new AnyElement();
 
         $this->assertTrue($element->submit(null)->valid());
+        $this->assertFalse($element->failed());
         $this->assertNull($element->value());
         $this->assertTrue($element->error()->empty());
     }
@@ -104,6 +106,7 @@ class AnyElementTest extends TestCase
         );
 
         $this->assertTrue($element->submit('aa')->valid());
+        $this->assertFalse($element->failed());
         $this->assertSame('aa', $element->value());
     }
 
@@ -152,6 +155,7 @@ class AnyElementTest extends TestCase
         $this->assertSame($element, $element->patch(null));
         $this->assertSame('foo', $element->value());
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('This value is too short. It should have 5 characters or more.', $element->error()->global());
     }
 

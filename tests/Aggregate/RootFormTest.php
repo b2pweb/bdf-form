@@ -210,6 +210,7 @@ class RootFormTest extends TestCase
         $this->assertSame([], $form->value());
         $this->assertSame(['value' => '42'], $form->httpValue());
         $this->assertTrue($form->valid());
+        $this->assertFalse($form->failed());
         $this->assertTrue($form->error()->empty());
         $this->assertNull($form->container());
         $this->assertSame($form, $form->root());

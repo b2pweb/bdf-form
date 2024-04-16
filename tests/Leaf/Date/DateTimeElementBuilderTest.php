@@ -69,6 +69,7 @@ class DateTimeElementBuilderTest extends TestCase
         $element->submit('invalid');
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('This value is not a valid datetime.', $element->error()->global());
         $this->assertEquals('INVALID_DATETIME_ERROR', $element->error()->code());
     }

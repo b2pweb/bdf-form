@@ -62,7 +62,11 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
 
         $attributes['name'] = $view->name();
         $attributes['value'] = $view->value();
-        $attributes['required'] = $view->required();
+
+        if (!isset($attributes['required'])) {
+            $attributes['required'] = $view->required();
+        }
+
         $attributes += $this->constraintsToAttributes($view->constraints());
 
         return HtmlRenderer::element('input', $attributes);

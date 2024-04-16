@@ -43,6 +43,7 @@ class PhoneElementBuilderTest extends TestCase
         $element->submit('1');
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('The phone number is not valid.', $element->error()->global());
         $this->assertEquals('INVALID_PHONE_NUMBER_ERROR', $element->error()->code());
     }
@@ -69,6 +70,7 @@ class PhoneElementBuilderTest extends TestCase
         $element->submit('1');
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
         $this->assertEquals('INVALID_PHONE_NUMBER_ERROR', $element->error()->code());
     }
@@ -82,6 +84,7 @@ class PhoneElementBuilderTest extends TestCase
         $element->submit('1');
 
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
         $this->assertEquals('INVALID_PHONE_NUMBER_ERROR', $element->error()->code());
     }

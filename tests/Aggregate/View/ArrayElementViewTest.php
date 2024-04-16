@@ -46,6 +46,45 @@ class ArrayElementViewTest extends TestCase
     /**
      *
      */
+    public function test_setError()
+    {
+        $view = new ArrayElementView(ArrayElement::class, 'foo', ['aaa', 'bbb'], null, $elements = [
+            $this->createMock(ElementViewInterface::class),
+            $this->createMock(ElementViewInterface::class),
+        ], true, [Count::class => ['max' => 5]]);
+
+        $this->assertSame(ArrayElement::class, $view->type());
+        $this->assertFalse($view->hasError());
+        $this->assertNull($view->error());
+        $this->assertTrue($view->required());
+        $this->assertEquals([Count::class => ['max' => 5]], $view->constraints());
+        $this->assertFalse($view->isCsv());
+        $this->assertEquals(['aaa', 'bbb'], $view->value());
+
+        $view->setError('my error');
+        $this->assertTrue($view->hasError());
+        $this->assertSame('my error', $view->error());
+    }
+
+    /**
+     *
+     */
+    public function test_setValue()
+    {
+        $view = new ArrayElementView(ArrayElement::class, 'foo', ['aaa', 'bbb'], null, $elements = [
+            $this->createMock(ElementViewInterface::class),
+            $this->createMock(ElementViewInterface::class),
+        ], true, [Count::class => ['max' => 5]]);
+
+        $this->assertEquals(['aaa', 'bbb'], $view->value());
+
+        $view->setValue(['ccc', 'ddd']);
+        $this->assertEquals(['ccc', 'ddd'], $view->value());
+    }
+
+    /**
+     *
+     */
     public function test_serialization_should_ignore_attributes()
     {
         $view = new ArrayElementView(ArrayElement::class, 'foo', ['aaa', 'bbb'], 'my error', $elements = [
@@ -217,6 +256,7 @@ class ArrayElementViewTest extends TestCase
 
         $this->assertNull($out);
     }
+
     /**
      *
      */
@@ -232,6 +272,20 @@ class ArrayElementViewTest extends TestCase
         $this->assertSame([], $view->unset('foo')->attributes());
         $this->assertSame(['foo' => 'bar', 'rab' => 'oof'], $view->foo('bar')->rab('oof')->attributes());
     }
+
+    /**
+     *
+     */
+    public function test_with()
+    {
+        $view = new ArrayElementView(ArrayElement::class, 'foo', ['aaa', 'bbb'], null, $elements = [
+            $this->createMock(ElementViewInterface::class),
+            $this->createMock(ElementViewInterface::class),
+        ], true, [Count::class => ['max' => 5]]);
+
+        $this->assertSame(['foo' => 'bar', 'baz' => true], $view->with(['foo' => 'bar', 'baz'])->attributes());
+    }
+
     /**
      *
      */

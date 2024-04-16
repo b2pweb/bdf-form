@@ -177,6 +177,7 @@ class StringElementBuilderTest extends TestCase
 
         $element->submit('aaa');
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
     }
 
@@ -189,6 +190,7 @@ class StringElementBuilderTest extends TestCase
 
         $element->submit('aaa');
         $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
     }
 }
