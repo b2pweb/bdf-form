@@ -15,7 +15,7 @@ class CsrfConstraintValidator extends ConstraintValidator
     /**
      * {@inheritdoc}
      */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof CsrfConstraint) {
             throw new UnexpectedTypeException($constraint, CsrfConstraint::class);

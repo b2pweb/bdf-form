@@ -15,7 +15,7 @@ class ClosureValidator extends ConstraintValidator
     /**
      * {@inheritdoc}
      */
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof Closure) {
             throw new UnexpectedTypeException($constraint, Closure::class);

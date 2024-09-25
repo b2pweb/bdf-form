@@ -12,9 +12,8 @@ final class TransformerExceptionConstraint extends Constraint
 {
     const TRANSFORM_ERROR = 'b5acab45-80b0-4808-8784-6577e37ac869';
 
-    protected static $errorNames = [
-        self::TRANSFORM_ERROR => 'TRANSFORM_ERROR',
-    ];
+    protected const ERROR_NAMES = [self::TRANSFORM_ERROR => 'TRANSFORM_ERROR'];
+    protected static $errorNames = self::ERROR_NAMES;
 
     /**
      * The error message. If null, the exception's message will be taken
@@ -58,7 +57,7 @@ final class TransformerExceptionConstraint extends Constraint
     /**
      * {@inheritdoc}
      */
-    public function getDefaultOption()
+    public function getDefaultOption(): ?string
     {
         return 'exception';
     }

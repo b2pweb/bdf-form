@@ -38,11 +38,13 @@ class EmailElementBuilderTest extends TestCase
      */
     public function test_mode()
     {
-        $element = $this->builder->mode(Email::VALIDATION_MODE_LOOSE)->buildElement();
-        $this->assertTrue($element->submit('foo   @bar.baz')->valid());
+        if (defined(Email::class.'::VALIDATION_MODE_HTML5_ALLOW_NO_TLD')) {
+            $element = $this->builder->mode(Email::VALIDATION_MODE_HTML5_ALLOW_NO_TLD)->buildElement();
+            $this->assertTrue($element->submit('foo@bar')->valid());
+        }
 
         $element = $this->builder->mode(Email::VALIDATION_MODE_HTML5)->buildElement();
-        $this->assertFalse($element->submit('foo   @bar.baz')->valid());
+        $this->assertFalse($element->submit('foo@bar')->valid());
     }
 
     /**

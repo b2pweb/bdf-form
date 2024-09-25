@@ -12,9 +12,8 @@ class CsrfConstraint extends Constraint
 {
     const INVALID_TOKEN_ERROR = 'cd108896-d12a-4455-a6cc-ba13708c8e7f';
 
-    protected static $errorNames = [
-        self::INVALID_TOKEN_ERROR => 'INVALID_TOKEN_ERROR',
-    ];
+    protected const ERROR_NAMES = [self::INVALID_TOKEN_ERROR => 'INVALID_TOKEN_ERROR'];
+    protected static $errorNames = self::ERROR_NAMES;
 
     /**
      * The constraint message
@@ -31,7 +30,7 @@ class CsrfConstraint extends Constraint
     /**
      * {@inheritdoc}
      */
-    public function getDefaultOption()
+    public function getDefaultOption(): ?string
     {
         return 'manager';
     }
