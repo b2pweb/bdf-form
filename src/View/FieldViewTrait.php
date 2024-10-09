@@ -93,7 +93,7 @@ trait FieldViewTrait
     /**
      * {@inheritdoc}
      */
-    public function render(FieldViewRendererInterface $renderer = null): string
+    public function render(?FieldViewRendererInterface $renderer = null): string
     {
         return ($renderer ?? $this->defaultRenderer())->render($this, $this->attributes);
     }

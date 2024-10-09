@@ -26,7 +26,7 @@ class ArrayChildBuilder extends ChildBuilder
      * @param ArrayElementBuilder $elementBuilder
      * @param RegistryInterface|null $registry
      */
-    public function __construct(string $name, ElementBuilderInterface $elementBuilder, RegistryInterface $registry = null)
+    public function __construct(string $name, ElementBuilderInterface $elementBuilder, ?RegistryInterface $registry = null)
     {
         parent::__construct($name, $elementBuilder, $registry);
 

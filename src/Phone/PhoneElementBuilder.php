@@ -63,7 +63,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      *
      * @param RegistryInterface|null $registry
      */
-    public function __construct(RegistryInterface $registry = null)
+    public function __construct(?RegistryInterface $registry = null)
     {
         parent::__construct($registry);
 

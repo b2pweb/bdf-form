@@ -126,7 +126,7 @@ class ChildBuilder implements ChildBuilderInterface
      * @param B $elementBuilder
      * @param RegistryInterface|null $registry
      */
-    public function __construct(string $name, ElementBuilderInterface $elementBuilder, RegistryInterface $registry = null)
+    public function __construct(string $name, ElementBuilderInterface $elementBuilder, ?RegistryInterface $registry = null)
     {
         $this->name = $name;
         $this->elementBuilder = $elementBuilder;

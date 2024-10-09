@@ -28,7 +28,7 @@ class PhoneChildBuilder extends ChildBuilder
      *
      * @param PhoneElementBuilder $elementBuilder
      */
-    public function __construct(string $name, ElementBuilderInterface $elementBuilder, RegistryInterface $registry = null)
+    public function __construct(string $name, ElementBuilderInterface $elementBuilder, ?RegistryInterface $registry = null)
     {
         parent::__construct($name, $elementBuilder, $registry);
 

@@ -36,7 +36,7 @@ abstract class AbstractElementBuilder implements ElementBuilderInterface
      *
      * @param RegistryInterface|null $registry
      */
-    public function __construct(RegistryInterface $registry = null)
+    public function __construct(?RegistryInterface $registry = null)
     {
         $this->registry = $registry ?: new Registry();
     }
