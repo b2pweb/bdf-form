@@ -9,6 +9,8 @@ use InvalidArgumentException;
 use Locale;
 use NumberFormatter;
 
+use function is_string;
+
 /**
  * Transformer localized string number to native PHP number (int or double)
  *
@@ -76,6 +78,11 @@ class LocalizedNumberTransformer implements TransformerInterface
 
         if (!is_numeric($value)) {
             throw new InvalidArgumentException('Expected a numeric or null.');
+        }
+
+        // Formatter only supports number values, so we cast to float
+        if (is_string($value)) {
+            $value = (float) $value;
         }
 
         $formatter = $this->getNumberFormatter();
