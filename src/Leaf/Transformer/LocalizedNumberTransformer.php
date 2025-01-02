@@ -85,6 +85,8 @@ class LocalizedNumberTransformer implements TransformerInterface
             $value = (float) $value;
         }
 
+        /** @var float|int $value */
+
         $formatter = $this->getNumberFormatter();
         $value = $formatter->format($value);
 
