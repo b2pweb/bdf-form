@@ -19,6 +19,8 @@ use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
 use PHPUnit\Framework\TestCase;
 
+use function base_convert;
+
 /**
  * Class FunctionalTest
  */
@@ -419,6 +421,34 @@ class FormTest extends TestCase
         $this->assertSame('Mike', $form['firstName']->element()->value());
         $this->assertSame('Mike', $form['lastName']->element()->value());
         $this->assertSame(42, $form['id']->element()->value());
+    }
+
+    public function test_import_with_dependencies_should_first_import_dependencies()
+    {
+        $builder = new FormBuilder($this->registry);
+
+        $builder->integer('base')->getset();
+        $builder
+            ->string('value')
+            ->depends('base')
+            ->getter(function ($value, ChildInterface $input) {
+                return base_convert($value, 10, $input->parent()['base']->element()->value());
+            })
+            ->setter(function ($value, ChildInterface $input) {
+                return (int) base_convert($value, $input->parent()['base']->element()->value(), 10);
+            })
+        ;
+
+        /** @var FormInterface $form */
+        $form = $builder->buildElement();
+
+        $form->import([
+            'base' => 32,
+            'value' => 74325,
+        ]);
+
+        $this->assertSame(32, $form['base']->element()->value());
+        $this->assertSame('28il', $form['value']->element()->value());
     }
 
     /**
