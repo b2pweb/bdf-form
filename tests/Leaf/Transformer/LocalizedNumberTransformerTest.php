@@ -231,6 +231,11 @@ class LocalizedNumberTransformerTest extends TestCase
             ['16.52', '16.52'],
             ['16.52045', '16.52'],
             ['-15.4', '-15.4'],
+            [NAN, 'NaN'],
+            [INF, '∞'],
+            [-INF, '-∞'],
+            [-1/INF, '-0'],
+            [1/INF, '0'],
         ];
     }
 }
