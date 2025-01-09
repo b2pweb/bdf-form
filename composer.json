@@ -21,7 +21,7 @@
   },
   "minimum-stability": "dev",
   "require": {
-    "php": ">=7.1",
+    "php": ">=7.4",
     "symfony/property-access": "~4.3|~5.0|~6.0|~7.0",
     "symfony/validator": "~4.3|~5.0|~6.0|~7.0",
     "symfony/polyfill-php80": "~1.22"
