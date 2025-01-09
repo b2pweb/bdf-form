@@ -214,7 +214,7 @@ final class Form implements FormInterface
 
         $this->value = $entity;
 
-        foreach ($this->children as $child) {
+        foreach ($this->children->reverseIterator() as $child) {
             $child->import($entity);
         }
 

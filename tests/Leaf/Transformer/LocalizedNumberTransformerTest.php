@@ -211,4 +211,31 @@ class LocalizedNumberTransformerTest extends TestCase
             [new \stdClass()],
         ];
     }
+
+    /**
+     * @dataProvider validPhpValue
+     */
+    public function test_transformToHttp_valid($httpValue, $expected)
+    {
+        $transformer = new LocalizedNumberTransformer();
+        $element = $this->createMock(ElementInterface::class);
+
+        $this->assertSame($expected, $transformer->transformToHttp($httpValue, $element));
+    }
+
+    public function validPhpValue()
+    {
+        return [
+            [1.23, '1.23'],
+            [42, '42'],
+            ['16.52', '16.52'],
+            ['16.52045', '16.52'],
+            ['-15.4', '-15.4'],
+            [NAN, 'NaN'],
+            [INF, '∞'],
+            [-INF, '-∞'],
+            [-1/INF, '-0'],
+            [1/INF, '0'],
+        ];
+    }
 }
