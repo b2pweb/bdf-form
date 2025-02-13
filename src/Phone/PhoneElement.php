@@ -54,7 +54,7 @@ final class PhoneElement extends LeafElement
      */
     protected function toPhp($httpValue)
     {
-        if ($httpValue === null) {
+        if ($httpValue === null || $httpValue === '') {
             return null;
         }
 

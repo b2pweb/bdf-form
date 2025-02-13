@@ -37,6 +37,32 @@ class PhoneElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_should_ignore_error_on_empty_string()
+    {
+        $element = $this->builder->buildElement();
+        $element->submit('');
+
+        $this->assertTrue($element->valid());
+        $this->assertFalse($element->failed());
+        $this->assertNull($element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_should_ignore_error_on_null()
+    {
+        $element = $this->builder->buildElement();
+        $element->submit(null);
+
+        $this->assertTrue($element->valid());
+        $this->assertFalse($element->failed());
+        $this->assertNull($element->error()->global());
+    }
+
+    /**
+     *
+     */
     public function test_must_validate_number_by_default()
     {
         $element = $this->builder->buildElement();
