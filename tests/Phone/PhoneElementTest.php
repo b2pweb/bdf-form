@@ -86,8 +86,21 @@ class PhoneElementTest extends TestCase
         $element = new PhoneElement();
 
         $this->assertTrue($element->submit('')->valid());
-        $this->assertSame('', $element->value()->getRawInput());
-        $this->assertSame('', $element->httpValue());
+        $this->assertNull($element->value());
+        $this->assertNull($element->httpValue());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
+    public function test_submit_empty_string_with_region()
+    {
+        $element = new PhoneElement(null, null, function () { return 'fr'; });
+
+        $this->assertTrue($element->submit('')->valid());
+        $this->assertNull($element->value());
+        $this->assertNull($element->httpValue());
         $this->assertTrue($element->error()->empty());
     }
 
