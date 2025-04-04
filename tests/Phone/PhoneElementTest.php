@@ -107,6 +107,19 @@ class PhoneElementTest extends TestCase
     /**
      *
      */
+    public function test_submit_null_region()
+    {
+        $element = new PhoneElement(null, null, function () { return null; });
+
+        $this->assertTrue($element->submit('+330142563698')->valid());
+        $this->assertInstanceOf(PhoneNumber::class, $element->value());
+        $this->assertSame('+330142563698', $element->httpValue());
+        $this->assertTrue($element->error()->empty());
+    }
+
+    /**
+     *
+     */
     public function test_submit_with_constraint()
     {
         $element = new PhoneElement(new ConstraintValueValidator([new NotBlank()]));

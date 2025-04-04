@@ -11,6 +11,8 @@ use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use TypeError;
 
+use function strtoupper;
+
 /**
  * Element for handle phone number input
  *
@@ -102,7 +104,9 @@ final class PhoneElement extends LeafElement
             return PhoneNumberUtil::UNKNOWN_REGION;
         }
 
-        return strtoupper(($this->regionResolver)($this));
+        $region = ($this->regionResolver)($this);
+
+        return $region === null ? PhoneNumberUtil::UNKNOWN_REGION : strtoupper($region);
     }
 
     /**
