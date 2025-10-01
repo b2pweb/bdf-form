@@ -39,7 +39,7 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
      * @param bool $formatIfInvalid
      * @param PhoneNumberUtil|null $formatter
      */
-    public function __construct(int $format = PhoneNumberFormat::E164, bool $formatIfInvalid = false, ?PhoneNumberUtil $formatter = null)
+    public function __construct($format = PhoneNumberFormat::E164, bool $formatIfInvalid = false, ?PhoneNumberUtil $formatter = null)
     {
         $this->format = $format;
         $this->formatIfInvalid = $formatIfInvalid;

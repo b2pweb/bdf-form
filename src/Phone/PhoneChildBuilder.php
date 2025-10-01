@@ -79,7 +79,7 @@ class PhoneChildBuilder extends ChildBuilder
      *
      * @see PhoneNumberToStringTransformer
      */
-    public function saveAsString(?int $format = PhoneNumberFormat::E164): self
+    public function saveAsString($format = PhoneNumberFormat::E164): self
     {
         $this->saveFormat = $format;
 
