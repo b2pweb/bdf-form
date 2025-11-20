@@ -690,7 +690,7 @@ class ArrayElementTest extends TestCase
         $this->assertEquals('ccc', $view->choices()[2]->value());
 
         $r = new \ReflectionProperty(ArrayElement::class, 'templateElement');
-        $r->setAccessible(true);
+        PHP_VERSION_ID >= 80100 or $r->setAccessible(true);
 
         $this->assertNull($r->getValue($element)->value());
     }

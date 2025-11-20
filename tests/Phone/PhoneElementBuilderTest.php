@@ -124,7 +124,8 @@ class PhoneElementBuilderTest extends TestCase
 
         $this->assertInstanceOf(PhoneElement::class, $element);
         $r = (new \ReflectionClass($element))->getProperty('formatter');
-        $r->setAccessible(true);
+
+        PHP_VERSION_ID >= 80100 or $r->setAccessible(true);
 
         $this->assertSame($formatter, $r->getValue($element));
     }
