@@ -373,7 +373,7 @@ class DependencyTreeTest extends TestCase
     {
         $reflector = new ReflectionObject($object);
         $prop = $reflector->getProperty($attributeName);
-        $prop->setAccessible(true);
+        PHP_VERSION_ID >= 80100 or $prop->setAccessible(true);
         return $prop->getValue($object);
     }
 }
