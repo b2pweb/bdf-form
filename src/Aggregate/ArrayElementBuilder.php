@@ -19,10 +19,20 @@ use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Util\MagicCallForwarding;
 use Bdf\Form\Util\TransformerBuilderTrait;
 use Bdf\Form\Util\ValidatorBuilderTrait;
+use ReflectionClass;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Choice as ChoiceConstraint;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use TypeError;
+
+use function func_get_arg;
+use function func_num_args;
+use function is_array;
+use function is_bool;
+use function is_callable;
+use function sprintf;
+use function trigger_error;
 
 /**
  * Builder for the array element
@@ -297,15 +307,41 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * Ex: `$builder->count(['min' => 3, 'max' => 5])`
      *
-     * @param array $options Constraint options. Keys are "min", "max"
+     * @param array|int|null $exactly The exact expected number of elements, or an array of options (deprecated since 1.7)
+     * @param int|null $min Minimum expected number of elements
+     * @param int|null $max Maximum expected number of elements
+     * @param string|null $exactMessage
+     * @param string|null $minMessage
+     * @param string|null $maxMessage
      *
      * @return $this
      *
      * @see Count For the list of options
      */
-    public function count(array $options): ArrayElementBuilder
+    public function count($exactly = null, ?int $min = null, ?int $max = null, ?string $exactMessage = null, ?string  $minMessage = null, ?string $maxMessage = null): ArrayElementBuilder
     {
-        return $this->arrayConstraint(new Count($options));
+        if (is_array($exactly)) {
+            @trigger_error('Passing an array of options to count() is deprecated since 1.7. Pass the options as individual parameters instead.', E_USER_DEPRECATED);
+
+            $min = $exactly['min'] ?? null;
+            $max = $exactly['max'] ?? null;
+            $exactMessage = $exactly['exactMessage'] ?? null;
+            $minMessage = $exactly['minMessage'] ?? null;
+            $maxMessage = $exactly['maxMessage'] ?? null;
+            $exactly = $exactly['exactly'] ?? null;
+        }
+
+        static $isSf4 = null;
+
+        if ($isSf4 === null) {
+            $isSf4 = (new ReflectionClass(Count::class))->getConstructor()->getNumberOfParameters() === 1;
+        }
+
+        return $this->arrayConstraint(
+            $isSf4
+                ? new Count(['exactly' => $exactly, 'min' => $min, 'max' => $max, 'exactMessage' => $exactMessage, 'minMessage' => $minMessage, 'maxMessage' => $maxMessage])
+                : new Count($exactly, $min, $max, null, $exactMessage, $minMessage, $maxMessage) // The constructor is consistent from sf 5 to 8, so we can safely use ordered parameters.
+        );
     }
 
     /**
@@ -313,14 +349,44 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @return $this
      */
-    final public function required($options = null)
+    final public function required($options = null/*, ?bool $allowNull = null, ?callable $normalizer = null*/)
     {
+        // @todo rename $options to $message on bdf-form 2.0
+        if (is_array($options)) {
+            @trigger_error('Passing an array of options to required() is deprecated since 1.7. Pass the options as individual parameters instead.', E_USER_DEPRECATED);
+        }
+
+        // @todo declare allowNull and normalizer as actual parameters on bdf-form 2.0
+        $allowNull = func_num_args() > 1 ? func_get_arg(1) : null;
+        $normalizer = func_num_args() > 2 ? func_get_arg(2) : null;
+
+        if ($allowNull !== null && !is_bool($allowNull)) {
+            throw new TypeError(sprintf('The "allowNull" option of required() must be a boolean or null, "%s" given.', get_debug_type($allowNull)));
+        }
+
+        if ($normalizer !== null && !is_callable($normalizer)) {
+            throw new TypeError(sprintf('The "normalizer" option of required() must be a valid callable or null, "%s" given.', get_debug_type($normalizer)));
+        }
+
         if (!$options instanceof Constraint) {
-            if (is_string($options)) {
-                $options = ['message' => $options];
+            static $isSf4 = null;
+
+            if ($isSf4 === null) {
+                $isSf4 = (new ReflectionClass(NotBlank::class))->getConstructor()->getNumberOfParameters() === 1;
             }
 
-            $options = new NotBlank($options);
+            if (is_array($options)) {
+                $message = $options['message'] ?? null;
+                $allowNull ??= $options['allowNull'] ?? null;
+                $normalizer ??= $options['normalizer'] ?? null;
+            } else {
+                $message = $options;
+            }
+
+            $options = $isSf4
+                ? new NotBlank(['message' => $message, 'allowNull' => $allowNull, 'normalizer' => $normalizer])
+                : new NotBlank(null, $message, $allowNull, $normalizer) // The constructor is consistent from sf 5 to 8, so we can safely use ordered parameters.
+            ;
         }
 
         return $this->arrayConstraint($options);
@@ -329,23 +395,29 @@ class ArrayElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
-    final public function choices($choices, $options = null): self
+    final public function choices($choices, $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): self
     {
-        // @fixme c/c choice from trait
-        if (!$choices instanceof ChoiceInterface) {
-            $choices = is_array($choices) ? new ArrayChoice($choices) : new LazyChoice($choices);
-        }
+        $builder = new class {
+            use ChoiceBuilderTrait {
+                getChoices as public;
+            }
 
-        if (is_string($options)) {
-            $options = ['multipleMessage' => $options];
-        }
+            public ChoiceConstraint $constraint;
 
-        $options['callback'] = [$choices, 'values'];
-        $options['multiple'] = true;
+            public function satisfy($constraint, $options = null, bool $append = true)
+            {
+                $this->constraint = $constraint;
+                return $this;
+            }
+        };
 
-        $this->choices = $choices;
+        // Force the multiple option to true
+        $builder->choices($choices, $message, true, $strict, $min, $max, $minMessage, $maxMessage);
 
-        return $this->arrayConstraint(new ChoiceConstraint($options));
+        $this->arrayConstraint($builder->constraint);
+        $this->choices = $builder->getChoices();
+
+        return $this;
     }
 
     /**

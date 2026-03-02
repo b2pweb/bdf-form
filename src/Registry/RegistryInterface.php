@@ -22,6 +22,7 @@ interface RegistryInterface
      * @param FilterInterface|callable|string $filter
      *
      * @return FilterInterface
+     * @deprecated Since 1.7. Instantiate the filter directly instead of using the registry.
      */
     public function filter($filter): FilterInterface;
 
@@ -31,6 +32,7 @@ interface RegistryInterface
      * @param Constraint|callable|array|string $constraint
      *
      * @return Constraint
+     * @deprecated Since 1.7. Instantiate the constraint directly instead of using the registry.
      */
     public function constraint($constraint): Constraint;
 
@@ -42,6 +44,7 @@ interface RegistryInterface
      * @return TransformerInterface
      *
      * @throws LogicException If the transformer is invalid
+     * @deprecated Since 1.7. Instantiate the transformer directly instead of using the registry.
      */
     public function transformer($transformer): TransformerInterface;
 

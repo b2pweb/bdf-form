@@ -6,6 +6,8 @@ use Bdf\Form\AbstractElementBuilder;
 use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
+use Bdf\Form\Validator\TransformerExceptionConstraint;
+use ReflectionClass;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -48,13 +50,16 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
      */
     public function min($min, ?string $message = null): self
     {
-        $options = ['value' => $min];
+        static $isSf4 = null;
 
-        if ($message) {
-            $options['message'] = $message;
+        if ($isSf4 === null) {
+            $isSf4 = (new ReflectionClass(GreaterThanOrEqual::class))->getConstructor()->getNumberOfParameters() === 1;
         }
 
-        $this->satisfy(new GreaterThanOrEqual($options));
+        $this->satisfy($isSf4
+            ? new GreaterThanOrEqual(['value' => $min, 'message' => $message])
+            : new GreaterThanOrEqual($min, null, $message)
+        );
 
         return $this;
     }
@@ -69,13 +74,16 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
      */
     public function max($max, ?string $message = null): self
     {
-        $options = ['value' => $max];
+        static $isSf4 = null;
 
-        if ($message) {
-            $options['message'] = $message;
+        if ($isSf4 === null) {
+            $isSf4 = (new ReflectionClass(LessThanOrEqual::class))->getConstructor()->getNumberOfParameters() === 1;
         }
 
-        $this->satisfy(new LessThanOrEqual($options));
+        $this->satisfy($isSf4
+            ? new LessThanOrEqual(['value' => $max, 'message' => $message])
+            : new LessThanOrEqual($max, null, $message)
+        );
 
         return $this;
     }
@@ -83,18 +91,23 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
     /**
      * The number must be positive
      *
-     * @param array|string $options The constraint options, or the error message
+     * @param array|string|null $message The error message
      *
      * @return $this
      * @see Positive
      */
-    public function positive($options = []): self
+    public function positive($message = null): self
     {
-        if (is_string($options)) {
-            $options = ['message' => $options];
+        static $isSf4 = null;
+
+        if ($isSf4 === null) {
+            $isSf4 = (new ReflectionClass(Positive::class))->getConstructor()->getNumberOfParameters() === 1;
         }
 
-        return $this->satisfy(new Positive($options));
+        return $this->satisfy($isSf4
+            ? new Positive(['message' => $message])
+            : new Positive(null, $message)
+        );
     }
 
     /**
@@ -123,6 +136,18 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
             'message' => 'The value is not a valid number.',
             'code' => 'INVALID_NUMBER_ERROR',
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function defaultTransformerExceptionConstraint(): TransformerExceptionConstraint
+    {
+        return new TransformerExceptionConstraint(
+            null,
+            /*message:*/ 'The value is not a valid number.',
+            /*code:*/ 'INVALID_NUMBER_ERROR',
+        );
     }
 
     /**

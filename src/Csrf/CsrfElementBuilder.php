@@ -174,7 +174,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     {
         return new CsrfElement(
             $this->tokenId,
-            new CsrfValueValidator($this->invalidate, $this->message ? ['message' => $this->message] : [], $this->onlyValidateRoot),
+            new CsrfValueValidator($this->invalidate, $this->message, $this->onlyValidateRoot),
             $this->tokenManager
         );
     }

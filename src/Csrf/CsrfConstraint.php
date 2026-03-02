@@ -5,6 +5,10 @@ namespace Bdf\Form\Csrf;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Validator\Constraint;
 
+use function is_array;
+use function sprintf;
+use function trigger_error;
+
 /**
  * @internal
  */
@@ -26,6 +30,21 @@ class CsrfConstraint extends Constraint
      * @var CsrfTokenManagerInterface
      */
     public $manager;
+
+    public function __construct($manager = null, ?string $message = null)
+    {
+        if (is_array($manager)) {
+            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
+            $options = $manager;
+            $manager = $options['manager'] ?? null;
+            $message = $message ?? $options['message'] ?? null;
+        }
+
+        parent::__construct($options ?? null);
+
+        $this->manager = $manager ?? $this->manager;
+        $this->message = $message ?? $this->message;
+    }
 
     /**
      * {@inheritdoc}

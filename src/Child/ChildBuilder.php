@@ -6,6 +6,8 @@ use Bdf\Form\Child\Http\ArrayOffsetHttpFields;
 use Bdf\Form\Child\Http\HttpFieldsInterface;
 use Bdf\Form\Child\Http\PrefixedHttpFields;
 use Bdf\Form\ElementBuilderInterface;
+use Bdf\Form\Filter\ClosureFilter;
+use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\Filter\TrimFilter;
 use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\Getter;
@@ -17,6 +19,9 @@ use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\MagicCallForwarding;
 use Bdf\Form\Util\TransformerBuilderTrait;
 use Symfony\Component\Form\DataTransformerInterface;
+
+use function is_callable;
+use function trigger_error;
 
 /**
  * Base builder for a child
@@ -158,6 +163,14 @@ class ChildBuilder implements ChildBuilderInterface
      */
     final public function filter($filter, bool $append = true)
     {
+        if (is_callable($filter)) {
+            $filter = new ClosureFilter($filter);
+        }
+
+        if (!$filter instanceof FilterInterface) {
+            @trigger_error('Not passing a callable or a filter instance is deprecated since 1.7 and will be removed in 2.0.', E_USER_DEPRECATED);
+        }
+
         if ($append === true) {
             $this->filters[] = $filter;
         } else {

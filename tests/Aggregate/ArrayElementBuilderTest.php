@@ -217,9 +217,20 @@ class ArrayElementBuilderTest extends TestCase
     /**
      *
      */
-    public function test_count()
+    public function test_count_legacy()
     {
         $element = $this->builder->count(['min' => 3])->buildElement();
+
+        $this->assertFalse($element->submit(['foo', 'bar'])->valid());
+        $this->assertTrue($element->submit(['foo', 'bar', 'baz'])->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_count()
+    {
+        $element = $this->builder->count(null, /*min: */3)->buildElement();
 
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());
         $this->assertTrue($element->submit(['foo', 'bar', 'baz'])->valid());

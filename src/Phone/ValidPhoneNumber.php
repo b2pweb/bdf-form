@@ -4,6 +4,10 @@ namespace Bdf\Form\Phone;
 
 use Symfony\Component\Validator\Constraint;
 
+use function is_array;
+use function sprintf;
+use function trigger_error;
+
 /**
  * Check if the phone number is valid
  */
@@ -20,4 +24,18 @@ class ValidPhoneNumber extends Constraint
      * @var string
      */
     public $message = 'The phone number is not valid.';
+
+    public function __construct($message = null)
+    {
+        if (is_array($message)) {
+            @trigger_error(sprintf('Passing an array of options to the "%s" constraint is deprecated since version 1.7 and support for it will be removed in 2.0. Use named arguments instead.', __CLASS__), E_USER_DEPRECATED);
+
+            $options = $message;
+            $message = $options['message'] ?? null;
+        }
+
+        parent::__construct($options ?? null);
+
+        $this->message = $message ?? $this->message;
+    }
 }

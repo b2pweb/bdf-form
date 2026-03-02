@@ -7,7 +7,10 @@ use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use ReflectionClass;
 use Symfony\Component\Validator\Constraints\Email;
+
+use function is_array;
 
 /**
  * Provide email constraint builder for a StringElementBuilder
@@ -28,10 +31,13 @@ class EmailElementBuilder extends StringElementBuilder
      */
     private $useConstraint = true;
 
+    private ?string $errorMessage = null;
+    private ?string $mode = null;
+
     /**
-     * @var array{message?:string,mode?:string,normalizer?:callable(string):string}
+     * @var (callable(string):string)|null
      */
-    private $constraintOptions = [];
+    private $normalizer = null;
 
     /**
      * EmailElementBuilder constructor.
@@ -59,7 +65,7 @@ class EmailElementBuilder extends StringElementBuilder
      */
     public function mode(string $mode): self
     {
-        $this->constraintOptions['mode'] = $mode;
+        $this->mode = $mode;
 
         return $this;
     }
@@ -73,7 +79,7 @@ class EmailElementBuilder extends StringElementBuilder
      */
     public function errorMessage(string $message): self
     {
-        $this->constraintOptions['message'] = $message;
+        $this->errorMessage = $message;
 
         return $this;
     }
@@ -98,7 +104,7 @@ class EmailElementBuilder extends StringElementBuilder
      */
     public function normalizer(callable $normalizer): self
     {
-        $this->constraintOptions['normalizer'] = $normalizer;
+        $this->normalizer = $normalizer;
 
         return $this;
     }
@@ -122,16 +128,27 @@ class EmailElementBuilder extends StringElementBuilder
      * $builder->email('contact')->useConstraint(['mode' => Email::VALIDATION_MODE_HTML5, 'message' => 'my error']);
      * </code>
      *
-     * @param array{message?:string,mode?:string,normalizer?:callable(string):string} $options
+     * @param string|array|null $message
      *
      * @return $this
      *
      * @see Email for list of options
      */
-    public function useConstraint(array $options = []): self
+    public function useConstraint($message = null, ?string $mode = null, ?string $normalizer = null): self
     {
         $this->useConstraint = true;
-        $this->constraintOptions = $options;
+
+        if (is_array($message)) {
+            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
+
+            $mode = $mode ?? $message['mode'] ?? null;
+            $normalizer = $normalizer ?? $message['normalizer'] ?? null;
+            $message = $message['message'] ?? null;
+        }
+
+        $this->errorMessage = $message;
+        $this->mode = $mode;
+        $this->normalizer = $normalizer;
 
         return $this;
     }
@@ -145,7 +162,17 @@ class EmailElementBuilder extends StringElementBuilder
             return [];
         }
 
-        return [new Email($this->constraintOptions)];
+        static $isSf4 = null;
+
+        if (null === $isSf4) {
+            $isSf4 = (new ReflectionClass(Email::class))->getConstructor()->getNumberOfParameters() === 1;
+        }
+
+        return [
+            $isSf4
+                ? new Email(['mode' => $this->mode, 'message' => $this->errorMessage, 'normalizer' => $this->normalizer])
+                : new Email(null, $this->errorMessage, $this->mode, $this->normalizer)
+        ];
     }
 
     /**
