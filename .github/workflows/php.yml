@@ -79,10 +79,11 @@ jobs:
     - name: Run type coverage
       run: composer run-script psalm
 
+    # TODO: min-msi has been decrease to 80 to allow compatibility between SF 4.3 to 7.4. We should increase it to 90 on bdf-form 2.0
     - name: Run Infection
       run: |
         git fetch --depth=1 origin $GITHUB_BASE_REF
-        ./infection.phar --logger-github --git-diff-filter=AM --min-msi=90
+        ./infection.phar --logger-github --git-diff-filter=AM --min-msi=80
 
   coverage:
     name: Test coverage
