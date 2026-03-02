@@ -80,7 +80,7 @@ trait ChoiceBuilderTrait
 
         return $this->satisfy($isSf4
             ? new ChoiceConstraint(['callback' => $callback, 'message' => $message, 'multipleMessage' => $message, 'multiple' => $multiple, 'strict' => $strict, 'min' => $min, 'max' => $max, 'minMessage' => $minMessage, 'maxMessage' => $maxMessage])
-            : new ChoiceConstraint(null, null, $callback, $multiple, $strict, $min, $max, $message, $message, $min, $maxMessage)
+            : new ChoiceConstraint([], null, $callback, $multiple, $strict, $min, $max, $message, $message, $min, $maxMessage)
         );
     }
 
