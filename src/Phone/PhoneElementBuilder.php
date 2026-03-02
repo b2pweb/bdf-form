@@ -108,6 +108,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
             static $isSf4 = null;
 
             if ($isSf4 === null) {
+                /** @psalm-suppress PossiblyNullReference */
                 $isSf4 = (new ReflectionClass(NotEmptyPhoneNumber::class))->getConstructor()->getNumberOfParameters() === 1;
             }
 

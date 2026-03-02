@@ -87,6 +87,7 @@ trait ValidatorBuilderTrait
             static $isSf4 = null;
 
             if ($isSf4 === null) {
+                /** @psalm-suppress PossiblyNullReference */
                 $isSf4 = (new ReflectionClass(NotBlank::class))->getConstructor()->getNumberOfParameters() === 1;
             }
 

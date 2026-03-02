@@ -11,6 +11,7 @@ use ReflectionClass;
 use Symfony\Component\Validator\Constraints\Url;
 
 use function is_array;
+use function is_string;
 use function sprintf;
 use function trigger_error;
 
@@ -33,7 +34,7 @@ class UrlElementBuilder extends StringElementBuilder
     private ?string $errorMessage = null;
 
     /**
-     * @var array|string|null
+     * @var string[]|null
      */
     private $protocols = null;
     private ?bool $relativeProtocol = null;
@@ -166,7 +167,7 @@ class UrlElementBuilder extends StringElementBuilder
         }
 
         $this->errorMessage = $message;
-        $this->protocols = $protocols;
+        $this->protocols = is_string($protocols) ? [$protocols] : $protocols;
         $this->relativeProtocol = $relativeProtocol;
         $this->normalizer = $normalizer;
 
@@ -175,6 +176,7 @@ class UrlElementBuilder extends StringElementBuilder
 
     /**
      * @return \Symfony\Component\Validator\Constraint[]
+     * @psalm-suppress TooManyArguments
      */
     protected function createUrlConstraint(RegistryInterface $registry): array
     {
@@ -185,6 +187,7 @@ class UrlElementBuilder extends StringElementBuilder
         static $isSf4 = null;
 
         if ($isSf4 === null) {
+            /** @psalm-suppress PossiblyNullReference */
             $isSf4 = (new ReflectionClass(Url::class))->getConstructor()->getNumberOfParameters() === 1;
         }
 

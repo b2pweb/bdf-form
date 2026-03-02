@@ -334,6 +334,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
         static $isSf4 = null;
 
         if ($isSf4 === null) {
+            /** @psalm-suppress PossiblyNullReference */
             $isSf4 = (new ReflectionClass(Count::class))->getConstructor()->getNumberOfParameters() === 1;
         }
 
@@ -372,6 +373,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
             static $isSf4 = null;
 
             if ($isSf4 === null) {
+                /** @psalm-suppress PossiblyNullReference */
                 $isSf4 = (new ReflectionClass(NotBlank::class))->getConstructor()->getNumberOfParameters() === 1;
             }
 

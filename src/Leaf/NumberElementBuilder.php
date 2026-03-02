@@ -12,6 +12,10 @@ use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Positive;
 
+use function is_array;
+use function sprintf;
+use function trigger_error;
+
 /**
  * Base builder for an number element
  *
@@ -53,6 +57,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
         static $isSf4 = null;
 
         if ($isSf4 === null) {
+            /** @psalm-suppress PossiblyNullReference */
             $isSf4 = (new ReflectionClass(GreaterThanOrEqual::class))->getConstructor()->getNumberOfParameters() === 1;
         }
 
@@ -77,6 +82,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
         static $isSf4 = null;
 
         if ($isSf4 === null) {
+            /** @psalm-suppress PossiblyNullReference */
             $isSf4 = (new ReflectionClass(LessThanOrEqual::class))->getConstructor()->getNumberOfParameters() === 1;
         }
 
@@ -101,7 +107,13 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
         static $isSf4 = null;
 
         if ($isSf4 === null) {
+            /** @psalm-suppress PossiblyNullReference */
             $isSf4 = (new ReflectionClass(Positive::class))->getConstructor()->getNumberOfParameters() === 1;
+        }
+
+        if (is_array($message)) {
+            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
+            $message = $message['message'] ?? null;
         }
 
         return $this->satisfy($isSf4

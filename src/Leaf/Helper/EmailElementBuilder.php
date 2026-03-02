@@ -165,6 +165,7 @@ class EmailElementBuilder extends StringElementBuilder
         static $isSf4 = null;
 
         if (null === $isSf4) {
+            /** @psalm-suppress PossiblyNullReference */
             $isSf4 = (new ReflectionClass(Email::class))->getConstructor()->getNumberOfParameters() === 1;
         }
 

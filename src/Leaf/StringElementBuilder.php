@@ -8,10 +8,13 @@ use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Regex;
 
+use function get_debug_type;
 use function is_array;
+use function is_string;
 use function property_exists;
 use function sprintf;
 use function trigger_error;
@@ -57,6 +60,7 @@ class StringElementBuilder extends AbstractElementBuilder
         static $sfVersion = null;
 
         if ($sfVersion === null) {
+            /** @psalm-suppress PossiblyNullReference */
             if ((new \ReflectionClass(Length::class))->getConstructor()->getNumberOfParameters() === 1) {
                 $sfVersion = 43;
             } elseif (!property_exists(Length::class, 'countUnit')) {
@@ -92,6 +96,7 @@ class StringElementBuilder extends AbstractElementBuilder
                 break;
 
             default:
+                /** @psalm-suppress PossiblyInvalidArgument */
                 $constraint = new Length($exactly, $min, $max, $charset, $normalizer, $countUnit, $exactMessage, $minMessage, $maxMessage, $charsetMessage);
         }
 
@@ -127,7 +132,12 @@ class StringElementBuilder extends AbstractElementBuilder
         static $ifSf4 = null;
 
         if ($ifSf4 === null) {
+            /** @psalm-suppress PossiblyNullReference */
             $ifSf4 = (new \ReflectionClass(Regex::class))->getConstructor()->getNumberOfParameters() === 1;
+        }
+
+        if (!is_string($pattern)) {
+            throw new InvalidArgumentException(sprintf('The "pattern" option of the regex constraint must be a string, "%s" given.', get_debug_type($pattern)));
         }
 
         return $this->satisfy($ifSf4
