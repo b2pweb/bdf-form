@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\ValidatorBuilder;
 
+use function method_exists;
+
 /**
  * Class FormErrorTest
  */
@@ -170,8 +172,10 @@ class FormErrorTest extends TestCase
 
         $printer->expects($this->once())->method('global')->with('global error');
         $printer->expects($this->once())->method('code')->with('MY_CODE');
-        $printer->expects($matcher = $this->exactly(2))->method('child')->willReturnCallback(function (...$args) use ($matcher) {
-            switch ($matcher->numberOfInvocations()) {
+        $printer->expects($this->exactly(2))->method('child')->willReturnCallback(function (...$args) {
+            static $count = 0;
+
+            switch (++$count) {
                 case 1:
                     $this->assertEquals(['child', FormError::message('child error')], $args);
                     break;
@@ -247,8 +251,10 @@ class FormErrorTest extends TestCase
         $printer = $this->createMock(FormErrorPrinterInterface::class);
 
         $printer->expects($this->never())->method('global');
-        $printer->expects($matcher = $this->exactly(2))->method('child')->willReturnCallback(function (...$args) use ($matcher) {
-            switch ($matcher->numberOfInvocations()) {
+        $printer->expects($this->exactly(2))->method('child')->willReturnCallback(function (...$args) {
+            static $count = 0;
+
+            switch (++$count) {
                 case 1:
                     $this->assertEquals(['child', FormError::message('child error')], $args);
                     break;
