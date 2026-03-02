@@ -544,8 +544,8 @@ class UserForm extends \Bdf\Form\Custom\CustomForm
             // So it can be used like a simple form builder
             
             $builder->generates(Credentials::class);
-            $builder->string('username')->required()->length(['min' => 3])->getter()->setter();
-            $builder->string('password')->required()->length(['min' => 6])->getter()->setter();
+            $builder->string('username')->required()->length(min: 3)->getter()->setter();
+            $builder->string('password')->required()->length(min: 6)->getter()->setter();
         });
         
         // Define an array of Address instances
@@ -606,8 +606,8 @@ class CredentialsForm extends \Bdf\Form\Custom\CustomForm
     protected function configure(\Bdf\Form\Aggregate\FormBuilderInterface $builder) : void
     {
         $builder->generates(Credentials::class);
-        $builder->string('username')->required()->length(['min' => 3])->getter()->setter();
-        $builder->string('password')->required()->length(['min' => 6])->getter()->setter();
+        $builder->string('username')->required()->length(min: 3)->getter()->setter();
+        $builder->string('password')->required()->length(min: 6)->getter()->setter();
     }
 }
 
@@ -875,7 +875,7 @@ switch ($btn = $form->root()->submitButton() ? $btn->name() : null) {
 
 ```php
 $builder->string('username')
-    ->length(['min' => 3, 'max' => 32]) // Define length options
+    ->length(min: 3, max: 32) // Define length options
     ->regex('/[a-z0-9_-]+/i') // Define a validation regex
 ;
 ```
