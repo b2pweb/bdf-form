@@ -225,9 +225,9 @@ class ValidatorBuilderTraitTest extends TestCase
     public function test_defaultTransformerExceptionConstraintOptions()
     {
         $builder = new class extends StringElementBuilder {
-            protected function defaultTransformerExceptionConstraintOptions(): array
+            protected function defaultTransformerExceptionConstraint(): TransformerExceptionConstraint
             {
-                return ['message' => 'my error message', 'code' => 'MY_ERROR'];
+                return new TransformerExceptionConstraint(message: 'my error message', code: 'MY_ERROR');
             }
         };
 
