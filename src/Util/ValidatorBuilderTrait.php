@@ -258,29 +258,11 @@ trait ValidatorBuilderTrait
     }
 
     /**
-     * Define the default constraints options for the TransformerExceptionConstraint
-     * This method should be overridden for define options
-     *
-     * @return array
-     * @deprecated Use {@see ValidatorBuilderTrait::defaultTransformerExceptionConstraint()} instead to define the default constraint with options. Will be removed in bdf-form 2.0
-     */
-    protected function defaultTransformerExceptionConstraintOptions(): array
-    {
-        return [];
-    }
-
-    /**
      * Define the default TransformerExceptionConstraint
      * This method should be overridden to define options
      */
     protected function defaultTransformerExceptionConstraint(): TransformerExceptionConstraint
     {
-        $options = $this->defaultTransformerExceptionConstraintOptions();
-
-        if ($options !== []) {
-            @trigger_error(sprintf('The %s::defaultTransformerExceptionConstraintOptions() method is deprecated since 1.7. Override %s::defaultTransformerExceptionConstraint() instead to define the default constraint with options.', static::class, static::class), E_USER_DEPRECATED);
-        }
-
         return new TransformerExceptionConstraint(
             $options['exception'] ?? null,
             $options['message'] ?? null,

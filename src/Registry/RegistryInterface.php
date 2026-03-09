@@ -5,49 +5,12 @@ namespace Bdf\Form\Registry;
 use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
-use Bdf\Form\Filter\FilterInterface;
-use Bdf\Form\Transformer\TransformerInterface;
-use LogicException;
-use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Validator\Constraint;
 
 /**
  * Registry for form components
  */
 interface RegistryInterface
 {
-    /**
-     * Create the filter
-     *
-     * @param FilterInterface|callable|string $filter
-     *
-     * @return FilterInterface
-     * @deprecated Since 1.7. Instantiate the filter directly instead of using the registry.
-     */
-    public function filter($filter): FilterInterface;
-
-    /**
-     * Create the constraint
-     *
-     * @param Constraint|callable|array|string $constraint
-     *
-     * @return Constraint
-     * @deprecated Since 1.7. Instantiate the constraint directly instead of using the registry.
-     */
-    public function constraint($constraint): Constraint;
-
-    /**
-     * Create a view transformer
-     *
-     * @param callable|TransformerInterface|DataTransformerInterface $transformer
-     *
-     * @return TransformerInterface
-     *
-     * @throws LogicException If the transformer is invalid
-     * @deprecated Since 1.7. Instantiate the transformer directly instead of using the registry.
-     */
-    public function transformer($transformer): TransformerInterface;
-
     /**
      * Create the child builder
      *

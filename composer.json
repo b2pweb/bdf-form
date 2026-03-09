@@ -11,8 +11,7 @@
   "autoload": {
     "psr-4": {
       "Bdf\\Form\\": "src"
-    },
-    "classmap": ["polyfill/WeakReference.php"]
+    }
   },
   "autoload-dev": {
     "psr-4": {
@@ -20,10 +19,9 @@
     }
   },
   "require": {
-    "php": ">=7.4",
+    "php": "~8.4",
     "symfony/property-access": "~4.3|~5.0|~6.0|~7.0",
-    "symfony/validator": "~4.3|~5.0|~6.0|~7.0",
-    "symfony/polyfill-php80": "~1.22"
+    "symfony/validator": "~4.3|~5.0|~6.0|~7.0"
   },
   "require-dev": {
     "symfony/security-csrf": "~4.3|~5.0|~6.0|~7.0",

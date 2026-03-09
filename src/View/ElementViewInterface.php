@@ -4,8 +4,6 @@ namespace Bdf\Form\View;
 
 /**
  * Base form element view type
- *
- * @method self setError(?string $error)
  */
 interface ElementViewInterface
 {
@@ -35,9 +33,8 @@ interface ElementViewInterface
      *
      * @return $this
      * @since 1.5
-     * @todo uncomment in 2.0
      */
-    //public function setError(?string $error): self;
+    public function setError(?string $error): self;
 
     /**
      * Check if the current element is on error

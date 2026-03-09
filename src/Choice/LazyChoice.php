@@ -10,7 +10,7 @@ namespace Bdf\Form\Choice;
  *
  * @final
  */
-/*final*/ class LazyChoice implements ChoiceInterface
+final class LazyChoice implements ChoiceInterface
 {
     /**
      * The lazy callback with returns choices

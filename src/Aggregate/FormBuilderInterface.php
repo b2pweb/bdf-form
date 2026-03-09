@@ -37,8 +37,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * </code>
  *
  * @extends ElementBuilderInterface<FormInterface>
- *
- * @method ChildBuilderInterface any(string $name)
  */
 interface FormBuilderInterface extends ElementBuilderInterface
 {
@@ -74,9 +72,8 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @return ChildBuilderInterface<AnyElementBuilder> The child builder
      *
      * @since 1.5
-     * @todo uncomment in 2.0
      */
-    //public function any(string $name): ChildBuilderInterface;
+    public function any(string $name): ChildBuilderInterface;
 
     /**
      * Add a new string element on the form

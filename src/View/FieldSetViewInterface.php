@@ -28,8 +28,6 @@ use Traversable;
  *
  * @extends ArrayAccess<array-key, E>
  * @extends Traversable<array-key, E>
- *
- * @method array errors()
  */
 interface FieldSetViewInterface extends ElementViewInterface, ArrayAccess, Traversable
 {
@@ -42,7 +40,6 @@ interface FieldSetViewInterface extends ElementViewInterface, ArrayAccess, Trave
      *
      * @return array<array-key, string|array>
      * @since 1.5
-     * @todo uncomment in 2.0
      */
-    //public function errors(): array;
+    public function errors(): array;
 }

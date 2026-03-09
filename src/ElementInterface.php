@@ -20,8 +20,6 @@ use Bdf\Form\View\ElementViewInterface;
  * </code>
  *
  * @template T
- *
- * @method bool failed()
  */
 interface ElementInterface
 {
@@ -138,9 +136,8 @@ interface ElementInterface
      *
      * @see ElementInterface::error() To get error
      * @since 1.5
-     * @todo uncomment in 2.0
      */
-    //public function failed(): bool;
+    public function failed(): bool;
 
     /**
      * Get the errors related to the element

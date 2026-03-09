@@ -7,8 +7,6 @@ use Stringable;
 
 /**
  * Base type for a renderable element of the form view tree
- *
- * @method self with(array $attributes)
  */
 interface Renderable extends Stringable
 {
@@ -44,9 +42,8 @@ interface Renderable extends Stringable
      * @param array<scalar> $attributes
      * @return $this
      * @since 1.5
-     * @todo uncomment in 2.0
      */
-    //public function with(array $attributes);
+    public function with(array $attributes);
 
     /**
      * Remove an attribute
