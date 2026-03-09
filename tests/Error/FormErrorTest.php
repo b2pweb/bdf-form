@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\ValidatorBuilder;
 
+use function method_exists;
+
 /**
  * Class FormErrorTest
  */
@@ -170,10 +172,18 @@ class FormErrorTest extends TestCase
 
         $printer->expects($this->once())->method('global')->with('global error');
         $printer->expects($this->once())->method('code')->with('MY_CODE');
-        $printer->expects($this->exactly(2))->method('child')->withConsecutive(
-            ['child', FormError::message('child error')],
-            ['child2', FormError::message('child2 error')]
-        );
+        $printer->expects($this->exactly(2))->method('child')->willReturnCallback(function (...$args) {
+            static $count = 0;
+
+            switch (++$count) {
+                case 1:
+                    $this->assertEquals(['child', FormError::message('child error')], $args);
+                    break;
+                case 2:
+                    $this->assertEquals(['child2', FormError::message('child2 error')], $args);
+                    break;
+            }
+        });
         $printer->expects($this->once())->method('print')->willReturn('formatted');
 
         $this->assertEquals('formatted', $error->print($printer));
@@ -241,10 +251,18 @@ class FormErrorTest extends TestCase
         $printer = $this->createMock(FormErrorPrinterInterface::class);
 
         $printer->expects($this->never())->method('global');
-        $printer->expects($this->exactly(2))->method('child')->withConsecutive(
-            ['child', FormError::message('child error')],
-            ['child2', FormError::message('child2 error')]
-        );
+        $printer->expects($this->exactly(2))->method('child')->willReturnCallback(function (...$args) {
+            static $count = 0;
+
+            switch (++$count) {
+                case 1:
+                    $this->assertEquals(['child', FormError::message('child error')], $args);
+                    break;
+                case 2:
+                    $this->assertEquals(['child2', FormError::message('child2 error')], $args);
+                    break;
+            }
+        });
         $printer->expects($this->once())->method('print')->willReturn('formatted');
 
         $this->assertEquals('formatted', $error->print($printer));

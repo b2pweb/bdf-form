@@ -99,11 +99,28 @@ class UrlElementBuilderTest extends TestCase
     /**
      *
      */
-    public function test_useConstraint()
+    public function test_useConstraint_legacy()
     {
         $element = $this->builder
             ->disableConstraint()
             ->useConstraint(['message' => 'my error'])
+            ->buildElement()
+        ;
+
+        $this->assertInstanceOf(UrlElement::class, $element);
+
+        $this->assertFalse($element->submit('foo')->valid());
+        $this->assertEquals('my error', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_useConstraint()
+    {
+        $element = $this->builder
+            ->disableConstraint()
+            ->useConstraint('my error')
             ->buildElement()
         ;
 

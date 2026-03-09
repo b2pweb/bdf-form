@@ -4,9 +4,13 @@ namespace Bdf\Form\Util;
 
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Registry\RegistryInterface;
+use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerAggregate;
 use Bdf\Form\Transformer\TransformerInterface;
+
+use function is_callable;
+use function trigger_error;
 
 /**
  * Trait for implements builder of transformer
@@ -30,6 +34,14 @@ trait TransformerBuilderTrait
      */
     final public function transformer($transformer, bool $append = true)
     {
+        if (is_callable($transformer)) {
+            $transformer = new ClosureTransformer($transformer);
+        }
+
+        if (!$transformer instanceof TransformerInterface) {
+            @trigger_error('Passing a non transformer to transformer() is deprecated since 1.7. Pass a transformer instance, or a callback, instead of a class name.', E_USER_DEPRECATED);
+        }
+
         if ($append === true) {
             $this->transformers[] = $transformer;
         } else {

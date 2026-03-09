@@ -5,6 +5,10 @@ namespace Bdf\Form\Validator;
 use Exception;
 use Symfony\Component\Validator\Constraint;
 
+use function is_array;
+use function sprintf;
+use function trigger_error;
+
 /**
  * @internal
  */
@@ -53,6 +57,23 @@ final class TransformerExceptionConstraint extends Constraint
      * @var bool
      */
     public $ignoreException = false;
+
+    public function __construct($exception = null, ?string $message = null, ?string $code = null, ?callable $validationCallback = null, ?bool $ignoreException = null)
+    {
+        if (is_array($exception)) {
+            @trigger_error(sprintf('Passing an array of options to %s is deprecated since 1.7 and will not be supported in 2.0. Use named parameters instead.', __METHOD__), E_USER_DEPRECATED);
+
+            $options = $exception;
+        }
+
+        parent::__construct($options ?? null);
+
+        $this->exception = $exception ?? $this->exception;
+        $this->message = $message ?? $this->message;
+        $this->code = $code ?? $this->code;
+        $this->validationCallback = $validationCallback ?? $this->validationCallback;
+        $this->ignoreException = $ignoreException ?? $this->ignoreException;
+    }
 
     /**
      * {@inheritdoc}

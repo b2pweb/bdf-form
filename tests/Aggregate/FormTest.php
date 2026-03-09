@@ -44,8 +44,8 @@ class FormTest extends TestCase
         $this->registry = new Registry();
 
         $this->form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->setter()->length(['min' => 2])->buildChild(),
-            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->setter()->length(null, /*min:*/ 2)->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->setter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->setter()->buildChild(),
         ]));
     }
@@ -77,8 +77,8 @@ class FormTest extends TestCase
     {
         $called = false;
         $this->form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'firstName')->setter(function ($value) use(&$called) { $called = true; return $value; })->length(['min' => 2])->buildChild(),
-            $this->registry->childBuilder(StringElement::class, 'lastName')->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->setter(function ($value) use(&$called) { $called = true; return $value; })->length(null, /*min:*/ 2)->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->setter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->setter()->buildChild(),
         ]));
 
@@ -138,7 +138,7 @@ class FormTest extends TestCase
     public function test_submit_error_on_form()
     {
         $form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'password')->length(['min' => 8])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'password')->length(null, /*min:*/ 8)->buildChild(),
             $this->registry->childBuilder(StringElement::class, 'confirm')->buildChild(),
         ]), new ConstraintValueValidator([new Closure(function ($value, $form) {
             if ($form['password']->element()->value() != $form['confirm']->element()->value()) {
@@ -162,8 +162,8 @@ class FormTest extends TestCase
     public function test_submit_with_view_transformer()
     {
         $form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
-            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(null, /*min:*/ 2)->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
         ]), null, new ClosureTransformer(function ($value) { return array_map('strtolower', $value); }));
 
@@ -187,8 +187,8 @@ class FormTest extends TestCase
     public function test_submit_with_transformer_exception()
     {
         $form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
-            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(null, /*min:*/ 2)->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
         ]), null, new ClosureTransformer(function () { throw new \Exception('my error'); }));
 
@@ -215,8 +215,8 @@ class FormTest extends TestCase
     public function test_submit_with_transformer_exception_ignored()
     {
         $form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(['min' => 2])->buildChild(),
-            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(null, /*min:*/ 2)->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
         ]), new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])), new ClosureTransformer(function () { throw new \Exception('my error'); }));
 
@@ -241,8 +241,8 @@ class FormTest extends TestCase
     public function test_submit_with_transformer_exception_ignored_should_validate_other_constraints()
     {
         $form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->required()->length(['min' => 2])->buildChild(),
-            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->required()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->required()->length(null, /*min:*/ 2)->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->required()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->required()->buildChild(),
         ]), new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])), new ClosureTransformer(function () { throw new \Exception('my error'); }));
 
@@ -1024,8 +1024,8 @@ class FormTest extends TestCase
     public function test_optional_submit()
     {
         $this->form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'firstName')->required()->getter()->setter()->length(['min' => 2])->buildChild(),
-            $this->registry->childBuilder(StringElement::class, 'lastName')->required()->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->required()->getter()->setter()->length(null, /*min:*/ 2)->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->required()->getter()->setter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->required()->getter()->setter()->buildChild(),
         ]), null, null, null, true);
 
@@ -1064,8 +1064,8 @@ class FormTest extends TestCase
     public function test_optional_patch()
     {
         $this->form = new Form(new ChildrenCollection([
-            $this->registry->childBuilder(StringElement::class, 'firstName')->required()->getter()->setter()->length(['min' => 2])->buildChild(),
-            $this->registry->childBuilder(StringElement::class, 'lastName')->required()->getter()->setter()->length(['min' => 2])->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->required()->getter()->setter()->length(null, /*min:*/ 2)->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->required()->getter()->setter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->required()->getter()->setter()->buildChild(),
         ]), null, null, null, true);
 

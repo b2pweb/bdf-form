@@ -212,7 +212,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_import_and_patch_null_will_keep_global_error()
     {
-        $element = (new ArrayElementBuilder())->count(['min' => 3])->buildElement();
+        $element = (new ArrayElementBuilder())->count(null, /*min: */3)->buildElement();
 
         $element->submit(['foo', 'bar']);
 
@@ -579,7 +579,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_view_with_constraints()
     {
-        $element = (new ArrayElementBuilder())->count(['min' => 3, 'max' => 5])->required()->buildElement();
+        $element = (new ArrayElementBuilder())->count(null, /*min:*/ 3, /*max:*/ 5)->required()->buildElement();
 
         $view = $element->view();
 
@@ -609,7 +609,7 @@ class ArrayElementTest extends TestCase
     public function test_view_with_error_on_element()
     {
         $element = (new ArrayElementBuilder())->element(StringElement::class, function (StringElementBuilder $builder) {
-            $builder->length(['min' => 3]);
+            $builder->length(null, /*min:*/ 3);
         })->required()->buildElement();
 
         $element->submit(['f']);

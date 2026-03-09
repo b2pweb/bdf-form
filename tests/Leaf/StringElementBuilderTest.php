@@ -114,9 +114,20 @@ class StringElementBuilderTest extends TestCase
     /**
      *
      */
-    public function test_length()
+    public function test_length_legacy()
     {
         $element = $this->builder->length(['max' => 3])->buildElement();
+
+        $this->assertFalse($element->submit('aaaa')->valid());
+        $this->assertTrue($element->submit('aaa')->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_length()
+    {
+        $element = $this->builder->length(null, null, /*max:*/ 3)->buildElement();
 
         $this->assertFalse($element->submit('aaaa')->valid());
         $this->assertTrue($element->submit('aaa')->valid());

@@ -147,7 +147,7 @@ class StringElementTest extends TestCase
      */
     public function test_patch_null_with_constraints_should_be_validated()
     {
-        $element = (new StringElementBuilder())->length(['min' => 5])->buildElement();
+        $element = (new StringElementBuilder())->length(null, /*min:*/ 5)->buildElement();
         $element->import('foo');
 
         $this->assertSame($element, $element->patch(null));
@@ -162,7 +162,7 @@ class StringElementTest extends TestCase
      */
     public function test_patch_with_value()
     {
-        $element = (new StringElementBuilder())->length(['min' => 3])->buildElement();
+        $element = (new StringElementBuilder())->length(null, /*min:*/ 3)->buildElement();
 
         $this->assertFalse($element->patch('f')->valid());
         $this->assertSame('f', $element->value());
@@ -313,7 +313,7 @@ class StringElementTest extends TestCase
      */
     public function test_view_with_constraints()
     {
-        $element = (new StringElementBuilder())->length(['min' => 3, 'max' => 35])->required()->buildElement();
+        $element = (new StringElementBuilder())->length(null, /*min:*/ 3, /*max:*/ 35)->required()->buildElement();
         $element->import('foo');
 
         $view = $element->view(HttpFieldPath::named('name'));
@@ -335,7 +335,7 @@ class StringElementTest extends TestCase
      */
     public function test_view_with_error()
     {
-        $element = (new StringElementBuilder())->length(['min' => 3, 'max' => 35])->required()->buildElement();
+        $element = (new StringElementBuilder())->length(null, /*min:*/ 3, /*max:*/ 35)->required()->buildElement();
         $element->submit('f');
 
         $view = $element->view(HttpFieldPath::named('name'));

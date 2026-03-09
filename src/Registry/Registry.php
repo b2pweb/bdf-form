@@ -47,6 +47,8 @@ use LogicException;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Validator\Constraint;
 
+use function trigger_error;
+
 /**
  * Base registry interface
  */
@@ -103,6 +105,8 @@ class Registry implements RegistryInterface
             return $filter;
         }
 
+        @trigger_error('Using the registry to create filters is deprecated since 1.7. Instantiate the filter directly instead of using the registry.', E_USER_DEPRECATED);
+
         if (is_callable($filter)) {
             return new ClosureFilter($filter);
         }
@@ -120,6 +124,8 @@ class Registry implements RegistryInterface
         if ($constraint instanceof Constraint) {
             return $constraint;
         }
+
+        @trigger_error('Using the registry to create constraints is deprecated since 1.7. Instantiate the constraint directly instead of using the registry.', E_USER_DEPRECATED);
 
         if (is_callable($constraint)) {
             return new Closure(['callback' => $constraint]);
@@ -149,6 +155,8 @@ class Registry implements RegistryInterface
         if ($transformer instanceof TransformerInterface) {
             return $transformer;
         }
+
+        @trigger_error('Using the registry to create transformers is deprecated since 1.7. Instantiate the transformer directly instead of using the registry.', E_USER_DEPRECATED);
 
         if ($transformer instanceof DataTransformerInterface) {
             return new DataTransformerAdapter($transformer);

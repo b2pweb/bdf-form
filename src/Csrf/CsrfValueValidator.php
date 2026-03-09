@@ -9,7 +9,10 @@ use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Exception;
 
+use function is_array;
 use function method_exists;
+use function sprintf;
+use function trigger_error;
 
 /**
  * Class CsrfValueValidator
@@ -37,11 +40,11 @@ final class CsrfValueValidator implements ValueValidatorInterface
     private $invalidate;
 
     /**
-     * The constraint options
+     * The error message
      *
-     * @var array
+     * @var string|null
      */
-    private $options;
+    private $message;
 
     /**
      * Only validate the csrf token if the element is on the root form
@@ -55,13 +58,19 @@ final class CsrfValueValidator implements ValueValidatorInterface
      * CsrfValueValidator constructor.
      *
      * @param bool $invalidate Always invalidate the token after validation
-     * @param array $options Constraints options
+     * @param array|string|null $message The error message
      * @param bool $onlyValidateRoot Only validate the csrf token if the element is on the root form
      */
-    public function __construct(bool $invalidate = false, array $options = [], bool $onlyValidateRoot = false)
+    public function __construct(bool $invalidate = false, $message = null, bool $onlyValidateRoot = false)
     {
+        if (is_array($message)) {
+            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
+
+            $message = $message['message'] ?? null;
+        }
+
         $this->invalidate = $invalidate;
-        $this->options = $options;
+        $this->message = $message;
         $this->onlyValidateRoot = $onlyValidateRoot;
     }
 
@@ -84,7 +93,7 @@ final class CsrfValueValidator implements ValueValidatorInterface
         }
 
         try {
-            return (new ConstraintValueValidator([new CsrfConstraint($this->options + ['manager' => $element->getTokenManager()])]))->validate($value, $element);
+            return (new ConstraintValueValidator([new CsrfConstraint($element->getTokenManager(), $this->message)]))->validate($value, $element);
         } finally {
             if ($this->invalidate) {
                 $element->invalidateToken();

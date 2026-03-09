@@ -7,7 +7,13 @@ use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use ReflectionClass;
 use Symfony\Component\Validator\Constraints\Url;
+
+use function is_array;
+use function is_string;
+use function sprintf;
+use function trigger_error;
 
 /**
  * Provide URL constraint builder for a StringElementBuilder
@@ -25,10 +31,20 @@ class UrlElementBuilder extends StringElementBuilder
      */
     private $useConstraint = true;
 
+    private ?string $errorMessage = null;
+
     /**
-     * @var array{message?:string,protocols?:string[],relativeProtocol?:bool,normalizer?:callable(string):string}
+     * @var string[]|null
      */
-    private $constraintOptions = [];
+    private $protocols = null;
+    private ?bool $relativeProtocol = null;
+
+    /**
+     * @var (callable(string):string)|null
+     */
+    private $normalizer = null;
+    private ?bool $requireTld = false;
+    private ?string $tldMessage = null;
 
     /**
      * UrlElementBuilder constructor.
@@ -55,7 +71,7 @@ class UrlElementBuilder extends StringElementBuilder
      */
     public function protocols(string ...$protocols): self
     {
-        $this->constraintOptions['protocols'] = $protocols;
+        $this->protocols = $protocols;
 
         return $this;
     }
@@ -70,7 +86,7 @@ class UrlElementBuilder extends StringElementBuilder
      */
     public function relativeProtocol(bool $enable = true): self
     {
-        $this->constraintOptions['relativeProtocol'] = $enable;
+        $this->relativeProtocol = $enable;
 
         return $this;
     }
@@ -84,7 +100,7 @@ class UrlElementBuilder extends StringElementBuilder
      */
     public function errorMessage(string $message): self
     {
-        $this->constraintOptions['message'] = $message;
+        $this->errorMessage = $message;
 
         return $this;
     }
@@ -109,7 +125,7 @@ class UrlElementBuilder extends StringElementBuilder
      */
     public function normalizer(callable $normalizer): self
     {
-        $this->constraintOptions['normalizer'] = $normalizer;
+        $this->normalizer = $normalizer;
 
         return $this;
     }
@@ -130,25 +146,37 @@ class UrlElementBuilder extends StringElementBuilder
      * Define the email validation constraint options
      *
      * <code>
-     * $builder->email('contact')->useConstraint(['protocols' => ['ssh', 'sftp'], 'message' => 'my error']);
+     * $builder->email('contact')->useConstraint(protocols: ['ssh', 'sftp'], message: 'my error');
      * </code>
-     *
-     * @param array{message?:string,protocols?:string[],relativeProtocol?:bool,normalizer?:callable(string):string} $options
      *
      * @return $this
      *
      * @see Url for list of options
      */
-    public function useConstraint(array $options = []): self
+    public function useConstraint($message = null, $protocols = null, ?bool $relativeProtocol = null, ?callable $normalizer = null): self
     {
         $this->useConstraint = true;
-        $this->constraintOptions = $options;
+
+        if (is_array($message)) {
+            @trigger_error(sprintf('Passing an array of options to "%s" is deprecated since 1.7, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
+
+            $protocols ??= $message['protocols'] ?? null;
+            $relativeProtocol ??= $message['relativeProtocol'] ?? null;
+            $normalizer ??= $message['normalizer'] ?? null;
+            $message = $message['message'] ?? null;
+        }
+
+        $this->errorMessage = $message;
+        $this->protocols = is_string($protocols) ? [$protocols] : $protocols;
+        $this->relativeProtocol = $relativeProtocol;
+        $this->normalizer = $normalizer;
 
         return $this;
     }
 
     /**
      * @return \Symfony\Component\Validator\Constraint[]
+     * @psalm-suppress TooManyArguments
      */
     protected function createUrlConstraint(RegistryInterface $registry): array
     {
@@ -156,7 +184,19 @@ class UrlElementBuilder extends StringElementBuilder
             return [];
         }
 
-        return [new Url($this->constraintOptions)];
+        static $isSf4 = null;
+
+        if ($isSf4 === null) {
+            /** @psalm-suppress PossiblyNullReference */
+            $isSf4 = (new ReflectionClass(Url::class))->getConstructor()->getNumberOfParameters() === 1;
+        }
+
+        return [
+            $isSf4
+                ? new Url(['protocols' => $this->protocols, 'relativeProtocol' => $this->relativeProtocol, 'normalizer' => $this->normalizer, 'message' => $this->errorMessage])
+                : new Url(null, $this->errorMessage, $this->protocols, $this->relativeProtocol, $this->normalizer, null, null, $this->requireTld, $this->tldMessage)
+            ,
+        ];
     }
 
     /**

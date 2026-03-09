@@ -12,6 +12,7 @@ use Bdf\Form\Constraint\LessThanOrEqualField;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\FieldPath;
+use Bdf\Form\Validator\TransformerExceptionConstraint;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use DateTime;
 use DateTimeImmutable;
@@ -298,6 +299,18 @@ class DateTimeElementBuilder extends AbstractElementBuilder
             'message' => 'This value is not a valid datetime.',
             'code' => 'INVALID_DATETIME_ERROR',
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function defaultTransformerExceptionConstraint(): TransformerExceptionConstraint
+    {
+        return new TransformerExceptionConstraint(
+            null,
+            /*message:*/ 'This value is not a valid datetime.',
+            /*code:*/ 'INVALID_DATETIME_ERROR',
+        );
     }
 
     /**
