@@ -103,7 +103,7 @@ class UrlElementBuilderTest extends TestCase
     {
         $element = $this->builder
             ->disableConstraint()
-            ->useConstraint(['message' => 'my error'])
+            ->useConstraint(message: 'my error')
             ->buildElement()
         ;
 

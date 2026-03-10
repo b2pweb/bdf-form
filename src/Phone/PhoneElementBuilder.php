@@ -12,17 +12,7 @@ use Bdf\Form\Util\FieldPath;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\RegionCode;
-use ReflectionClass;
 use Symfony\Component\Validator\Constraint;
-use TypeError;
-
-use function func_get_arg;
-use function func_num_args;
-use function is_array;
-use function is_bool;
-use function is_callable;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Builder for a phone element
@@ -85,48 +75,17 @@ class PhoneElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function required($options = null/*, ?bool $allowNull = null, ?callable $normalizer = null*/)
+    public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null)
     {
-        // @todo rename $options to $message on bdf-form 2.0
-        if (is_array($options)) {
-            @trigger_error('Passing an array of options to required() is deprecated since 1.7. Pass the options as individual parameters instead.', E_USER_DEPRECATED);
+        if (!$message instanceof Constraint) {
+            $message = new NotEmptyPhoneNumber(
+                message: $message,
+                allowNull: $allowNull,
+                normalizer: $normalizer,
+            );
         }
 
-        // @todo declare allowNull and normalizer as actual parameters on bdf-form 2.0
-        $allowNull = func_num_args() > 1 ? func_get_arg(1) : null;
-        $normalizer = func_num_args() > 2 ? func_get_arg(2) : null;
-
-        if ($allowNull !== null && !is_bool($allowNull)) {
-            throw new TypeError(sprintf('The "allowNull" option of required() must be a boolean or null, "%s" given.', get_debug_type($allowNull)));
-        }
-
-        if ($normalizer !== null && !is_callable($normalizer)) {
-            throw new TypeError(sprintf('The "normalizer" option of required() must be a valid callable or null, "%s" given.', get_debug_type($normalizer)));
-        }
-
-        if (!$options instanceof Constraint) {
-            static $isSf4 = null;
-
-            if ($isSf4 === null) {
-                /** @psalm-suppress PossiblyNullReference */
-                $isSf4 = (new ReflectionClass(NotEmptyPhoneNumber::class))->getConstructor()->getNumberOfParameters() === 1;
-            }
-
-            if (is_array($options)) {
-                $message = $options['message'] ?? null;
-                $allowNull ??= $options['allowNull'] ?? null;
-                $normalizer ??= $options['normalizer'] ?? null;
-            } else {
-                $message = $options;
-            }
-
-            $options = $isSf4
-                ? new NotEmptyPhoneNumber(['message' => $message, 'allowNull' => $allowNull, 'normalizer' => $normalizer])
-                : new NotEmptyPhoneNumber(null, $message, $allowNull, $normalizer) // The constructor is consistent from sf 5 to 8, so we can safely use ordered parameters.
-            ;
-        }
-
-        return $this->satisfy($options);
+        return $this->satisfy($message);
     }
 
     /**
@@ -232,19 +191,13 @@ class PhoneElementBuilder extends AbstractElementBuilder
      * $builder->validateNumber(['message' => 'My error']); // Also accept array of options
      * </code>
      *
-     * @param array|string|null $message The error message or options for the ValidPhoneNumber constraint if the phone number is invalid
+     * @param string|null $message The error message if the phone number is invalid
      *
      * @return $this
      * @see ValidPhoneNumber
      */
-    public function validateNumber($message = null): self
+    public function validateNumber(?string $message = null): self
     {
-        if (is_array($message)) {
-            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
-
-            $message = $message['message'] ?? null;
-        }
-
         $this->allowInvalidNumber = false;
         $this->invalidPhoneErrorMessage = $message;
 

@@ -9,10 +9,7 @@ use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Exception;
 
-use function is_array;
 use function method_exists;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Class CsrfValueValidator
@@ -58,17 +55,11 @@ final class CsrfValueValidator implements ValueValidatorInterface
      * CsrfValueValidator constructor.
      *
      * @param bool $invalidate Always invalidate the token after validation
-     * @param array|string|null $message The error message
+     * @param string|null $message The error message
      * @param bool $onlyValidateRoot Only validate the csrf token if the element is on the root form
      */
-    public function __construct(bool $invalidate = false, $message = null, bool $onlyValidateRoot = false)
+    public function __construct(bool $invalidate = false, ?string $message = null, bool $onlyValidateRoot = false)
     {
-        if (is_array($message)) {
-            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
-
-            $message = $message['message'] ?? null;
-        }
-
         $this->invalidate = $invalidate;
         $this->message = $message;
         $this->onlyValidateRoot = $onlyValidateRoot;

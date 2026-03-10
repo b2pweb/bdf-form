@@ -132,7 +132,7 @@ class MyCustomForm extends CustomForm
 
         $builder
             ->string('foo')
-            ->length(['min' => 3])
+            ->length(min: 3)
             ->setter()->getter()
         ;
 

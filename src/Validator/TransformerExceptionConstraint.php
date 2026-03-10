@@ -5,10 +5,6 @@ namespace Bdf\Form\Validator;
 use Exception;
 use Symfony\Component\Validator\Constraint;
 
-use function is_array;
-use function sprintf;
-use function trigger_error;
-
 /**
  * @internal
  */
@@ -17,7 +13,6 @@ final class TransformerExceptionConstraint extends Constraint
     const TRANSFORM_ERROR = 'b5acab45-80b0-4808-8784-6577e37ac869';
 
     protected const ERROR_NAMES = [self::TRANSFORM_ERROR => 'TRANSFORM_ERROR'];
-    protected static $errorNames = self::ERROR_NAMES;
 
     /**
      * The error message. If null, the exception's message will be taken
@@ -36,7 +31,7 @@ final class TransformerExceptionConstraint extends Constraint
     /**
      * The transformer exception
      *
-     * @var Exception
+     * @var Exception|null
      */
     public $exception;
 
@@ -58,15 +53,9 @@ final class TransformerExceptionConstraint extends Constraint
      */
     public $ignoreException = false;
 
-    public function __construct($exception = null, ?string $message = null, ?string $code = null, ?callable $validationCallback = null, ?bool $ignoreException = null)
+    public function __construct(?Exception $exception = null, ?string $message = null, ?string $code = null, ?callable $validationCallback = null, ?bool $ignoreException = null)
     {
-        if (is_array($exception)) {
-            @trigger_error(sprintf('Passing an array of options to %s is deprecated since 1.7 and will not be supported in 2.0. Use named parameters instead.', __METHOD__), E_USER_DEPRECATED);
-
-            $options = $exception;
-        }
-
-        parent::__construct($options ?? null);
+        parent::__construct();
 
         $this->exception = $exception ?? $this->exception;
         $this->message = $message ?? $this->message;

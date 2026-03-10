@@ -6,8 +6,10 @@ use BadMethodCallException;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Transformer\TransformerInterface;
 use LogicException;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Validator\Constraint;
 
 /**
  * Builder for a CsrfElement
@@ -146,7 +148,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function satisfy($constraint, $options = null, bool $append = true)
+    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
     {
         throw new BadMethodCallException();
     }
@@ -154,7 +156,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function transformer($transformer, bool $append = true)
+    public function transformer(callable|TransformerInterface $transformer, bool $append = true)
     {
         throw new BadMethodCallException();
     }

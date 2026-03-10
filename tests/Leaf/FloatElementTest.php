@@ -102,7 +102,7 @@ class FloatElementTest extends TestCase
         $transformer = $this->createMock(TransformerInterface::class);
         $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
         $element = new FloatElement(
-            new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])),
+            new ConstraintValueValidator([], new TransformerExceptionConstraint(ignoreException: true)),
             $transformer
         );
 
@@ -120,7 +120,7 @@ class FloatElementTest extends TestCase
         $element = new FloatElement(
             new ConstraintValueValidator(
                 [new Closure(function () { return 'validation error'; })],
-                new TransformerExceptionConstraint(['ignoreException' => true])
+                new TransformerExceptionConstraint(ignoreException: true)
             ),
             $transformer
         );

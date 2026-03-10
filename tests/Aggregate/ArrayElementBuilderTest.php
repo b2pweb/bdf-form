@@ -57,7 +57,7 @@ class ArrayElementBuilderTest extends TestCase
      */
     public function test_calling_undefined_method_should_be_forwarded_to_inner_element_builder()
     {
-        $element = $this->builder->length(['min' => 2])->buildElement();
+        $element = $this->builder->length(min: 2)->buildElement();
 
         $this->assertFalse($element->submit(['a', 'bb'])->valid());
         $this->assertEquals(['This value is too short. It should have 2 characters or more.'], $element->error()->toArray());
@@ -212,17 +212,6 @@ class ArrayElementBuilderTest extends TestCase
     {
         $element = $this->builder->arrayTransformer(function ($value) { return array_flip($value); })->buildElement();
         $this->assertSame(['bar' => 'foo'], $element->submit(['foo' => 'bar'])->value());
-    }
-
-    /**
-     *
-     */
-    public function test_count_legacy()
-    {
-        $element = $this->builder->count(['min' => 3])->buildElement();
-
-        $this->assertFalse($element->submit(['foo', 'bar'])->valid());
-        $this->assertTrue($element->submit(['foo', 'bar', 'baz'])->valid());
     }
 
     /**

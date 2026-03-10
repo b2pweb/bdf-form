@@ -67,7 +67,7 @@ interface ChildBuilderInterface
      *
      * @see FilterInterface
      */
-    public function filter($filter, bool $append = true);
+    public function filter(FilterInterface|callable $filter, bool $append = true);
 
     /**
      * Define the default value
@@ -160,14 +160,14 @@ interface ChildBuilderInterface
      * });
      * </code>
      *
-     * @param callable|TransformerInterface|DataTransformerInterface $transformer The transformer. Symfony transformer can be used
+     * @param callable|TransformerInterface $transformer The transformer
      * @param bool $append Append the transformer. Prepend if false
      *
      * @return $this
      *
      * @see TransformerInterface
      */
-    public function modelTransformer($transformer, bool $append = true);
+    public function modelTransformer(callable|TransformerInterface $transformer, bool $append = true);
 
     /**
      * Creates the child instance

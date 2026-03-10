@@ -154,7 +154,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(
             new StringElement(),
             new ClosureTransformer(function () { throw new Exception('My error'); }),
-            new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true]))
+            new ConstraintValueValidator([], new TransformerExceptionConstraint(ignoreException: true))
         );
 
         $this->assertTrue($element->submit(['foo', 'bar'])->valid());
@@ -169,7 +169,7 @@ class ArrayElementTest extends TestCase
         $element = new ArrayElement(
             new StringElement(),
             new ClosureTransformer(function () { throw new Exception('My error'); }),
-            new ConstraintValueValidator([new Closure(function () {return 'error';})], new TransformerExceptionConstraint(['ignoreException' => true]))
+            new ConstraintValueValidator([new Closure(function () {return 'error';})], new TransformerExceptionConstraint(ignoreException: true))
         );
 
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());

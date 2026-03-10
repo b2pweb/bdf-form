@@ -105,7 +105,7 @@ class ConstraintValueValidatorTest extends TestCase
     public function test_onTransformerException_ignoreException()
     {
         $element = new StringElement();
-        $validator = new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true]));
+        $validator = new ConstraintValueValidator([], new TransformerExceptionConstraint(ignoreException: true));
 
         $error = $validator->onTransformerException(new \Exception('my error'), 'foo', $element);
 
@@ -118,7 +118,7 @@ class ConstraintValueValidatorTest extends TestCase
     public function test_onTransformerException_custom_message_and_code()
     {
         $element = new StringElement();
-        $validator = new ConstraintValueValidator([], new TransformerExceptionConstraint(['message' => 'message', 'code' => 'CODE_ERROR']));
+        $validator = new ConstraintValueValidator([], new TransformerExceptionConstraint(message: 'message', code: 'CODE_ERROR'));
 
         $error = $validator->onTransformerException(new \Exception('my error'), 'foo', $element);
 

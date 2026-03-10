@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Csrf;
 
+use Bdf\Form\Transformer\TransformerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -11,6 +12,7 @@ use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\TokenStorage\SessionTokenStorage;
 use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class CsrfElementBuilderTest
@@ -104,7 +106,7 @@ class CsrfElementBuilderTest extends TestCase
     public function test_satisfy()
     {
         $this->expectException(\BadMethodCallException::class);
-        $this->builder->satisfy(null);
+        $this->builder->satisfy(new NotBlank());
     }
 
     /**
@@ -113,7 +115,7 @@ class CsrfElementBuilderTest extends TestCase
     public function test_transformer()
     {
         $this->expectException(\BadMethodCallException::class);
-        $this->builder->transformer(null);
+        $this->builder->transformer($this->createMock(TransformerInterface::class));
     }
 
     /**

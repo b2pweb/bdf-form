@@ -3,12 +3,10 @@
 namespace Bdf\Form\Choice;
 
 use Bdf\Form\ElementBuilderInterface;
-use ReflectionClass;
+use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Choice as ChoiceConstraint;
 
 use function is_array;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Trait for configure choices on an element
@@ -45,43 +43,32 @@ trait ChoiceBuilderTrait
      * </code>
      *
      * @param ChoiceInterface|array|callable $choices  The allowed values in PHP form.
-     * @param null|string|array $message The error message.
+     * @param string|null $message The error message.
      *
      * @return $this
      * @see ChoiceConstraint
      */
-    final public function choices($choices, $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): self
+    final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): self
     {
         if (!$choices instanceof ChoiceInterface) {
             $choices = is_array($choices) ? new ArrayChoice($choices) : new LazyChoice($choices);
         }
 
-        if (is_array($message)) {
-            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
-
-            $multiple = $multiple ?? $message['multiple'] ?? null;
-            $strict = $strict ?? $message['strict'] ?? null;
-            $min = $min ?? $message['min'] ?? null;
-            $max = $max ?? $message['max'] ?? null;
-            $minMessage = $minMessage ?? $message['minMessage'] ?? null;
-            $maxMessage = $maxMessage ?? $message['maxMessage'] ?? null;
-            $message = $message['message'] ?? null;
-        }
-
-        static $isSf4 = null;
-
-        if ($isSf4 === null) {
-            /** @psalm-suppress PossiblyNullReference */
-            $isSf4 = (new ReflectionClass(ChoiceConstraint::class))->getConstructor()->getNumberOfParameters() === 1;
-        }
-
-        $callback = [$choices, 'values'];
-
+        $callback = $choices->values(...);
         $this->choices = $choices;
 
-        return $this->satisfy($isSf4
-            ? new ChoiceConstraint(['callback' => $callback, 'message' => $message, 'multipleMessage' => $message, 'multiple' => $multiple, 'strict' => $strict, 'min' => $min, 'max' => $max, 'minMessage' => $minMessage, 'maxMessage' => $maxMessage])
-            : new ChoiceConstraint([], null, $callback, $multiple, $strict, $min, $max, $message, $message, $minMessage, $maxMessage)
+        return $this->satisfy(
+            new ChoiceConstraint(
+                callback: $callback,
+                multiple: $multiple,
+                strict: $strict,
+                min: $min,
+                max: $max,
+                message: $message,
+                multipleMessage: $message,
+                minMessage: $minMessage,
+                maxMessage: $maxMessage
+            )
         );
     }
 
@@ -101,5 +88,5 @@ trait ChoiceBuilderTrait
      *
      * @see ElementBuilderInterface::satisfy()
      */
-    abstract public function satisfy($constraint, $options = null, bool $append = true);
+    abstract public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true);
 }

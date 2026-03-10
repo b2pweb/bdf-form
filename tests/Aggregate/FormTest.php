@@ -218,7 +218,7 @@ class FormTest extends TestCase
             $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->buildChild(),
-        ]), new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])), new ClosureTransformer(function () { throw new \Exception('my error'); }));
+        ]), new ConstraintValueValidator([], new TransformerExceptionConstraint(ignoreException: true)), new ClosureTransformer(function () { throw new \Exception('my error'); }));
 
         $form->import([
             'firstName' => 'John',
@@ -244,7 +244,7 @@ class FormTest extends TestCase
             $this->registry->childBuilder(StringElement::class, 'firstName')->getter()->required()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(StringElement::class, 'lastName')->getter()->required()->length(null, /*min:*/ 2)->buildChild(),
             $this->registry->childBuilder(IntegerElement::class, 'id')->getter()->required()->buildChild(),
-        ]), new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])), new ClosureTransformer(function () { throw new \Exception('my error'); }));
+        ]), new ConstraintValueValidator([], new TransformerExceptionConstraint(ignoreException: true)), new ClosureTransformer(function () { throw new \Exception('my error'); }));
 
         $form->import([
             'firstName' => 'John',

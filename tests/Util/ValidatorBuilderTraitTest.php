@@ -60,17 +60,6 @@ class ValidatorBuilderTraitTest extends TestCase
     /**
      *
      */
-    public function test_satisfy_with_className_and_options()
-    {
-        $element = $this->builder->satisfy(NotEqualTo::class, ['value' => 'hello'])->buildElement();
-
-        $this->assertFalse($element->submit('hello')->valid());
-        $this->assertTrue($element->submit('world')->valid());
-    }
-
-    /**
-     *
-     */
     public function test_required()
     {
         $element = $this->builder->required()->buildElement();

@@ -145,7 +145,7 @@ class BooleanStringElementTest extends TestCase
         $transformer = $this->createMock(TransformerInterface::class);
         $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
         $element = new BooleanStringElement(
-            new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])),
+            new ConstraintValueValidator([], new TransformerExceptionConstraint(ignoreException: true)),
             $transformer
         );
 
@@ -163,7 +163,7 @@ class BooleanStringElementTest extends TestCase
         $element = new BooleanStringElement(
             new ConstraintValueValidator(
                 [new Closure(function () { return 'validation error'; })],
-                new TransformerExceptionConstraint(['ignoreException' => true])
+                new TransformerExceptionConstraint(ignoreException: true)
             ),
             $transformer
         );

@@ -65,17 +65,6 @@ class StringElementBuilderTest extends TestCase
     /**
      *
      */
-    public function test_satisfy_with_className_and_options()
-    {
-        $element = $this->builder->satisfy(NotEqualTo::class, ['value' => 'hello'])->buildElement();
-
-        $this->assertFalse($element->submit('hello')->valid());
-        $this->assertTrue($element->submit('world')->valid());
-    }
-
-    /**
-     *
-     */
     public function test_transformer_append()
     {
         $element = $this->builder
@@ -109,17 +98,6 @@ class StringElementBuilderTest extends TestCase
         $element = $this->builder->value('default')->buildElement();
 
         $this->assertSame('default', $element->value());
-    }
-
-    /**
-     *
-     */
-    public function test_length_legacy()
-    {
-        $element = $this->builder->length(['max' => 3])->buildElement();
-
-        $this->assertFalse($element->submit('aaaa')->valid());
-        $this->assertTrue($element->submit('aaa')->valid());
     }
 
     /**

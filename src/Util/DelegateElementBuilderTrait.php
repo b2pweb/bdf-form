@@ -3,6 +3,7 @@
 namespace Bdf\Form\Util;
 
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Transformer\TransformerInterface;
 
 /**
  * Simple implementation of delegated element builder
@@ -26,7 +27,7 @@ trait DelegateElementBuilderTrait
     /**
      * {@inheritdoc}
      */
-    final public function transformer($transformer, bool $append = true)
+    final public function transformer(callable|TransformerInterface $transformer, bool $append = true)
     {
         $this->getElementBuilder()->transformer($transformer, $append);
 

@@ -21,7 +21,6 @@ use Bdf\Form\Util\TransformerBuilderTrait;
 use Symfony\Component\Form\DataTransformerInterface;
 
 use function is_callable;
-use function trigger_error;
 
 /**
  * Base builder for a child
@@ -76,7 +75,7 @@ class ChildBuilder implements ChildBuilderInterface
     private $default;
 
     /**
-     * @var array
+     * @var array<FilterInterface>
      */
     private $filters = [];
 
@@ -161,14 +160,10 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * {@inheritdoc}
      */
-    final public function filter($filter, bool $append = true)
+    final public function filter(FilterInterface|callable $filter, bool $append = true)
     {
         if (is_callable($filter)) {
             $filter = new ClosureFilter($filter);
-        }
-
-        if (!$filter instanceof FilterInterface) {
-            @trigger_error('Not passing a callable or a filter instance is deprecated since 1.7 and will be removed in 2.0.', E_USER_DEPRECATED);
         }
 
         if ($append === true) {
@@ -454,7 +449,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * <code>
      * $builder->string('foo')->configure(function (StringElementBuilder $builder) {
-     *     $builder->length(['min' => 3]);
+     *     $builder->length(min: 3);
      * });
      * </code>
      *
@@ -532,13 +527,10 @@ class ChildBuilder implements ChildBuilderInterface
         $parameters->className = $this->childClassName;
 
         $parameters->filters = $this->trim ? [TrimFilter::instance()] : [];
-
-        foreach ($this->filters as $filter) {
-            $parameters->filters[] = $this->registry->filter($filter);
-        }
+        $parameters->filters = [...$parameters->filters, ...$this->filters];
 
         foreach ($this->filtersProviders as $provider) {
-            $parameters->filters = array_merge($parameters->filters, $provider($this->registry));
+            $parameters->filters = [...$parameters->filters, ...$provider($this->registry)];
         }
 
         $parameters->fields = $this->fields ?: new ArrayOffsetHttpFields($this->name);

@@ -280,12 +280,12 @@ final class Form implements FormInterface
      *
      * @return FormView
      */
-    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    public function view(?HttpFieldPath $fieldPath = null): ElementViewInterface
     {
         $elements = [];
 
         foreach ($this->children as $child) {
-            $elements[$child->name()] = $child->view($field);
+            $elements[$child->name()] = $child->view($fieldPath);
         }
 
         return new FormView(self::class, $this->error->global(), $elements);

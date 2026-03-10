@@ -88,23 +88,6 @@ class EmailElementBuilderTest extends TestCase
     /**
      *
      */
-    public function test_useConstraint_legacy()
-    {
-        $element = $this->builder
-            ->disableConstraint()
-            ->useConstraint(['message' => 'my error'])
-            ->buildElement()
-        ;
-
-        $this->assertInstanceOf(EmailElement::class, $element);
-
-        $this->assertFalse($element->submit('foo')->valid());
-        $this->assertEquals('my error', $element->error()->global());
-    }
-
-    /**
-     *
-     */
     public function test_useConstraint()
     {
         $element = $this->builder

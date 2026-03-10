@@ -9,8 +9,8 @@ use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerAggregate;
 use Bdf\Form\Transformer\TransformerInterface;
 
+use function count;
 use function is_callable;
-use function trigger_error;
 
 /**
  * Trait for implements builder of transformer
@@ -18,7 +18,7 @@ use function trigger_error;
 trait TransformerBuilderTrait
 {
     /**
-     * @var array
+     * @var array<TransformerInterface>
      */
     private $transformers = [];
 
@@ -32,14 +32,10 @@ trait TransformerBuilderTrait
      *
      * @see ElementBuilderInterface::transformer()
      */
-    final public function transformer($transformer, bool $append = true)
+    final public function transformer(callable|TransformerInterface $transformer, bool $append = true)
     {
         if (is_callable($transformer)) {
             $transformer = new ClosureTransformer($transformer);
-        }
-
-        if (!$transformer instanceof TransformerInterface) {
-            @trigger_error('Passing a non transformer to transformer() is deprecated since 1.7. Pass a transformer instance, or a callback, instead of a class name.', E_USER_DEPRECATED);
         }
 
         if ($append === true) {
@@ -91,24 +87,19 @@ trait TransformerBuilderTrait
         $providedTransformers = [];
 
         foreach ($this->transformerProviders as $provider) {
-            $providedTransformers = array_merge($providedTransformers, $provider($this->registry()));
+            $providedTransformers = [...$providedTransformers, ...$provider($this->registry())];
         }
 
-        $transformers = array_map([$this->registry(), 'transformer'], $this->transformers);
+        $transformers = $this->transformers;
 
         if (!empty($providedTransformers)) {
-            $transformers = array_merge($providedTransformers, $transformers);
+            $transformers = [...$providedTransformers, ...$transformers];
         }
 
-        switch (count($transformers)) {
-            case 0:
-                return NullTransformer::instance();
-
-            case 1:
-                return $transformers[0];
-
-            default:
-                return new TransformerAggregate($transformers);
-        }
+        return match (count($transformers)) {
+            0 => NullTransformer::instance(),
+            1 => $transformers[0],
+            default => new TransformerAggregate($transformers),
+        };
     }
 }

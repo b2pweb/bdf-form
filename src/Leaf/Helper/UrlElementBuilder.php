@@ -7,13 +7,9 @@ use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
-use ReflectionClass;
 use Symfony\Component\Validator\Constraints\Url;
 
-use function is_array;
 use function is_string;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Provide URL constraint builder for a StringElementBuilder
@@ -153,18 +149,9 @@ class UrlElementBuilder extends StringElementBuilder
      *
      * @see Url for list of options
      */
-    public function useConstraint($message = null, $protocols = null, ?bool $relativeProtocol = null, ?callable $normalizer = null): self
+    public function useConstraint(?string $message = null, string|array|null $protocols = null, ?bool $relativeProtocol = null, ?callable $normalizer = null): self
     {
         $this->useConstraint = true;
-
-        if (is_array($message)) {
-            @trigger_error(sprintf('Passing an array of options to "%s" is deprecated since 1.7, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
-
-            $protocols ??= $message['protocols'] ?? null;
-            $relativeProtocol ??= $message['relativeProtocol'] ?? null;
-            $normalizer ??= $message['normalizer'] ?? null;
-            $message = $message['message'] ?? null;
-        }
 
         $this->errorMessage = $message;
         $this->protocols = is_string($protocols) ? [$protocols] : $protocols;
@@ -184,18 +171,15 @@ class UrlElementBuilder extends StringElementBuilder
             return [];
         }
 
-        static $isSf4 = null;
-
-        if ($isSf4 === null) {
-            /** @psalm-suppress PossiblyNullReference */
-            $isSf4 = (new ReflectionClass(Url::class))->getConstructor()->getNumberOfParameters() === 1;
-        }
-
         return [
-            $isSf4
-                ? new Url(['protocols' => $this->protocols, 'relativeProtocol' => $this->relativeProtocol, 'normalizer' => $this->normalizer, 'message' => $this->errorMessage])
-                : new Url(null, $this->errorMessage, $this->protocols, $this->relativeProtocol, $this->normalizer, null, null, $this->requireTld, $this->tldMessage)
-            ,
+            new Url(
+                message: $this->errorMessage,
+                protocols: $this->protocols,
+                relativeProtocol: $this->relativeProtocol,
+                normalizer: $this->normalizer,
+                requireTld: $this->requireTld,
+                tldMessage: $this->tldMessage
+            ),
         ];
     }
 

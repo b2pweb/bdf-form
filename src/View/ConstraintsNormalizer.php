@@ -73,12 +73,9 @@ final class ConstraintsNormalizer
         assert($ctor !== null);
 
         $firstParam = $ctor->getParameters()[0] ?? null;
-        $firstParamName = $firstParam ? $firstParam->getName() : null;
+        $firstParamName = $firstParam?->getName();
 
-        // Sf < 5.3
-        if ($ctor->getNumberOfParameters() === 1 && $firstParamName === 'options') {
-            $option = $constraint->getDefaultOption();
-        } elseif ($firstParamName !== 'options') {
+        if ($firstParamName !== 'options' && $firstParamName !== 'message') {
             $option = $firstParamName;
         } else {
             return null;

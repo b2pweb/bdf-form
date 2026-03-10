@@ -5,11 +5,6 @@ namespace Bdf\Form\Constraint;
 use Attribute;
 use Symfony\Component\Validator\Constraint;
 
-use function is_array;
-use function is_callable;
-use function sprintf;
-use function trigger_error;
-
 /**
  * Handle custom constraint using a callback
  *
@@ -50,30 +45,14 @@ class Closure extends Constraint
      */
     public $callback;
 
-    public function __construct($callback, ?string $message = null)
+    public function __construct(callable $callback, ?string $message = null)
     {
-        if (!is_callable($callback) && is_array($callback)) {
-            @trigger_error(sprintf('Passing an array of options to %s is deprecated since 1.7. Pass the callback as first parameter and the message as second parameter instead.', self::class), E_USER_DEPRECATED);
-
-            $options = $callback;
-            $callback = $options['callback'] ?? null;
-            $message ??= $options['message'] ?? null;
-        }
-
-        parent::__construct($options ?? null);
+        parent::__construct();
 
         $this->callback = $callback;
 
         if ($message !== null) {
             $this->message = $message;
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefaultOption(): ?string
-    {
-        return 'callback';
     }
 }
