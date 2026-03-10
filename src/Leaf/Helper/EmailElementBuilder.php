@@ -7,6 +7,7 @@ use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Override;
 use Symfony\Component\Validator\Constraints\Email;
 
 /**
@@ -29,6 +30,10 @@ class EmailElementBuilder extends StringElementBuilder
     private $useConstraint = true;
 
     private ?string $errorMessage = null;
+
+    /**
+     * @var value-of<Email::VALIDATION_MODES>|null
+     */
     private ?string $mode = null;
 
     /**
@@ -52,7 +57,7 @@ class EmailElementBuilder extends StringElementBuilder
      * The validation mode
      * See Email::VALIDATION_MODE_* constants
      *
-     * @param string $mode
+     * @param value-of<Email::VALIDATION_MODES> $mode
      *
      * @return $this
      *
@@ -125,11 +130,13 @@ class EmailElementBuilder extends StringElementBuilder
      * $builder->email('contact')->useConstraint(mode: Email::VALIDATION_MODE_HTML5, message: 'my error');
      * </code>
      *
+     * @param value-of<Email::VALIDATION_MODES> $mode
+     *
      * @return $this
      *
      * @see Email for list of options
      */
-    public function useConstraint(?string $message = null, ?string $mode = null, ?string $normalizer = null): self
+    public function useConstraint(?string $message = null, ?string $mode = null, ?callable $normalizer = null): self
     {
         $this->useConstraint = true;
         $this->errorMessage = $message;
@@ -157,10 +164,8 @@ class EmailElementBuilder extends StringElementBuilder
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): EmailElement
     {
         return new EmailElement($validator, $transformer, $this->getChoices());
     }

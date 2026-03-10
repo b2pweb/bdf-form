@@ -5,6 +5,7 @@ namespace Bdf\Form\Aggregate\Collection;
 use ArrayIterator;
 use Iterator;
 use IteratorAggregate;
+use Override;
 
 /**
  * The dependency tree level
@@ -164,6 +165,7 @@ final class Level implements IteratorAggregate
      *
      * @return Iterator<string, string[]>
      */
+    #[Override]
     public function getIterator(): Iterator
     {
         return new ArrayIterator($this->elements);

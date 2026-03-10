@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Leaf;
 
+use Override;
+
 use function filter_var;
 use function is_bool;
 
@@ -25,17 +27,14 @@ class BooleanStringElement extends AbstractBooleanElement
      * @psalm-suppress ImplementedReturnTypeMismatch
      * @psalm-suppress LessSpecificImplementedReturnType
      */
-    protected function sanitize($rawValue)
+    #[Override]
+    protected function sanitize($rawValue): int|float|string|bool|null
     {
         // Does not cast to string, to allow boolean value
         return is_scalar($rawValue) ? $rawValue : null;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return bool|null
-     */
+    #[Override]
     protected function toPhp($httpValue): ?bool
     {
         if ($httpValue === null || $httpValue === '') {
@@ -50,9 +49,7 @@ class BooleanStringElement extends AbstractBooleanElement
         return filter_var((string) $httpValue, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function toHttp($phpValue): ?string
     {
         if ($phpValue === null) {

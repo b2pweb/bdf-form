@@ -5,6 +5,7 @@ namespace Bdf\Form\Validator;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Exception;
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -44,9 +45,7 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         $this->transformerExceptionConstraint = $transformerExceptionConstraint ?? new TransformerExceptionConstraint();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function validate($value, ElementInterface $element): FormError
     {
         if (!$this->constraints) {
@@ -71,9 +70,7 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         return FormError::null();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onTransformerException(Exception $exception, $value, ElementInterface $element): FormError
     {
         if ($this->transformerExceptionConstraint->ignoreException) {
@@ -95,17 +92,13 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         return FormError::null();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function constraints(): array
     {
         return $this->constraints;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function hasConstraints(): bool
     {
         return !empty($this->constraints);

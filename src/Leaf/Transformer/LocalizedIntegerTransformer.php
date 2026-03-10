@@ -4,6 +4,7 @@ namespace Bdf\Form\Leaf\Transformer;
 
 use Attribute;
 use NumberFormatter;
+use Override;
 
 /**
  * Localized number transformer for integer value
@@ -25,9 +26,7 @@ class LocalizedIntegerTransformer extends LocalizedNumberTransformer
         parent::__construct(0, $grouping, $roundingMode, $locale);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function cast($value): int
     {
         return $value;

@@ -15,6 +15,7 @@ class ArrayElementConfigure extends CustomForm
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function configure(FormBuilderInterface $builder): void
     {
         $builder->array('values')->element(

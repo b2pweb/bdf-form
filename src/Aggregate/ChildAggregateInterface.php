@@ -7,6 +7,7 @@ use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\ElementInterface;
 use Iterator;
 use IteratorAggregate;
+use Override;
 
 /**
  * Form element consists of an aggregation of sub-elements wrapped into a ChildInterface
@@ -27,6 +28,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @param string $offset The child name
      */
+    #[Override]
     public function offsetGet($offset): ChildInterface;
 
     /**
@@ -36,6 +38,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @param string $offset The child name
      */
+    #[Override]
     public function offsetExists($offset): bool;
 
     /**
@@ -48,6 +51,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @throws \BadMethodCallException
      */
+    #[Override]
     public function offsetSet($offset, $value): void;
 
     /**
@@ -57,6 +61,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @throws \BadMethodCallException
      */
+    #[Override]
     public function offsetUnset($offset): void;
 
     /**
@@ -66,5 +71,6 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @return Iterator<string, ChildInterface>
      */
+    #[Override]
     public function getIterator(): Iterator;
 }

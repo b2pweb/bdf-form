@@ -9,6 +9,8 @@ use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Exception;
 
+use Override;
+
 use function method_exists;
 
 /**
@@ -71,11 +73,12 @@ final class CsrfValueValidator implements ValueValidatorInterface
      * @param CsrfElement $element
      * @psalm-suppress MoreSpecificImplementedParamType
      */
+    #[Override]
     public function validate($value, ElementInterface $element): FormError
     {
         $root = $element->root();
 
-        if (method_exists($root, 'is') && $root->is(self::FLAG_DISABLE_CSRF_VALIDATION)) {
+        if ($root->is(self::FLAG_DISABLE_CSRF_VALIDATION)) {
             return FormError::null();
         }
 
@@ -92,26 +95,20 @@ final class CsrfValueValidator implements ValueValidatorInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onTransformerException(Exception $exception, $value, ElementInterface $element): FormError
     {
         // Ignore transformer exception: the CSRF token will be validated after
         return FormError::null();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function constraints(): array
     {
         return []; // Does CsrfConstraint should be returns ?
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function hasConstraints(): bool
     {
         return true;

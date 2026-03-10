@@ -5,6 +5,7 @@ namespace Bdf\Form\Filter;
 use Attribute;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildInterface;
+use Override;
 
 /**
  * Perform a trim on the input value
@@ -20,9 +21,7 @@ final class TrimFilter implements FilterInterface
      */
     private static $instance;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function filter($value, ChildInterface $input, $default)
     {
         if (!is_string($value)) {

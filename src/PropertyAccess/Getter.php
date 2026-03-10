@@ -3,6 +3,7 @@
 namespace Bdf\Form\PropertyAccess;
 
 use Attribute;
+use Override;
 
 /**
  * Extract a property value and import it into the form element
@@ -35,9 +36,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Getter extends AbstractAccessor implements ExtractorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function extract($source)
     {
         if ($this->customAccessor !== null) {

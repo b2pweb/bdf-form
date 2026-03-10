@@ -13,6 +13,7 @@ class SubClassChildBuilderForm extends CustomForm
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function configure(FormBuilderInterface $builder): void
     {
         $builder->dateTime('foo')

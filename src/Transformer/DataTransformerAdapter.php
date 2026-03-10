@@ -3,6 +3,7 @@
 namespace Bdf\Form\Transformer;
 
 use Bdf\Form\ElementInterface;
+use Override;
 use Symfony\Component\Form\DataTransformerInterface;
 
 /**
@@ -27,18 +28,14 @@ final class DataTransformerAdapter implements TransformerInterface
     {
         $this->transformer = $transformer;
     }
-    
-    /**
-     * {@inheritdoc}
-     */
+
+    #[Override]
     public function transformToHttp($value, ElementInterface $input)
     {
         return $this->transformer->transform($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformFromHttp($value, ElementInterface $input)
     {
         return $this->transformer->reverseTransform($value);

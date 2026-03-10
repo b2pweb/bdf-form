@@ -23,7 +23,7 @@ trait TransformerBuilderTrait
     private $transformers = [];
 
     /**
-     * @var callable[]
+     * @var array<callable(RegistryInterface):TransformerInterface[]>
      */
     private $transformerProviders = [];
 

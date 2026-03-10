@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Csrf;
 
+use Override;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -12,9 +13,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  */
 class CsrfConstraintValidator extends ConstraintValidator
 {
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof CsrfConstraint) {

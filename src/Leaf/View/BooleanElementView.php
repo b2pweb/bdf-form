@@ -7,6 +7,7 @@ use Bdf\Form\View\ElementViewTrait;
 use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\FieldViewTrait;
+use Override;
 
 /**
  * Element view for boolean / checkbox
@@ -70,9 +71,7 @@ final class BooleanElementView implements FieldViewInterface
         return $this->checked;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function defaultRenderer(): FieldViewRendererInterface
     {
         return CheckboxHtmlRenderer::instance();

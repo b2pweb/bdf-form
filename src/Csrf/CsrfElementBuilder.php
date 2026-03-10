@@ -148,6 +148,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
     {
         throw new BadMethodCallException();
@@ -156,6 +157,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function transformer(callable|TransformerInterface $transformer, bool $append = true)
     {
         throw new BadMethodCallException();
@@ -164,6 +166,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function value($value)
     {
         throw new BadMethodCallException();
@@ -172,6 +175,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function buildElement(): ElementInterface
     {
         return new CsrfElement(

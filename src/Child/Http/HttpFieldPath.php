@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Child\Http;
 
+use Override;
 use Stringable;
 
 /**
@@ -173,6 +174,7 @@ final class HttpFieldPath implements Stringable
      *
      * @return string
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->get();

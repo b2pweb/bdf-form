@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Constraint;
 
+use Override;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -12,9 +13,7 @@ use WeakReference;
  */
 class ClosureValidator extends ConstraintValidator
 {
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof Closure) {

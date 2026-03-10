@@ -3,6 +3,7 @@
 namespace Bdf\Form\Error;
 
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Override;
 
 /**
  * Format errors as a string
@@ -39,33 +40,25 @@ final class StringErrorPrinter implements FormErrorPrinterInterface
      */
     private $output = '';
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function field(HttpFieldPath $field): void
     {
         // Ignore the field name
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function global(string $error): void
     {
         $this->output .= $error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function code(string $code): void
     {
         // Ignore code
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function child(string $name, FormError $error): void
     {
         if ($this->maxDepth <= $this->depth) {
@@ -83,9 +76,7 @@ final class StringErrorPrinter implements FormErrorPrinterInterface
         --$this->depth;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function print()
     {
         return $this->output;

@@ -2,10 +2,12 @@
 
 namespace Bdf\Form\Aggregate;
 
+use Bdf\Form\Aggregate\View\FormView;
+use Bdf\Form\Child\Http\HttpFieldPath;
+use Override;
+
 /**
  * The base form element type
- *
- * @method \Bdf\Form\Aggregate\View\FormView view(?\Bdf\Form\Child\Http\HttpFieldPath $fieldPath = null)
  *
  * @template T
  * @extends ChildAggregateInterface<T>
@@ -38,4 +40,7 @@ interface FormInterface extends ChildAggregateInterface
      * @see Form::import() For attach and extract values from properties
      */
     public function attach($entity): FormInterface;
+
+    #[Override]
+    public function view(?HttpFieldPath $field = null): FormView;
 }

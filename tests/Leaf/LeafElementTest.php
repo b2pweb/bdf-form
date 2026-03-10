@@ -4,6 +4,7 @@ namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\View\ElementViewInterface;
+use Bdf\Form\View\FieldViewInterface;
 use PHPUnit\Framework\TestCase;
 
 class LeafElementTest extends TestCase
@@ -34,7 +35,7 @@ class LeafElementTest extends TestCase
                 return [];
             }
 
-            public function view(?HttpFieldPath $field = null): ElementViewInterface
+            public function view(?HttpFieldPath $field = null): FieldViewInterface
             {
                 $view = parent::view($field);
 

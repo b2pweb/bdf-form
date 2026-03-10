@@ -12,6 +12,7 @@ use Bdf\Form\Util\FieldPath;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\RegionCode;
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -70,11 +71,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
         $this->addConstraintsProvider([$this, 'providePhoneConstraint']);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return $this
-     */
+    #[Override]
     public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null)
     {
         if (!$message instanceof Constraint) {
@@ -219,10 +216,8 @@ class PhoneElementBuilder extends AbstractElementBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): PhoneElement
     {
         return new PhoneElement($validator, $transformer, $this->regionResolver, $this->formatter);
     }

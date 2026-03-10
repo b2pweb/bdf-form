@@ -65,14 +65,6 @@ final class TransformerExceptionConstraint extends Constraint
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getDefaultOption(): ?string
-    {
-        return 'exception';
-    }
-
-    /**
      * Set the exception on the constraint
      *
      * @param Exception $exception

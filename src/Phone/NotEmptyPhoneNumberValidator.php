@@ -4,6 +4,7 @@ namespace Bdf\Form\Phone;
 
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
+use Override;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\NotBlankValidator;
 
@@ -27,9 +28,7 @@ class NotEmptyPhoneNumberValidator extends NotBlankValidator
         $this->formatter = $formatter ?? PhoneNumberUtil::getInstance();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function validate($value, Constraint $constraint): void
     {
         if ($value instanceof PhoneNumber) {

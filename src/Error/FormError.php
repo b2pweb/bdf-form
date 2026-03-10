@@ -6,6 +6,7 @@ use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use InvalidArgumentException;
+use Override;
 use Stringable;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -129,7 +130,7 @@ final class FormError implements Stringable
     {
         $child = $this->children[$child] ?? null;
 
-        return $child ? $child->global : null;
+        return $child?->global;
     }
 
     /**
@@ -207,6 +208,7 @@ final class FormError implements Stringable
      *
      * @return string
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->print(new StringErrorPrinter());

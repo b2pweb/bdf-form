@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Child\Http;
 
+use Override;
+
 /**
  * Extract HTTP fields value using a simple array offset
  * This is the default http fields implementation
@@ -31,9 +33,7 @@ final class ArrayOffsetHttpFields implements HttpFieldsInterface
         $this->offset = $offset;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function extract($httpFields)
     {
         if (!is_array($httpFields) || !isset($httpFields[$this->offset])) {
@@ -43,25 +43,19 @@ final class ArrayOffsetHttpFields implements HttpFieldsInterface
         return $httpFields[$this->offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function contains($httpFields): bool
     {
         return isset($httpFields[$this->offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function format($value)
     {
         return [$this->offset => $value];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function get(?HttpFieldPath $path = null): HttpFieldPath
     {
         return $path === null ? HttpFieldPath::named($this->offset) : $path->add($this->offset);

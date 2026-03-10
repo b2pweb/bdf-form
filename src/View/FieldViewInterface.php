@@ -5,6 +5,7 @@ namespace Bdf\Form\View;
 use Bdf\Form\Choice\Choiceable;
 use Bdf\Form\Choice\ChoiceInterface;
 use Bdf\Form\Choice\ChoiceView;
+use Override;
 
 /**
  * Base type for HTTP input / field
@@ -91,5 +92,6 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      *
      * @return string
      */
+    #[Override]
     public function render(?FieldViewRendererInterface $renderer = null): string;
 }

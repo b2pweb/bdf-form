@@ -43,5 +43,6 @@ interface ButtonViewInterface extends Renderable
      *
      * @return string
      */
+    #[\Override]
     public function render(?ButtonViewRendererInterface $renderer = null): string;
 }

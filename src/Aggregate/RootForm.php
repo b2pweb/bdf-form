@@ -12,7 +12,9 @@ use Bdf\Form\RootElementInterface;
 use Bdf\Form\Util\RootFlagsTrait;
 use Bdf\Form\View\ElementViewInterface;
 use Iterator;
+use LogicException;
 use OutOfBoundsException;
+use Override;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraint;
@@ -97,33 +99,25 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
         $this->validator = $validator;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submit($data): ElementInterface
     {
         $this->submitToButtons($data);
-        /** @psalm-suppress PossiblyNullReference */
-        $this->form->get()->submit($data);
+        $this->form?->get()->submit($data);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function patch($data): ElementInterface
     {
         $this->submitToButtons($data);
-        /** @psalm-suppress PossiblyNullReference */
-        $this->form->get()->patch($data);
+        $this->form?->get()->patch($data);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function import($entity): ElementInterface
     {
         /** @psalm-suppress PossiblyNullReference */
@@ -132,22 +126,16 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function value()
     {
-        /** @psalm-suppress PossiblyNullReference */
-        return $this->form->get()->value();
+        return $this->form?->get()->value();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function httpValue()
     {
-        /** @psalm-suppress PossiblyNullReference */
-        $httpValue = $this->form->get()->httpValue();
+        $httpValue = $this->form?->get()->httpValue();
 
         if (empty($this->buttons)) {
             return $httpValue;
@@ -162,60 +150,45 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
         return $httpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         /** @psalm-suppress PossiblyNullReference */
         return $this->form->get()->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         // Do not use $this->form->get()->failed() because it may be not implemented
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
-        /** @psalm-suppress PossiblyNullReference */
-        return $this->form->get()->error($field);
+        return $this->form?->get()->error($field);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function container(): ?ChildInterface
     {
         return null; // root cannot have a container
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function setContainer(ChildInterface $container): ElementInterface
     {
         throw new BadMethodCallException('Cannot wrap a root element into a container');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         $buttons = [];
@@ -231,17 +204,13 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
         return $view;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submitButton(): ?ButtonInterface
     {
         return $this->submitButton;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function button(string $name): ButtonInterface
     {
         if ($btn = $this->buttons[$name] ?? null) {
@@ -251,9 +220,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
         throw new OutOfBoundsException("The button '{$name}' is not found");
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getValidator(): ValidatorInterface
     {
         if ($this->validator === null) {
@@ -263,9 +230,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
         return $this->validator;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getPropertyAccessor(): PropertyAccessorInterface
     {
         if ($this->propertyAccessor === null) {
@@ -275,9 +240,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
         return $this->propertyAccessor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function constraintGroups(): array
     {
         if (!$button = $this->submitButton) {
@@ -295,47 +258,37 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      * @psalm-suppress PossiblyNullArrayAccess
      * @psalm-suppress NullableReturnStatement
      */
+    #[Override]
     public function offsetGet($offset): ChildInterface
     {
         return $this->form->get()[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetExists($offset): bool
     {
-        /** @psalm-suppress PossiblyNullReference */
         return isset($this->form->get()[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetSet($offset, $value): void
     {
         /** @psalm-suppress PossiblyNullReference */
         $this->form->get()[$offset] = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @psalm-suppress PossiblyNullReference
-     * @psalm-suppress PossiblyNullArrayAccess
-     */
+    #[Override]
     public function offsetUnset($offset): void
     {
-        unset($this->form->get()[$offset]);
+        if ($form = $this->form->get()) {
+            unset($form[$offset]);
+        }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getIterator(): Iterator
     {
-        /** @psalm-suppress PossiblyNullReference */
-        return $this->form->get()->getIterator();
+        return $this->form->get()?->getIterator() ?? throw new LogicException();
     }
 
     /**

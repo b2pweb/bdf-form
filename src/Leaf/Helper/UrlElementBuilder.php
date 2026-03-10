@@ -7,6 +7,7 @@ use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Override;
 use Symfony\Component\Validator\Constraints\Url;
 
 use function is_string;
@@ -163,7 +164,6 @@ class UrlElementBuilder extends StringElementBuilder
 
     /**
      * @return \Symfony\Component\Validator\Constraint[]
-     * @psalm-suppress TooManyArguments
      */
     protected function createUrlConstraint(RegistryInterface $registry): array
     {
@@ -183,10 +183,8 @@ class UrlElementBuilder extends StringElementBuilder
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): UrlElement
     {
         return new UrlElement($validator, $transformer, $this->getChoices());
     }

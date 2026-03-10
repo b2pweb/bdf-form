@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Choice;
 
+use Override;
+
 /**
  * Implementation of choice using an array
  *
@@ -30,17 +32,13 @@ final class ArrayChoice implements ChoiceInterface
         $this->choices = $choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function values(): array
     {
         return $this->choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?callable $configuration = null): array
     {
         $view = [];

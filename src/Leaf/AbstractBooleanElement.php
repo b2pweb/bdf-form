@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf;
 
+use Override;
 use TypeError;
 
 use function is_scalar;
@@ -16,11 +17,7 @@ use function is_scalar;
  */
 abstract class AbstractBooleanElement extends LeafElement
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @return bool|null
-     */
+    #[Override]
     final protected function tryCast($value): ?bool
     {
         if ($value === null) {

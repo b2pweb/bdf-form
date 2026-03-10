@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf;
 
+use Override;
 use TypeError;
 
 /**
@@ -13,29 +14,19 @@ use TypeError;
  */
 class FloatElement extends LeafElement
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @return float|null
-     */
+    #[Override]
     protected function toPhp($httpValue): ?float
     {
         return $httpValue === null || $httpValue === '' ? null : (float) $httpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function toHttp($phpValue): ?string
     {
         return $phpValue === null ? null : (string) $phpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return float|null
-     */
+    #[Override]
     protected function tryCast($value): ?float
     {
         if ($value === null) {

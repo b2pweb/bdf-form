@@ -15,7 +15,10 @@ use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\HttpValue;
 use Bdf\Form\View\ElementViewInterface;
+use Override;
 use WeakReference;
+
+use function assert;
 
 /**
  * Child which extract HTTP field value from a simple array access
@@ -98,9 +101,7 @@ final class Child implements ChildInterface
         $this->transformer = $transformer ?? NullTransformer::instance();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function element(): ElementInterface
     {
         return $this->element;
@@ -112,14 +113,13 @@ final class Child implements ChildInterface
      * @psalm-suppress NullableReturnStatement
      * @psalm-suppress InvalidNullableReturnType
      */
+    #[Override]
     public function parent(): ChildAggregateInterface
     {
         return $this->parent->get();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function setParent(ChildAggregateInterface $parent): ChildInterface
     {
         if ($this->parent === null) {
@@ -133,33 +133,27 @@ final class Child implements ChildInterface
         return $child;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function dependencies(): array
     {
         return $this->dependencies;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function import($entity): void
     {
         if (!$this->extractor) {
             return;
         }
 
-        /** @psalm-suppress PossiblyNullReference */
-        $propertyAccessor = $this->parent->get()->root()->getPropertyAccessor();
+        $propertyAccessor = $this->parent->get()?->root()?->getPropertyAccessor();
+        assert($propertyAccessor !== null);
 
         $this->extractor->setPropertyAccessor($propertyAccessor);
         $this->extractor->setFormElement($this);
@@ -171,17 +165,15 @@ final class Child implements ChildInterface
         $this->element->import($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function fill(&$entity): void
     {
         if (!$this->hydrator) {
             return;
         }
 
-        /** @psalm-suppress PossiblyNullReference */
-        $propertyAccessor = $this->parent->get()->root()->getPropertyAccessor();
+        $propertyAccessor = $this->parent->get()?->root()?->getPropertyAccessor();
+        assert($propertyAccessor !== null);
 
         $this->hydrator->setPropertyAccessor($propertyAccessor);
         $this->hydrator->setFormElement($this);
@@ -193,9 +185,7 @@ final class Child implements ChildInterface
         $this->hydrator->setFormElement(null);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submit($data): bool
     {
         $value = $this->extractValue($data);
@@ -203,9 +193,7 @@ final class Child implements ChildInterface
         return $this->element->submit($value)->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function patch($data): bool
     {
         $value = $data !== null && $this->fields->contains($data)
@@ -216,33 +204,24 @@ final class Child implements ChildInterface
         return $this->element->patch($value)->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function httpFields(): array
     {
         return $this->fields->format($this->element->httpValue());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $this->element->error($this->fields->get($field));
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         return $this->element->view($this->fields->get($field));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __clone()
     {
         $this->element = $this->element->setContainer($this);

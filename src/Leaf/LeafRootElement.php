@@ -12,6 +12,7 @@ use Bdf\Form\RootElementInterface;
 use Bdf\Form\Util\RootFlagsTrait;
 use Bdf\Form\View\ElementViewInterface;
 use OutOfBoundsException;
+use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraint;
@@ -42,9 +43,7 @@ final class LeafRootElement implements RootElementInterface
         $this->element = $element;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submit($data): ElementInterface
     {
         $this->element->submit($data);
@@ -52,9 +51,7 @@ final class LeafRootElement implements RootElementInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function patch($data): ElementInterface
     {
         $this->element->patch($data);
@@ -62,9 +59,7 @@ final class LeafRootElement implements RootElementInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function import($entity): ElementInterface
     {
         $this->element->import($entity);
@@ -72,114 +67,86 @@ final class LeafRootElement implements RootElementInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function value()
     {
         return $this->element->value();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function httpValue()
     {
         return $this->element->httpValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->element->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         // Do not use $this->element->failed() because it may be not implemented
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $this->element->error($field);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function container(): ?ChildInterface
     {
         return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function setContainer(ChildInterface $container): ElementInterface
     {
         throw new BadMethodCallException('Cannot set a container on a root element');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         return $this->element->view($field);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submitButton(): ?ButtonInterface
     {
         return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function button(string $name): ButtonInterface
     {
         throw new OutOfBoundsException('A leaf element do not have any buttons');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getValidator(): ValidatorInterface
     {
         return (new ValidatorBuilder())->getValidator();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getPropertyAccessor(): PropertyAccessorInterface
     {
         return new PropertyAccessor();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function constraintGroups(): array
     {
         return [Constraint::DEFAULT_GROUP];

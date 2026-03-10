@@ -57,7 +57,7 @@ trait FieldViewTrait
     /**
      * {@inheritdoc}
      */
-    public function setValue($value): FieldViewInterface
+    public function setValue($value): static
     {
         $this->value = $value;
 

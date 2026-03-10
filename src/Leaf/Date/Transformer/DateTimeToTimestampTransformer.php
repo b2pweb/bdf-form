@@ -10,6 +10,10 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
+use Override;
+
+use function assert;
+use function method_exists;
 
 /**
  * Transform a DateTime instance from a form element to a timestamp to a model
@@ -40,12 +44,7 @@ final class DateTimeToTimestampTransformer implements TransformerInterface
         $this->timezone = $timezone;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @psalm-suppress UndefinedInterfaceMethod
-     * @psalm-suppress PossiblyUndefinedMethod
-     */
+    #[Override]
     public function transformToHttp($value, ElementInterface $input): ?DateTimeInterface
     {
         if ($value === null) {
@@ -63,15 +62,15 @@ final class DateTimeToTimestampTransformer implements TransformerInterface
         $dateTime = new $className;
 
         if ($timezone) {
+            assert(method_exists($dateTime, 'setTimezone'));
             $dateTime = $dateTime->setTimezone($timezone);
         }
 
+        assert(method_exists($dateTime, 'setTimestamp'));
         return $dateTime->setTimestamp($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformFromHttp($value, ElementInterface $input): ?int
     {
         if (!$value instanceof DateTimeInterface) {

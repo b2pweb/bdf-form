@@ -9,6 +9,7 @@ use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\HtmlRenderer;
+use Override;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
@@ -51,9 +52,7 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
         EmailElement::class => 'email',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
     {
         if (!isset($attributes['type'])) {

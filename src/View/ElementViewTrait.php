@@ -40,7 +40,7 @@ trait ElementViewTrait
     /**
      * {@inheritdoc}
      */
-    public function setError(?string $error): ElementViewInterface
+    public function setError(?string $error): static
     {
         $this->error = $error;
 

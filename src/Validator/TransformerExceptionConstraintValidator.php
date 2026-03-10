@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Validator;
 
+use LogicException;
+use Override;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -11,9 +13,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  */
 final class TransformerExceptionConstraintValidator extends ConstraintValidator
 {
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof TransformerExceptionConstraint) {
@@ -26,7 +26,7 @@ final class TransformerExceptionConstraintValidator extends ConstraintValidator
             }
         }
 
-        $this->context->buildViolation($constraint->message ?: $constraint->exception->getMessage())
+        $this->context->buildViolation($constraint->message ?? $constraint->exception?->getMessage() ?? throw new LogicException('TransformerExceptionConstraint must have a message or an exception'))
             ->setCode($constraint->code)
             ->setParameter('{{ value }}', $this->formatValue($value))
             ->addViolation()

@@ -6,6 +6,7 @@ use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\HtmlRenderer;
 use InvalidArgumentException;
+use Override;
 
 /**
  * Renderer for select element
@@ -20,9 +21,7 @@ final class SelectHtmlRenderer implements FieldViewRendererInterface
      */
     private static $instance;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
     {
         if (!$choices = $view->choices()) {

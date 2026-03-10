@@ -2,8 +2,8 @@
 
 namespace Bdf\Form\Leaf;
 
+use Override;
 use TypeError;
-use function Webmozart\Assert\Tests\StaticAnalysis\string;
 
 /**
  * Element for a simple string field
@@ -14,11 +14,7 @@ use function Webmozart\Assert\Tests\StaticAnalysis\string;
  */
 class StringElement extends LeafElement
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @return string|null
-     */
+    #[Override]
     protected function toPhp($httpValue): ?string
     {
         if (!is_scalar($httpValue)) {
@@ -28,19 +24,13 @@ class StringElement extends LeafElement
         return (string) $httpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function toHttp($phpValue): ?string
     {
         return $phpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return string|null
-     */
+    #[Override]
     protected function tryCast($value): ?string
     {
         if ($value === null) {

@@ -8,6 +8,7 @@ use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Override;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Regex;
 
@@ -39,6 +40,11 @@ class StringElementBuilder extends AbstractElementBuilder
      * $builder->length(max: 256);
      * </code>
      *
+     * @param positive-int $exactly
+     * @param non-negative-int $min
+     * @param positive-int $max
+     * @param value-of<Length::VALID_COUNT_UNITS>|null $countUnit
+     *
      * @return $this
      *
      * @see Length For options
@@ -69,7 +75,7 @@ class StringElementBuilder extends AbstractElementBuilder
      * $builder->regex('/[a-z_-]+/', message: 'Invalid value'); // With custom options
      * </code>
      *
-     * @param string|array $pattern
+     * @param string $pattern
      *
      * @return $this
      *
@@ -88,9 +94,7 @@ class StringElementBuilder extends AbstractElementBuilder
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
     {
         return new StringElement($validator, $transformer, $this->getChoices());

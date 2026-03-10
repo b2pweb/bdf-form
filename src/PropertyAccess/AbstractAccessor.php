@@ -3,6 +3,7 @@
 namespace Bdf\Form\PropertyAccess;
 
 use Bdf\Form\Child\ChildInterface;
+use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
@@ -56,17 +57,13 @@ abstract class AbstractAccessor implements AccessorInterface
         $this->customAccessor = $customAccessor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function setPropertyAccessor(PropertyAccessorInterface $propertyAccessor): void
     {
         $this->propertyAccessor = $propertyAccessor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function setFormElement(?ChildInterface $formElement): void
     {
         $this->input = $formElement;

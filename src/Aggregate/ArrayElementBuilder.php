@@ -3,6 +3,7 @@
 namespace Bdf\Form\Aggregate;
 
 use Bdf\Form\Choice\ChoiceBuilderTrait;
+use Bdf\Form\Choice\ChoiceInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\BooleanElement;
@@ -17,10 +18,13 @@ use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\MagicCallForwarding;
 use Bdf\Form\Util\TransformerBuilderTrait;
 use Bdf\Form\Util\ValidatorBuilderTrait;
+use Override;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Choice as ChoiceConstraint;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
+
+use function assert;
 
 /**
  * Builder for the array element
@@ -86,9 +90,10 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * Define a constraint on the inner element
      */
-    public function satisfy($constraint, $options = null, bool $append = true)
+    #[Override]
+    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
     {
-        $this->getElementBuilder()->satisfy($constraint, $options, $append);
+        $this->getElementBuilder()->satisfy($constraint, $message, $append);
 
         return $this;
     }
@@ -98,6 +103,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * Define a transformer on the inner element
      */
+    #[Override]
     public function transformer(callable|TransformerInterface $transformer, bool $append = true)
     {
         $this->getElementBuilder()->transformer($transformer, $append);
@@ -108,6 +114,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function value($value)
     {
         $this->value = $value;
@@ -153,6 +160,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * @return ElementBuilderInterface<ElementInterface<T>>
      * @psalm-suppress InvalidNullableReturnType
      */
+    #[Override]
     public function getElementBuilder(): ElementBuilderInterface
     {
         if (!$this->element) {
@@ -295,9 +303,9 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * Ex: `$builder->count(['min' => 3, 'max' => 5])`
      *
-     * @param int|null $exactly The exact expected number of elements
-     * @param int|null $min Minimum expected number of elements
-     * @param int|null $max Maximum expected number of elements
+     * @param positive-int|null $exactly The exact expected number of elements
+     * @param non-negative-int|null $min Minimum expected number of elements
+     * @param positive-int|null $max Maximum expected number of elements
      * @param string|null $exactMessage
      * @param string|null $minMessage
      * @param string|null $maxMessage
@@ -340,8 +348,13 @@ class ArrayElementBuilder implements ElementBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @param ChoiceInterface|array|callable $choices The allowed values in PHP form.
+     * @param string|null $message The error message.
+     * @param non-negative-int $min
+     * @param positive-int $max
      */
-    final public function choices($choices, $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): self
+    final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): self
     {
         $builder = new class {
             use ChoiceBuilderTrait {
@@ -350,15 +363,26 @@ class ArrayElementBuilder implements ElementBuilderInterface
 
             public ChoiceConstraint $constraint;
 
-            public function satisfy($constraint, $options = null, bool $append = true)
+            #[Override]
+            public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
             {
+                assert($constraint instanceof ChoiceConstraint);
                 $this->constraint = $constraint;
                 return $this;
             }
         };
 
         // Force the multiple option to true
-        $builder->choices($choices, $message, true, $strict, $min, $max, $minMessage, $maxMessage);
+        $builder->choices(
+            choices: $choices,
+            message: $message,
+            multiple: true,
+            strict: $strict,
+            min: $min,
+            max: $max,
+            minMessage: $minMessage,
+            maxMessage: $maxMessage
+        );
 
         $this->arrayConstraint($builder->constraint);
         $this->choices = $builder->getChoices();
@@ -371,6 +395,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @return ArrayElement<T>
      */
+    #[Override]
     public function buildElement(): ElementInterface
     {
         $element = new ArrayElement(
@@ -387,9 +412,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
         return $element;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function registry(): RegistryInterface
     {
         return $this->registry;

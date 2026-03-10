@@ -72,6 +72,8 @@ trait FieldSetViewTrait
 
     /**
      * {@inheritdoc}
+     *
+     * @return array<array-key, string|array>
      */
     public function errors(): array
     {
@@ -82,7 +84,7 @@ trait FieldSetViewTrait
                 continue;
             }
 
-            if ($element instanceof FieldSetViewInterface && method_exists($element, 'errors')) {
+            if ($element instanceof FieldSetViewInterface) {
                 $errors[$name] = $element->errors();
             } elseif ($error = $element->error()) {
                 $errors[$name] = $error;

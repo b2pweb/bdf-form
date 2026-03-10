@@ -7,6 +7,7 @@ use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
+use Override;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -99,9 +100,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function defaultTransformerExceptionConstraint(): TransformerExceptionConstraint
     {
         return new TransformerExceptionConstraint(

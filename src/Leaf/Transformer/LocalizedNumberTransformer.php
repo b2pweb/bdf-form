@@ -9,6 +9,9 @@ use InvalidArgumentException;
 use Locale;
 use NumberFormatter;
 
+use Override;
+
+use function is_int;
 use function is_string;
 
 /**
@@ -70,6 +73,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @throws InvalidArgumentException If the given value is not numeric or cannot be formatted
      */
+    #[Override]
     final public function transformToHttp($value, ElementInterface $input): ?string
     {
         if ($value === null) {
@@ -102,6 +106,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @throws InvalidArgumentException If the given value is not scalar or cannot be parsed
      */
+    #[Override]
     final public function transformFromHttp($value, ElementInterface $input)
     {
         if ($value !== null && !is_int($value) && !is_float($value) && !is_string($value)) {
@@ -158,7 +163,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @return T
      */
-    protected function cast($value)
+    protected function cast($value): float|int|string
     {
         return $value;
     }
@@ -170,7 +175,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @return int|float The rounded number
      */
-    private function round($number)
+    private function round(int|float $number): int|float
     {
         if (is_int($number) || $this->scale === null) {
             return $number;
@@ -185,7 +190,7 @@ class LocalizedNumberTransformer implements TransformerInterface
                 return round($number, $this->scale, PHP_ROUND_HALF_DOWN);
         }
 
-        $coef = 10 ** $this->scale;
+        $coef = (float) (10 ** $this->scale);
         $number *= $coef;
 
         switch ($this->roundingMode) {

@@ -65,6 +65,7 @@ interface ChildrenCollectionInterface extends IteratorAggregate, ArrayAccess, Co
      *
      * @return Iterator<ChildInterface>
      */
+    #[\Override]
     public function getIterator(): Iterator;
 
     /**

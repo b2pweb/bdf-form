@@ -31,7 +31,7 @@ trait ValidatorBuilderTrait
     private $transformerExceptionConstraint;
 
     /**
-     * @var callable[]
+     * @var array<callable(RegistryInterface):Constraint[]>
      */
     private $constraintsProviders = [];
 

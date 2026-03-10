@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Leaf;
 
+use Override;
 use TypeError;
 
 /**
@@ -13,29 +14,19 @@ use TypeError;
  */
 class IntegerElement extends LeafElement
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @return int|null
-     */
+    #[Override]
     protected function toPhp($httpValue): ?int
     {
         return $httpValue === null || $httpValue === '' ? null : (int) $httpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function toHttp($phpValue): ?string
     {
         return $phpValue === null ? null : (string) $phpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return int|null
-     */
+    #[Override]
     protected function tryCast($value): ?int
     {
         if ($value === null) {

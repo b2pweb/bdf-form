@@ -19,6 +19,7 @@ use Bdf\Form\View\ConstraintsNormalizer;
 use Bdf\Form\View\ElementViewInterface;
 use Bdf\Form\View\FieldViewInterface;
 use Exception;
+use Override;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
@@ -81,9 +82,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
         $this->choices = $choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function submit($data): ElementInterface
     {
         $shouldBeValidated = true;
@@ -105,9 +104,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function patch($data): ElementInterface
     {
         // A data is provided : simply submit the data
@@ -122,33 +119,25 @@ abstract class LeafElement implements ElementInterface, Choiceable
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function valid(): bool
     {
         return $this->submitted && $this->error->empty();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function failed(): bool
     {
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function error(?HttpFieldPath $field = null): FormError
     {
         return $field ? $this->error->withField($field) : $this->error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function import($entity): ElementInterface
     {
         $this->value = $this->tryCast($entity);
@@ -156,17 +145,13 @@ abstract class LeafElement implements ElementInterface, Choiceable
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function value()
     {
         return $this->value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function httpValue()
     {
         try {
@@ -176,9 +161,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function root(): RootElementInterface
     {
         if ($container = $this->container()) {
@@ -189,12 +172,8 @@ abstract class LeafElement implements ElementInterface, Choiceable
         return new LeafRootElement($this);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return FieldViewInterface
-     */
-    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    #[Override]
+    public function view(?HttpFieldPath $field = null): FieldViewInterface
     {
         [$required, $normalizedConstraints] = $this->parseConstraints($this->validator);
 
@@ -209,9 +188,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function choices(): ?ChoiceInterface
     {
         return $this->choices;
@@ -258,6 +235,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
      * @param mixed $rawValue The raw HTTP value
      *
      * @return string|null
+     * @todo return mixed ?
      */
     protected function sanitize($rawValue)
     {

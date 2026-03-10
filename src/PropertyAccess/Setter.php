@@ -3,6 +3,7 @@
 namespace Bdf\Form\PropertyAccess;
 
 use Attribute;
+use Override;
 
 /**
  * Set the property value using the element value
@@ -35,9 +36,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Setter extends AbstractAccessor implements HydratorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function hydrate(&$target, $value): void
     {
         if ($this->transformer) {

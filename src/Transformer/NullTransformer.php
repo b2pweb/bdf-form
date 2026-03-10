@@ -3,6 +3,7 @@
 namespace Bdf\Form\Transformer;
 
 use Bdf\Form\ElementInterface;
+use Override;
 
 /**
  * Null object for form transformer
@@ -14,17 +15,13 @@ final class NullTransformer implements TransformerInterface
      */
     private static $instance;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformToHttp($value, ElementInterface $input)
     {
         return $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformFromHttp($value, ElementInterface $input)
     {
         return $value;

@@ -5,6 +5,7 @@ namespace Bdf\Form\Filter;
 use Attribute;
 use Bdf\Form\Aggregate\ArrayChildBuilder;
 use Bdf\Form\Child\ChildInterface;
+use Override;
 
 /**
  * Filter empty values from an array
@@ -19,9 +20,7 @@ final class EmptyArrayValuesFilter implements FilterInterface
      */
     private static $instance;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function filter($value, ChildInterface $input, $default)
     {
         if (!is_array($value)) {

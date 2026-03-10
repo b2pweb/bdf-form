@@ -25,6 +25,7 @@ use Bdf\Form\View\ElementViewInterface;
 use Countable;
 use Exception;
 use Iterator;
+use Override;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use TypeError;
 
@@ -99,65 +100,49 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         $this->choices = $choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetGet($offset): ChildInterface
     {
         return $this->children[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetExists($offset): bool
     {
         return isset($this->children[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetSet($offset, $value): void
     {
         throw new BadMethodCallException('Use import() or submit() for set an offset value');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetUnset($offset): void
     {
         throw new BadMethodCallException('Use import() or submit() for set an offset value');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getIterator(): Iterator
     {
         return new ArrayIterator($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function count(): int
     {
         return count($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function choices(): ?ChoiceInterface
     {
         return $this->choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submit($data): ElementInterface
     {
         $this->valid = true;
@@ -204,9 +189,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function patch($data): ElementInterface
     {
         $this->valid = true;
@@ -231,9 +214,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function import($entity): ElementInterface
     {
         if ($entity === null) {
@@ -261,6 +242,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
      *
      * @return T[]
      */
+    #[Override]
     public function value(): array
     {
         $value = [];
@@ -272,9 +254,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function httpValue()
     {
         $value = [];
@@ -286,33 +266,25 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return $this->transformer->transformToHttp($value, $this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->valid;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         return !$this->valid;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $field ? $this->error->withField($field) : $this->error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         if ($container = $this->container()) {
@@ -323,9 +295,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return new LeafRootElement($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         $elements = [];
@@ -348,9 +318,6 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __clone()
     {
         $children = $this->children;

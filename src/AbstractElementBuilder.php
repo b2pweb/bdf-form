@@ -8,6 +8,7 @@ use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\TransformerBuilderTrait;
 use Bdf\Form\Util\ValidatorBuilderTrait;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Override;
 
 /**
  * Base builder for elements
@@ -41,9 +42,7 @@ abstract class AbstractElementBuilder implements ElementBuilderInterface
         $this->registry = $registry ?: new Registry();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function value($value)
     {
         $this->value = $value;
@@ -51,9 +50,7 @@ abstract class AbstractElementBuilder implements ElementBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function buildElement(): ElementInterface
     {
         $element = $this->createElement($this->buildValidator(), $this->buildTransformer());
@@ -75,9 +72,7 @@ abstract class AbstractElementBuilder implements ElementBuilderInterface
      */
     abstract protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final protected function registry(): RegistryInterface
     {
         return $this->registry;

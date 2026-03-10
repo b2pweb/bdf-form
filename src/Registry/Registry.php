@@ -37,6 +37,7 @@ use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
 use InvalidArgumentException;
+use Override;
 
 /**
  * Base registry interface
@@ -85,9 +86,7 @@ class Registry implements RegistryInterface
         });
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function childBuilder(string $element, string $name): ChildBuilderInterface
     {
         $elementBuilder = $this->elementBuilder($element);
@@ -109,6 +108,7 @@ class Registry implements RegistryInterface
      * @psalm-template E as \Bdf\Form\ElementInterface
      * @psalm-return ElementBuilderInterface<E>
      */
+    #[Override]
     public function elementBuilder(string $element): ElementBuilderInterface
     {
         $builderFactory = null;
@@ -136,9 +136,7 @@ class Registry implements RegistryInterface
         return ($builderFactory)($this, $element);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function buttonBuilder(string $name): ButtonBuilderInterface
     {
         return new SubmitButtonBuilder($name);

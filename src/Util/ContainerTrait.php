@@ -22,7 +22,7 @@ trait ContainerTrait
      */
     final public function container(): ?ChildInterface
     {
-        return $this->container ? $this->container->get() : null;
+        return $this->container?->get();
     }
 
     /**

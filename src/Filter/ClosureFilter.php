@@ -4,6 +4,7 @@ namespace Bdf\Form\Filter;
 
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Child\ChildInterface;
+use Override;
 
 /**
  * Adapt a simple callback to FilterInterface
@@ -33,9 +34,7 @@ final class ClosureFilter implements FilterInterface
         $this->callback = $callback;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function filter($value, ChildInterface $input, $default)
     {
         return ($this->callback)($value, $input, $default);

@@ -6,6 +6,7 @@ use Bdf\Form\Leaf\View\SelectHtmlRenderer;
 use Bdf\Form\Leaf\View\SimpleFieldHtmlRenderer;
 use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
+use Override;
 
 /**
  * Default renderer for @see ArrayElementView
@@ -41,11 +42,7 @@ final class ArrayElementViewRenderer implements FieldViewRendererInterface
         $this->selectRenderer = $selectRenderer ?? SelectHtmlRenderer::instance();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param ArrayElementView $view
-     */
+    #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
     {
         if ($view->isCsv()) {
@@ -62,10 +59,6 @@ final class ArrayElementViewRenderer implements FieldViewRendererInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self();
+        return self::$instance ??= new self();
     }
 }

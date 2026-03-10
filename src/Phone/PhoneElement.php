@@ -9,6 +9,7 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Override;
 use TypeError;
 
 use function strtoupper;
@@ -51,9 +52,7 @@ final class PhoneElement extends LeafElement
         $this->formatter = $formatter ?? PhoneNumberUtil::getInstance();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function toPhp($httpValue)
     {
         if ($httpValue === null || $httpValue === '') {
@@ -63,9 +62,7 @@ final class PhoneElement extends LeafElement
         return $this->parseValue($httpValue);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function toHttp($phpValue)
     {
         if (!$phpValue) {
@@ -75,11 +72,7 @@ final class PhoneElement extends LeafElement
         return $phpValue->getRawInput() ?? $this->formatter->format($phpValue, PhoneNumberFormat::E164);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return PhoneNumber|null
-     */
+    #[Override]
     protected function tryCast($value): ?PhoneNumber
     {
         if ($value === null) {
@@ -134,9 +127,7 @@ final class PhoneElement extends LeafElement
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function parseConstraints(ValueValidatorInterface $validator): array
     {
         $result = parent::parseConstraints($validator);

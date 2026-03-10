@@ -3,6 +3,7 @@
 namespace Bdf\Form\Transformer;
 
 use Bdf\Form\ElementInterface;
+use Override;
 
 /**
  * Aggregation of transformers
@@ -28,9 +29,7 @@ final class TransformerAggregate implements TransformerInterface
         $this->transformers = $transformers;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformToHttp($value, ElementInterface $input)
     {
         foreach ($this->transformers as $transformer) {
@@ -40,9 +39,7 @@ final class TransformerAggregate implements TransformerInterface
         return $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformFromHttp($value, ElementInterface $input)
     {
         for ($i = count($this->transformers) - 1; $i >= 0; --$i) {

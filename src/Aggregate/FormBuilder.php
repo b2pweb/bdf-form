@@ -36,6 +36,7 @@ use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -125,6 +126,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress LessSpecificReturnStatement
      * @psalm-suppress PropertyTypeCoercion
      */
+    #[Override]
     public function add(string $name, string $element): ChildBuilderInterface
     {
         return $this->children[$name] = $this->registry()->childBuilder($element, $name);
@@ -139,6 +141,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function any(string $name): ChildBuilderInterface
     {
         return $this->add($name, AnyElement::class);
@@ -153,6 +156,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function string(string $name, ?string $default = null): ChildBuilderInterface
     {
         return $this->add($name, StringElement::class)->default($default);
@@ -167,6 +171,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function integer(string $name, ?int $default = null): ChildBuilderInterface
     {
         return $this->add($name, IntegerElement::class)->default($default);
@@ -181,6 +186,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function float(string $name, ?float $default = null): ChildBuilderInterface
     {
         return $this->add($name, FloatElement::class)->default($default);
@@ -195,6 +201,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function boolean(string $name): ChildBuilderInterface
     {
         return $this->add($name, BooleanElement::class);
@@ -209,6 +216,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function dateTime(string $name): ChildBuilderInterface
     {
         return $this->add($name, DateTimeElement::class);
@@ -223,6 +231,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function phone(string $name): ChildBuilderInterface
     {
         return $this->add($name, PhoneElement::class);
@@ -237,6 +246,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function csrf(string $name = '_token'): ChildBuilderInterface
     {
         return $this->add($name, CsrfElement::class);
@@ -296,6 +306,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function embedded(string $name, ?callable $configurator = null): ChildBuilderInterface
     {
         $builder = $this->add($name, Form::class);
@@ -318,6 +329,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function array(string $name, ?string $elementType = null, ?callable $elementConfigurator = null): ChildBuilderInterface
     {
         /** @var ChildBuilderInterface<ArrayElementBuilder>&ArrayChildBuilder $builder */
@@ -333,6 +345,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function submit(string $name): ButtonBuilderInterface
     {
         return $this->buttons[$name] = $this->registry()->buttonBuilder($name);
@@ -341,6 +354,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function propertyAccessor(PropertyAccessorInterface $propertyAccessor): FormBuilderInterface
     {
         $this->propertyAccessor = $propertyAccessor;
@@ -351,6 +365,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function validator(ValidatorInterface $validator): FormBuilderInterface
     {
         $this->validator = $validator;
@@ -361,6 +376,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function generator(ValueGeneratorInterface $generator): FormBuilderInterface
     {
         $this->generator = $generator;
@@ -371,6 +387,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function generates($entity): FormBuilderInterface
     {
         return $this->generator(new ValueGenerator($entity));
@@ -379,6 +396,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
+    #[Override]
     public function optional(bool $flag = true): FormBuilderInterface
     {
         $this->optional = $flag;
@@ -389,7 +407,8 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * {@inheritdoc}
      */
-    final protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    final protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): Form
     {
         $children = new ChildrenCollection();
 

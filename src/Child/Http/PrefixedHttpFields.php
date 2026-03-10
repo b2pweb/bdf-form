@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Child\Http;
 
+use Override;
+
 /**
  * Extract HTTP fields value prefixed by a given string
  *
@@ -32,9 +34,7 @@ final class PrefixedHttpFields implements HttpFieldsInterface
         $this->prefix = $prefix;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function extract($httpFields)
     {
         $data = (array) $httpFields;
@@ -55,17 +55,13 @@ final class PrefixedHttpFields implements HttpFieldsInterface
         return $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function contains($httpFields): bool
     {
         return true; // Always true ?
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function format($value)
     {
         $http = [];
@@ -77,9 +73,7 @@ final class PrefixedHttpFields implements HttpFieldsInterface
         return $http;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function get(?HttpFieldPath $path = null): HttpFieldPath
     {
         return $path === null ? HttpFieldPath::prefixed($this->prefix) : $path->prefix($this->prefix);

@@ -10,6 +10,7 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
+use Override;
 use TypeError;
 
 /**
@@ -84,9 +85,7 @@ final class DateTimeElement extends LeafElement
         return $this->className;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function toPhp($httpValue): ?DateTimeInterface
     {
         if ($httpValue === null || $httpValue === '') {
@@ -129,9 +128,7 @@ final class DateTimeElement extends LeafElement
         return $dateTime;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function toHttp($phpValue)
     {
         // Because of legacy behavior, the raw value can be saved when a transformer failed
@@ -148,11 +145,7 @@ final class DateTimeElement extends LeafElement
         return $phpValue->format($this->format);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return DateTimeInterface|null
-     */
+    #[Override]
     protected function tryCast($value): ?DateTimeInterface
     {
         if ($value === null) {

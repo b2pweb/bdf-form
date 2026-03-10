@@ -11,6 +11,7 @@ use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Util\ContainerTrait;
 use Bdf\Form\View\ElementViewInterface;
+use Override;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -72,9 +73,7 @@ final class CsrfElement implements ElementInterface
         $this->error = FormError::null();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submit($data): ElementInterface
     {
         $this->value = new CsrfToken($this->tokenId, $data);
@@ -83,28 +82,20 @@ final class CsrfElement implements ElementInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function patch($data): ElementInterface
     {
         // CSRF element must be submitted
         return $this->submit($data);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function import($entity): ElementInterface
     {
         throw new BadMethodCallException('Cannot set a Csrf token value');
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return CsrfToken
-     */
+    #[Override]
     public function value(): CsrfToken
     {
         if ($this->value) {
@@ -114,49 +105,37 @@ final class CsrfElement implements ElementInterface
         return $this->value = $this->tokenManager->getToken($this->tokenId);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function httpValue(): string
     {
         return $this->value()->getValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->value && $this->error->empty();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $field ? $this->error->withField($field) : $this->error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         return ($container = $this->container()) ? $container->parent()->root() : new LeafRootElement($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         return new SimpleElementView(

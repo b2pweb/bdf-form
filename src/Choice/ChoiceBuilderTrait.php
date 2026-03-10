@@ -44,6 +44,8 @@ trait ChoiceBuilderTrait
      *
      * @param ChoiceInterface|array|callable $choices  The allowed values in PHP form.
      * @param string|null $message The error message.
+     * @param non-negative-int $min
+     * @param positive-int $max
      *
      * @return $this
      * @see ChoiceConstraint

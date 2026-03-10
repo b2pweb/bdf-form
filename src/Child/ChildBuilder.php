@@ -18,7 +18,7 @@ use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\MagicCallForwarding;
 use Bdf\Form\Util\TransformerBuilderTrait;
-use Symfony\Component\Form\DataTransformerInterface;
+use Override;
 
 use function is_callable;
 
@@ -137,9 +137,7 @@ class ChildBuilder implements ChildBuilderInterface
         $this->registry = $registry ?: new Registry();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function hydrator(HydratorInterface $hydrator)
     {
         $this->hydrator = $hydrator;
@@ -147,9 +145,7 @@ class ChildBuilder implements ChildBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function extractor(ExtractorInterface $extractor)
     {
         $this->extractor = $extractor;
@@ -157,9 +153,7 @@ class ChildBuilder implements ChildBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function filter(FilterInterface|callable $filter, bool $append = true)
     {
         if (is_callable($filter)) {
@@ -175,9 +169,7 @@ class ChildBuilder implements ChildBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function default($default)
     {
         $this->default = $default;
@@ -185,9 +177,7 @@ class ChildBuilder implements ChildBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function depends(string ...$inputNames)
     {
         foreach ($inputNames as $inputName) {
@@ -197,9 +187,7 @@ class ChildBuilder implements ChildBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function addParametersConfigurator(callable $configurator)
     {
         $this->parametersConfigurators[] = $configurator;
@@ -207,9 +195,7 @@ class ChildBuilder implements ChildBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function buildChild(): ChildInterface
     {
         $parameters = $this->buildParameters();
@@ -467,13 +453,13 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * Forward call to element builder
      *
-     * @param callable|TransformerInterface|DataTransformerInterface $transformer
+     * @param callable|TransformerInterface $transformer
      * @param bool $append
      * @return $this
      *
      * @see ElementBuilderInterface::transformer()
      */
-    public function transformer($transformer, bool $append = true)
+    public function transformer(callable|TransformerInterface $transformer, bool $append = true)
     {
         $this->elementBuilder->transformer($transformer, $append);
 
@@ -485,14 +471,13 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @return B
      */
+    #[Override]
     final protected function getElementBuilder(): ElementBuilderInterface
     {
         return $this->elementBuilder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final protected function registry(): RegistryInterface
     {
         return $this->registry;

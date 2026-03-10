@@ -10,6 +10,7 @@ use Bdf\Form\Transformer\TransformerInterface;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Override;
 
 /**
  * Transformer PhoneNumber instance to string with a format
@@ -46,9 +47,7 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
         $this->formatter = $formatter;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformToHttp($value, ElementInterface $input): ?PhoneNumber
     {
         if ($value === null) {
@@ -64,9 +63,7 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
         return $formatter->parse($value, null, null, true);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformFromHttp($value, ElementInterface $input): ?string
     {
         if (!$value instanceof PhoneNumber) {

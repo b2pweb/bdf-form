@@ -5,6 +5,8 @@ namespace Bdf\Form\Filter;
 use Attribute;
 use Bdf\Form\Child\ChildInterface;
 
+use Override;
+
 use function filter_var;
 use function is_array;
 use function is_scalar;
@@ -48,9 +50,7 @@ final class FilterVar implements FilterInterface
         $this->flags = $flags;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function filter($value, ChildInterface $input, $default)
     {
         if (!is_array($value)) {

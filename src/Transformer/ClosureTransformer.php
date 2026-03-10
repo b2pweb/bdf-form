@@ -5,6 +5,7 @@ namespace Bdf\Form\Transformer;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Registry\RegistryInterface;
+use Override;
 
 /**
  * Wrap a closure into a Transformer
@@ -34,17 +35,13 @@ final class ClosureTransformer implements TransformerInterface
         $this->callback = $callback;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformToHttp($value, ElementInterface $input)
     {
         return ($this->callback)($value, $input, false);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformFromHttp($value, ElementInterface $input)
     {
         return ($this->callback)($value, $input, true);

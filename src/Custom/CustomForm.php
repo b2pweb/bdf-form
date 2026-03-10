@@ -14,6 +14,7 @@ use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\View\ElementViewInterface;
 use Iterator;
+use Override;
 use WeakReference;
 
 use function method_exists;
@@ -89,49 +90,37 @@ abstract class CustomForm implements FormInterface
         $this->builder = $builder ?? new FormBuilder();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetGet($offset): ChildInterface
     {
         return $this->form()[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetExists($offset): bool
     {
         return isset($this->form()[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetSet($offset, $value): void
     {
         $this->form()[$offset] = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetUnset($offset): void
     {
         unset($this->form()[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getIterator(): Iterator
     {
         return $this->form()->getIterator();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submit($data): ElementInterface
     {
         $this->submitTarget()->submit($data);
@@ -139,9 +128,7 @@ abstract class CustomForm implements FormInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function patch($data): ElementInterface
     {
         $this->submitTarget()->patch($data);
@@ -149,9 +136,7 @@ abstract class CustomForm implements FormInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function import($entity): ElementInterface
     {
         $this->form()->import($entity);
@@ -159,58 +144,44 @@ abstract class CustomForm implements FormInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function value()
     {
         return $this->form()->value();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function httpValue()
     {
         return $this->form()->httpValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->form()->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         // Do not use $this->form()->failed() because it may be not implemented
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $this->form()->error($field);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function container(): ?ChildInterface
     {
-        return $this->container ? $this->container->get() : null;
+        return $this->container?->get();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function setContainer(ChildInterface $container): ElementInterface
     {
         $form = clone $this;
@@ -220,18 +191,14 @@ abstract class CustomForm implements FormInterface
         return $form;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         // @todo bad root form ?
         return $this->form()->root();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function attach($entity): FormInterface
     {
         $this->form()->attach($entity);
@@ -239,10 +206,8 @@ abstract class CustomForm implements FormInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    #[Override]
+    public function view(?HttpFieldPath $field = null): FormView
     {
         $form = $this->form();
         /** @var FormView $view */
@@ -322,11 +287,7 @@ abstract class CustomForm implements FormInterface
      */
     final public function disableCsrfValidation(): void
     {
-        $root = $this->root();
-
-        if (method_exists($root, 'set')) {
-            $root->set(CsrfValueValidator::FLAG_DISABLE_CSRF_VALIDATION, true);
-        }
+        $this->root()->set(CsrfValueValidator::FLAG_DISABLE_CSRF_VALIDATION, true);
     }
 
     /**

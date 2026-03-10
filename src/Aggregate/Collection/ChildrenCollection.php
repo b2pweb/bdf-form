@@ -8,6 +8,7 @@ use Bdf\Form\Child\ChildInterface;
 use Countable;
 use Iterator;
 use IteratorAggregate;
+use Override;
 
 /**
  * Simple implementation of children collection for handle dependencies order
@@ -42,25 +43,19 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function add(ChildInterface $child): void
     {
         $this->addNamed($child->name(), $child);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function has(string $name): bool
     {
         return isset($this->children[$name]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function remove(string $name): bool
     {
         if (!$this->has($name)) {
@@ -72,81 +67,61 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetExists($offset): bool
     {
         return $this->has($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetGet($offset): ChildInterface
     {
         return $this->children[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetSet($offset, $value): void
     {
         $this->add($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function offsetUnset($offset): void
     {
         $this->remove($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function count(): int
     {
         return count($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getIterator(): Iterator
     {
         return new ArrayIterator($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function reverseIterator(): Iterator
     {
         return new ArrayIterator($this->hasViewDependencies ? array_reverse($this->children) : $this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function forwardIterator(): Iterator
     {
         return new ArrayIterator($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function all(): array
     {
         return $this->children;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function duplicate(ChildAggregateInterface $newParent): ChildrenCollectionInterface
     {
         $children = [];
@@ -169,7 +144,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
      * @param string $name
      * @param ChildInterface $child
      */
-    private function addNamed($name, ChildInterface $child): void
+    private function addNamed(string $name, ChildInterface $child): void
     {
         $this->children[$name] = $child;
         $this->orderDependencies($child);

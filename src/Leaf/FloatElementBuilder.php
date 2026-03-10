@@ -8,6 +8,7 @@ use Bdf\Form\Leaf\Transformer\LocalizedNumberTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use NumberFormatter;
+use Override;
 
 /**
  * Builder for a float element
@@ -91,17 +92,13 @@ class FloatElementBuilder extends NumberElementBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): FloatElement
     {
         return new FloatElement($validator, $transformer, $this->getChoices());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function numberTransformer(): TransformerInterface
     {
         return new LocalizedNumberTransformer($this->scale, $this->grouping, $this->roundingMode);

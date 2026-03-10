@@ -18,6 +18,7 @@ use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElementBuilder;
+use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -69,7 +70,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @param non-empty-string $name The child name
      *
      * @return ChildBuilder|AnyElementBuilder
-     * @return ChildBuilderInterface<AnyElementBuilder> The child builder
+     * @psalm-return ChildBuilderInterface<AnyElementBuilder> The child builder
      *
      * @since 1.5
      */
@@ -332,5 +333,6 @@ interface FormBuilderInterface extends ElementBuilderInterface
      *
      * @return FormInterface
      */
+    #[Override]
     public function buildElement(): ElementInterface;
 }

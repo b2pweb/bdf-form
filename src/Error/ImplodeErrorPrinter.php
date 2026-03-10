@@ -3,6 +3,7 @@
 namespace Bdf\Form\Error;
 
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Override;
 
 /**
  * Implode all errors into a string
@@ -43,33 +44,25 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
         $this->separator = $separator;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function field(HttpFieldPath $field): void
     {
         // Ignore field name
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function global(string $error): void
     {
         $this->lines[] = $error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function code(string $code): void
     {
         // Ignore code
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function child(string $name, FormError $error): void
     {
         $this->inChild = true;
@@ -77,9 +70,7 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
         $this->inChild = false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function print()
     {
         return $this->inChild ? null : implode($this->separator, $this->lines);

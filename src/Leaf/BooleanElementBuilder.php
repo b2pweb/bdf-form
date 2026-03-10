@@ -8,6 +8,7 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use InvalidArgumentException;
+use Override;
 
 /**
  * Builder for a boolean element
@@ -83,10 +84,8 @@ class BooleanElementBuilder extends AbstractElementBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): BooleanStringElement|BooleanElement
     {
         return $this->booleanString
             ? new BooleanStringElement($validator, $transformer)

@@ -6,9 +6,9 @@ use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\ElementBuilderInterface;
-use Bdf\Form\ElementInterface;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Util\DelegateElementBuilderTrait;
+use Override;
 
 use function is_string;
 
@@ -66,12 +66,8 @@ class CustomFormBuilder implements ElementBuilderInterface
         $this->builder = $builder ?: new FormBuilder();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return CustomForm
-     */
-    public function buildElement(): ElementInterface
+    #[Override]
+    public function buildElement(): CustomForm
     {
         if (is_string($this->formFactory)) {
             /** @var class-string<CustomForm> $className */
@@ -128,9 +124,7 @@ class CustomFormBuilder implements ElementBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function getElementBuilder(): ElementBuilderInterface
     {
         return $this->builder;

@@ -3,6 +3,7 @@
 namespace Bdf\Form\Aggregate\Value;
 
 use Bdf\Form\ElementInterface;
+use Override;
 
 /**
  * The base value generator implementation
@@ -40,18 +41,14 @@ final class ValueGenerator implements ValueGeneratorInterface
         $this->value = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function attach($entity): void
     {
         /** @psalm-suppress PropertyTypeCoercion */
         $this->attachment = $entity;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generate(ElementInterface $element)
     {
         $value = $this->attachment ?? $this->value;
