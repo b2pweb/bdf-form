@@ -70,6 +70,10 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
+    # psalm 6 is not compatible with Symfony 6.4, so remove it
+    - name: Remove psalm
+      run: composer remove --dev vimeo/psalm
+
     - name: Set Symfony version
       run: composer require --dev "symfony/symfony:~${{ matrix.sf-versions }}.0"
 
