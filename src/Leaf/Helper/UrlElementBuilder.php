@@ -10,6 +10,7 @@ use Override;
 use Symfony\Component\Validator\Constraints\Url;
 
 use function is_string;
+use function property_exists;
 
 /**
  * Provide URL constraint builder for a StringElementBuilder
@@ -167,14 +168,22 @@ class UrlElementBuilder extends StringElementBuilder
         }
 
         return [
-            new Url(
-                message: $this->errorMessage,
-                protocols: $this->protocols,
-                relativeProtocol: $this->relativeProtocol,
-                normalizer: $this->normalizer,
-                requireTld: $this->requireTld,
-                tldMessage: $this->tldMessage
-            ),
+            property_exists(Url::class, 'requireTld') // SF >= 7.1
+                ? new Url(
+                    message: $this->errorMessage,
+                    protocols: $this->protocols,
+                    relativeProtocol: $this->relativeProtocol,
+                    normalizer: $this->normalizer,
+                    requireTld: $this->requireTld,
+                    tldMessage: $this->tldMessage
+                )
+                : new Url(
+                    message: $this->errorMessage,
+                    protocols: $this->protocols,
+                    relativeProtocol: $this->relativeProtocol,
+                    normalizer: $this->normalizer,
+                )
+            ,
         ];
     }
 
