@@ -12,6 +12,7 @@ use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use libphonenumber\PhoneNumber;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -185,9 +186,7 @@ class PhoneElementTest extends TestCase
         $this->assertNull($element->import(null)->value());
     }
 
-    /**
-     * @dataProvider provideInvalidValue
-     */
+    #[DataProvider('provideInvalidValue')]
     public function test_import_invalid_values($value)
     {
         $this->expectException(\TypeError::class);
@@ -200,7 +199,7 @@ class PhoneElementTest extends TestCase
     /**
      *
      */
-    public function provideInvalidValue()
+    public static function provideInvalidValue()
     {
         return [
             [[]],

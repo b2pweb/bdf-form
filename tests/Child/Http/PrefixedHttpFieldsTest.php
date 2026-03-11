@@ -11,6 +11,7 @@ use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Setter;
 use Bdf\Form\Validator\ConstraintValueValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Count;
 
@@ -19,9 +20,7 @@ use Symfony\Component\Validator\Constraints\Count;
  */
 class PrefixedHttpFieldsTest extends TestCase
 {
-    /**
-     * @dataProvider emptyValues
-     */
+    #[DataProvider('emptyValues')]
     public function test_submit_empty($value)
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], null, new Setter());
@@ -31,9 +30,7 @@ class PrefixedHttpFieldsTest extends TestCase
         $this->assertSame([], $child->element()->value());
     }
 
-    /**
-     * @dataProvider emptyValues
-     */
+    #[DataProvider('emptyValues')]
     public function test_submit_empty_with_default_value($value)
     {
         $child = new Child('child', new ArrayElement(new StringElement()), new PrefixedHttpFields('child_'), [], ['default'], new Setter());
@@ -130,7 +127,7 @@ class PrefixedHttpFieldsTest extends TestCase
     /**
      * @return array
      */
-    public function emptyValues()
+    public static function emptyValues()
     {
         return [
             [null],

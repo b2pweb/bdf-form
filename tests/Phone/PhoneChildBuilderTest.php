@@ -6,13 +6,12 @@ use Bdf\Form\Aggregate\Collection\ChildrenCollection;
 use Bdf\Form\Aggregate\Form;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PhoneChildBuilderTest extends TestCase
 {
-    /**
-     * @dataProvider provideFormats
-     */
+    #[DataProvider('provideFormats')]
     public function test_saveAsString($format, $formatted)
     {
         $builder = new PhoneChildBuilder('child', new PhoneElementBuilder());
@@ -82,7 +81,7 @@ class PhoneChildBuilderTest extends TestCase
         $this->assertSame(['child' => '+3314554'], $target);
     }
 
-    public function provideFormats()
+    public static function provideFormats()
     {
         return [
             [PhoneNumberFormat::E164, '+33142563698'],

@@ -313,7 +313,7 @@ class AnyElementTest extends TestCase
 
         $view = $element->view(HttpFieldPath::named('val'));
 
-        $this->assertContainsOnly(ChoiceView::class, $view->choices());
+        $this->assertContainsOnlyInstancesOf(ChoiceView::class, $view->choices());
         $this->assertCount(2, $view->choices());
 
         $this->assertSame('foo', $view->choices()[0]->value());
@@ -342,7 +342,7 @@ class AnyElementTest extends TestCase
 
         $view = $element->view(HttpFieldPath::named('val'));
 
-        $this->assertContainsOnly(ChoiceView::class, $view->choices());
+        $this->assertContainsOnlyInstancesOf(ChoiceView::class, $view->choices());
         $this->assertCount(2, $view->choices());
 
         $this->assertSame('Zm9v', $view->choices()[0]->value());

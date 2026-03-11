@@ -167,7 +167,7 @@ class ArrayElementBuilderTest extends TestCase
 
         $phones = $element->submit(['0451236585', '0241578932'])->value();
 
-        $this->assertContainsOnly(PhoneNumber::class, $phones);
+        $this->assertContainsOnlyInstancesOf(PhoneNumber::class, $phones);
         $this->assertCount(2, $phones);
         $this->assertEquals('+33451236585', PhoneNumberUtil::getInstance()->format($phones[0], PhoneNumberFormat::E164));
         $this->assertEquals('+33241578932', PhoneNumberUtil::getInstance()->format($phones[1], PhoneNumberFormat::E164));

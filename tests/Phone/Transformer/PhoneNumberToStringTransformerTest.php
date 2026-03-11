@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\FormBuilder;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PhoneNumberToStringTransformerTest extends TestCase
@@ -82,9 +83,7 @@ class PhoneNumberToStringTransformerTest extends TestCase
         $this->assertInstanceOf(PhoneNumber::class, $form['foo']->element()->value());
     }
 
-    /**
-     * @dataProvider provideEmptyValue
-     */
+    #[DataProvider('provideEmptyValue')]
     public function test_with_empty_value_should_return_null($empty)
     {
         $builder = new FormBuilder();
@@ -99,7 +98,7 @@ class PhoneNumberToStringTransformerTest extends TestCase
     /**
      *
      */
-    public function provideEmptyValue()
+    public static function provideEmptyValue()
     {
         return [
             [null],

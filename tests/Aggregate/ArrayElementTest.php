@@ -15,6 +15,7 @@ use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
 use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Length;
@@ -341,9 +342,7 @@ class ArrayElementTest extends TestCase
         $this->assertSame([], $element->import(null)->value());
     }
 
-    /**
-     * @dataProvider provideInvalidValue
-     */
+    #[DataProvider('provideInvalidValue')]
     public function test_import_invalid_values($value)
     {
         $this->expectException(\TypeError::class);
@@ -356,7 +355,7 @@ class ArrayElementTest extends TestCase
     /**
      *
      */
-    public function provideInvalidValue()
+    public static function provideInvalidValue()
     {
         return [
             [''],
@@ -501,7 +500,7 @@ class ArrayElementTest extends TestCase
         $this->assertFalse($view->hasError());
         $this->assertEquals(['foo', 'bar', 'baz'], $view->value());
         $this->assertCount(3, $view);
-        $this->assertContainsOnly(SimpleElementView::class, $view);
+        $this->assertContainsOnlyInstancesOf(SimpleElementView::class, $view);
         $this->assertEquals('foo', $view[0]->value());
         $this->assertEquals('arr[0]', $view[0]->name());
         $this->assertEquals('bar', $view[1]->value());
@@ -516,7 +515,7 @@ class ArrayElementTest extends TestCase
         $this->assertFalse($view->hasError());
         $this->assertEquals(['foo' => 'bar', 'baz' => 'rab'], $view->value());
         $this->assertCount(2, $view);
-        $this->assertContainsOnly(SimpleElementView::class, $view);
+        $this->assertContainsOnlyInstancesOf(SimpleElementView::class, $view);
         $this->assertEquals('bar', $view['foo']->value());
         $this->assertEquals('arr[foo]', $view['foo']->name());
         $this->assertEquals('rab', $view['baz']->value());
@@ -540,7 +539,7 @@ class ArrayElementTest extends TestCase
         $this->assertEquals('arr', $view->name());
         $this->assertFalse($view->hasError());
         $this->assertEquals(['Zm9v', 'YmFy'], $view->value());
-        $this->assertContainsOnly(SimpleElementView::class, $view);
+        $this->assertContainsOnlyInstancesOf(SimpleElementView::class, $view);
         $this->assertEquals('Zm9v', $view[0]->value());
         $this->assertEquals('arr[0]', $view[0]->name());
         $this->assertEquals('YmFy', $view[1]->value());

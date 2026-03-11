@@ -4,13 +4,12 @@ namespace Bdf\Form\Leaf\Transformer;
 
 use Bdf\Form\ElementInterface;
 use Locale;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class LocalizedIntegerTransformerTest extends TestCase
 {
-    /**
-     * @dataProvider provideFromHttpRoundingMode
-     */
+    #[DataProvider('provideFromHttpRoundingMode')]
     public function test_fromHttp_scale_and_roundingMode($mode, $httpValue, $phpValue)
     {
         $transformer = new LocalizedIntegerTransformer(false, $mode);
@@ -21,7 +20,7 @@ class LocalizedIntegerTransformerTest extends TestCase
     /**
      *
      */
-    public function provideFromHttpRoundingMode()
+    public static function provideFromHttpRoundingMode()
     {
         return [
             [\NumberFormatter::ROUND_CEILING, '12.3456789', 13],
@@ -34,9 +33,7 @@ class LocalizedIntegerTransformerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideToHttpRoundingMode
-     */
+    #[DataProvider('provideToHttpRoundingMode')]
     public function test_toHttp_roundingMode($mode, $phpValue, $httpValue)
     {
         $transformer = new LocalizedIntegerTransformer(false, $mode);
@@ -47,7 +44,7 @@ class LocalizedIntegerTransformerTest extends TestCase
     /**
      *
      */
-    public function provideToHttpRoundingMode()
+    public static function provideToHttpRoundingMode()
     {
         return [
             [\NumberFormatter::ROUND_CEILING, 12.3456789, '13'],
@@ -128,9 +125,7 @@ class LocalizedIntegerTransformerTest extends TestCase
         $this->assertNull($transformer->transformToHttp(null, $element));
     }
 
-    /**
-     * @dataProvider invalidValue
-     */
+    #[DataProvider('invalidValue')]
     public function test_transformFromHttp_invalid_number($value, $error)
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -142,7 +137,7 @@ class LocalizedIntegerTransformerTest extends TestCase
         $transformer->transformFromHttp($value, $element);
     }
 
-    public function invalidValue()
+    public static function invalidValue()
     {
         return [
             ['foo', 'Number parsing failed: U_PARSE_ERROR'],
@@ -153,9 +148,7 @@ class LocalizedIntegerTransformerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider invalidPhpValue
-     */
+    #[DataProvider('invalidPhpValue')]
     public function test_transformToHttp_not_a_number($value)
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -167,7 +160,7 @@ class LocalizedIntegerTransformerTest extends TestCase
         $transformer->transformToHttp($value, $element);
     }
 
-    public function invalidPhpValue()
+    public static function invalidPhpValue()
     {
         return [
             ['foo'],

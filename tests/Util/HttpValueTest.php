@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Util;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class HttpValueTest extends TestCase
@@ -23,18 +24,14 @@ class HttpValueTest extends TestCase
         $this->assertFalse(HttpValue::isEmpty(false));
     }
 
-    /**
-     * @dataProvider emptyValues
-     */
+    #[DataProvider('emptyValues')]
     public function test_orDefault_with_empty_value($value)
     {
         $this->assertSame($value, HttpValue::orDefault($value, null));
         $this->assertSame('foo', HttpValue::orDefault($value, 'foo'));
     }
 
-    /**
-     * @dataProvider notEmptyValues
-     */
+    #[DataProvider('notEmptyValues')]
     public function test_orDefault_with_not_empty_value($value)
     {
         $this->assertSame($value, HttpValue::orDefault($value, null));
@@ -44,7 +41,7 @@ class HttpValueTest extends TestCase
     /**
      * @return array
      */
-    public function emptyValues()
+    public static function emptyValues()
     {
         return [
             [null],
@@ -56,7 +53,7 @@ class HttpValueTest extends TestCase
     /**
      * @return array
      */
-    public function notEmptyValues()
+    public static function notEmptyValues()
     {
         return [
             ['0'],

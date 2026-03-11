@@ -8,11 +8,6 @@ use Bdf\Form\Custom\CustomForm;
 use PHPUnit\Framework\TestCase;
 use WeakReference;
 
-/**
- * Class CyclicReferenceTest
- *
- * @requires PHP 7.4
- */
 class CyclicReferenceTest extends TestCase
 {
     /**
