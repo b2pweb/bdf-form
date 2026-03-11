@@ -21,7 +21,9 @@ final class SelectHtmlRenderer implements FieldViewRendererInterface
     #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
     {
-        if (!$choices = $view->choices()) {
+        $choices = $view->choices();
+
+        if ($choices === null || $choices === []) {
             throw new InvalidArgumentException('Choices must be provided for render a select element.');
         }
 

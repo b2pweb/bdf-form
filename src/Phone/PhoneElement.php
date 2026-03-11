@@ -26,7 +26,7 @@ use function strtoupper;
 final class PhoneElement extends LeafElement
 {
     /**
-     * @var callable(PhoneElement):string
+     * @var callable(PhoneElement):(string|null)
      */
     private readonly mixed $regionResolver;
     private readonly PhoneNumberUtil $formatter;

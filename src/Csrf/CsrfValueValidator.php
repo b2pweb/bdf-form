@@ -11,6 +11,7 @@ use Exception;
 
 use Override;
 
+use function assert;
 use function method_exists;
 
 /**
@@ -63,13 +64,12 @@ final readonly class CsrfValueValidator implements ValueValidatorInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @param CsrfElement $element
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     #[Override]
-    public function validate($value, ElementInterface $element): FormError
+    public function validate(mixed $value, ElementInterface $element): FormError
     {
+        assert($element instanceof CsrfElement);
+
         $root = $element->root();
 
         if ($root->is(self::FLAG_DISABLE_CSRF_VALIDATION)) {

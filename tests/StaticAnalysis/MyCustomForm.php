@@ -35,6 +35,9 @@ class MyCustomForm extends CustomForm
     }
 }
 
+/**
+ * @psalm-suppress MissingConstructor
+ */
 class MyGeneratedEntity
 {
     /**

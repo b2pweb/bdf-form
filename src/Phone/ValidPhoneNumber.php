@@ -9,9 +9,9 @@ use Symfony\Component\Validator\Constraint;
  */
 class ValidPhoneNumber extends Constraint
 {
-    const INVALID_PHONE_NUMBER_ERROR = '5169f03c-ec96-4e62-8651-9ee6766e0b5a';
+    public const string INVALID_PHONE_NUMBER_ERROR = '5169f03c-ec96-4e62-8651-9ee6766e0b5a';
 
-    protected const ERROR_NAMES = [self::INVALID_PHONE_NUMBER_ERROR => 'INVALID_PHONE_NUMBER_ERROR'];
+    protected const array ERROR_NAMES = [self::INVALID_PHONE_NUMBER_ERROR => 'INVALID_PHONE_NUMBER_ERROR'];
 
     /**
      * The error message

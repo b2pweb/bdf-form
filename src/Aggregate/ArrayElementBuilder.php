@@ -139,7 +139,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
         /** @psalm-suppress InvalidPropertyAssignmentValue */
         $this->element = $this->registry->elementBuilder($element);
 
-        if ($configurator) {
+        if ($configurator !== null) {
             /** @psalm-suppress InvalidArgument */
             $configurator($this->element);
         }
@@ -357,6 +357,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      */
     final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): static
     {
+        /** @psalm-suppress MissingConstructor */
         $builder = new class {
             use ChoiceBuilderTrait {
                 getChoices as public;

@@ -58,6 +58,7 @@ final readonly class DateTimeToTimestampTransformer implements TransformerInterf
         $className = $this->className ?? ($input instanceof DateTimeElement ? $input->dateTimeClassName() : DateTime::class);
         $timezone = $this->timezone ?? ($input instanceof DateTimeElement ? $input->timezone() : null);
 
+        /** @psalm-suppress UnsafeInstantiation */
         /** @var DateTimeInterface $dateTime */
         $dateTime = new $className;
 

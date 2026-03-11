@@ -5,6 +5,7 @@ namespace Bdf\Form\Aggregate\Value;
 use Bdf\Form\ElementInterface;
 use Override;
 
+use function class_exists;
 use function is_callable;
 use function is_object;
 use function is_string;
@@ -57,7 +58,7 @@ final class ValueGenerator implements ValueGeneratorInterface
     {
         $value = $this->attachment ?? $this->value;
 
-        if (is_string($value)) {
+        if (is_string($value) && class_exists($value)) {
             /** @var T */
             return new $value;
         }
@@ -67,10 +68,11 @@ final class ValueGenerator implements ValueGeneratorInterface
         }
 
         // Only clone value if it's not attached
-        if (!$this->attachment && is_object($value)) {
+        if ($this->attachment === null && is_object($value)) {
             return clone $value;
         }
 
+        /** @var T */
         return $value;
     }
 }

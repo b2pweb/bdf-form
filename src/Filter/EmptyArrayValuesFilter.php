@@ -15,10 +15,7 @@ use Override;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class EmptyArrayValuesFilter implements FilterInterface
 {
-    /**
-     * @var EmptyArrayValuesFilter
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
     #[Override]
     public function filter(mixed $value, ChildInterface $input, mixed $default): mixed
@@ -43,10 +40,6 @@ final class EmptyArrayValuesFilter implements FilterInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

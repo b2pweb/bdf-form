@@ -107,7 +107,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      * @throws InvalidArgumentException If the given value is not scalar or cannot be parsed
      */
     #[Override]
-    final public function transformFromHttp($value, ElementInterface $input)
+    final public function transformFromHttp(mixed $value, ElementInterface $input): float|int|string|null
     {
         if ($value !== null && !is_int($value) && !is_float($value) && !is_string($value)) {
             throw new InvalidArgumentException('Expected a scalar or null.');
@@ -163,8 +163,9 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @return T
      */
-    protected function cast($value): float|int|string
+    protected function cast(float|int|string $value): float|int|string
     {
+        /** @var T */
         return $value;
     }
 

@@ -295,7 +295,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     {
         $builder = $this->add($name, Form::class);
 
-        if ($configurator) {
+        if ($configurator !== null) {
             $configurator($builder);
         }
 

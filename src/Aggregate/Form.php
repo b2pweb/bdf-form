@@ -182,7 +182,7 @@ final class Form implements FormInterface
     #[Override]
     public function import(mixed $entity): static
     {
-        if ($entity) {
+        if ($entity !== null && $entity !== []) {
             $this->generator->attach($entity);
         }
 

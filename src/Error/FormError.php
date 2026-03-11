@@ -112,7 +112,7 @@ final class FormError implements Stringable
      */
     public function empty(): bool
     {
-        return empty($this->global) && empty($this->code) && empty($this->children);
+        return $this->global === null && $this->code === null && $this->children === [];
     }
 
     /**
@@ -160,12 +160,12 @@ final class FormError implements Stringable
     {
         $errors = [];
 
-        if ($this->global) {
+        if ($this->global !== null) {
             $errors[0] = $this->global;
         }
 
         foreach ($this->children as $name => $child) {
-            if ($child->global) {
+            if ($child->global !== null) {
                 $errors[$name] = $child->global;
             } else {
                 $errors[$name] = $child->toArray();
@@ -184,15 +184,15 @@ final class FormError implements Stringable
      */
     public function print(FormErrorPrinterInterface $printer): mixed
     {
-        if ($this->field) {
+        if ($this->field !== null) {
             $printer->field($this->field);
         }
 
-        if ($this->global) {
+        if ($this->global !== null) {
             $printer->global($this->global);
         }
 
-        if ($this->code) {
+        if ($this->code !== null) {
             $printer->code($this->code);
         }
 

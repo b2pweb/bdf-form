@@ -64,7 +64,7 @@ final readonly class PhoneNumberToStringTransformer implements TransformerInterf
 
         $formatter = $this->formatter ?? ($input instanceof PhoneElement ? $input->getFormatter() : PhoneNumberUtil::getInstance());
 
-        if ((!$this->formatIfInvalid && !$formatter->isValidNumber($value)) || !$value->getNationalNumber()) {
+        if ((!$this->formatIfInvalid && !$formatter->isValidNumber($value)) || !$value->hasNationalNumber()) {
             return $value->getRawInput();
         }
 

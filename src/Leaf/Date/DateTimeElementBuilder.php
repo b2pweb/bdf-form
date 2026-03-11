@@ -154,7 +154,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
     {
         $constraint = $orEqual ? new LessThanOrEqual($dateTime) : new LessThan($dateTime);
 
-        if ($message) {
+        if ($message !== null) {
             $constraint->message = $message;
         }
 
@@ -186,7 +186,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
     {
         $constraint = $orEqual ? new LessThanOrEqualField($field) : new LessThanField($field);
 
-        if ($message) {
+        if ($message !== null) {
             $constraint->message = $message;
         }
 
@@ -210,7 +210,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
     {
         $constraint = $orEqual ? new GreaterThanOrEqual($dateTime) : new GreaterThan($dateTime);
 
-        if ($message) {
+        if ($message !== null) {
             $constraint->message = $message;
         }
 
@@ -242,7 +242,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
     {
         $constraint = $orEqual ? new GreaterThanOrEqualField($field) : new GreaterThanField($field);
 
-        if ($message) {
+        if ($message !== null) {
             $constraint->message = $message;
         }
 

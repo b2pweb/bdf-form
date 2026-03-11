@@ -20,10 +20,7 @@ use function trim;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class TrimFilter implements FilterInterface
 {
-    /**
-     * @var self
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
     #[Override]
     public function filter(mixed $value, ChildInterface $input, mixed $default): mixed
@@ -47,10 +44,6 @@ final class TrimFilter implements FilterInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

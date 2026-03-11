@@ -45,7 +45,7 @@ final class SimpleElementView implements FieldViewInterface
     #[Override]
     protected function defaultRenderer(): FieldViewRendererInterface
     {
-        return $this->choices ? SelectHtmlRenderer::instance() : SimpleFieldHtmlRenderer::instance();
+        return $this->choices !== null ? SelectHtmlRenderer::instance() : SimpleFieldHtmlRenderer::instance();
     }
 
     /**

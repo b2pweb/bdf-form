@@ -27,7 +27,7 @@ class LocalizedIntegerTransformer extends LocalizedNumberTransformer
     }
 
     #[Override]
-    protected function cast($value): int
+    protected function cast(float|int|string $value): int
     {
         return (int) $value;
     }

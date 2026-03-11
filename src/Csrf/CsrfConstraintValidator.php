@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class CsrfConstraintValidator extends ConstraintValidator
 {
     #[Override]
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof CsrfConstraint) {
             throw new UnexpectedTypeException($constraint, CsrfConstraint::class);

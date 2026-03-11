@@ -11,6 +11,8 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Validator for @see ValidPhoneNumber
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ValidPhoneNumberValidator extends ConstraintValidator
 {

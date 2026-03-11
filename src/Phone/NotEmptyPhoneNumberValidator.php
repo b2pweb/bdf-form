@@ -10,6 +10,8 @@ use Symfony\Component\Validator\Constraints\NotBlankValidator;
 
 /**
  * NotBlank implementation for PhoneNumber value
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class NotEmptyPhoneNumberValidator extends NotBlankValidator
 {
@@ -26,7 +28,7 @@ final class NotEmptyPhoneNumberValidator extends NotBlankValidator
     }
 
     #[Override]
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if ($value instanceof PhoneNumber) {
             if ($value->hasRawInput()) {

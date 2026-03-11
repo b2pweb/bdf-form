@@ -38,7 +38,7 @@ final readonly class ArrayChoice implements ChoiceInterface
         foreach ($this->choices as $label => $value) {
             $view[] = $choice = new ChoiceView($value, $label);
 
-            if ($configuration) {
+            if ($configuration !== null) {
                 $configuration($choice);
             }
         }

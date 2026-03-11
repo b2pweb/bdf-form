@@ -70,6 +70,7 @@ class CustomFormBuilder implements ElementBuilderInterface
             /** @var class-string<CustomForm> $className */
             $className = $this->formFactory;
 
+            /** @psalm-suppress UnsafeInstantiation */
             $form = new $className($this->builder);
         } else {
             $form = ($this->formFactory)($this->builder);
