@@ -315,7 +315,7 @@ class ArrayElementBuilderTest extends TestCase
      */
     public function test_required_with_custom_constraint()
     {
-        $element = $this->builder->required(new Count(['min' => 2]))->buildElement();
+        $element = $this->builder->required(new Count(min: 2))->buildElement();
 
         $element->submit([]);
         $this->assertEquals('This collection should contain 2 elements or more.', $element->error()->global());

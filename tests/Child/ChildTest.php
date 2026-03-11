@@ -63,7 +63,7 @@ class ChildTest extends TestCase
      */
     public function test_import_with_array()
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter());
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(message: 'required error'), null, new Getter());
         $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->import(['child' => 'my value']);
@@ -75,7 +75,7 @@ class ChildTest extends TestCase
      */
     public function test_import_with_object()
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter());
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(message: 'required error'), null, new Getter());
         $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->import((object) ['child' => 'my value']);
@@ -87,7 +87,7 @@ class ChildTest extends TestCase
      */
     public function test_import_null()
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter());
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(message: 'required error'), null, new Getter());
         $child->setParent($form = new Form(new ChildrenCollection()));
 
         $child->import(null);
@@ -99,7 +99,7 @@ class ChildTest extends TestCase
      */
     public function test_import_with_transformer()
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter(), [], new ClosureTransformer(function($value) {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(message: 'required error'), null, new Getter(), [], new ClosureTransformer(function($value) {
             return base64_encode($value);
         }));
         $child->setParent($form = new Form(new ChildrenCollection()));
@@ -113,7 +113,7 @@ class ChildTest extends TestCase
      */
     public function test_fill_with_array()
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), new Setter());
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(message: 'required error'), new Setter());
         $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('my value');
 
@@ -128,7 +128,7 @@ class ChildTest extends TestCase
      */
     public function test_fill_with_object()
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), new Setter());
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(message: 'required error'), new Setter());
         $child->setParent($form = new Form(new ChildrenCollection()));
         $child->element()->import('my value');
 
@@ -143,7 +143,7 @@ class ChildTest extends TestCase
      */
     public function test_fill_with_transformer()
     {
-        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), new Setter(), null, [], new ClosureTransformer(function($value) {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(message: 'required error'), new Setter(), null, [], new ClosureTransformer(function($value) {
             return base64_encode($value);
         }));
         $child->setParent($form = new Form(new ChildrenCollection()));

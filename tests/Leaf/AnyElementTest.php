@@ -68,7 +68,7 @@ class AnyElementTest extends TestCase
      */
     public function test_submit_with_constraint()
     {
-        $element = new AnyElement(new ConstraintValueValidator([new Length(['max' => 2])]));
+        $element = new AnyElement(new ConstraintValueValidator([new Length(max: 2)]));
 
         $this->assertFalse($element->submit('hello')->valid());
         $this->assertSame('hello', $element->value());
@@ -149,7 +149,7 @@ class AnyElementTest extends TestCase
      */
     public function test_patch_null_with_constraints_should_be_validated()
     {
-        $element = (new AnyElementBuilder())->satisfy(new Length(['min' => 5]))->buildElement();
+        $element = (new AnyElementBuilder())->satisfy(new Length(min: 5))->buildElement();
         $element->import('foo');
 
         $this->assertSame($element, $element->patch(null));
@@ -164,7 +164,7 @@ class AnyElementTest extends TestCase
      */
     public function test_patch_with_value()
     {
-        $element = (new AnyElementBuilder())->satisfy(new Length(['min' => 3]))->buildElement();
+        $element = (new AnyElementBuilder())->satisfy(new Length(min: 3))->buildElement();
 
         $this->assertFalse($element->patch('f')->valid());
         $this->assertSame('f', $element->value());

@@ -43,6 +43,39 @@ jobs:
     - name: Run test suite
       run: composer run-script tests
 
+  sf-compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sf-versions: ['6.4', '7.4', '8.0']
+    name: Symfony ${{ matrix.sf-versions }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set Timezone
+      uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Europe/Paris"
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.4
+        extensions: json, intl
+        ini-values: date.timezone=Europe/Paris
+    - name: Check PHP Version
+      run: php -v
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Set Symfony version
+      run: composer require --dev "symfony/symfony:~${{ matrix.sf-versions }}.0"
+
+    - name: Run test suite
+      run: composer run-script tests
+
   analysis:
     name: Analysis
     runs-on: ubuntu-latest

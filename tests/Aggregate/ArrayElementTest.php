@@ -183,7 +183,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_submit_with_array_error()
     {
-        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator([new Count(['min' => 3])]));
+        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator([new Count(min: 3)]));
 
         $this->assertFalse($element->submit(['foo', 'bar'])->valid());
         $this->assertEquals('This collection should contain 3 elements or more.', $element->error()->global());
@@ -226,7 +226,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_import_and_patch_null_will_keep_element_error()
     {
-        $element = (new ArrayElementBuilder())->satisfy(new Length(['min' => 3]))->buildElement();
+        $element = (new ArrayElementBuilder())->satisfy(new Length(min: 3))->buildElement();
 
         $element->submit(['a', 'bar']);
 
@@ -292,7 +292,7 @@ class ArrayElementTest extends TestCase
      */
     public function test_patch_with_array_error()
     {
-        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator([new Count(['min' => 3])]));
+        $element = new ArrayElement(new StringElement(), null, new ConstraintValueValidator([new Count(min: 3)]));
 
         $this->assertFalse($element->patch(['foo', 'bar'])->valid());
         $this->assertEquals('This collection should contain 3 elements or more.', $element->error()->global());

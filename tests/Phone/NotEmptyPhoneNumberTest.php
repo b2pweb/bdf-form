@@ -38,20 +38,9 @@ class NotEmptyPhoneNumberTest extends TestCase
     /**
      *
      */
-    public function test_custom_message_legacy()
-    {
-        $validator = new ConstraintValueValidator([new NotEmptyPhoneNumber(['message' => 'my error'])]);
-        $input = new PhoneElement();
-
-        $this->assertEquals(FormError::message('my error', 'IS_BLANK_ERROR'), $validator->validate(null, $input));
-    }
-
-    /**
-     *
-     */
     public function test_custom_message()
     {
-        $validator = new ConstraintValueValidator([new NotEmptyPhoneNumber(null, /*message:*/ 'my error')]);
+        $validator = new ConstraintValueValidator([new NotEmptyPhoneNumber(message: 'my error')]);
         $input = new PhoneElement();
 
         $this->assertEquals(FormError::message('my error', 'IS_BLANK_ERROR'), $validator->validate(null, $input));
