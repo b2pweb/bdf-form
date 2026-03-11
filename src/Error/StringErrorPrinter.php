@@ -10,35 +10,12 @@ use Override;
  */
 final class StringErrorPrinter implements FormErrorPrinterInterface
 {
-    /**
-     * @var string
-     */
-    private $lineSeparator = PHP_EOL;
-
-    /**
-     * @var string
-     */
-    private $indentString = '  ';
-
-    /**
-     * @var string
-     */
-    private $nameSeparator = ' : ';
-
-    /**
-     * @var int
-     */
-    private $maxDepth = PHP_INT_MAX;
-
-    /**
-     * @var integer
-     */
-    private $depth = 0;
-
-    /**
-     * @var string
-     */
-    private $output = '';
+    private string $lineSeparator = PHP_EOL;
+    private string $indentString = '  ';
+    private string $nameSeparator = ' : ';
+    private int $maxDepth = PHP_INT_MAX;
+    private int $depth = 0;
+    private string $output = '';
 
     #[Override]
     public function field(HttpFieldPath $field): void
@@ -77,7 +54,7 @@ final class StringErrorPrinter implements FormErrorPrinterInterface
     }
 
     #[Override]
-    public function print()
+    public function print(): string
     {
         return $this->output;
     }

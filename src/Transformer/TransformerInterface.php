@@ -17,7 +17,7 @@ interface TransformerInterface
      * 
      * @return mixed The view value
      */
-    public function transformToHttp($value, ElementInterface $input);
+    public function transformToHttp(mixed $value, ElementInterface $input)/*: mixed*/;
 
     /**
      * Http to model transformation
@@ -27,5 +27,5 @@ interface TransformerInterface
      * 
      * @return mixed The model value
      */
-    public function transformFromHttp($value, ElementInterface $input);
+    public function transformFromHttp(mixed $value, ElementInterface $input)/*: mixed*/;
 }

@@ -48,24 +48,14 @@ class DateTimeElementBuilder extends AbstractElementBuilder
     /**
      * @var class-string<DateTimeInterface>
      */
-    private $dateTimeClassName = DateTime::class;
-
-    /**
-     * @var string
-     */
-    private $dateFormat = DateTime::ATOM;
-
-    /**
-     * @var DateTimeZone|null
-     */
-    private $timezone;
+    private string $dateTimeClassName = DateTime::class;
+    private string $dateFormat = DateTime::ATOM;
+    private ?DateTimeZone $timezone = null;
 
     /**
      * Reset the fields value which are not provided by the format
-     *
-     * @var bool
      */
-    private $resetNotProvidedFields = true;
+    private bool $resetNotProvidedFields = true;
 
     /**
      * Define the date time class name to use
@@ -80,7 +70,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @see DateTimeElementBuilder::immutable() For use DateTimeImmutable
      */
-    public function className(string $dateTimeClassName): self
+    public function className(string $dateTimeClassName): static
     {
         $this->dateTimeClassName = $dateTimeClassName;
 
@@ -96,7 +86,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      * @see DateTimeImmutable
      * @see DateTimeElementBuilder::className()
      */
-    public function immutable(): self
+    public function immutable(): static
     {
         return $this->className(DateTimeImmutable::class);
     }
@@ -115,7 +105,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @see https://www.php.net/manual/en/datetime.createfromformat.php#refsect1-datetime.createfromformat-parameters For the format
      */
-    public function format(string $format): self
+    public function format(string $format): static
     {
         $this->dateFormat = $format;
 
@@ -136,7 +126,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function timezone($timezone): self
+    public function timezone(string|DateTimeZone|null $timezone): static
     {
         if (is_string($timezone)) {
             $timezone = new DateTimeZone($timezone);
@@ -160,7 +150,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function before(DateTimeInterface $dateTime, ?string $message = null, bool $orEqual = false): self
+    public function before(DateTimeInterface $dateTime, ?string $message = null, bool $orEqual = false): static
     {
         $constraint = $orEqual ? new LessThanOrEqual($dateTime) : new LessThan($dateTime);
 
@@ -192,7 +182,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @see FieldPath::parse() For the field path syntax
      */
-    public function beforeField(string $field, ?string $message = null, bool $orEqual = false): self
+    public function beforeField(string $field, ?string $message = null, bool $orEqual = false): static
     {
         $constraint = $orEqual ? new LessThanOrEqualField($field) : new LessThanField($field);
 
@@ -216,7 +206,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function after(DateTimeInterface $dateTime, ?string $message = null, bool $orEqual = false): self
+    public function after(DateTimeInterface $dateTime, ?string $message = null, bool $orEqual = false): static
     {
         $constraint = $orEqual ? new GreaterThanOrEqual($dateTime) : new GreaterThan($dateTime);
 
@@ -248,7 +238,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @see FieldPath::parse() For the field path syntax
      */
-    public function afterField(string $field, ?string $message = null, bool $orEqual = false): self
+    public function afterField(string $field, ?string $message = null, bool $orEqual = false): static
     {
         $constraint = $orEqual ? new GreaterThanOrEqualField($field) : new GreaterThanField($field);
 
@@ -283,7 +273,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function resetNotProvidedFields(bool $flag = true): self
+    public function resetNotProvidedFields(bool $flag = true): static
     {
         $this->resetNotProvidedFields = $flag;
 

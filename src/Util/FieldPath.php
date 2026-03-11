@@ -14,26 +14,22 @@ use Bdf\Form\ElementInterface;
  */
 final class FieldPath
 {
-    const SELF_ELEMENT = '.';
-    const PARENT_ELEMENT = '..';
-    const SEPARATOR = '/';
+    public const string SELF_ELEMENT = '.';
+    public const string PARENT_ELEMENT = '..';
+    public const string SEPARATOR = '/';
 
     /**
      * Paths cache
      *
      * @var FieldPath[]
      */
-    private static $cache = [];
+    private static array $cache = [];
 
     /**
      * @var string[]
      */
-    private $path;
-
-    /**
-     * @var bool
-     */
-    private $absolute;
+    private readonly array $path;
+    private readonly bool $absolute;
 
 
     /**
@@ -57,7 +53,7 @@ final class FieldPath
      *
      * @return ElementInterface|null The resolved element, or null if cannot be found
      */
-    public function resolve($currentElement): ?ElementInterface
+    public function resolve(ElementInterface|ChildInterface $currentElement): ?ElementInterface
     {
         if ($currentElement instanceof ChildInterface) {
             $currentElement = $currentElement->element();

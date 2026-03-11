@@ -56,7 +56,7 @@ final class ArrayElementView implements IteratorAggregate, FieldViewInterface, F
      * @param array $constraints
      * @param ChoiceView[]|null $choices
      */
-    public function __construct(string $type, string $name, $value, ?string $error, array $elements, bool $required, array $constraints, ?array $choices = [])
+    public function __construct(string $type, string $name, mixed $value, ?string $error, array $elements, bool $required, array $constraints, ?array $choices = [])
     {
         $this->type = $type;
         $this->name = $name;

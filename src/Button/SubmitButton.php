@@ -13,26 +13,14 @@ use Override;
  */
 final class SubmitButton implements ButtonInterface
 {
-    /**
-     * @var string
-     */
-    private $name;
+    private readonly string $name;
+    private readonly string $value;
 
     /**
-     * @var string
+     * @var string[]
      */
-    private $value;
-
-    /**
-     * @var array
-     */
-    private $groups;
-
-    /**
-     * @var bool
-     */
-    private $clicked = false;
-
+    private readonly array $groups;
+    private bool $clicked = false;
 
     /**
      * SubmitButton constructor.

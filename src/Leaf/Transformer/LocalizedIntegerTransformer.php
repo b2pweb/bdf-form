@@ -29,6 +29,6 @@ class LocalizedIntegerTransformer extends LocalizedNumberTransformer
     #[Override]
     protected function cast($value): int
     {
-        return $value;
+        return (int) $value;
     }
 }

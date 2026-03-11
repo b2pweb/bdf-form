@@ -20,7 +20,7 @@ use function strip_tags;
  * @see filter_var()
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class FilterVar implements FilterInterface
+final readonly class FilterVar implements FilterInterface
 {
     const HTML_FILTER = -1;
 
@@ -29,14 +29,14 @@ final class FilterVar implements FilterInterface
      *
      * @var int
      */
-    private $filter;
+    private int $filter;
 
     /**
      * The flag option of the filter given to filter_var
      *
      * @var int
      */
-    private $flags;
+    private int $flags;
 
     /**
      * FilterVar constructor.
@@ -51,7 +51,7 @@ final class FilterVar implements FilterInterface
     }
 
     #[Override]
-    public function filter($value, ChildInterface $input, $default)
+    public function filter(mixed $value, ChildInterface $input, mixed $default): mixed
     {
         if (!is_array($value)) {
             return $this->apply($value);
@@ -64,7 +64,7 @@ final class FilterVar implements FilterInterface
         return $value;
     }
 
-    private function apply($value)
+    private function apply(mixed $value): mixed
     {
         $value = is_scalar($value) ? (string) $value : '';
 

@@ -11,12 +11,9 @@ use Symfony\Component\Validator\Constraints\NotBlankValidator;
 /**
  * NotBlank implementation for PhoneNumber value
  */
-class NotEmptyPhoneNumberValidator extends NotBlankValidator
+final class NotEmptyPhoneNumberValidator extends NotBlankValidator
 {
-    /**
-     * @var PhoneNumberUtil
-     */
-    private $formatter;
+    private readonly PhoneNumberUtil $formatter;
 
 
     /**

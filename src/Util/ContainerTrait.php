@@ -14,7 +14,7 @@ trait ContainerTrait
     /**
      * @var WeakReference<ChildInterface>|null
      */
-    private $container;
+    private ?WeakReference $container = null;
 
 
     /**

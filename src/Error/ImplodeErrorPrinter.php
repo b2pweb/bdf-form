@@ -16,14 +16,14 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
      *
      * @var string
      */
-    private $separator;
+    private readonly string $separator;
 
     /**
      * Lines of errors
      *
      * @var string[]
      */
-    private $lines = [];
+    private array $lines = [];
 
     /**
      * Does the printer is visiting a child ?
@@ -31,7 +31,7 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
      *
      * @var bool
      */
-    private $inChild = false;
+    private bool $inChild = false;
 
 
     /**
@@ -71,7 +71,7 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
     }
 
     #[Override]
-    public function print()
+    public function print(): ?string
     {
         return $this->inChild ? null : implode($this->separator, $this->lines);
     }

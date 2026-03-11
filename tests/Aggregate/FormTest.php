@@ -543,6 +543,35 @@ class FormTest extends TestCase
     /**
      *
      */
+    public function test_import_null_should_reset_fields()
+    {
+        $form = new Form(new ChildrenCollection([
+            $this->registry->childBuilder(IntegerElement::class, 'id')->getset()->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'firstName')->getset()->buildChild(),
+            $this->registry->childBuilder(StringElement::class, 'lastName')->getset()->buildChild(),
+        ]));
+
+        $form->submit($data = [
+            'id' => 42,
+            'firstName' => 'Mike',
+            'lastName' => 'Smith',
+        ]);
+        $this->assertSame($data, $form->value());
+
+        $this->assertSame([
+            'id' => null,
+            'firstName' => null,
+            'lastName' => null,
+        ], $form->import(null)->value());
+
+        $this->assertNull($form['firstName']->element()->value());
+        $this->assertNull($form['lastName']->element()->value());
+        $this->assertNull($form['id']->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_value_empty()
     {
         $registry = new Registry();

@@ -15,7 +15,7 @@ interface ButtonBuilderInterface
      *
      * @return $this
      */
-    public function value(string $value): ButtonBuilderInterface;
+    public function value(string $value): static;
 
     /**
      * Define the constraint groups to use when the button is clicked
@@ -26,7 +26,7 @@ interface ButtonBuilderInterface
      *
      * @see https://symfony.com/doc/current/validation/groups.html
      */
-    public function groups(array $groups): ButtonBuilderInterface;
+    public function groups(array $groups): static;
 
     /**
      * Build the button element

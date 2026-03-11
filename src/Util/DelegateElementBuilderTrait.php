@@ -18,7 +18,7 @@ trait DelegateElementBuilderTrait
     /**
      * {@inheritdoc}
      */
-    final public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
+    final public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static
     {
         $this->getElementBuilder()->satisfy($constraint, $message, $append);
 
@@ -28,7 +28,7 @@ trait DelegateElementBuilderTrait
     /**
      * {@inheritdoc}
      */
-    final public function transformer(callable|TransformerInterface $transformer, bool $append = true)
+    final public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
     {
         $this->getElementBuilder()->transformer($transformer, $append);
 
@@ -38,7 +38,7 @@ trait DelegateElementBuilderTrait
     /**
      * {@inheritdoc}
      */
-    final public function value($value)
+    final public function value(mixed $value): static
     {
         $this->getElementBuilder()->value($value);
 

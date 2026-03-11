@@ -22,6 +22,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ValidatorBuilder;
 use WeakReference;
 
+use function assert;
+
 /**
  * Adapt a form element as root element
  * The root form handle constraint group, validator and property accessor instances, and submit button
@@ -60,28 +62,15 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     /**
      * @var WeakReference<Form>
      */
-    private $form;
+    private readonly WeakReference $form;
 
     /**
      * @var array<non-empty-string, ButtonInterface>
      */
-    private $buttons;
-
-    /**
-     * @var ButtonInterface|null
-     */
-    private $submitButton;
-
-    /**
-     * @var PropertyAccessorInterface|null
-     */
-    private $propertyAccessor;
-
-    /**
-     * @var ValidatorInterface|null
-     */
-    private $validator;
-
+    private readonly array $buttons;
+    private ?ButtonInterface $submitButton = null;
+    private ?PropertyAccessorInterface $propertyAccessor = null;
+    private ?ValidatorInterface $validator = null;
 
     /**
      * RootForm constructor.
@@ -100,42 +89,41 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     }
 
     #[Override]
-    public function submit($data): ElementInterface
+    public function submit(mixed $data): static
     {
         $this->submitToButtons($data);
-        $this->form?->get()->submit($data);
+        $this->form->get()?->submit($data);
 
         return $this;
     }
 
     #[Override]
-    public function patch($data): ElementInterface
+    public function patch(mixed $data): static
     {
         $this->submitToButtons($data);
-        $this->form?->get()->patch($data);
+        $this->form->get()?->patch($data);
 
         return $this;
     }
 
     #[Override]
-    public function import($entity): ElementInterface
+    public function import(mixed $entity): static
     {
-        /** @psalm-suppress PossiblyNullReference */
-        $this->form->get()->import($entity);
+        $this->form->get()?->import($entity);
 
         return $this;
     }
 
     #[Override]
-    public function value()
+    public function value(): mixed
     {
-        return $this->form?->get()->value();
+        return $this->form->get()?->value();
     }
 
     #[Override]
-    public function httpValue()
+    public function httpValue(): mixed
     {
-        $httpValue = $this->form?->get()->httpValue();
+        $httpValue = $this->form->get()?->httpValue();
 
         if (empty($this->buttons)) {
             return $httpValue;
@@ -153,8 +141,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     #[Override]
     public function valid(): bool
     {
-        /** @psalm-suppress PossiblyNullReference */
-        return $this->form->get()->valid();
+        return $this->form->get()?->valid() ?? false;
     }
 
     #[Override]
@@ -167,7 +154,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
-        return $this->form?->get()->error($field);
+        return $this->form->get()?->error($field) ?? throw new LogicException('Invalid reference');
     }
 
     #[Override]
@@ -197,8 +184,8 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
             $buttons[$button->name()] = $button->view($field);
         }
 
-        /** @psalm-suppress PossiblyNullReference */
-        $view = $this->form->get()->view($field);
+        $view = $this->form->get()?->view($field);
+        assert($view !== null);
         $view->setButtons($buttons);
 
         return $view;
@@ -224,7 +211,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     public function getValidator(): ValidatorInterface
     {
         if ($this->validator === null) {
-            $this->validator = (new ValidatorBuilder())->getValidator();
+            $this->validator = new ValidatorBuilder()->getValidator();
         }
 
         return $this->validator;
@@ -233,11 +220,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
     #[Override]
     public function getPropertyAccessor(): PropertyAccessorInterface
     {
-        if ($this->propertyAccessor === null) {
-            $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
-        }
-
-        return $this->propertyAccessor;
+        return $this->propertyAccessor ??= PropertyAccess::createPropertyAccessor();
     }
 
     #[Override]
@@ -259,26 +242,26 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      * @psalm-suppress NullableReturnStatement
      */
     #[Override]
-    public function offsetGet($offset): ChildInterface
+    public function offsetGet(mixed $offset): ChildInterface
     {
         return $this->form->get()[$offset];
     }
 
     #[Override]
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->form->get()[$offset]);
     }
 
     #[Override]
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         /** @psalm-suppress PossiblyNullReference */
         $this->form->get()[$offset] = $value;
     }
 
     #[Override]
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         if ($form = $this->form->get()) {
             unset($form[$offset]);
@@ -296,7 +279,7 @@ final class RootForm implements RootElementInterface, ChildAggregateInterface
      *
      * @param mixed $data The HTTP value
      */
-    private function submitToButtons($data): void
+    private function submitToButtons(mixed $data): void
     {
         $this->submitButton = null;
 

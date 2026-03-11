@@ -16,19 +16,19 @@ use Override;
 class AnyElement extends LeafElement
 {
     #[Override]
-    protected function toPhp($httpValue)
+    protected function toPhp(mixed $httpValue): mixed
     {
         return $httpValue;
     }
 
     #[Override]
-    protected function toHttp($phpValue)
+    protected function toHttp(mixed $phpValue): mixed
     {
         return $phpValue;
     }
 
     #[Override]
-    protected function sanitize($rawValue)
+    protected function sanitize(mixed $rawValue): mixed
     {
         return $rawValue;
     }

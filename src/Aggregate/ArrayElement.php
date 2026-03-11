@@ -50,37 +50,17 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     /**
      * @var ElementInterface<T>
      */
-    private $templateElement;
-
-    /**
-     * @var TransformerInterface
-     */
-    private $transformer;
-
-    /**
-     * @var ValueValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var ChoiceInterface|null
-     */
-    private $choices;
-
-    /**
-     * @var bool
-     */
-    private $valid = false;
-
-    /**
-     * @var FormError
-     */
-    private $error;
+    private readonly ElementInterface $templateElement;
+    private readonly TransformerInterface $transformer;
+    private readonly ValueValidatorInterface $validator;
+    private readonly ?ChoiceInterface $choices;
+    private bool $valid = false;
+    private FormError $error;
 
     /**
      * @var ChildInterface[]
      */
-    private $children = [];
+    private array $children = [];
 
 
     /**
@@ -101,25 +81,25 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     }
 
     #[Override]
-    public function offsetGet($offset): ChildInterface
+    public function offsetGet(mixed $offset): ChildInterface
     {
         return $this->children[$offset];
     }
 
     #[Override]
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->children[$offset]);
     }
 
     #[Override]
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new BadMethodCallException('Use import() or submit() for set an offset value');
     }
 
     #[Override]
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         throw new BadMethodCallException('Use import() or submit() for set an offset value');
     }
@@ -143,7 +123,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     }
 
     #[Override]
-    public function submit($data): ElementInterface
+    public function submit(mixed $data): static
     {
         $this->valid = true;
 
@@ -165,7 +145,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         $errors = [];
 
         foreach ($data as $key => $value) {
-            $child = $lastChildren[$key] ?? (new Child($key, $this->templateElement))->setParent($this);
+            $child = $lastChildren[$key] ?? new Child($key, $this->templateElement)->setParent($this);
 
             $child->element()->submit($value);
 
@@ -190,7 +170,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     }
 
     #[Override]
-    public function patch($data): ElementInterface
+    public function patch(mixed $data): static
     {
         $this->valid = true;
 
@@ -215,7 +195,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     }
 
     #[Override]
-    public function import($entity): ElementInterface
+    public function import(mixed $entity): static
     {
         if ($entity === null) {
             $entity = [];
@@ -255,7 +235,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     }
 
     #[Override]
-    public function httpValue()
+    public function httpValue(): mixed
     {
         $value = [];
 

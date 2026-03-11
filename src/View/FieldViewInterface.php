@@ -25,7 +25,7 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      *
      * @return mixed
      */
-    public function value();
+    public function value(): mixed;
 
     /**
      * Override the value
@@ -36,7 +36,7 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      * @return $this Return the current instance
      * @since 1.5
      */
-    public function setValue($value): self;
+    public function setValue(mixed $value): static;
 
     /**
      * Does the current field is required (i.e. the value must not be empty)

@@ -48,37 +48,34 @@ use function method_exists;
  * </code>
  *
  * @todo implements root form interface ?
- * @template T
+ * @template T as array|object
  * @implements FormInterface<T>
  */
 abstract class CustomForm implements FormInterface
 {
-    /**
-     * @var FormBuilderInterface
-     */
-    private $builder;
+    private readonly FormBuilderInterface $builder;
 
     /**
      * The inner form
      *
      * @var FormInterface<T>|null
      */
-    private $form;
+    private ?FormInterface $form = null;
 
     /**
      * @var WeakReference<ChildInterface>|null
      */
-    private $container;
+    private ?WeakReference $container = null;
 
     /**
      * @var list<callable(static, FormBuilderInterface): void>
      */
-    private $preConfigureHooks = [];
+    private array $preConfigureHooks = [];
 
     /**
      * @var list<callable(static, FormInterface<T>): void>
      */
-    private $postConfigureHooks = [];
+    private array $postConfigureHooks = [];
 
     /**
      * CustomForm constructor.
@@ -91,25 +88,25 @@ abstract class CustomForm implements FormInterface
     }
 
     #[Override]
-    public function offsetGet($offset): ChildInterface
+    public function offsetGet(mixed $offset): ChildInterface
     {
         return $this->form()[$offset];
     }
 
     #[Override]
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->form()[$offset]);
     }
 
     #[Override]
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->form()[$offset] = $value;
     }
 
     #[Override]
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->form()[$offset]);
     }
@@ -121,7 +118,7 @@ abstract class CustomForm implements FormInterface
     }
 
     #[Override]
-    public function submit($data): ElementInterface
+    public function submit(mixed $data): static
     {
         $this->submitTarget()->submit($data);
 
@@ -129,7 +126,7 @@ abstract class CustomForm implements FormInterface
     }
 
     #[Override]
-    public function patch($data): ElementInterface
+    public function patch(mixed $data): static
     {
         $this->submitTarget()->patch($data);
 
@@ -137,7 +134,7 @@ abstract class CustomForm implements FormInterface
     }
 
     #[Override]
-    public function import($entity): ElementInterface
+    public function import($entity): static
     {
         $this->form()->import($entity);
 
@@ -145,13 +142,13 @@ abstract class CustomForm implements FormInterface
     }
 
     #[Override]
-    public function value()
+    public function value(): array|object|null
     {
         return $this->form()->value();
     }
 
     #[Override]
-    public function httpValue()
+    public function httpValue(): mixed
     {
         return $this->form()->httpValue();
     }
@@ -199,7 +196,7 @@ abstract class CustomForm implements FormInterface
     }
 
     #[Override]
-    public function attach($entity): FormInterface
+    public function attach(mixed $entity): FormInterface
     {
         $this->form()->attach($entity);
 
@@ -304,8 +301,6 @@ abstract class CustomForm implements FormInterface
         // Form can be rebuilt, so we need to clone the builder to avoid side effects
         $builder = clone $this->builder;
 
-        /** @var static $this Psalm cannot infer this type */
-
         foreach ($this->preConfigureHooks as $hook) {
             $hook($this, $builder);
         }
@@ -313,6 +308,7 @@ abstract class CustomForm implements FormInterface
         /** @psalm-suppress ArgumentTypeCoercion */
         $this->configure($builder);
 
+        /** @var FormInterface<T> $form */
         $form = $builder->buildElement();
 
         if ($this->container && $container = $this->container->get()) {

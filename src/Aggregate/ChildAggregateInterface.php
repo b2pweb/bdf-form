@@ -29,7 +29,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      * @param string $offset The child name
      */
     #[Override]
-    public function offsetGet($offset): ChildInterface;
+    public function offsetGet(mixed $offset): ChildInterface;
 
     /**
      * {@inheritdoc}
@@ -39,7 +39,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      * @param string $offset The child name
      */
     #[Override]
-    public function offsetExists($offset): bool;
+    public function offsetExists(mixed $offset): bool;
 
     /**
      * {@inheritdoc}
@@ -52,7 +52,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      * @throws \BadMethodCallException
      */
     #[Override]
-    public function offsetSet($offset, $value): void;
+    public function offsetSet(mixed $offset, mixed $value): void;
 
     /**
      * {@inheritdoc}
@@ -62,7 +62,7 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      * @throws \BadMethodCallException
      */
     #[Override]
-    public function offsetUnset($offset): void;
+    public function offsetUnset(mixed $offset): void;
 
     /**
      * {@inheritdoc}

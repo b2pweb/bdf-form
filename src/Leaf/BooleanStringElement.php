@@ -24,18 +24,16 @@ class BooleanStringElement extends AbstractBooleanElement
      * {@inheritdoc}
      *
      * @return scalar|null
-     * @psalm-suppress ImplementedReturnTypeMismatch
-     * @psalm-suppress LessSpecificImplementedReturnType
      */
     #[Override]
-    protected function sanitize($rawValue): int|float|string|bool|null
+    protected function sanitize(mixed $rawValue): int|float|string|bool|null
     {
         // Does not cast to string, to allow boolean value
         return is_scalar($rawValue) ? $rawValue : null;
     }
 
     #[Override]
-    protected function toPhp($httpValue): ?bool
+    protected function toPhp(mixed $httpValue): ?bool
     {
         if ($httpValue === null || $httpValue === '') {
             return null;
@@ -50,7 +48,7 @@ class BooleanStringElement extends AbstractBooleanElement
     }
 
     #[Override]
-    protected function toHttp($phpValue): ?string
+    protected function toHttp(mixed $phpValue): ?string
     {
         if ($phpValue === null) {
             return null;

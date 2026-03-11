@@ -29,20 +29,20 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @var int|null
      */
-    private $scale;
+    private readonly ?int $scale;
 
     /**
      * @var int
      * @psalm-var NumberFormatter::ROUND_*
      */
-    private $roundingMode;
+    private readonly int $roundingMode;
 
     /**
      * Group by thousand or not
      *
      * @var bool
      */
-    private $grouping;
+    private readonly bool $grouping;
 
     /**
      * The locale to use
@@ -50,7 +50,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @var string|null
      */
-    private $locale;
+    private readonly ?string $locale;
 
     /**
      * LocalizedNumberTransformer constructor.

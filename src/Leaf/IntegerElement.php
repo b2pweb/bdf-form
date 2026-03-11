@@ -5,6 +5,8 @@ namespace Bdf\Form\Leaf;
 use Override;
 use TypeError;
 
+use function is_numeric;
+
 /**
  * Element for an integer
  *
@@ -15,19 +17,19 @@ use TypeError;
 class IntegerElement extends LeafElement
 {
     #[Override]
-    protected function toPhp($httpValue): ?int
+    protected function toPhp(mixed $httpValue): ?int
     {
         return $httpValue === null || $httpValue === '' ? null : (int) $httpValue;
     }
 
     #[Override]
-    protected function toHttp($phpValue): ?string
+    protected function toHttp(mixed $phpValue): ?string
     {
         return $phpValue === null ? null : (string) $phpValue;
     }
 
     #[Override]
-    protected function tryCast($value): ?int
+    protected function tryCast(mixed $value): ?int
     {
         if ($value === null) {
             return null;

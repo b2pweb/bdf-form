@@ -10,27 +10,19 @@ use Override;
  * @template T
  * @implements ChoiceInterface<T>
  */
-final class ArrayChoice implements ChoiceInterface
+final readonly class ArrayChoice implements ChoiceInterface
 {
-    /**
-     * The list of choices
-     *
-     * Key: should be the label of the choice
-     * Value: the value
-     *
-     * @var T[]
-     */
-    private $choices;
-
-    /**
-     * ArrayChoice constructor.
-     *
-     * @param T[] $choices The choices. To declare label, use associative array with key as label
-     */
-    public function __construct(array $choices)
-    {
-        $this->choices = $choices;
-    }
+    public function __construct(
+        /**
+         * The list of choices
+         *
+         * Key: should be the label of the choice
+         * Value: the value
+         *
+         * @var T[]
+         */
+        private array $choices,
+    ) {}
 
     #[Override]
     public function values(): array

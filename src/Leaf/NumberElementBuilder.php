@@ -22,10 +22,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
 {
     use ChoiceBuilderTrait;
 
-    /**
-     * @var bool
-     */
-    private $raw = false;
+    private bool $raw = false;
 
 
     /**
@@ -37,7 +34,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
     {
         parent::__construct($registry);
 
-        $this->addTransformerProvider([$this, 'provideNumberTransformer']);
+        $this->addTransformerProvider($this->provideNumberTransformer(...));
     }
 
     /**

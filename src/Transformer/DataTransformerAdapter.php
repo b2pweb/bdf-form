@@ -9,34 +9,23 @@ use Symfony\Component\Form\DataTransformerInterface;
 /**
  * Adapter for Symfony data transformer to bdf transformer
  */
-final class DataTransformerAdapter implements TransformerInterface
+final readonly class DataTransformerAdapter implements TransformerInterface
 {
-    /**
-     * The symfony data transformer
-     *
-     * @var DataTransformerInterface
-     */
-    private $transformer;
-
-
-    /**
-     * Set the symfony data transformer
-     * 
-     * @param DataTransformerInterface $transformer
-     */
-    public function __construct(DataTransformerInterface $transformer)
-    {
-        $this->transformer = $transformer;
-    }
+    public function __construct(
+        /**
+         * The symfony data transformer
+         */
+        private DataTransformerInterface $transformer,
+    ) {}
 
     #[Override]
-    public function transformToHttp($value, ElementInterface $input)
+    public function transformToHttp(mixed $value, ElementInterface $input): mixed
     {
         return $this->transformer->transform($value);
     }
 
     #[Override]
-    public function transformFromHttp($value, ElementInterface $input)
+    public function transformFromHttp(mixed $value, ElementInterface $input): mixed
     {
         return $this->transformer->reverseTransform($value);
     }

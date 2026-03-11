@@ -19,21 +19,21 @@ final class TransformerExceptionConstraint extends Constraint
      *
      * @var string|null
      */
-    public $message = null;
+    public ?string $message = null;
 
     /**
      * The error code
      *
      * @var string
      */
-    public $code = self::TRANSFORM_ERROR;
+    public string $code = self::TRANSFORM_ERROR;
 
     /**
      * The transformer exception
      *
      * @var Exception|null
      */
-    public $exception;
+    public ?Exception $exception = null;
 
     /**
      * Use to validate the exception
@@ -43,7 +43,7 @@ final class TransformerExceptionConstraint extends Constraint
      *
      * @var callable(mixed,TransformerExceptionConstraint,\Bdf\Form\ElementInterface):bool|null
      */
-    public $validationCallback;
+    public mixed $validationCallback = null;
 
     /**
      * Does the transformation error should be ignored ?
@@ -51,7 +51,7 @@ final class TransformerExceptionConstraint extends Constraint
      *
      * @var bool
      */
-    public $ignoreException = false;
+    public bool $ignoreException = false;
 
     public function __construct(?Exception $exception = null, ?string $message = null, ?string $code = null, ?callable $validationCallback = null, ?bool $ignoreException = null)
     {

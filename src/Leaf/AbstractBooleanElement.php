@@ -18,7 +18,7 @@ use function is_scalar;
 abstract class AbstractBooleanElement extends LeafElement
 {
     #[Override]
-    final protected function tryCast($value): ?bool
+    final protected function tryCast(mixed $value): ?bool
     {
         if ($value === null) {
             return null;

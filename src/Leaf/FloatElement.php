@@ -5,6 +5,8 @@ namespace Bdf\Form\Leaf;
 use Override;
 use TypeError;
 
+use function is_numeric;
+
 /**
  * Element for a float value
  *
@@ -15,19 +17,19 @@ use TypeError;
 class FloatElement extends LeafElement
 {
     #[Override]
-    protected function toPhp($httpValue): ?float
+    protected function toPhp(mixed $httpValue): ?float
     {
         return $httpValue === null || $httpValue === '' ? null : (float) $httpValue;
     }
 
     #[Override]
-    protected function toHttp($phpValue): ?string
+    protected function toHttp(mixed $phpValue): ?string
     {
         return $phpValue === null ? null : (string) $phpValue;
     }
 
     #[Override]
-    protected function tryCast($value): ?float
+    protected function tryCast(mixed $value): ?float
     {
         if ($value === null) {
             return null;

@@ -16,7 +16,7 @@ trait FieldComparisonTrait
      *
      * @var string|FieldPath
      */
-    public $field;
+    public string|FieldPath $field;
 
     /**
      * FieldComparisonTrait constructor.

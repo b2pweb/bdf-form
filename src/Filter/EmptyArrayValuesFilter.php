@@ -21,7 +21,7 @@ final class EmptyArrayValuesFilter implements FilterInterface
     private static $instance;
 
     #[Override]
-    public function filter($value, ChildInterface $input, $default)
+    public function filter(mixed $value, ChildInterface $input, mixed $default): mixed
     {
         if (!is_array($value)) {
             return $value;

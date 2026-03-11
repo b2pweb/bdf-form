@@ -74,32 +74,16 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     /**
      * @var array<non-empty-string, ChildBuilder>
      */
-    private $children = [];
+    private array $children = [];
 
     /**
      * @var array<non-empty-string, ButtonBuilderInterface>
      */
-    private $buttons = [];
-
-    /**
-     * @var PropertyAccessorInterface|null
-     */
-    private $propertyAccessor;
-
-    /**
-     * @var ValidatorInterface|null
-     */
-    private $validator;
-
-    /**
-     * @var ValueGeneratorInterface|null
-     */
-    private $generator;
-
-    /**
-     * @var bool
-     */
-    private $optional = false;
+    private array $buttons = [];
+    private ?PropertyAccessorInterface $propertyAccessor = null;
+    private ?ValidatorInterface $validator = null;
+    private ?ValueGeneratorInterface $generator = null;
+    private bool $optional = false;
 
 
     /**

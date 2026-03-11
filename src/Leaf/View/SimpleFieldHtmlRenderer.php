@@ -22,10 +22,7 @@ use Symfony\Component\Validator\Constraints\PositiveOrZero;
  */
 final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
 {
-    /**
-     * @var SimpleFieldHtmlRenderer|null
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * Map constraint class name to mapped attributes in form :
@@ -33,7 +30,7 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
      *
      * @var string[][]
      */
-    private $constraintMapping = [
+    private array $constraintMapping = [
         Length::class => ['min' => 'minlength', 'max' => 'maxlength'],
         LessThanOrEqual::class => ['value' => 'max'],
         GreaterThanOrEqual::class => ['value' => 'min'],
@@ -45,7 +42,7 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
      *
      * @var string[]
      */
-    private $typesMapping = [
+    private array $typesMapping = [
         IntegerElement::class => 'number',
         PhoneElement::class => 'tel',
         CsrfElement::class => 'hidden',
@@ -97,10 +94,6 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

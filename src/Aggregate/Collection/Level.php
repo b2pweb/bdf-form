@@ -15,32 +15,17 @@ use Override;
  */
 final class Level implements IteratorAggregate
 {
-    /**
-     * @var int
-     */
-    private $number;
-
-    /**
-     * @var Level|null
-     */
-    private $prev;
-
-    /**
-     * @var Level|null
-     */
-    private $next;
-
-    /**
-     * @var Level|null
-     */
-    private $last;
+    private int $number;
+    private ?Level $prev;
+    private ?Level $next = null;
+    private ?Level $last = null;
 
     /**
      * Array of elements dependencies
      *
      * @var string[][]
      */
-    private $elements = [];
+    private array $elements = [];
 
 
     /**
@@ -49,7 +34,7 @@ final class Level implements IteratorAggregate
      * @param Level|null $prev
      * @param int $number
      */
-    public function __construct(?Level $prev = null, $number = 0)
+    public function __construct(?Level $prev = null, int $number = 0)
     {
         $this->prev   = $prev;
         $this->number = $number;
@@ -63,7 +48,7 @@ final class Level implements IteratorAggregate
      *
      * @return int[] Associative array, with element name as key, and element level as value
      */
-    public function add($name, array $dependencies)
+    public function add(string $name, array $dependencies): array
     {
         $result = [
             $name => $this->number
@@ -85,7 +70,7 @@ final class Level implements IteratorAggregate
      *
      * @return bool
      */
-    public function has($element)
+    public function has(string $element): bool
     {
         return isset($this->elements[$element]);
     }
@@ -97,7 +82,7 @@ final class Level implements IteratorAggregate
      *
      * @return int[] The result of add()
      */
-    public function shift($element)
+    public function shift(string $element): array
     {
         if ($this->next === null) {
             $this->next = new self($this, $this->number + 1);
@@ -123,7 +108,7 @@ final class Level implements IteratorAggregate
     /**
      * @return int
      */
-    public function number()
+    public function number(): int
     {
         return $this->number;
     }
@@ -133,7 +118,7 @@ final class Level implements IteratorAggregate
      *
      * @return Level|null
      */
-    public function prev()
+    public function prev(): ?Level
     {
         return $this->prev;
     }
@@ -144,7 +129,7 @@ final class Level implements IteratorAggregate
      *
      * @return Level|null
      */
-    public function last()
+    public function last(): ?Level
     {
         return $this->last;
     }
@@ -155,7 +140,7 @@ final class Level implements IteratorAggregate
      *
      * @return Level|null
      */
-    public function next()
+    public function next(): ?Level
     {
         return $this->next;
     }
@@ -176,7 +161,7 @@ final class Level implements IteratorAggregate
      *
      * @param string $name The element name
      */
-    public function reset($name): void
+    public function reset(string $name): void
     {
         if ($this->has($name)) {
             $this->elements[$name] = [];
@@ -188,7 +173,7 @@ final class Level implements IteratorAggregate
      *
      * @param string $name
      */
-    public function remove($name): void
+    public function remove(string $name): void
     {
         unset($this->elements[$name]);
     }

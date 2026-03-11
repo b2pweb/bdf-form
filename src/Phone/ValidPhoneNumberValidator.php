@@ -12,12 +12,9 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 /**
  * Validator for @see ValidPhoneNumber
  */
-class ValidPhoneNumberValidator extends ConstraintValidator
+final class ValidPhoneNumberValidator extends ConstraintValidator
 {
-    /**
-     * @var PhoneNumberUtil
-     */
-    private $formatter;
+    private readonly PhoneNumberUtil $formatter;
 
 
     /**
@@ -30,7 +27,7 @@ class ValidPhoneNumberValidator extends ConstraintValidator
     }
 
     #[Override]
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidPhoneNumber) {
             throw new UnexpectedTypeException($constraint, ValidPhoneNumber::class);

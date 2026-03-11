@@ -36,27 +36,19 @@ class PhoneElementBuilder extends AbstractElementBuilder
     /**
      * @var callable(ElementInterface):string|null
      */
-    private $regionResolver;
-
-    /**
-     * @var PhoneNumberUtil|null
-     */
-    private $formatter;
+    private mixed $regionResolver = null;
+    private ?PhoneNumberUtil $formatter = null;
 
     /**
      * Invalid phone number are allowed ?
      * (i.e. number value is not validated)
-     *
-     * @var bool
      */
-    private $allowInvalidNumber = false;
+    private bool $allowInvalidNumber = false;
 
     /**
      * The error message or options for the ValidPhoneNumber constraint if the phone number is invalid
-     *
-     * @var string|null
      */
-    private $invalidPhoneErrorMessage = null;
+    private ?string $invalidPhoneErrorMessage = null;
 
 
     /**
@@ -68,11 +60,14 @@ class PhoneElementBuilder extends AbstractElementBuilder
     {
         parent::__construct($registry);
 
-        $this->addConstraintsProvider([$this, 'providePhoneConstraint']);
+        $this->addConstraintsProvider($this->providePhoneConstraint(...));
     }
 
+    /**
+     * @psalm-suppress MethodSignatureMismatch
+     */
     #[Override]
-    public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null)
+    public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null): static
     {
         if (!$message instanceof Constraint) {
             $message = new NotEmptyPhoneNumber(
@@ -98,7 +93,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function regionResolver(callable $regionResolver): self
+    public function regionResolver(callable $regionResolver): static
     {
         $this->regionResolver = $regionResolver;
 
@@ -114,9 +109,9 @@ class PhoneElementBuilder extends AbstractElementBuilder
      *
      * @see RegionCode
      */
-    public function region(string $region): self
+    public function region(string $region): static
     {
-        return $this->regionResolver(function () use($region) { return $region; });
+        return $this->regionResolver(static fn() => $region);
     }
 
     /**
@@ -141,7 +136,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      * @see FieldPath::parse() For the path syntax
      * @see ChildBuilderInterface::depends() For declare the dependency to the other field
      */
-    public function regionInput(string $inputPath): self
+    public function regionInput(string $inputPath): static
     {
         return $this->regionResolver(function (ElementInterface $element) use($inputPath) {
             return FieldPath::parse($inputPath)->value($element);
@@ -155,7 +150,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function formatter(PhoneNumberUtil $formatter): self
+    public function formatter(PhoneNumberUtil $formatter): static
     {
         $this->formatter = $formatter;
 
@@ -170,7 +165,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function allowInvalidNumber(bool $allowInvalidNumber = true): self
+    public function allowInvalidNumber(bool $allowInvalidNumber = true): static
     {
         $this->allowInvalidNumber = $allowInvalidNumber;
 
@@ -193,7 +188,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      * @return $this
      * @see ValidPhoneNumber
      */
-    public function validateNumber(?string $message = null): self
+    public function validateNumber(?string $message = null): static
     {
         $this->allowInvalidNumber = false;
         $this->invalidPhoneErrorMessage = $message;
@@ -209,7 +204,7 @@ class PhoneElementBuilder extends AbstractElementBuilder
      * @return $this
      * @see ValidPhoneNumber::$message
      */
-    public function errorMessage(string $message): self
+    public function errorMessage(string $message): static
     {
         $this->invalidPhoneErrorMessage = $message;
 

@@ -28,20 +28,13 @@ use Override;
  */
 class FloatElementBuilder extends NumberElementBuilder
 {
-    /**
-     * @var int|null
-     */
-    private $scale = null;
-
-    /**
-     * @var bool
-     */
-    private $grouping = false;
+    private ?int $scale = null;
+    private bool $grouping = false;
 
     /**
      * @var NumberFormatter::ROUND_*
      */
-    private $roundingMode = NumberFormatter::ROUND_DOWN;
+    private int $roundingMode = NumberFormatter::ROUND_DOWN;
 
 
     /**

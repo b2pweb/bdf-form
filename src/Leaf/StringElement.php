@@ -5,6 +5,10 @@ namespace Bdf\Form\Leaf;
 use Override;
 use TypeError;
 
+use function is_object;
+use function is_scalar;
+use function method_exists;
+
 /**
  * Element for a simple string field
  *
@@ -15,7 +19,7 @@ use TypeError;
 class StringElement extends LeafElement
 {
     #[Override]
-    protected function toPhp($httpValue): ?string
+    protected function toPhp(mixed $httpValue): ?string
     {
         if (!is_scalar($httpValue)) {
             return null;
@@ -25,13 +29,13 @@ class StringElement extends LeafElement
     }
 
     #[Override]
-    protected function toHttp($phpValue): ?string
+    protected function toHttp(mixed $phpValue): ?string
     {
         return $phpValue;
     }
 
     #[Override]
-    protected function tryCast($value): ?string
+    protected function tryCast(mixed $value): ?string
     {
         if ($value === null) {
             return null;

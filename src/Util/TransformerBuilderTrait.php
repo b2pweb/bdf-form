@@ -9,6 +9,7 @@ use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerAggregate;
 use Bdf\Form\Transformer\TransformerInterface;
 
+use function array_unshift;
 use function count;
 use function is_callable;
 
@@ -18,21 +19,21 @@ use function is_callable;
 trait TransformerBuilderTrait
 {
     /**
-     * @var array<TransformerInterface>
+     * @var list<TransformerInterface>
      */
-    private $transformers = [];
+    private array $transformers = [];
 
     /**
-     * @var array<callable(RegistryInterface):TransformerInterface[]>
+     * @var array<callable(RegistryInterface):(TransformerInterface[])>
      */
-    private $transformerProviders = [];
+    private array $transformerProviders = [];
 
     /**
      * {@inheritdoc}
      *
      * @see ElementBuilderInterface::transformer()
      */
-    final public function transformer(callable|TransformerInterface $transformer, bool $append = true)
+    final public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
     {
         if (is_callable($transformer)) {
             $transformer = new ClosureTransformer($transformer);
@@ -63,7 +64,7 @@ trait TransformerBuilderTrait
      * });
      * </code>
      *
-     * @param callable(RegistryInterface):TransformerInterface[] $provider
+     * @param callable(RegistryInterface):(TransformerInterface[]) $provider
      */
     final protected function addTransformerProvider(callable $provider): void
     {

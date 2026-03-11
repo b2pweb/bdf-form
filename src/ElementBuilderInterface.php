@@ -63,7 +63,7 @@ interface ElementBuilderInterface
      * @see RegistryInterface::constraint() For make the constraint
      * @see Closure When use callback as first parameter
      */
-    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true);
+    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static;
 
     /**
      * Add a view transformer
@@ -97,7 +97,7 @@ interface ElementBuilderInterface
      *
      * @see TransformerInterface
      */
-    public function transformer(callable|TransformerInterface $transformer, bool $append = true);
+    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static;
 
     /**
      * Define the initial value of the element
@@ -112,7 +112,7 @@ interface ElementBuilderInterface
      *
      * @see ChildBuilderInterface::default() For setting the default value
      */
-    public function value($value);
+    public function value(mixed $value): static;
 
     /**
      * Build the element

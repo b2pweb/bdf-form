@@ -44,7 +44,7 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
     /**
      * @var ButtonViewInterface[]
      */
-    private $buttons = [];
+    private array $buttons = [];
 
     /**
      * FormView constructor.
@@ -61,13 +61,13 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
     }
 
     #[Override]
-    public function offsetGet($offset): ElementViewInterface|ButtonViewInterface
+    public function offsetGet(mixed $offset): ElementViewInterface|ButtonViewInterface
     {
         return $this->elements[$offset] ?? $this->buttons[$offset];
     }
 
     #[Override]
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->elements[$offset]) || isset($this->buttons[$offset]);
     }

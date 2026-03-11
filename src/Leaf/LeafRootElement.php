@@ -27,24 +27,12 @@ final class LeafRootElement implements RootElementInterface
 {
     use RootFlagsTrait;
 
-    /**
-     * @var ElementInterface
-     */
-    private $element;
-
-
-    /**
-     * LeafRootElement constructor.
-     *
-     * @param ElementInterface $element
-     */
-    public function __construct(ElementInterface $element)
-    {
-        $this->element = $element;
-    }
+    public function __construct(
+        private readonly ElementInterface $element,
+    ) {}
 
     #[Override]
-    public function submit($data): ElementInterface
+    public function submit(mixed $data): static
     {
         $this->element->submit($data);
 
@@ -52,7 +40,7 @@ final class LeafRootElement implements RootElementInterface
     }
 
     #[Override]
-    public function patch($data): ElementInterface
+    public function patch(mixed $data): static
     {
         $this->element->patch($data);
 
@@ -60,7 +48,7 @@ final class LeafRootElement implements RootElementInterface
     }
 
     #[Override]
-    public function import($entity): ElementInterface
+    public function import(mixed $entity): static
     {
         $this->element->import($entity);
 
@@ -68,13 +56,13 @@ final class LeafRootElement implements RootElementInterface
     }
 
     #[Override]
-    public function value()
+    public function value(): mixed
     {
         return $this->element->value();
     }
 
     #[Override]
-    public function httpValue()
+    public function httpValue(): mixed
     {
         return $this->element->httpValue();
     }
@@ -137,7 +125,7 @@ final class LeafRootElement implements RootElementInterface
     #[Override]
     public function getValidator(): ValidatorInterface
     {
-        return (new ValidatorBuilder())->getValidator();
+        return new ValidatorBuilder()->getValidator();
     }
 
     #[Override]

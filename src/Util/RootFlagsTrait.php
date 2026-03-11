@@ -16,7 +16,7 @@ trait RootFlagsTrait
      *
      * @var array<string, bool>
      */
-    private $flags = [];
+    private array $flags = [];
 
     /**
      * {@inheritdoc}

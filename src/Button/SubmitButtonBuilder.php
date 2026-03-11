@@ -21,25 +21,22 @@ use Override;
  */
 final class SubmitButtonBuilder implements ButtonBuilderInterface
 {
-    /**
-     * @var string
-     */
-    private $name;
+    private readonly string $name;
 
     /**
      * @var class-string<ButtonInterface>
      */
-    private $buttonClass;
+    private string $buttonClass;
 
     /**
      * @var string
      */
-    private $value = 'ok';
+    private string $value = 'ok';
 
     /**
-     * @var array
+     * @var string[]
      */
-    private $groups = [];
+    private array $groups = [];
 
 
     /**
@@ -55,7 +52,7 @@ final class SubmitButtonBuilder implements ButtonBuilderInterface
     }
 
     #[Override]
-    public function value(string $value): ButtonBuilderInterface
+    public function value(string $value): static
     {
         $this->value = $value;
 
@@ -63,7 +60,7 @@ final class SubmitButtonBuilder implements ButtonBuilderInterface
     }
 
     #[Override]
-    public function groups(array $groups): ButtonBuilderInterface
+    public function groups(array $groups): static
     {
         $this->groups = $groups;
 

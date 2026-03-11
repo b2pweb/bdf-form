@@ -16,7 +16,7 @@ trait ChoiceBuilderTrait
     /**
      * @var ChoiceInterface|null
      */
-    private $choices;
+    protected private(set) ?ChoiceInterface $choices = null;
 
     /**
      * Define choices for the element
@@ -44,13 +44,13 @@ trait ChoiceBuilderTrait
      *
      * @param ChoiceInterface|array|callable $choices  The allowed values in PHP form.
      * @param string|null $message The error message.
-     * @param non-negative-int $min
-     * @param positive-int $max
+     * @param non-negative-int|null $min
+     * @param positive-int|null $max
      *
      * @return $this
      * @see ChoiceConstraint
      */
-    final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): self
+    final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): static
     {
         if (!$choices instanceof ChoiceInterface) {
             $choices = is_array($choices) ? new ArrayChoice($choices) : new LazyChoice($choices);
@@ -90,5 +90,5 @@ trait ChoiceBuilderTrait
      *
      * @see ElementBuilderInterface::satisfy()
      */
-    abstract public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true);
+    abstract public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static;
 }

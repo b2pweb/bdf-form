@@ -18,10 +18,7 @@ use Override;
  */
 class BooleanElement extends AbstractBooleanElement
 {
-    /**
-     * @var string
-     */
-    private $httpValue = '1';
+    private string $httpValue = '1';
 
     /**
      * BooleanElement constructor.
@@ -38,13 +35,13 @@ class BooleanElement extends AbstractBooleanElement
     }
 
     #[Override]
-    protected function toPhp($httpValue): bool
+    protected function toPhp(mixed $httpValue): bool
     {
         return (bool) $httpValue;
     }
 
     #[Override]
-    protected function toHttp($phpValue)
+    protected function toHttp(mixed $phpValue): ?string
     {
         return $phpValue ? $this->httpValue : null;
     }

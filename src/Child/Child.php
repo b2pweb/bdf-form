@@ -15,6 +15,7 @@ use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\HttpValue;
 use Bdf\Form\View\ElementViewInterface;
+use LogicException;
 use Override;
 use WeakReference;
 
@@ -25,55 +26,32 @@ use function assert;
  */
 final class Child implements ChildInterface
 {
-    /**
-     * @var ElementInterface
-     */
-    private $element;
+    private readonly ElementInterface $element;
 
     /**
      * @var WeakReference<ChildAggregateInterface>
      */
-    private $parent;
-
-    /**
-     * @var string
-     */
-    private $name;
+    private ?WeakReference $parent = null;
+    private readonly string $name;
 
     /**
      * @var HttpFieldsInterface
      */
-    private $fields;
-
-    /**
-     * @var mixed
-     */
-    private $defaultValue;
+    private readonly HttpFieldsInterface $fields;
+    private readonly mixed $defaultValue;
 
     /**
      * @var FilterInterface[]
      */
-    private $filters;
-
-    /**
-     * @var HydratorInterface|null
-     */
-    private $hydrator;
-
-    /**
-     * @var ExtractorInterface|null
-     */
-    private $extractor;
+    private readonly array $filters;
+    private readonly ?HydratorInterface $hydrator;
+    private readonly ?ExtractorInterface $extractor;
 
     /**
      * @var string[]
      */
-    private $dependencies;
-
-    /**
-     * @var TransformerInterface
-     */
-    private $transformer;
+    private readonly array $dependencies;
+    private readonly TransformerInterface $transformer;
 
 
     /**
@@ -109,18 +87,15 @@ final class Child implements ChildInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @psalm-suppress NullableReturnStatement
-     * @psalm-suppress InvalidNullableReturnType
      */
     #[Override]
     public function parent(): ChildAggregateInterface
     {
-        return $this->parent->get();
+        return $this->parent?->get() ?? throw new LogicException('No parent has been set.');
     }
 
     #[Override]
-    public function setParent(ChildAggregateInterface $parent): ChildInterface
+    public function setParent(ChildAggregateInterface $parent): static
     {
         if ($this->parent === null) {
             $this->parent = WeakReference::create($parent);
@@ -146,13 +121,18 @@ final class Child implements ChildInterface
     }
 
     #[Override]
-    public function import($entity): void
+    public function import(array|object|null $entity): void
     {
         if (!$this->extractor) {
             return;
         }
 
-        $propertyAccessor = $this->parent->get()?->root()?->getPropertyAccessor();
+        if ($entity === null) {
+            $this->element->import(null);
+            return;
+        }
+
+        $propertyAccessor = $this->parent?->get()?->root()?->getPropertyAccessor();
         assert($propertyAccessor !== null);
 
         $this->extractor->setPropertyAccessor($propertyAccessor);
@@ -166,13 +146,13 @@ final class Child implements ChildInterface
     }
 
     #[Override]
-    public function fill(&$entity): void
+    public function fill(array|object &$entity): void
     {
         if (!$this->hydrator) {
             return;
         }
 
-        $propertyAccessor = $this->parent->get()?->root()?->getPropertyAccessor();
+        $propertyAccessor = $this->parent?->get()?->root()?->getPropertyAccessor();
         assert($propertyAccessor !== null);
 
         $this->hydrator->setPropertyAccessor($propertyAccessor);
@@ -186,7 +166,7 @@ final class Child implements ChildInterface
     }
 
     #[Override]
-    public function submit($data): bool
+    public function submit(mixed $data): bool
     {
         $value = $this->extractValue($data);
 
@@ -194,7 +174,7 @@ final class Child implements ChildInterface
     }
 
     #[Override]
-    public function patch($data): bool
+    public function patch(mixed $data): bool
     {
         $value = $data !== null && $this->fields->contains($data)
             ? $this->extractValue($data)
@@ -233,7 +213,7 @@ final class Child implements ChildInterface
      * @param mixed $httpValue
      * @return mixed The filtered value
      */
-    private function extractValue($httpValue)
+    private function extractValue(mixed $httpValue): mixed
     {
         $value = $this->fields->extract($httpValue);
         $default = $this->defaultValue;

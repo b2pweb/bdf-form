@@ -18,7 +18,7 @@ class ValidPhoneNumber extends Constraint
      *
      * @var string
      */
-    public $message = 'The phone number is not valid.';
+    public string $message = 'The phone number is not valid.';
 
     public function __construct(?string $message = null)
     {

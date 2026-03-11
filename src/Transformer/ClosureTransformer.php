@@ -19,13 +19,12 @@ use Override;
  * @see RegistryInterface::transformer() With callbable should return a ClosureTransformer
  * @see ElementBuilderInterface::transformer() For register a transformer on an element
  */
-final class ClosureTransformer implements TransformerInterface
+final readonly class ClosureTransformer implements TransformerInterface
 {
     /**
      * @var callable
      */
-    private $callback;
-
+    private mixed $callback;
 
     /**
      * @param callable $callback
@@ -36,13 +35,13 @@ final class ClosureTransformer implements TransformerInterface
     }
 
     #[Override]
-    public function transformToHttp($value, ElementInterface $input)
+    public function transformToHttp(mixed $value, ElementInterface $input): mixed
     {
         return ($this->callback)($value, $input, false);
     }
 
     #[Override]
-    public function transformFromHttp($value, ElementInterface $input)
+    public function transformFromHttp(mixed $value, ElementInterface $input): mixed
     {
         return ($this->callback)($value, $input, true);
     }

@@ -34,7 +34,7 @@ interface ElementViewInterface
      * @return $this
      * @since 1.5
      */
-    public function setError(?string $error): self;
+    public function setError(?string $error): static;
 
     /**
      * Check if the current element is on error
@@ -71,5 +71,5 @@ interface ElementViewInterface
      *
      * @see ElementViewInterface::hasError() To check if the element has an error
      */
-    public function onError($action): ?string;
+    public function onError(string|callable $action): ?string;
 }

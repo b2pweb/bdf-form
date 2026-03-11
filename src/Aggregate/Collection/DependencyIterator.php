@@ -20,27 +20,11 @@ final class DependencyIterator implements Iterator
     /**
      * @var ChildInterface[]
      */
-    private $children;
-
-    /**
-     * @var Level
-     */
-    private $first;
-
-    /**
-     * @var bool
-     */
-    private $reverse;
-
-    /**
-     * @var Level|null
-     */
-    private $currentLevel;
-
-    /**
-     * @var Iterator|null
-     */
-    private $levelIterator;
+    private array $children;
+    private Level $first;
+    private bool $reverse;
+    private ?Level $currentLevel = null;
+    private ?Iterator $levelIterator = null;
 
 
     /**
@@ -50,7 +34,7 @@ final class DependencyIterator implements Iterator
      * @param Level $first
      * @param bool $reverse Does iterate on reverse order on levels ?
      */
-    public function __construct(array $children, Level $first, $reverse = true)
+    public function __construct(array $children, Level $first, bool $reverse = true)
     {
         $this->children = $children;
         $this->first    = $first;

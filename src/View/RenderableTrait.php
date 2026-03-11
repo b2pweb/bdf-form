@@ -16,14 +16,14 @@ use function is_scalar;
 trait RenderableTrait
 {
     /**
-     * @var array
+     * @var array<string, scalar>
      */
-    private $attributes = [];
+    private array $attributes = [];
 
     /**
      * {@inheritdoc}
      */
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): static
     {
         if (empty($arguments)) {
             throw new ArgumentCountError('Missing the attribute value.');
@@ -37,12 +37,8 @@ trait RenderableTrait
     /**
      * {@inheritdoc}
      */
-    public function set(string $name, $value)
+    public function set(string $name, int|string|float|bool $value): static
     {
-        if (!is_scalar($value)) {
-            throw new TypeError('The attribute value must be a scalar value.');
-        }
-
         $this->attributes[$name] = $value;
 
         return $this;
@@ -51,7 +47,7 @@ trait RenderableTrait
     /**
      * {@inheritdoc}
      */
-    public function with(array $attributes)
+    public function with(array $attributes): static
     {
         foreach ($attributes as $name => $value) {
             if (!is_scalar($value)) {
@@ -71,7 +67,7 @@ trait RenderableTrait
     /**
      * {@inheritdoc}
      */
-    public function unset(string $name)
+    public function unset(string $name): static
     {
         unset($this->attributes[$name]);
 

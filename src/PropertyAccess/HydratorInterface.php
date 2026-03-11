@@ -7,7 +7,7 @@ namespace Bdf\Form\PropertyAccess;
  */
 interface HydratorInterface extends AccessorInterface
 {
-    const HYDRATION = 'hydration';
+    public const string HYDRATION = 'hydration';
 
     /**
      * Hydrate the target
@@ -17,5 +17,5 @@ interface HydratorInterface extends AccessorInterface
      *
      * @return void
      */
-    public function hydrate(&$target, $value)/*: void*/;
+    public function hydrate(array|object &$target, mixed $value)/*: void*/;
 }

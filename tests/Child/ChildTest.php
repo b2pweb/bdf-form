@@ -84,6 +84,18 @@ class ChildTest extends TestCase
     /**
      *
      */
+    public function test_import_null()
+    {
+        $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter());
+        $child->setParent($form = new Form(new ChildrenCollection()));
+
+        $child->import(null);
+        $this->assertNull($child->element()->value());
+    }
+
+    /**
+     *
+     */
     public function test_import_with_transformer()
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], new NotBlank(['message' => 'required error']), null, new Getter(), [], new ClosureTransformer(function($value) {

@@ -15,7 +15,7 @@ final class HttpValue
      *
      * @return bool true if the value is empty
      */
-    public static function isEmpty($value): bool
+    public static function isEmpty(mixed $value): bool
     {
         return $value === null || $value === '' || $value === [];
     }
@@ -29,7 +29,7 @@ final class HttpValue
      *
      * @return mixed The value or the default
      */
-    public static function orDefault($value, $default)
+    public static function orDefault(mixed $value, mixed $default): mixed
     {
         if ($default === null || !self::isEmpty($value)) {
             return $value;

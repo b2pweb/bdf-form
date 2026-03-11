@@ -31,7 +31,7 @@ final class SimpleElementView implements FieldViewInterface
      * @param array $constraints
      * @param ChoiceView[]|null $choices
      */
-    public function __construct(string $type, string $name, $value, ?string $error, bool $required, array $constraints, ?array $choices = null)
+    public function __construct(string $type, string $name, mixed $value, ?string $error, bool $required, array $constraints, ?array $choices = null)
     {
         $this->type = $type;
         $this->name = $name;

@@ -19,12 +19,8 @@ class CsrfConstraint extends Constraint
      *
      * @var string
      */
-    public $message = 'The CSRF token is invalid.';
-
-    /**
-     * @var CsrfTokenManagerInterface
-     */
-    public $manager;
+    public string $message = 'The CSRF token is invalid.';
+    public CsrfTokenManagerInterface $manager;
 
     public function __construct(CsrfTokenManagerInterface $manager, ?string $message = null)
     {

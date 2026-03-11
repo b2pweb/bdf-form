@@ -13,22 +13,10 @@ use Override;
  *
  * @implements FieldViewRendererInterface<ArrayElementView>
  */
-final class ArrayElementViewRenderer implements FieldViewRendererInterface
+final readonly class ArrayElementViewRenderer implements FieldViewRendererInterface
 {
-    /**
-     * @var ArrayElementViewRenderer|null
-     */
-    private static $instance;
-
-    /**
-     * @var FieldViewRendererInterface
-     */
-    private $csvRenderer;
-
-    /**
-     * @var FieldViewRendererInterface
-     */
-    private $selectRenderer;
+    private FieldViewRendererInterface $csvRenderer;
+    private FieldViewRendererInterface $selectRenderer;
 
     /**
      * ArrayElementViewRenderer constructor.
@@ -59,6 +47,8 @@ final class ArrayElementViewRenderer implements FieldViewRendererInterface
      */
     public static function instance(): self
     {
-        return self::$instance ??= new self();
+        static $instance = new self();
+
+        return $instance;
     }
 }

@@ -18,13 +18,12 @@ use Override;
  *
  * @see ChildBuilderInterface::filter()
  */
-final class ClosureFilter implements FilterInterface
+final readonly class ClosureFilter implements FilterInterface
 {
     /**
      * @var callable(mixed, ChildInterface, mixed):mixed
      */
-    protected $callback;
-
+    private mixed $callback;
 
     /**
      * @param callable(mixed, ChildInterface, mixed):mixed $callback
@@ -35,7 +34,7 @@ final class ClosureFilter implements FilterInterface
     }
 
     #[Override]
-    public function filter($value, ChildInterface $input, $default)
+    public function filter(mixed $value, ChildInterface $input, mixed $default): mixed
     {
         return ($this->callback)($value, $input, $default);
     }

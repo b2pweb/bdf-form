@@ -303,7 +303,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @see ValueGenerator
      * @see ElementInterface::value()
      */
-    public function generates($entity): FormBuilderInterface;
+    public function generates(mixed $entity): FormBuilderInterface;
 
     /**
      * Mark the form as optional

@@ -32,30 +32,11 @@ final class CsrfElement implements ElementInterface
 {
     use ContainerTrait;
 
-    /**
-     * @var string
-     */
-    private $tokenId;
-
-    /**
-     * @var CsrfValueValidator
-     */
-    private $validator;
-
-    /**
-     * @var CsrfTokenManagerInterface
-     */
-    private $tokenManager;
-
-    /**
-     * @var CsrfToken|null
-     */
-    private $value = null;
-
-    /**
-     * @var FormError
-     */
-    private $error;
+    private readonly string $tokenId;
+    private readonly CsrfValueValidator $validator;
+    private readonly CsrfTokenManagerInterface $tokenManager;
+    private ?CsrfToken $value = null;
+    private FormError $error;
 
     /**
      * CsrfElement constructor.
@@ -66,15 +47,15 @@ final class CsrfElement implements ElementInterface
      */
     public function __construct(?string $tokenId = null, ?CsrfValueValidator $validator = null, ?CsrfTokenManagerInterface $tokenManager = null)
     {
-        $this->tokenId = $tokenId ?: self::class;
-        $this->validator = $validator ?: new CsrfValueValidator();
-        $this->tokenManager = $tokenManager ?: new CsrfTokenManager();
+        $this->tokenId = $tokenId ?? self::class;
+        $this->validator = $validator ?? new CsrfValueValidator();
+        $this->tokenManager = $tokenManager ?? new CsrfTokenManager();
 
         $this->error = FormError::null();
     }
 
     #[Override]
-    public function submit($data): ElementInterface
+    public function submit(mixed $data): static
     {
         $this->value = new CsrfToken($this->tokenId, $data);
         $this->error = $this->validator->validate($this->value, $this);
@@ -83,14 +64,14 @@ final class CsrfElement implements ElementInterface
     }
 
     #[Override]
-    public function patch($data): ElementInterface
+    public function patch(mixed $data): static
     {
         // CSRF element must be submitted
         return $this->submit($data);
     }
 
     #[Override]
-    public function import($entity): ElementInterface
+    public function import(mixed $entity): static
     {
         throw new BadMethodCallException('Cannot set a Csrf token value');
     }

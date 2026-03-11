@@ -19,17 +19,17 @@ use function method_exists;
  * Transform a DateTime instance from a form element to a timestamp to a model
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class DateTimeToTimestampTransformer implements TransformerInterface
+final readonly class DateTimeToTimestampTransformer implements TransformerInterface
 {
     /**
      * @var class-string<DateTimeInterface>|null
      */
-    private $className;
+    private ?string $className;
 
     /**
      * @var DateTimeZone|null
      */
-    private $timezone;
+    private ?DateTimeZone $timezone;
 
 
     /**
@@ -45,7 +45,7 @@ final class DateTimeToTimestampTransformer implements TransformerInterface
     }
 
     #[Override]
-    public function transformToHttp($value, ElementInterface $input): ?DateTimeInterface
+    public function transformToHttp(mixed $value, ElementInterface $input): ?DateTimeInterface
     {
         if ($value === null) {
             return null;

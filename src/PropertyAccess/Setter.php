@@ -5,6 +5,8 @@ namespace Bdf\Form\PropertyAccess;
 use Attribute;
 use Override;
 
+use function assert;
+
 /**
  * Set the property value using the element value
  *
@@ -37,15 +39,16 @@ use Override;
 final class Setter extends AbstractAccessor implements HydratorInterface
 {
     #[Override]
-    public function hydrate(&$target, $value): void
+    public function hydrate(array|object &$target, mixed $value): void
     {
-        if ($this->transformer) {
+        if ($this->transformer !== null) {
             $value = ($this->transformer)($value, $this->input);
         }
 
         if ($this->customAccessor !== null) {
             ($this->customAccessor)($target, $value, self::HYDRATION, $this);
         } else {
+            assert($this->propertyAccessor !== null);
             $this->propertyAccessor->setValue($target, $this->prepareAccessorPath($target), $value);
         }
     }

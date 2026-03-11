@@ -29,15 +29,8 @@ use Override;
  */
 class BooleanElementBuilder extends AbstractElementBuilder
 {
-    /**
-     * @var string
-     */
-    private $httpValue = '1';
-
-    /**
-     * @var bool
-     */
-    private $booleanString = false;
+    private string $httpValue = '1';
+    private bool $booleanString = false;
 
     /**
      * Define the HTTP value used for represent the true value

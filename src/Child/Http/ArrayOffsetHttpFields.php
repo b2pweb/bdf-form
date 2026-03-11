@@ -4,6 +4,8 @@ namespace Bdf\Form\Child\Http;
 
 use Override;
 
+use function is_array;
+
 /**
  * Extract HTTP fields value using a simple array offset
  * This is the default http fields implementation
@@ -15,26 +17,17 @@ use Override;
  * $fields->extract(['other' => 'value'], 'not found'); // => 'not found'
  * </code>
  */
-final class ArrayOffsetHttpFields implements HttpFieldsInterface
+final readonly class ArrayOffsetHttpFields implements HttpFieldsInterface
 {
-    /**
-     * @var string
-     */
-    private $offset;
-
-
-    /**
-     * ArrayOffsetHttpFields constructor.
-     *
-     * @param string $offset The field name
-     */
-    public function __construct(string $offset)
-    {
-        $this->offset = $offset;
-    }
+    public function __construct(
+        /**
+         * The HTTP field name
+         */
+        private string $offset,
+    ) {}
 
     #[Override]
-    public function extract($httpFields)
+    public function extract(mixed $httpFields): mixed
     {
         if (!is_array($httpFields) || !isset($httpFields[$this->offset])) {
             return null;
@@ -50,7 +43,7 @@ final class ArrayOffsetHttpFields implements HttpFieldsInterface
     }
 
     #[Override]
-    public function format($value)
+    public function format(mixed $value): array
     {
         return [$this->offset => $value];
     }

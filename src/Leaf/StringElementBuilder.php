@@ -40,16 +40,16 @@ class StringElementBuilder extends AbstractElementBuilder
      * $builder->length(max: 256);
      * </code>
      *
-     * @param positive-int $exactly
-     * @param non-negative-int $min
-     * @param positive-int $max
+     * @param positive-int|null $exactly
+     * @param non-negative-int|null $min
+     * @param positive-int|null $max
      * @param value-of<Length::VALID_COUNT_UNITS>|null $countUnit
      *
      * @return $this
      *
      * @see Length For options
      */
-    public function length(?int $exactly = null, ?int $min = null, ?int $max = null, ?string $charset = null, ?callable $normalizer = null, ?string $countUnit = null, ?string $exactMessage = null, ?string $minMessage = null, ?string $maxMessage = null, ?string $charsetMessage = null): self
+    public function length(?int $exactly = null, ?int $min = null, ?int $max = null, ?string $charset = null, ?callable $normalizer = null, ?string $countUnit = null, ?string $exactMessage = null, ?string $minMessage = null, ?string $maxMessage = null, ?string $charsetMessage = null): static
     {
         return $this->satisfy(
             new Length(
@@ -81,7 +81,7 @@ class StringElementBuilder extends AbstractElementBuilder
      *
      * @see Regex
      */
-    public function regex(string $pattern, ?string $message = null, ?string $htmlPattern = null, ?bool $match = null, ?callable $normalizer = null): self
+    public function regex(string $pattern, ?string $message = null, ?string $htmlPattern = null, ?bool $match = null, ?callable $normalizer = null): static
     {
         return $this->satisfy(
             new Regex(
@@ -95,7 +95,7 @@ class StringElementBuilder extends AbstractElementBuilder
     }
 
     #[Override]
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): StringElement
     {
         return new StringElement($validator, $transformer, $this->getChoices());
     }

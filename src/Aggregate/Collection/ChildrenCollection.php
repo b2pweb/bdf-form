@@ -21,14 +21,12 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
      *
      * @var ChildInterface[]
      */
-    private $children = [];
+    private array $children = [];
 
     /**
      * Flag to know if the form has view dependencies in its children
-     *
-     * @var boolean
      */
-    private $hasViewDependencies = false;
+    private bool $hasViewDependencies = false;
 
 
     /**
@@ -68,25 +66,25 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
     }
 
     #[Override]
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->has($offset);
     }
 
     #[Override]
-    public function offsetGet($offset): ChildInterface
+    public function offsetGet(mixed $offset): ChildInterface
     {
         return $this->children[$offset];
     }
 
     #[Override]
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->add($value);
     }
 
     #[Override]
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         $this->remove($offset);
     }
@@ -130,7 +128,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
             $children[$key] = $child->setParent($newParent);
         }
 
-        $collection = new static();
+        $collection = new self();
 
         $collection->children = $children;
         $collection->hasViewDependencies = $this->hasViewDependencies;

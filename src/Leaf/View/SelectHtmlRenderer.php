@@ -16,10 +16,7 @@ use Override;
  */
 final class SelectHtmlRenderer implements FieldViewRendererInterface
 {
-    /**
-     * @var SelectHtmlRenderer|null
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
     #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
@@ -51,10 +48,6 @@ final class SelectHtmlRenderer implements FieldViewRendererInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

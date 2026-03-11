@@ -27,22 +27,22 @@ final class FormError implements Stringable
     /**
      * @var HttpFieldPath|null
      */
-    private $field;
+    private ?HttpFieldPath $field = null;
 
     /**
      * @var string|null
      */
-    private $global;
+    private ?string $global;
 
     /**
      * @var string|null
      */
-    private $code;
+    private ?string $code;
 
     /**
      * @var FormError[]
      */
-    private $children;
+    private array $children;
 
 
     /**
@@ -182,7 +182,7 @@ final class FormError implements Stringable
      *
      * @return mixed The printer result
      */
-    public function print(FormErrorPrinterInterface $printer)
+    public function print(FormErrorPrinterInterface $printer): mixed
     {
         if ($this->field) {
             $printer->field($this->field);
@@ -287,7 +287,7 @@ final class FormError implements Stringable
         $message = (string) $violation->getMessage();
         $code = $violation->getCode();
 
-        if ($code !== null && $violation instanceof ConstraintViolation && ($constraint = $violation->getConstraint()) !== null) {
+        if ($code !== null && ($constraint = $violation->getConstraint()) !== null) {
             try {
                 $code = $constraint->getErrorName($code);
             } catch (InvalidArgumentException $e) {

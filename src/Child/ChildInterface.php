@@ -49,7 +49,7 @@ interface ChildInterface
      *
      * @return static The child instance linked with the parent
      */
-    public function setParent(ChildAggregateInterface $parent): self;
+    public function setParent(ChildAggregateInterface $parent): static;
 
     /**
      * Get the element's name
@@ -78,20 +78,20 @@ interface ChildInterface
      * Import values from the entity
      * Use a PropertyAccessor for extract related attributes
      *
-     * @param mixed $entity
+     * @param array|object|null $entity
      *
      * @see AccessorInterface
      */
-    public function import($entity): void;
+    public function import(array|object|null $entity): void;
 
     /**
      * Hydrate entity with the child value
      * Use a PropertyAccessor for hydrate related attributes
      * This is the opposite operation of import()
      *
-     * @param mixed $entity
+     * @param array|object $entity
      */
-    public function fill(&$entity): void;
+    public function fill(array|object &$entity): void;
 
     /**
      * Submit HTTP form data
@@ -107,7 +107,7 @@ interface ChildInterface
      *
      * @see ElementInterface::submit() The element submit() method
      */
-    public function submit($data): bool;
+    public function submit(mixed $data): bool;
 
     /**
      * Submit HTTP form data without override previous ones
@@ -119,7 +119,7 @@ interface ChildInterface
      *
      * @see ElementInterface::patch() The element patch() method
      */
-    public function patch($data): bool;
+    public function patch(mixed $data): bool;
 
     /**
      * Export the http value of the child as an array

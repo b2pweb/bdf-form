@@ -14,13 +14,13 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 final class TransformerExceptionConstraintValidator extends ConstraintValidator
 {
     #[Override]
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof TransformerExceptionConstraint) {
             throw new UnexpectedTypeException($constraint, TransformerExceptionConstraint::class);
         }
 
-        if ($constraint->validationCallback) {
+        if ($constraint->validationCallback !== null) {
             if (!($constraint->validationCallback)($value, $constraint, $this->context->getRoot())) {
                 return;
             }

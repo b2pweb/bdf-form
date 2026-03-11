@@ -28,7 +28,7 @@ interface ChildBuilderInterface
      * @see ChildInterface::fill()
      * @see ChildBuilder::setter() For define simple hydrator
      */
-    public function hydrator(HydratorInterface $hydrator);
+    public function hydrator(HydratorInterface $hydrator): static;
 
     /**
      * Define the extractor for the child
@@ -41,7 +41,7 @@ interface ChildBuilderInterface
      * @see ChildInterface::import()
      * @see ChildBuilder::getter() For define simple extractor
      */
-    public function extractor(ExtractorInterface $extractor);
+    public function extractor(ExtractorInterface $extractor): static;
 
     /**
      * Add a filter
@@ -67,7 +67,7 @@ interface ChildBuilderInterface
      *
      * @see FilterInterface
      */
-    public function filter(FilterInterface|callable $filter, bool $append = true);
+    public function filter(FilterInterface|callable $filter, bool $append = true): static;
 
     /**
      * Define the default value
@@ -87,7 +87,7 @@ interface ChildBuilderInterface
      *
      * @see ElementBuilderInterface::value() For set the initial value
      */
-    public function default($default);
+    public function default($default): static;
 
     /**
      * Add a configurator for child parameters
@@ -110,7 +110,7 @@ interface ChildBuilderInterface
      *
      * @return $this
      */
-    public function addParametersConfigurator(callable $configurator);
+    public function addParametersConfigurator(callable $configurator): static;
 
     /**
      * Add an input dependency
@@ -133,7 +133,7 @@ interface ChildBuilderInterface
      *
      * @return $this
      */
-    public function depends(string ...$inputNames);
+    public function depends(string ...$inputNames): static;
 
     /**
      * Add a model transformer
@@ -167,7 +167,7 @@ interface ChildBuilderInterface
      *
      * @see TransformerInterface
      */
-    public function modelTransformer(callable|TransformerInterface $transformer, bool $append = true);
+    public function modelTransformer(callable|TransformerInterface $transformer, bool $append = true): static;
 
     /**
      * Creates the child instance

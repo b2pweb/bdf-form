@@ -17,20 +17,9 @@ final class ButtonView implements ButtonViewInterface
 {
     use RenderableTrait;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $value;
-
-    /**
-     * @var bool
-     */
-    private $clicked;
+    public private(set) string $name;
+    public private(set) string $value;
+    public private(set) bool $clicked;
 
     /**
      * ButtonView constructor.

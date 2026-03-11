@@ -21,15 +21,8 @@ abstract class AbstractElementBuilder implements ElementBuilderInterface
     use TransformerBuilderTrait;
     use ValidatorBuilderTrait;
 
-    /**
-     * @var RegistryInterface
-     */
-    private $registry;
-
-    /**
-     * @var mixed
-     */
-    private $value;
+    private readonly RegistryInterface $registry;
+    private mixed $value = null;
 
 
     /**
@@ -43,7 +36,7 @@ abstract class AbstractElementBuilder implements ElementBuilderInterface
     }
 
     #[Override]
-    final public function value($value)
+    final public function value(mixed $value): static
     {
         $this->value = $value;
 

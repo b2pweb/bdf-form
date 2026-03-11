@@ -18,7 +18,7 @@ use function method_exists;
  *
  * @implements ValueValidatorInterface<\Symfony\Component\Security\Csrf\CsrfToken>
  */
-final class CsrfValueValidator implements ValueValidatorInterface
+final readonly class CsrfValueValidator implements ValueValidatorInterface
 {
     /**
      * Flag for disable the CSRF validation
@@ -33,25 +33,19 @@ final class CsrfValueValidator implements ValueValidatorInterface
 
     /**
      * Invalidate the token after verification ?
-     *
-     * @var boolean
      */
-    private $invalidate;
+    private bool $invalidate;
 
     /**
      * The error message
-     *
-     * @var string|null
      */
-    private $message;
+    private ?string $message;
 
     /**
      * Only validate the csrf token if the element is on the root form
      * If false, all csrf tokens on sub forms will be validated
-     *
-     * @var bool
      */
-    private $onlyValidateRoot;
+    private bool $onlyValidateRoot;
 
     /**
      * CsrfValueValidator constructor.
@@ -87,7 +81,7 @@ final class CsrfValueValidator implements ValueValidatorInterface
         }
 
         try {
-            return (new ConstraintValueValidator([new CsrfConstraint($element->getTokenManager(), $this->message)]))->validate($value, $element);
+            return new ConstraintValueValidator([new CsrfConstraint($element->getTokenManager(), $this->message)])->validate($value, $element);
         } finally {
             if ($this->invalidate) {
                 $element->invalidateToken();

@@ -301,7 +301,7 @@ class CustomFormTest extends TestCase
                 $error->print($this);
             }
 
-            public function print()
+            public function print(): mixed
             {
                 if ($this->global || $this->code) {
                     $this->errors[] = [

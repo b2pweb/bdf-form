@@ -13,30 +13,19 @@ trait FieldViewTrait
 {
     use RenderableTrait;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var mixed
-     */
-    private $value;
-
-    /**
-     * @var bool
-     */
-    private $required = false;
+    public private(set) string $name;
+    public private(set) mixed $value;
+    public private(set) bool $required = false;
 
     /**
      * @var array
      */
-    private $constraints = [];
+    private array $constraints = [];
 
     /**
      * @var ChoiceView[]|null
      */
-    private $choices;
+    public private(set) ?array $choices = null;
 
     /**
      * {@inheritdoc}
@@ -49,7 +38,7 @@ trait FieldViewTrait
     /**
      * {@inheritdoc}
      */
-    public function value()
+    public function value(): mixed
     {
         return $this->value;
     }
@@ -57,7 +46,7 @@ trait FieldViewTrait
     /**
      * {@inheritdoc}
      */
-    public function setValue($value): static
+    public function setValue(mixed $value): static
     {
         $this->value = $value;
 

@@ -39,15 +39,18 @@ use Bdf\Form\Phone\PhoneElementBuilder;
 use InvalidArgumentException;
 use Override;
 
+use function is_string;
+use function is_subclass_of;
+
 /**
  * Base registry interface
  */
-class Registry implements RegistryInterface
+final class Registry implements RegistryInterface
 {
     /**
      * @var class-string<ElementBuilderInterface>[]|callable[]
      */
-    private $elementBuilderFactories = [
+    private array $elementBuilderFactories = [
         StringElement::class => StringElementBuilder::class,
         IntegerElement::class => IntegerElementBuilder::class,
         FloatElement::class => FloatElementBuilder::class,
@@ -69,7 +72,7 @@ class Registry implements RegistryInterface
     /**
      * @var class-string<ChildBuilderInterface>[]|callable[]
      */
-    private $childBuilderFactories = [
+    private array $childBuilderFactories = [
         DateTimeElement::class => DateTimeChildBuilder::class,
         PhoneElement::class => PhoneChildBuilder::class,
         ArrayElement::class => ArrayChildBuilder::class,
@@ -124,7 +127,7 @@ class Registry implements RegistryInterface
             }
         }
 
-        if (!$builderFactory) {
+        if ($builderFactory === null) {
             throw new InvalidArgumentException('The element '.$element.' is not registered');
         }
 
@@ -166,7 +169,7 @@ class Registry implements RegistryInterface
      *
      * @see Registry::elementBuilder()
      */
-    public function register(string $elementType, $builderFactory, $childBuilderFactory = null): void
+    public function register(string $elementType, string|callable $builderFactory, string|callable|null $childBuilderFactory = null): void
     {
         $this->elementBuilderFactories[$elementType] = $builderFactory;
 

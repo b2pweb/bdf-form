@@ -2,7 +2,6 @@
 
 namespace Bdf\Form\Leaf\Helper;
 
-use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
@@ -23,23 +22,19 @@ use function is_string;
  */
 class UrlElementBuilder extends StringElementBuilder
 {
-    /**
-     * @var bool
-     */
-    private $useConstraint = true;
-
+    private bool $useConstraint = true;
     private ?string $errorMessage = null;
 
     /**
      * @var string[]|null
      */
-    private $protocols = null;
+    private ?array $protocols = null;
     private ?bool $relativeProtocol = null;
 
     /**
      * @var (callable(string):string)|null
      */
-    private $normalizer = null;
+    private mixed $normalizer = null;
     private ?bool $requireTld = false;
     private ?string $tldMessage = null;
 
@@ -52,7 +47,7 @@ class UrlElementBuilder extends StringElementBuilder
     {
         parent::__construct($registry);
 
-        $this->addConstraintsProvider([$this, 'createUrlConstraint']);
+        $this->addConstraintsProvider($this->createUrlConstraint(...));
     }
 
     /**
@@ -66,7 +61,7 @@ class UrlElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function protocols(string ...$protocols): self
+    public function protocols(string ...$protocols): static
     {
         $this->protocols = $protocols;
 
@@ -81,7 +76,7 @@ class UrlElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function relativeProtocol(bool $enable = true): self
+    public function relativeProtocol(bool $enable = true): static
     {
         $this->relativeProtocol = $enable;
 
@@ -95,7 +90,7 @@ class UrlElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function errorMessage(string $message): self
+    public function errorMessage(string $message): static
     {
         $this->errorMessage = $message;
 
@@ -120,7 +115,7 @@ class UrlElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function normalizer(callable $normalizer): self
+    public function normalizer(callable $normalizer): static
     {
         $this->normalizer = $normalizer;
 
@@ -132,7 +127,7 @@ class UrlElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function disableConstraint(): self
+    public function disableConstraint(): static
     {
         $this->useConstraint = false;
 
@@ -150,7 +145,7 @@ class UrlElementBuilder extends StringElementBuilder
      *
      * @see Url for list of options
      */
-    public function useConstraint(?string $message = null, string|array|null $protocols = null, ?bool $relativeProtocol = null, ?callable $normalizer = null): self
+    public function useConstraint(?string $message = null, string|array|null $protocols = null, ?bool $relativeProtocol = null, ?callable $normalizer = null): static
     {
         $this->useConstraint = true;
 

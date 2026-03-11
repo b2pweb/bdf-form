@@ -9,7 +9,7 @@ use Override;
 /**
  * The base form element type
  *
- * @template T
+ * @template T as array|object
  * @extends ChildAggregateInterface<T>
  */
 interface FormInterface extends ChildAggregateInterface
@@ -33,13 +33,13 @@ interface FormInterface extends ChildAggregateInterface
      * $this->repository->save($form->value());
      * </code>
      *
-     * @param T|class-string<T>|callable():T $entity The entity object, or class name
+     * @param T|class-string|callable():T $entity The entity object, or class name
      *
      * @return $this
      *
      * @see Form::import() For attach and extract values from properties
      */
-    public function attach($entity): FormInterface;
+    public function attach(mixed $entity): FormInterface;
 
     #[Override]
     public function view(?HttpFieldPath $field = null): FormView;

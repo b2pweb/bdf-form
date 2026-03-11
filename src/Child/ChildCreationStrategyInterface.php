@@ -29,5 +29,5 @@ interface ChildCreationStrategyInterface
      *
      * @return ChildInterface
      */
-    public function __invoke(string $name, ElementInterface $element, HttpFieldsInterface $fields, array $filters, $defaultValue, ?HydratorInterface $hydrator, ?ExtractorInterface $extractor, array $dependencies, ?TransformerInterface $transformer): ChildInterface;
+    public function __invoke(string $name, ElementInterface $element, HttpFieldsInterface $fields, array $filters, mixed $defaultValue, ?HydratorInterface $hydrator, ?ExtractorInterface $extractor, array $dependencies, ?TransformerInterface $transformer): ChildInterface;
 }

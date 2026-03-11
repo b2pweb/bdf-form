@@ -16,7 +16,7 @@ interface HttpFieldsInterface
      *
      * @return mixed
      */
-    public function extract($httpFields);
+    public function extract(mixed $httpFields): mixed;
 
     /**
      * Does the required field is contained into given http fields
@@ -26,7 +26,7 @@ interface HttpFieldsInterface
      *
      * @return bool true if the field is available
      */
-    public function contains($httpFields): bool;
+    public function contains(mixed $httpFields): bool;
 
     /**
      * Format an element value to HTTP fields
@@ -35,7 +35,7 @@ interface HttpFieldsInterface
      *
      * @return mixed
      */
-    public function format($value);
+    public function format(mixed $value): mixed;
 
     /**
      * Get the field path for the current child

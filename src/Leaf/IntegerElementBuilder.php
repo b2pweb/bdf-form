@@ -28,15 +28,12 @@ use Override;
  */
 class IntegerElementBuilder extends NumberElementBuilder
 {
-    /**
-     * @var bool
-     */
-    private $grouping = false;
+    private bool $grouping = false;
 
     /**
      * @var NumberFormatter::ROUND_*
      */
-    private $roundingMode = NumberFormatter::ROUND_DOWN;
+    private int $roundingMode = NumberFormatter::ROUND_DOWN;
 
 
     /**

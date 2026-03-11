@@ -27,7 +27,7 @@ class EmailElementBuilder extends StringElementBuilder
     /**
      * @var bool
      */
-    private $useConstraint = true;
+    private bool $useConstraint = true;
 
     private ?string $errorMessage = null;
 
@@ -39,7 +39,7 @@ class EmailElementBuilder extends StringElementBuilder
     /**
      * @var (callable(string):string)|null
      */
-    private $normalizer = null;
+    private mixed $normalizer = null;
 
     /**
      * EmailElementBuilder constructor.
@@ -50,7 +50,7 @@ class EmailElementBuilder extends StringElementBuilder
     {
         parent::__construct($registry);
 
-        $this->addConstraintsProvider([$this, 'createEmailConstraint']);
+        $this->addConstraintsProvider($this->createEmailConstraint(...));
     }
 
     /**
@@ -65,7 +65,7 @@ class EmailElementBuilder extends StringElementBuilder
      * @see Email::VALIDATION_MODE_LOOSE
      * @see Email::VALIDATION_MODE_STRICT
      */
-    public function mode(string $mode): self
+    public function mode(string $mode): static
     {
         $this->mode = $mode;
 
@@ -79,7 +79,7 @@ class EmailElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function errorMessage(string $message): self
+    public function errorMessage(string $message): static
     {
         $this->errorMessage = $message;
 
@@ -104,7 +104,7 @@ class EmailElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function normalizer(callable $normalizer): self
+    public function normalizer(callable $normalizer): static
     {
         $this->normalizer = $normalizer;
 
@@ -116,7 +116,7 @@ class EmailElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function disableConstraint(): self
+    public function disableConstraint(): static
     {
         $this->useConstraint = false;
 
@@ -136,7 +136,7 @@ class EmailElementBuilder extends StringElementBuilder
      *
      * @see Email for list of options
      */
-    public function useConstraint(?string $message = null, ?string $mode = null, ?callable $normalizer = null): self
+    public function useConstraint(?string $message = null, ?string $mode = null, ?callable $normalizer = null): static
     {
         $this->useConstraint = true;
         $this->errorMessage = $message;

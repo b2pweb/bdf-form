@@ -8,6 +8,7 @@ use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use LogicException;
+use Override;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Validator\Constraint;
 
@@ -31,33 +32,16 @@ use Symfony\Component\Validator\Constraint;
  */
 class CsrfElementBuilder implements ElementBuilderInterface
 {
-    /**
-     * @var string
-     */
-    private $tokenId = CsrfElement::class;
-
-    /**
-     * @var string|null
-     */
-    private $message = null;
-
-    /**
-     * @var bool
-     */
-    private $invalidate = false;
-
-    /**
-     * @var CsrfTokenManagerInterface
-     */
-    private $tokenManager;
+    private string $tokenId = CsrfElement::class;
+    private ?string $message = null;
+    private bool $invalidate = false;
+    private ?CsrfTokenManagerInterface $tokenManager = null;
 
     /**
      * Only validate the csrf token if the element is on the root form
      * If false, all csrf tokens on sub forms will be validated
-     *
-     * @var bool
      */
-    private $onlyValidateRoot = true;
+    private bool $onlyValidateRoot = true;
 
     /**
      * CsrfElementBuilder constructor.
@@ -145,11 +129,14 @@ class CsrfElementBuilder implements ElementBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    #[\Override]
-    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
+    #[Override]
+    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static
+    {
+        throw new BadMethodCallException();
+    }
+
+    #[Override]
+    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
     {
         throw new BadMethodCallException();
     }
@@ -157,8 +144,8 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
-    #[\Override]
-    public function transformer(callable|TransformerInterface $transformer, bool $append = true)
+    #[Override]
+    public function value(mixed $value): static
     {
         throw new BadMethodCallException();
     }
@@ -166,16 +153,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      */
-    #[\Override]
-    public function value($value)
-    {
-        throw new BadMethodCallException();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    #[\Override]
+    #[Override]
     public function buildElement(): ElementInterface
     {
         return new CsrfElement(

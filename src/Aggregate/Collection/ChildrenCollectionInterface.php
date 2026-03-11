@@ -47,14 +47,14 @@ interface ChildrenCollectionInterface extends IteratorAggregate, ArrayAccess, Co
     /**
      * Get the reverse iterator (i.e. iterate on higher dependencies in first)
      *
-     * @return Iterator<ChildInterface>
+     * @return Iterator<string, ChildInterface>
      */
     public function reverseIterator(): Iterator;
 
     /**
      * Get the base iterator
      *
-     * @return Iterator<ChildInterface>
+     * @return Iterator<string, ChildInterface>
      */
     public function forwardIterator(): Iterator;
 

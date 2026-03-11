@@ -28,12 +28,8 @@ final class PhoneElement extends LeafElement
     /**
      * @var callable(PhoneElement):string
      */
-    private $regionResolver;
-
-    /**
-     * @var PhoneNumberUtil
-     */
-    private $formatter;
+    private readonly mixed $regionResolver;
+    private readonly PhoneNumberUtil $formatter;
 
 
     /**
@@ -53,7 +49,7 @@ final class PhoneElement extends LeafElement
     }
 
     #[Override]
-    protected function toPhp($httpValue)
+    protected function toPhp(mixed $httpValue): ?PhoneNumber
     {
         if ($httpValue === null || $httpValue === '') {
             return null;
@@ -63,7 +59,7 @@ final class PhoneElement extends LeafElement
     }
 
     #[Override]
-    protected function toHttp($phpValue)
+    protected function toHttp(mixed $phpValue): ?string
     {
         if (!$phpValue) {
             return null;
@@ -123,7 +119,7 @@ final class PhoneElement extends LeafElement
         try {
             return $this->formatter->parse($rawPhoneNumber, $this->resolveRegion(), null, true);
         } catch (NumberParseException $e) {
-            return (new PhoneNumber())->setRawInput($rawPhoneNumber);
+            return new PhoneNumber()->setRawInput($rawPhoneNumber);
         }
     }
 

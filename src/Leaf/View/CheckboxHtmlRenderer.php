@@ -14,10 +14,7 @@ use Override;
  */
 final class CheckboxHtmlRenderer implements FieldViewRendererInterface
 {
-    /**
-     * @var CheckboxHtmlRenderer|null
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
     #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
@@ -40,10 +37,6 @@ final class CheckboxHtmlRenderer implements FieldViewRendererInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

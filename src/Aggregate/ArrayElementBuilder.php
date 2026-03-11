@@ -59,21 +59,13 @@ class ArrayElementBuilder implements ElementBuilderInterface
         ValidatorBuilderTrait::satisfy as arrayConstraint;
     }
 
-    /**
-     * @var RegistryInterface
-     */
-    private $registry;
+    private readonly RegistryInterface $registry;
 
     /**
      * @var ElementBuilderInterface<ElementInterface<T>>|null
      */
-    private $element;
-
-    /**
-     * @var mixed
-     */
-    private $value;
-
+    private ?ElementBuilderInterface $element = null;
+    private mixed $value = null;
 
     /**
      * ArrayBuilder constructor.
@@ -91,7 +83,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * Define a constraint on the inner element
      */
     #[Override]
-    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
+    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static
     {
         $this->getElementBuilder()->satisfy($constraint, $message, $append);
 
@@ -104,7 +96,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * Define a transformer on the inner element
      */
     #[Override]
-    public function transformer(callable|TransformerInterface $transformer, bool $append = true)
+    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
     {
         $this->getElementBuilder()->transformer($transformer, $append);
 
@@ -115,7 +107,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * {@inheritdoc}
      */
     #[Override]
-    public function value($value)
+    public function value($value): static
     {
         $this->value = $value;
 
@@ -138,12 +130,13 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * @template E as ElementInterface<RT>
      * @template EB as ElementBuilderInterface<E>
      *
-     * @return ArrayElementBuilder<RT>
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<RT>
      */
-    public function element(string $element, ?callable $configurator = null): ArrayElementBuilder
+    public function element(string $element, ?callable $configurator = null): static
     {
-        /** @var ArrayElementBuilder<RT> $this */
         // @todo exception if already defined ?
+        /** @psalm-suppress InvalidPropertyAssignmentValue */
         $this->element = $this->registry->elementBuilder($element);
 
         if ($configurator) {
@@ -158,7 +151,6 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * {@inheritdoc}
      *
      * @return ElementBuilderInterface<ElementInterface<T>>
-     * @psalm-suppress InvalidNullableReturnType
      */
     #[Override]
     public function getElementBuilder(): ElementBuilderInterface
@@ -167,7 +159,9 @@ class ArrayElementBuilder implements ElementBuilderInterface
             $this->element(StringElement::class);
         }
 
-        /** @psalm-suppress NullableReturnStatement */
+        assert($this->element !== null);
+
+        /** @var ElementBuilderInterface<ElementInterface<T>> */
         return $this->element;
     }
 
@@ -182,9 +176,10 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable(ElementBuilderInterface<StringElement>):void|null $configurator Callback for configure the inner element builder
      *
-     * @return ArrayElementBuilder<string>
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<string>
      */
-    public function string(?callable $configurator = null): ArrayElementBuilder
+    public function string(?callable $configurator = null): static
     {
         return $this->element(StringElement::class, $configurator);
     }
@@ -200,9 +195,10 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable(ElementBuilderInterface<IntegerElement>):void|null $configurator Callback for configure the inner element builder
      *
-     * @return ArrayElementBuilder<int>
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<int>
      */
-    public function integer(?callable $configurator = null): ArrayElementBuilder
+    public function integer(?callable $configurator = null): static
     {
         return $this->element(IntegerElement::class, $configurator);
     }
@@ -218,9 +214,10 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable(ElementBuilderInterface<FloatElement>):void|null $configurator Callback for configure the inner element builder
      *
-     * @return ArrayElementBuilder<float>
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<float>
      */
-    public function float(?callable $configurator = null): ArrayElementBuilder
+    public function float(?callable $configurator = null): static
     {
         return $this->element(FloatElement::class, $configurator);
     }
@@ -234,9 +231,10 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable(ElementBuilderInterface<BooleanElement>):void|null $configurator Callback for configure the inner element builder
      *
-     * @return ArrayElementBuilder<bool>
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<bool>
      */
-    public function boolean(?callable $configurator = null): ArrayElementBuilder
+    public function boolean(?callable $configurator = null): static
     {
         return $this->element(BooleanElement::class, $configurator);
     }
@@ -252,9 +250,10 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable(ElementBuilderInterface<ElementInterface<\DateTimeInterface>>):void|null $configurator Callback for configure the inner element builder
      *
-     * @return ArrayElementBuilder<\DateTimeInterface>
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<\DateTimeInterface>
      */
-    public function dateTime(?callable $configurator = null): ArrayElementBuilder
+    public function dateTime(?callable $configurator = null): static
     {
         return $this->element(DateTimeElement::class, $configurator);
     }
@@ -270,9 +269,10 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable(ElementBuilderInterface<ElementInterface<\libphonenumber\PhoneNumber>>):void|null $configurator Callback for configure the inner element builder
      *
-     * @return ArrayElementBuilder<\libphonenumber\PhoneNumber>
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<\libphonenumber\PhoneNumber>
      */
-    public function phone(?callable $configurator = null): ArrayElementBuilder
+    public function phone(?callable $configurator = null): static
     {
         return $this->element(PhoneElement::class, $configurator);
     }
@@ -291,9 +291,10 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @param callable|null $configurator Configure the embedded form
      *
-     * @return ArrayElementBuilder<mixed>
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<mixed>
      */
-    public function form(?callable $configurator = null): ArrayElementBuilder
+    public function form(?callable $configurator = null): static
     {
         return $this->element(Form::class, $configurator);
     }
@@ -314,7 +315,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @see Count For the list of options
      */
-    public function count(?int $exactly = null, ?int $min = null, ?int $max = null, ?string $exactMessage = null, ?string  $minMessage = null, ?string $maxMessage = null): ArrayElementBuilder
+    public function count(?int $exactly = null, ?int $min = null, ?int $max = null, ?string $exactMessage = null, ?string  $minMessage = null, ?string $maxMessage = null): static
     {
         return $this->arrayConstraint(
             new Count(
@@ -333,7 +334,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      *
      * @return $this
      */
-    final public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null)
+    final public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null): static
     {
         if (!$message instanceof Constraint) {
             $message = new NotBlank(
@@ -354,7 +355,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * @param non-negative-int $min
      * @param positive-int $max
      */
-    final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): self
+    final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): static
     {
         $builder = new class {
             use ChoiceBuilderTrait {
@@ -364,7 +365,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
             public ChoiceConstraint $constraint;
 
             #[Override]
-            public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
+            public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static
             {
                 assert($constraint instanceof ChoiceConstraint);
                 $this->constraint = $constraint;
@@ -396,7 +397,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * @return ArrayElement<T>
      */
     #[Override]
-    public function buildElement(): ElementInterface
+    public function buildElement(): ArrayElement
     {
         $element = new ArrayElement(
             $this->getElementBuilder()->buildElement(),

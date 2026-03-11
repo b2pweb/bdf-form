@@ -34,21 +34,17 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
     /**
      * @var ChildInterface[]
      */
-    private $children = [];
+    private array $children = [];
 
     /**
      * The first level of dependencies
-     *
-     * @var Level
      */
-    private $root;
+    private Level $root;
 
     /**
      * The last level of dependencies
-     *
-     * @var Level
      */
-    private $last;
+    private Level $last;
 
     /**
      * Get the level of each elements
@@ -56,8 +52,7 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
      *
      * @var int[]
      */
-    private $depth = [];
-
+    private array $depth = [];
 
     /**
      * DependencyTree constructor.
@@ -106,25 +101,25 @@ final class DependencyTree implements \ArrayAccess, \IteratorAggregate, \Countab
     }
 
     #[Override]
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->has($offset);
     }
 
     #[Override]
-    public function offsetGet($offset): ChildInterface
+    public function offsetGet(mixed $offset): ChildInterface
     {
         return $this->children[$offset];
     }
 
     #[Override]
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->add($value);
     }
 
     #[Override]
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         $this->remove($offset);
     }

@@ -8,21 +8,16 @@ use Override;
 /**
  * Null object for form transformer
  */
-final class NullTransformer implements TransformerInterface
+final readonly class NullTransformer implements TransformerInterface
 {
-    /**
-     * @var NullTransformer|null
-     */
-    private static $instance;
-
     #[Override]
-    public function transformToHttp($value, ElementInterface $input)
+    public function transformToHttp(mixed $value, ElementInterface $input): mixed
     {
         return $value;
     }
 
     #[Override]
-    public function transformFromHttp($value, ElementInterface $input)
+    public function transformFromHttp(mixed $value, ElementInterface $input): mixed
     {
         return $value;
     }
@@ -34,10 +29,8 @@ final class NullTransformer implements TransformerInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
+        static $instance = new self();
 
-        return self::$instance = new self();
+        return $instance;
     }
 }

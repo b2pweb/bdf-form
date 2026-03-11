@@ -33,25 +33,22 @@ class CustomFormBuilder implements ElementBuilderInterface
 {
     use DelegateElementBuilderTrait;
 
-    /**
-     * @var FormBuilderInterface
-     */
-    private $builder;
+    private readonly FormBuilderInterface $builder;
 
     /**
      * @var class-string<CustomForm>|callable(FormBuilderInterface):CustomForm
      */
-    private $formFactory;
+    private readonly mixed $formFactory;
 
     /**
      * @var list<callable(CustomForm, FormBuilderInterface): void>
      */
-    private $preConfigureHooks = [];
+    private array $preConfigureHooks = [];
 
     /**
      * @var list<callable(CustomForm, FormInterface): void>
      */
-    private $postConfigureHooks = [];
+    private array $postConfigureHooks = [];
 
 
     /**

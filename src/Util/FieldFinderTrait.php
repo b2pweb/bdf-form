@@ -68,7 +68,7 @@ trait FieldFinderTrait
      *
      * @see FieldPath::parse() For the path syntax
      */
-    public function findFieldValue(string $path)
+    public function findFieldValue(string $path): mixed
     {
         return $this->fieldPath($path)->value($this);
     }

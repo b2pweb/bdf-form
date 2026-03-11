@@ -19,14 +19,14 @@ final class LazyChoice implements ChoiceInterface
      *
      * @var callable():(T[]|ChoiceInterface<T>)
      */
-    private $resolver;
+    private readonly mixed $resolver;
 
     /**
      * The choice object
      *
      * @var ChoiceInterface<T>|null
      */
-    private $choices;
+    private ?ChoiceInterface $choices = null;
 
     /**
      * LazyChoice constructor.

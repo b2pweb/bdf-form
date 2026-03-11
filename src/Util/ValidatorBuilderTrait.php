@@ -11,6 +11,7 @@ use Bdf\Form\Validator\ValueValidatorInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+use function array_unshift;
 use function is_callable;
 
 /**
@@ -23,17 +24,13 @@ trait ValidatorBuilderTrait
     /**
      * @var array<Constraint>
      */
-    private $constraints = [];
+    private array $constraints = [];
+    private ?TransformerExceptionConstraint $transformerExceptionConstraint = null;
 
     /**
-     * @var TransformerExceptionConstraint|null
+     * @var array<callable(RegistryInterface):(Constraint[])>
      */
-    private $transformerExceptionConstraint;
-
-    /**
-     * @var array<callable(RegistryInterface):Constraint[]>
-     */
-    private $constraintsProviders = [];
+    private array $constraintsProviders = [];
 
     /**
      * Mark this input as required
@@ -57,7 +54,7 @@ trait ValidatorBuilderTrait
      *
      * @see NotBlank The used constraint
      */
-    public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null)
+    public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null): static
     {
         if (!$message instanceof Constraint) {
             $message = new NotBlank(message: $message, allowNull: $allowNull, normalizer: $normalizer);
@@ -71,7 +68,7 @@ trait ValidatorBuilderTrait
      *
      * @see ElementBuilderInterface::satisfy()
      */
-    final public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true)
+    final public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static
     {
         if (is_callable($constraint)) {
             $constraint = new Closure($constraint, $message);
@@ -96,7 +93,7 @@ trait ValidatorBuilderTrait
      *
      * @see TransformerExceptionConstraint::$ignoreException
      */
-    final public function ignoreTransformerException(bool $flag = true)
+    final public function ignoreTransformerException(bool $flag = true): static
     {
         $this->getTransformerExceptionConstraint()->ignoreException = $flag;
 
@@ -111,7 +108,7 @@ trait ValidatorBuilderTrait
      *
      * @see TransformerExceptionConstraint::$message
      */
-    final public function transformerErrorMessage(string $message)
+    final public function transformerErrorMessage(string $message): static
     {
         $this->getTransformerExceptionConstraint()->message = $message;
 
@@ -126,7 +123,7 @@ trait ValidatorBuilderTrait
      *
      * @see TransformerExceptionConstraint::$code
      */
-    final public function transformerErrorCode(string $code)
+    final public function transformerErrorCode(string $code): static
     {
         $this->getTransformerExceptionConstraint()->code = $code;
 
@@ -164,7 +161,7 @@ trait ValidatorBuilderTrait
      *
      * @see TransformerExceptionConstraint::$code
      */
-    final public function transformerExceptionValidation(callable $validationCallback)
+    final public function transformerExceptionValidation(callable $validationCallback): static
     {
         $this->getTransformerExceptionConstraint()->validationCallback = $validationCallback;
 
@@ -185,7 +182,7 @@ trait ValidatorBuilderTrait
      * });
      * </code>
      *
-     * @param callable(RegistryInterface):Constraint[] $constraintsProvider
+     * @param callable(RegistryInterface):(Constraint[]) $constraintsProvider
      */
     final protected function addConstraintsProvider(callable $constraintsProvider): void
     {
