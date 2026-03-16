@@ -12,6 +12,7 @@ use Bdf\Form\RootElementInterface;
 use Bdf\Form\Util\RootFlagsTrait;
 use Bdf\Form\View\ElementViewInterface;
 use OutOfBoundsException;
+use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraint;
@@ -26,160 +27,114 @@ final class LeafRootElement implements RootElementInterface
 {
     use RootFlagsTrait;
 
-    /**
-     * @var ElementInterface
-     */
-    private $element;
+    public function __construct(
+        private readonly ElementInterface $element,
+    ) {}
 
-
-    /**
-     * LeafRootElement constructor.
-     *
-     * @param ElementInterface $element
-     */
-    public function __construct(ElementInterface $element)
-    {
-        $this->element = $element;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function submit($data): ElementInterface
+    #[Override]
+    public function submit(mixed $data): static
     {
         $this->element->submit($data);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function patch($data): ElementInterface
+    #[Override]
+    public function patch(mixed $data): static
     {
         $this->element->patch($data);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function import($entity): ElementInterface
+    #[Override]
+    public function import(mixed $entity): static
     {
         $this->element->import($entity);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function value()
+    #[Override]
+    public function value(): mixed
     {
         return $this->element->value();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function httpValue()
+    #[Override]
+    public function httpValue(): mixed
     {
         return $this->element->httpValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->element->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         // Do not use $this->element->failed() because it may be not implemented
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $this->element->error($field);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function container(): ?ChildInterface
     {
         return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function setContainer(ChildInterface $container): ElementInterface
     {
         throw new BadMethodCallException('Cannot set a container on a root element');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         return $this->element->view($field);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submitButton(): ?ButtonInterface
     {
         return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function button(string $name): ButtonInterface
     {
         throw new OutOfBoundsException('A leaf element do not have any buttons');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getValidator(): ValidatorInterface
     {
-        return (new ValidatorBuilder())->getValidator();
+        return new ValidatorBuilder()->getValidator();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getPropertyAccessor(): PropertyAccessorInterface
     {
         return new PropertyAccessor();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function constraintGroups(): array
     {
         return [Constraint::DEFAULT_GROUP];

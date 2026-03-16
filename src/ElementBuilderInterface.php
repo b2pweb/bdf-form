@@ -22,17 +22,12 @@ interface ElementBuilderInterface
      *
      * Prototypes:
      *   function satisfy(Constraint $constraint, null, bool $append = true) - Add a constraint object. The 2nd parameter is ignored
-     *   function satisfy(string $constraintClassName, ?array $options = null, bool $append = true) - Equivalent to satisfy(new $constraintClassName($options), null, $append)
-     *   function satisfy(string $constraintClassName, ?string $errorMessage = null, bool $append = true) - Equivalent to satisfy(new $constraintClassName(['message' => $errorMessage]), null, $append)
-     *   function satisfy(callable $inlineConstraint, null, bool $append = true) - Create a new constraint using a callback. The 2nd parameter is ignored
+     *   function satisfy(callable $inlineConstraint, ?string $message = null, bool $append = true) - Create a new constraint using a callback. The 2nd parameter is the error message
      *
      * Usage:
      * <code>
      * $builder->satisfy(new MyConstraint()); // Add a constraint
      * $builder->satisfy(new MyConstraint(), null, false); // Prepend the constraint (it will be validated first)
-     * $builder->satisfy(MyConstraint::class); // Use class name (will be used by the registry to make the constraint)
-     * $builder->satisfy(MyConstraint::class, ['foo' => 'bar']); // Same as above, but with options
-     * $builder->satisfy(MyConstraint::class, 'my error'); // Same as above, but with the option "message" defined to "my error"
      *
      * // Register a custom constraint
      * // Take the value as first parameter, and the input element as second
@@ -53,14 +48,14 @@ interface ElementBuilderInterface
      * // You can also return a simple boolean
      * $builder->satisfy(function ($value, ElementInterface $input) {
      *     return is_valid($value);
-     * });
+     * }, 'my error');
      *
      * // Use method reference also works, but the method must be public
      * $builder->satisfy([$this, 'checkElement']);
      * </code>
      *
-     * @param Constraint|string|callable $constraint The constraint
-     * @param array|string|null $options Constraint options if a class name is given as first parameter. If a string is given, it will be used as message option
+     * @param Constraint|callable $constraint The constraint
+     * @param string|null $message The error message if the first parameter is a callable.
      * @param bool $append Append the validator. Prepend if false
      *
      * @return $this
@@ -68,7 +63,7 @@ interface ElementBuilderInterface
      * @see RegistryInterface::constraint() For make the constraint
      * @see Closure When use callback as first parameter
      */
-    public function satisfy($constraint, $options = null, bool $append = true);
+    public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static;
 
     /**
      * Add a view transformer
@@ -95,14 +90,14 @@ interface ElementBuilderInterface
      * });
      * </code>
      *
-     * @param callable|TransformerInterface|DataTransformerInterface $transformer The transformer. Symfony transformer can be used
+     * @param callable|TransformerInterface $transformer The transformer.
      * @param bool $append Append the transformer. Prepend if false
      *
      * @return $this
      *
      * @see TransformerInterface
      */
-    public function transformer($transformer, bool $append = true);
+    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static;
 
     /**
      * Define the initial value of the element
@@ -117,7 +112,7 @@ interface ElementBuilderInterface
      *
      * @see ChildBuilderInterface::default() For setting the default value
      */
-    public function value($value);
+    public function value(mixed $value): static;
 
     /**
      * Build the element

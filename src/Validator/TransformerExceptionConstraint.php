@@ -5,10 +5,6 @@ namespace Bdf\Form\Validator;
 use Exception;
 use Symfony\Component\Validator\Constraint;
 
-use function is_array;
-use function sprintf;
-use function trigger_error;
-
 /**
  * @internal
  */
@@ -17,28 +13,27 @@ final class TransformerExceptionConstraint extends Constraint
     const TRANSFORM_ERROR = 'b5acab45-80b0-4808-8784-6577e37ac869';
 
     protected const ERROR_NAMES = [self::TRANSFORM_ERROR => 'TRANSFORM_ERROR'];
-    protected static $errorNames = self::ERROR_NAMES;
 
     /**
      * The error message. If null, the exception's message will be taken
      *
      * @var string|null
      */
-    public $message = null;
+    public ?string $message = null;
 
     /**
      * The error code
      *
      * @var string
      */
-    public $code = self::TRANSFORM_ERROR;
+    public string $code = self::TRANSFORM_ERROR;
 
     /**
      * The transformer exception
      *
-     * @var Exception
+     * @var Exception|null
      */
-    public $exception;
+    public ?Exception $exception = null;
 
     /**
      * Use to validate the exception
@@ -48,7 +43,7 @@ final class TransformerExceptionConstraint extends Constraint
      *
      * @var callable(mixed,TransformerExceptionConstraint,\Bdf\Form\ElementInterface):bool|null
      */
-    public $validationCallback;
+    public mixed $validationCallback = null;
 
     /**
      * Does the transformation error should be ignored ?
@@ -56,31 +51,17 @@ final class TransformerExceptionConstraint extends Constraint
      *
      * @var bool
      */
-    public $ignoreException = false;
+    public bool $ignoreException = false;
 
-    public function __construct($exception = null, ?string $message = null, ?string $code = null, ?callable $validationCallback = null, ?bool $ignoreException = null)
+    public function __construct(?Exception $exception = null, ?string $message = null, ?string $code = null, ?callable $validationCallback = null, ?bool $ignoreException = null)
     {
-        if (is_array($exception)) {
-            @trigger_error(sprintf('Passing an array of options to %s is deprecated since 1.7 and will not be supported in 2.0. Use named parameters instead.', __METHOD__), E_USER_DEPRECATED);
-
-            $options = $exception;
-        }
-
-        parent::__construct($options ?? null);
+        parent::__construct();
 
         $this->exception = $exception ?? $this->exception;
         $this->message = $message ?? $this->message;
         $this->code = $code ?? $this->code;
         $this->validationCallback = $validationCallback ?? $this->validationCallback;
         $this->ignoreException = $ignoreException ?? $this->ignoreException;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getDefaultOption(): ?string
-    {
-        return 'exception';
     }
 
     /**

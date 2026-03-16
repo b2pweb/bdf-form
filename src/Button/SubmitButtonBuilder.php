@@ -3,6 +3,7 @@
 namespace Bdf\Form\Button;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
+use Override;
 
 /**
  * Builder for a submit button
@@ -20,25 +21,22 @@ use Bdf\Form\Aggregate\FormBuilderInterface;
  */
 final class SubmitButtonBuilder implements ButtonBuilderInterface
 {
-    /**
-     * @var string
-     */
-    private $name;
+    private readonly string $name;
 
     /**
      * @var class-string<ButtonInterface>
      */
-    private $buttonClass;
+    private string $buttonClass;
 
     /**
      * @var string
      */
-    private $value = 'ok';
+    private string $value = 'ok';
 
     /**
-     * @var array
+     * @var string[]
      */
-    private $groups = [];
+    private array $groups = [];
 
 
     /**
@@ -53,29 +51,23 @@ final class SubmitButtonBuilder implements ButtonBuilderInterface
         $this->buttonClass = $buttonClass;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function value(string $value): ButtonBuilderInterface
+    #[Override]
+    public function value(string $value): static
     {
         $this->value = $value;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function groups(array $groups): ButtonBuilderInterface
+    #[Override]
+    public function groups(array $groups): static
     {
         $this->groups = $groups;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function buildButton(): ButtonInterface
     {
         return new $this->buttonClass($this->name, $this->value, $this->groups);

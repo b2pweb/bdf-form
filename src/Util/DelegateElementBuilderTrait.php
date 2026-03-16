@@ -3,6 +3,8 @@
 namespace Bdf\Form\Util;
 
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Transformer\TransformerInterface;
+use Symfony\Component\Validator\Constraint;
 
 /**
  * Simple implementation of delegated element builder
@@ -16,9 +18,9 @@ trait DelegateElementBuilderTrait
     /**
      * {@inheritdoc}
      */
-    final public function satisfy($constraint, $options = null, bool $append = true)
+    final public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static
     {
-        $this->getElementBuilder()->satisfy($constraint, $options, $append);
+        $this->getElementBuilder()->satisfy($constraint, $message, $append);
 
         return $this;
     }
@@ -26,7 +28,7 @@ trait DelegateElementBuilderTrait
     /**
      * {@inheritdoc}
      */
-    final public function transformer($transformer, bool $append = true)
+    final public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
     {
         $this->getElementBuilder()->transformer($transformer, $append);
 
@@ -36,7 +38,7 @@ trait DelegateElementBuilderTrait
     /**
      * {@inheritdoc}
      */
-    final public function value($value)
+    final public function value(mixed $value): static
     {
         $this->getElementBuilder()->value($value);
 

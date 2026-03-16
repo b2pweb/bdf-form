@@ -18,6 +18,7 @@ use Bdf\Form\Validator\TransformerExceptionConstraint;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Validator\Constraints\LessThan;
@@ -178,7 +179,7 @@ class DateTimeElementTest extends TestCase
         $element = new DateTimeElement(
             new ConstraintValueValidator(
                 [new Closure(function () { return 'validation error'; })],
-                new TransformerExceptionConstraint(['ignoreException' => true])
+                new TransformerExceptionConstraint(ignoreException: true)
             ),
             $transformer
         );
@@ -346,9 +347,7 @@ class DateTimeElementTest extends TestCase
         $element->import(new DateTime('2000-01-05 15:00:00'));
     }
 
-    /**
-     * @dataProvider provideInvalidValue
-     */
+    #[DataProvider('provideInvalidValue')]
     public function test_import_invalid($value)
     {
         $this->expectException(\TypeError::class);
@@ -361,7 +360,7 @@ class DateTimeElementTest extends TestCase
     /**
      *
      */
-    public function provideInvalidValue()
+    public static function provideInvalidValue()
     {
         return [
             [[]],

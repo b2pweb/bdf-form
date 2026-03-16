@@ -9,7 +9,6 @@ use Bdf\Form\Aggregate\Value\ValueGeneratorInterface;
 use Bdf\Form\Aggregate\View\FormView;
 use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
-use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Transformer\NullTransformer;
@@ -17,9 +16,11 @@ use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\ContainerTrait;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
-use Bdf\Form\View\ElementViewInterface;
 use Exception;
 use Iterator;
+use Override;
+
+use function assert;
 
 /**
  * The base form element
@@ -46,7 +47,7 @@ use Iterator;
  * $entity = $form->attach($entity)->value();
  * </code>
  *
- * @template T
+ * @template T as array|object
  * @implements FormInterface<T>
  */
 final class Form implements FormInterface
@@ -56,24 +57,24 @@ final class Form implements FormInterface
     /**
      * @var ValueValidatorInterface<T>
      */
-    private $validator;
+    private readonly ValueValidatorInterface $validator;
 
     /**
      * Transformer to view value
      *
      * @var TransformerInterface
      */
-    private $transformer;
+    private readonly TransformerInterface $transformer;
 
     /**
      * @var ChildrenCollectionInterface
      */
-    private $children;
+    private readonly ChildrenCollectionInterface $children;
 
     /**
      * @var ValueGeneratorInterface<T>
      */
-    private $generator;
+    private readonly ValueGeneratorInterface $generator;
 
     /**
      * Does the form is optional ?
@@ -81,22 +82,10 @@ final class Form implements FormInterface
      *
      * @var bool
      */
-    private $optional;
-
-    /**
-     * @var RootElementInterface|null
-     */
-    private $root;
-
-    /**
-     * @var FormError
-     */
-    private $error;
-
-    /**
-     * @var bool
-     */
-    private $valid = false;
+    private readonly bool $optional;
+    private ?RootElementInterface $root = null;
+    private FormError $error;
+    private bool $valid = false;
 
     /**
      * The generated value
@@ -104,7 +93,7 @@ final class Form implements FormInterface
      *
      * @var T|null
      */
-    private $value;
+    private array|object|null $value = null;
 
     /**
      * Does the form has been submitted ?
@@ -112,7 +101,7 @@ final class Form implements FormInterface
      *
      * @var bool
      */
-    private $submitted = false;
+    private bool $submitted = false;
 
     /**
      * Form constructor.
@@ -127,17 +116,15 @@ final class Form implements FormInterface
     {
         $this->children = $children->duplicate($this);
         $this->validator = $validator ?? ConstraintValueValidator::empty();
-        $this->transformer = $transformer ?: NullTransformer::instance();
+        $this->transformer = $transformer ?? NullTransformer::instance();
         $this->error = FormError::null();
         /** @var ValueGeneratorInterface<T> */
-        $this->generator = $generator ?: new ValueGenerator();
+        $this->generator = $generator ?? new ValueGenerator();
         $this->optional = $optional;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submit($data): ElementInterface
+    #[Override]
+    public function submit(mixed $data): static
     {
         $this->valid = true;
         $this->value = null;
@@ -154,10 +141,8 @@ final class Form implements FormInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function patch($data): ElementInterface
+    #[Override]
+    public function patch(mixed $data): static
     {
         $this->valid = true;
         $this->value = null;
@@ -176,39 +161,28 @@ final class Form implements FormInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->valid;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         return !$this->valid;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $field ? $this->error->withField($field) : $this->error;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param T|null $entity
-     * @return $this
-     */
-    public function import($entity): ElementInterface
+    #[Override]
+    public function import(mixed $entity): static
     {
-        if ($entity) {
+        if ($entity !== null && $entity !== []) {
             $this->generator->attach($entity);
         }
 
@@ -223,10 +197,9 @@ final class Form implements FormInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @return T
      */
-    public function value()
+    #[Override]
+    public function value(): array|object|null
     {
         if ($this->value !== null) {
             return $this->value;
@@ -236,19 +209,18 @@ final class Form implements FormInterface
             return null;
         }
 
-        $this->value = $this->generator->generate($this);
+        $value = $this->generator->generate($this);
 
         foreach ($this->children->reverseIterator() as $child) {
-            $child->fill($this->value);
+            $child->fill($value);
         }
 
-        return $this->value;
+        /** @var T $value */
+        return $this->value = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function httpValue()
+    #[Override]
+    public function httpValue(): mixed
     {
         $http = [];
 
@@ -259,9 +231,7 @@ final class Form implements FormInterface
         return $this->transformer->transformToHttp($http, $this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         if ($container = $this->container()) {
@@ -275,12 +245,8 @@ final class Form implements FormInterface
         return $this->root = new RootForm($this);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return FormView
-     */
-    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    #[Override]
+    public function view(?HttpFieldPath $field = null): FormView
     {
         $elements = [];
 
@@ -291,57 +257,43 @@ final class Form implements FormInterface
         return new FormView(self::class, $this->error->global(), $elements);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getIterator(): Iterator
     {
         return $this->children->forwardIterator();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset): bool
+    #[Override]
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->children[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset): ChildInterface
+    #[Override]
+    public function offsetGet(mixed $offset): ChildInterface
     {
+        /** @var ChildInterface */
         return $this->children[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value): void
+    #[Override]
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new BadMethodCallException(__CLASS__.' is immutable');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($offset): void
+    #[Override]
+    public function offsetUnset(mixed $offset): void
     {
         throw new BadMethodCallException(__CLASS__.' is immutable');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __clone()
     {
         $this->children = $this->children->duplicate($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function attach($entity): FormInterface
     {
         $this->generator->attach($entity);
@@ -370,7 +322,7 @@ final class Form implements FormInterface
      *
      * @return mixed The transformed value
      */
-    private function transformHttpValue($data)
+    private function transformHttpValue(mixed $data): mixed
     {
         try {
             $data = $this->transformer->transformFromHttp($data, $this);
@@ -395,7 +347,7 @@ final class Form implements FormInterface
      * @param mixed $data Data to submit
      * @param string $method The submit method to call. Should be "submit" or "patch"
      */
-    private function submitToChildrenAndValidate($data, string $method): void
+    private function submitToChildrenAndValidate(mixed $data, string $method): void
     {
         if (!$this->submitToChildren($data, $method)) {
             return;
@@ -418,7 +370,7 @@ final class Form implements FormInterface
      *
      * @return bool false on fail, or true on success
      */
-    private function submitToChildren($data, string $method): bool
+    private function submitToChildren(mixed $data, string $method): bool
     {
         if (!$this->valid) {
             return false;
@@ -450,7 +402,7 @@ final class Form implements FormInterface
      *
      * @return bool true if the form is optional and not submitted, false otherwise
      */
-    private function handleOptional($data): bool
+    private function handleOptional(mixed $data): bool
     {
         if (!$this->optional || $data !== null && $data !== [] && $data !== '') {
             return false;

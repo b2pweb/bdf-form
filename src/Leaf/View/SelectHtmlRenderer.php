@@ -6,6 +6,7 @@ use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\HtmlRenderer;
 use InvalidArgumentException;
+use Override;
 
 /**
  * Renderer for select element
@@ -15,17 +16,14 @@ use InvalidArgumentException;
  */
 final class SelectHtmlRenderer implements FieldViewRendererInterface
 {
-    /**
-     * @var SelectHtmlRenderer|null
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
     {
-        if (!$choices = $view->choices()) {
+        $choices = $view->choices();
+
+        if ($choices === null || $choices === []) {
             throw new InvalidArgumentException('Choices must be provided for render a select element.');
         }
 
@@ -52,10 +50,6 @@ final class SelectHtmlRenderer implements FieldViewRendererInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

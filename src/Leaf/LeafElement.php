@@ -16,9 +16,9 @@ use Bdf\Form\Util\ContainerTrait;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Bdf\Form\View\ConstraintsNormalizer;
-use Bdf\Form\View\ElementViewInterface;
 use Bdf\Form\View\FieldViewInterface;
 use Exception;
+use Override;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
@@ -36,34 +36,24 @@ abstract class LeafElement implements ElementInterface, Choiceable
     /**
      * @var ValueValidatorInterface<T>
      */
-    private $validator;
+    private readonly ValueValidatorInterface $validator;
 
     /**
      * Transformer to view value
-     *
-     * @var TransformerInterface
      */
-    private $transformer;
+    private readonly TransformerInterface $transformer;
 
     /**
      * @var ChoiceInterface<T>|null
      */
-    private $choices;
+    private ?ChoiceInterface $choices;
 
     /**
      * @var T|null
      */
-    private $value = null;
-
-    /**
-     * @var FormError
-     */
-    private $error;
-
-    /**
-     * @var bool
-     */
-    private $submitted = false;
+    private mixed $value = null;
+    private FormError $error;
+    private bool $submitted = false;
 
 
     /**
@@ -81,10 +71,8 @@ abstract class LeafElement implements ElementInterface, Choiceable
         $this->choices = $choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function submit($data): ElementInterface
+    #[Override]
+    final public function submit(mixed $data): static
     {
         $shouldBeValidated = true;
 
@@ -105,10 +93,8 @@ abstract class LeafElement implements ElementInterface, Choiceable
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function patch($data): ElementInterface
+    #[Override]
+    final public function patch(mixed $data): static
     {
         // A data is provided : simply submit the data
         if ($data !== null) {
@@ -122,52 +108,40 @@ abstract class LeafElement implements ElementInterface, Choiceable
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function valid(): bool
     {
         return $this->submitted && $this->error->empty();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function failed(): bool
     {
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function error(?HttpFieldPath $field = null): FormError
     {
         return $field ? $this->error->withField($field) : $this->error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function import($entity): ElementInterface
+    #[Override]
+    final public function import(mixed $entity): static
     {
         $this->value = $this->tryCast($entity);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function value()
+    #[Override]
+    final public function value(): mixed
     {
         return $this->value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function httpValue()
+    #[Override]
+    final public function httpValue(): mixed
     {
         try {
             return $this->transformer->transformToHttp($this->toHttp($this->value), $this);
@@ -176,9 +150,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function root(): RootElementInterface
     {
         if ($container = $this->container()) {
@@ -189,12 +161,8 @@ abstract class LeafElement implements ElementInterface, Choiceable
         return new LeafRootElement($this);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return FieldViewInterface
-     */
-    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    #[Override]
+    public function view(?HttpFieldPath $field = null): FieldViewInterface
     {
         [$required, $normalizedConstraints] = $this->parseConstraints($this->validator);
 
@@ -209,9 +177,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function choices(): ?ChoiceInterface
     {
         return $this->choices;
@@ -224,7 +190,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
      *
      * @return T|null
      */
-    abstract protected function toPhp($httpValue);
+    abstract protected function toPhp(mixed $httpValue)/*: mixed*/;
 
     /**
      * Transform the PHP value to the HTTP representation
@@ -233,7 +199,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
      *
      * @return mixed
      */
-    abstract protected function toHttp($phpValue);
+    abstract protected function toHttp(mixed $phpValue)/*: mixed*/;
 
     /**
      * Try to convert the value into the element type
@@ -247,7 +213,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
      *
      * @see LeafElement::import()
      */
-    protected function tryCast($value)
+    protected function tryCast(mixed $value)/*: mixed*/
     {
         return $value;
     }
@@ -256,10 +222,9 @@ abstract class LeafElement implements ElementInterface, Choiceable
      * Sanitize the raw HTTP value
      *
      * @param mixed $rawValue The raw HTTP value
-     *
-     * @return string|null
+     * @return mixed
      */
-    protected function sanitize($rawValue)
+    protected function sanitize(mixed $rawValue)/*: mixed*/
     {
         if (is_scalar($rawValue)) {
             return (string) $rawValue;
@@ -277,11 +242,7 @@ abstract class LeafElement implements ElementInterface, Choiceable
      */
     protected function choiceView(): ?array
     {
-        if ($this->choices === null) {
-            return null;
-        }
-
-        return $this->choices->view(function (ChoiceView $view) {
+        return $this->choices?->view(function (ChoiceView $view) {
             $view->setSelected($view->value() == $this->value());
             $view->setValue($this->transformer->transformToHttp($this->toHttp($view->value()), $this));
         });

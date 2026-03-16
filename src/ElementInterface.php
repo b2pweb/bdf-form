@@ -20,8 +20,6 @@ use Bdf\Form\View\ElementViewInterface;
  * </code>
  *
  * @template T
- *
- * @method bool failed()
  */
 interface ElementInterface
 {
@@ -47,7 +45,7 @@ interface ElementInterface
      * @see ElementInterface::valid() For validates the element after submition
      * @see ElementInterface::patch() For submit value without overrides previous ones
      */
-    public function submit($data): self;
+    public function submit(mixed $data): static;
 
     /**
      * Submit HTTP data without override previous ones
@@ -70,7 +68,7 @@ interface ElementInterface
      *
      * @see ElementInterface::submit() For submit data with override old values
      */
-    public function patch($data): self;
+    public function patch(mixed $data): static;
 
     /**
      * Set the PHP value of the element
@@ -89,7 +87,7 @@ interface ElementInterface
      *
      * @see ElementInterface::submit() For import HTTP data
      */
-    public function import($entity): self;
+    public function import(mixed $entity): static;
 
     /**
      * Get the element's value
@@ -100,7 +98,7 @@ interface ElementInterface
      *
      * @see ElementInterface::httpValue() For get the raw HTTP value
      */
-    public function value();
+    public function value(): mixed;
 
     /**
      * Get the raw HTTP value
@@ -112,7 +110,7 @@ interface ElementInterface
      *
      * @see ElementInterface::value() For get the PHP value
      */
-    public function httpValue();
+    public function httpValue(): mixed;
 
     /**
      * Validates the element value
@@ -138,9 +136,8 @@ interface ElementInterface
      *
      * @see ElementInterface::error() To get error
      * @since 1.5
-     * @todo uncomment in 2.0
      */
-    //public function failed(): bool;
+    public function failed(): bool;
 
     /**
      * Get the errors related to the element

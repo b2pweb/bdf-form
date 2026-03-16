@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <psalm
-    errorLevel="3"
+    errorLevel="2"
     resolveFromConfigFile="true"
     findUnusedBaselineEntry="false"
     findUnusedCode="false"
@@ -15,4 +15,11 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <ClassMustBeFinal errorLevel="suppress" />
+        <DocblockTypeContradiction errorLevel="suppress" />
+        <RedundantConditionGivenDocblockType errorLevel="suppress" />
+        <RedundantCastGivenDocblockType errorLevel="suppress" />
+    </issueHandlers>
 </psalm>

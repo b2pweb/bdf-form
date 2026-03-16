@@ -5,6 +5,7 @@ namespace Bdf\Form\Validator;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Error\FormError;
 use Exception;
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -14,22 +15,17 @@ use Symfony\Component\Validator\Constraint;
  * @template T
  * @implements ValueValidatorInterface<T>
  */
-final class ConstraintValueValidator implements ValueValidatorInterface
+final readonly class ConstraintValueValidator implements ValueValidatorInterface
 {
-    /**
-     * @var self
-     */
-    private static $emptyInstance;
-
     /**
      * @var Constraint[]
      */
-    private $constraints;
+    private array $constraints;
 
     /**
      * @var TransformerExceptionConstraint
      */
-    private $transformerExceptionConstraint;
+    private TransformerExceptionConstraint $transformerExceptionConstraint;
 
 
     /**
@@ -44,9 +40,7 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         $this->transformerExceptionConstraint = $transformerExceptionConstraint ?? new TransformerExceptionConstraint();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function validate($value, ElementInterface $element): FormError
     {
         if (!$this->constraints) {
@@ -71,9 +65,7 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         return FormError::null();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onTransformerException(Exception $exception, $value, ElementInterface $element): FormError
     {
         if ($this->transformerExceptionConstraint->ignoreException) {
@@ -95,20 +87,16 @@ final class ConstraintValueValidator implements ValueValidatorInterface
         return FormError::null();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function constraints(): array
     {
         return $this->constraints;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function hasConstraints(): bool
     {
-        return !empty($this->constraints);
+        return $this->constraints !== [];
     }
 
     /**
@@ -118,10 +106,8 @@ final class ConstraintValueValidator implements ValueValidatorInterface
      */
     public static function empty(): self
     {
-        if (self::$emptyInstance) {
-            return self::$emptyInstance;
-        }
+        static $instance = new self();
 
-        return self::$emptyInstance = new self();
+        return $instance;
     }
 }

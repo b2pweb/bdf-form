@@ -10,22 +10,26 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
+use Override;
+
+use function assert;
+use function method_exists;
 
 /**
  * Transform a DateTime instance from a form element to a timestamp to a model
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class DateTimeToTimestampTransformer implements TransformerInterface
+final readonly class DateTimeToTimestampTransformer implements TransformerInterface
 {
     /**
      * @var class-string<DateTimeInterface>|null
      */
-    private $className;
+    private ?string $className;
 
     /**
      * @var DateTimeZone|null
      */
-    private $timezone;
+    private ?DateTimeZone $timezone;
 
 
     /**
@@ -40,13 +44,8 @@ final class DateTimeToTimestampTransformer implements TransformerInterface
         $this->timezone = $timezone;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @psalm-suppress UndefinedInterfaceMethod
-     * @psalm-suppress PossiblyUndefinedMethod
-     */
-    public function transformToHttp($value, ElementInterface $input): ?DateTimeInterface
+    #[Override]
+    public function transformToHttp(mixed $value, ElementInterface $input): ?DateTimeInterface
     {
         if ($value === null) {
             return null;
@@ -59,19 +58,20 @@ final class DateTimeToTimestampTransformer implements TransformerInterface
         $className = $this->className ?? ($input instanceof DateTimeElement ? $input->dateTimeClassName() : DateTime::class);
         $timezone = $this->timezone ?? ($input instanceof DateTimeElement ? $input->timezone() : null);
 
+        /** @psalm-suppress UnsafeInstantiation */
         /** @var DateTimeInterface $dateTime */
         $dateTime = new $className;
 
         if ($timezone) {
+            assert(method_exists($dateTime, 'setTimezone'));
             $dateTime = $dateTime->setTimezone($timezone);
         }
 
+        assert(method_exists($dateTime, 'setTimestamp'));
         return $dateTime->setTimestamp($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function transformFromHttp($value, ElementInterface $input): ?int
     {
         if (!$value instanceof DateTimeInterface) {

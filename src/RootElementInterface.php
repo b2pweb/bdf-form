@@ -12,9 +12,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  *
  * @see ElementInterface::root() To get the root instance
  *
- * @method void set(string $flag, mixed $value) Define a flag value
- * @method bool is(string $flag) Check if a flag is defined
- *
  * @extends ElementInterface<mixed>
  */
 interface RootElementInterface extends ElementInterface
@@ -94,7 +91,7 @@ interface RootElementInterface extends ElementInterface
      *
      * @return void
      */
-    //public function set(string $flag, bool $value): void;
+    public function set(string $flag, bool $value): void;
 
     /**
      * Check a flag value
@@ -104,5 +101,5 @@ interface RootElementInterface extends ElementInterface
      *
      * @return bool Flag value
      */
-    //public function is(string $flag): bool;
+    public function is(string $flag): bool;
 }

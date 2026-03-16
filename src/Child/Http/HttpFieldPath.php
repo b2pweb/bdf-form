@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Child\Http;
 
+use Override;
 use Stringable;
 
 /**
@@ -19,25 +20,10 @@ use Stringable;
  */
 final class HttpFieldPath implements Stringable
 {
-    /**
-     * @var HttpFieldPath|null
-     */
-    private static $empty;
-
-    /**
-     * @var string
-     */
-    private $root = '';
-
-    /**
-     * @var string
-     */
-    private $path = '';
-
-    /**
-     * @var string
-     */
-    private $prefix = '';
+    private static ?self $empty = null;
+    private string $root = '';
+    private string $path = '';
+    private string $prefix = '';
 
     /**
      * HttpFieldPath constructor.
@@ -93,6 +79,7 @@ final class HttpFieldPath implements Stringable
      */
     public function concat(HttpFieldPath $other): self
     {
+        // @todo use clone with + readonly when support of PHP < 8.5 will be dropped
         $newPath = clone $this;
 
         if ($other->root !== '') {
@@ -173,6 +160,7 @@ final class HttpFieldPath implements Stringable
      *
      * @return string
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->get();
@@ -185,11 +173,7 @@ final class HttpFieldPath implements Stringable
      */
     public static function empty(): HttpFieldPath
     {
-        if (self::$empty) {
-            return self::$empty;
-        }
-
-        return self::$empty = new HttpFieldPath();
+        return self::$empty ??= new HttpFieldPath();
     }
 
     /**

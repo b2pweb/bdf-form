@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+        php-versions: ['8.4', '8.5']
     name: PHP ${{ matrix.php-versions }}
 
     steps:
@@ -43,6 +43,43 @@ jobs:
     - name: Run test suite
       run: composer run-script tests
 
+  sf-compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sf-versions: ['6.4', '7.4', '8.0']
+    name: Symfony ${{ matrix.sf-versions }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set Timezone
+      uses: szenius/set-timezone@v1.0
+      with:
+        timezoneLinux: "Europe/Paris"
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.4
+        extensions: json, intl
+        ini-values: date.timezone=Europe/Paris
+    - name: Check PHP Version
+      run: php -v
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    # psalm 6 is not compatible with Symfony 6.4, so remove it
+    - name: Remove psalm
+      run: composer remove --dev vimeo/psalm
+
+    - name: Set Symfony version
+      run: composer require --dev "symfony/symfony:~${{ matrix.sf-versions }}.0"
+
+    - name: Run test suite
+      run: composer run-script tests
+
   analysis:
     name: Analysis
     runs-on: ubuntu-latest
@@ -58,14 +95,14 @@ jobs:
     - name: Install PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: 7.4
+        php-version: 8.4
         extensions: json
         ini-values: date.timezone=Europe/Paris
 
     - name: Install Infection
       run: |
-        wget https://github.com/infection/infection/releases/download/0.21.5/infection.phar
-        wget https://github.com/infection/infection/releases/download/0.21.5/infection.phar.asc
+        wget https://github.com/infection/infection/releases/download/0.32.6/infection.phar
+        wget https://github.com/infection/infection/releases/download/0.32.6/infection.phar.asc
         chmod +x infection.phar
         gpg --recv-keys C6D76C329EBADE2FB9C458CFC5095986493B4AA0
         gpg --with-fingerprint --verify infection.phar.asc infection.phar
@@ -83,7 +120,7 @@ jobs:
     - name: Run Infection
       run: |
         git fetch --depth=1 origin $GITHUB_BASE_REF
-        ./infection.phar --logger-github --git-diff-filter=AM --min-msi=80
+        ./infection.phar --logger-github --git-diff-base=origin/$GITHUB_BASE_REF --git-diff-filter=AM --min-msi=80
 
   coverage:
     name: Test coverage
@@ -100,7 +137,7 @@ jobs:
     - name: Install PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: 8.1
+        php-version: 8.4
         extensions: json
         ini-values: date.timezone=Europe/Paris
 

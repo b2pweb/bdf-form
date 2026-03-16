@@ -2,8 +2,12 @@
 
 namespace Bdf\Form\Leaf;
 
+use Override;
 use TypeError;
-use function Webmozart\Assert\Tests\StaticAnalysis\string;
+
+use function is_object;
+use function is_scalar;
+use function method_exists;
 
 /**
  * Element for a simple string field
@@ -14,12 +18,8 @@ use function Webmozart\Assert\Tests\StaticAnalysis\string;
  */
 class StringElement extends LeafElement
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @return string|null
-     */
-    protected function toPhp($httpValue): ?string
+    #[Override]
+    protected function toPhp(mixed $httpValue): ?string
     {
         if (!is_scalar($httpValue)) {
             return null;
@@ -28,20 +28,14 @@ class StringElement extends LeafElement
         return (string) $httpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function toHttp($phpValue): ?string
+    #[Override]
+    protected function toHttp(mixed $phpValue): ?string
     {
         return $phpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return string|null
-     */
-    protected function tryCast($value): ?string
+    #[Override]
+    protected function tryCast(mixed $value): ?string
     {
         if ($value === null) {
             return null;

@@ -3,69 +3,39 @@
 namespace Bdf\Form\Error;
 
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Override;
 
 /**
  * Format errors as a string
  */
 final class StringErrorPrinter implements FormErrorPrinterInterface
 {
-    /**
-     * @var string
-     */
-    private $lineSeparator = PHP_EOL;
+    private string $lineSeparator = PHP_EOL;
+    private string $indentString = '  ';
+    private string $nameSeparator = ' : ';
+    private int $maxDepth = PHP_INT_MAX;
+    private int $depth = 0;
+    private string $output = '';
 
-    /**
-     * @var string
-     */
-    private $indentString = '  ';
-
-    /**
-     * @var string
-     */
-    private $nameSeparator = ' : ';
-
-    /**
-     * @var int
-     */
-    private $maxDepth = PHP_INT_MAX;
-
-    /**
-     * @var integer
-     */
-    private $depth = 0;
-
-    /**
-     * @var string
-     */
-    private $output = '';
-
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function field(HttpFieldPath $field): void
     {
         // Ignore the field name
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function global(string $error): void
     {
         $this->output .= $error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function code(string $code): void
     {
         // Ignore code
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function child(string $name, FormError $error): void
     {
         if ($this->maxDepth <= $this->depth) {
@@ -83,10 +53,8 @@ final class StringErrorPrinter implements FormErrorPrinterInterface
         --$this->depth;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function print()
+    #[Override]
+    public function print(): string
     {
         return $this->output;
     }

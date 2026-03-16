@@ -11,6 +11,7 @@ use Bdf\Form\Leaf\View\SimpleElementView;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\Util\ContainerTrait;
 use Bdf\Form\View\ElementViewInterface;
+use Override;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -31,30 +32,11 @@ final class CsrfElement implements ElementInterface
 {
     use ContainerTrait;
 
-    /**
-     * @var string
-     */
-    private $tokenId;
-
-    /**
-     * @var CsrfValueValidator
-     */
-    private $validator;
-
-    /**
-     * @var CsrfTokenManagerInterface
-     */
-    private $tokenManager;
-
-    /**
-     * @var CsrfToken|null
-     */
-    private $value = null;
-
-    /**
-     * @var FormError
-     */
-    private $error;
+    private readonly string $tokenId;
+    private readonly CsrfValueValidator $validator;
+    private readonly CsrfTokenManagerInterface $tokenManager;
+    private ?CsrfToken $value = null;
+    private FormError $error;
 
     /**
      * CsrfElement constructor.
@@ -65,17 +47,15 @@ final class CsrfElement implements ElementInterface
      */
     public function __construct(?string $tokenId = null, ?CsrfValueValidator $validator = null, ?CsrfTokenManagerInterface $tokenManager = null)
     {
-        $this->tokenId = $tokenId ?: self::class;
-        $this->validator = $validator ?: new CsrfValueValidator();
-        $this->tokenManager = $tokenManager ?: new CsrfTokenManager();
+        $this->tokenId = $tokenId ?? self::class;
+        $this->validator = $validator ?? new CsrfValueValidator();
+        $this->tokenManager = $tokenManager ?? new CsrfTokenManager();
 
         $this->error = FormError::null();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submit($data): ElementInterface
+    #[Override]
+    public function submit(mixed $data): static
     {
         $this->value = new CsrfToken($this->tokenId, $data);
         $this->error = $this->validator->validate($this->value, $this);
@@ -83,28 +63,20 @@ final class CsrfElement implements ElementInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function patch($data): ElementInterface
+    #[Override]
+    public function patch(mixed $data): static
     {
         // CSRF element must be submitted
         return $this->submit($data);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function import($entity): ElementInterface
+    #[Override]
+    public function import(mixed $entity): static
     {
         throw new BadMethodCallException('Cannot set a Csrf token value');
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return CsrfToken
-     */
+    #[Override]
     public function value(): CsrfToken
     {
         if ($this->value) {
@@ -114,49 +86,37 @@ final class CsrfElement implements ElementInterface
         return $this->value = $this->tokenManager->getToken($this->tokenId);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function httpValue(): string
     {
         return $this->value()->getValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->value && $this->error->empty();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $field ? $this->error->withField($field) : $this->error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         return ($container = $this->container()) ? $container->parent()->root() : new LeafRootElement($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         return new SimpleElementView(

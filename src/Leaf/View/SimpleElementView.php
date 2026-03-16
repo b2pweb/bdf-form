@@ -8,6 +8,7 @@ use Bdf\Form\View\ElementViewTrait;
 use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\FieldViewTrait;
+use Override;
 
 /**
  * View for simple input fields
@@ -30,7 +31,7 @@ final class SimpleElementView implements FieldViewInterface
      * @param array $constraints
      * @param ChoiceView[]|null $choices
      */
-    public function __construct(string $type, string $name, $value, ?string $error, bool $required, array $constraints, ?array $choices = null)
+    public function __construct(string $type, string $name, mixed $value, ?string $error, bool $required, array $constraints, ?array $choices = null)
     {
         $this->type = $type;
         $this->name = $name;
@@ -41,12 +42,10 @@ final class SimpleElementView implements FieldViewInterface
         $this->choices = $choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function defaultRenderer(): FieldViewRendererInterface
     {
-        return $this->choices ? SelectHtmlRenderer::instance() : SimpleFieldHtmlRenderer::instance();
+        return $this->choices !== null ? SelectHtmlRenderer::instance() : SimpleFieldHtmlRenderer::instance();
     }
 
     /**

@@ -4,19 +4,19 @@ namespace Bdf\Form\Phone;
 
 use libphonenumber\PhoneNumber as PhoneNumberValue;
 use libphonenumber\PhoneNumberUtil;
+use Override;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Validator for @see ValidPhoneNumber
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
-class ValidPhoneNumberValidator extends ConstraintValidator
+final class ValidPhoneNumberValidator extends ConstraintValidator
 {
-    /**
-     * @var PhoneNumberUtil
-     */
-    private $formatter;
+    private readonly PhoneNumberUtil $formatter;
 
 
     /**
@@ -28,10 +28,8 @@ class ValidPhoneNumberValidator extends ConstraintValidator
         $this->formatter = $formatter ?? PhoneNumberUtil::getInstance();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function validate($value, Constraint $constraint): void
+    #[Override]
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidPhoneNumber) {
             throw new UnexpectedTypeException($constraint, ValidPhoneNumber::class);

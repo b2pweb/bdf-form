@@ -9,6 +9,9 @@ use InvalidArgumentException;
 use Locale;
 use NumberFormatter;
 
+use Override;
+
+use function is_int;
 use function is_string;
 
 /**
@@ -26,20 +29,20 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @var int|null
      */
-    private $scale;
+    private readonly ?int $scale;
 
     /**
      * @var int
      * @psalm-var NumberFormatter::ROUND_*
      */
-    private $roundingMode;
+    private readonly int $roundingMode;
 
     /**
      * Group by thousand or not
      *
      * @var bool
      */
-    private $grouping;
+    private readonly bool $grouping;
 
     /**
      * The locale to use
@@ -47,7 +50,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @var string|null
      */
-    private $locale;
+    private readonly ?string $locale;
 
     /**
      * LocalizedNumberTransformer constructor.
@@ -70,6 +73,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @throws InvalidArgumentException If the given value is not numeric or cannot be formatted
      */
+    #[Override]
     final public function transformToHttp($value, ElementInterface $input): ?string
     {
         if ($value === null) {
@@ -102,7 +106,8 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @throws InvalidArgumentException If the given value is not scalar or cannot be parsed
      */
-    final public function transformFromHttp($value, ElementInterface $input)
+    #[Override]
+    final public function transformFromHttp(mixed $value, ElementInterface $input): float|int|string|null
     {
         if ($value !== null && !is_int($value) && !is_float($value) && !is_string($value)) {
             throw new InvalidArgumentException('Expected a scalar or null.');
@@ -158,8 +163,9 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @return T
      */
-    protected function cast($value)
+    protected function cast(float|int|string $value): float|int|string
     {
+        /** @var T */
         return $value;
     }
 
@@ -170,7 +176,7 @@ class LocalizedNumberTransformer implements TransformerInterface
      *
      * @return int|float The rounded number
      */
-    private function round($number)
+    private function round(int|float $number): int|float
     {
         if (is_int($number) || $this->scale === null) {
             return $number;
@@ -185,7 +191,7 @@ class LocalizedNumberTransformer implements TransformerInterface
                 return round($number, $this->scale, PHP_ROUND_HALF_DOWN);
         }
 
-        $coef = 10 ** $this->scale;
+        $coef = (float) (10 ** $this->scale);
         $number *= $coef;
 
         switch ($this->roundingMode) {

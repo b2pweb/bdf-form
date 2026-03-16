@@ -10,27 +10,20 @@ use Bdf\Form\Transformer\TransformerInterface;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Override;
 
 /**
  * Transformer PhoneNumber instance to string with a format
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class PhoneNumberToStringTransformer implements TransformerInterface
+final readonly class PhoneNumberToStringTransformer implements TransformerInterface
 {
     /**
      * @var PhoneNumberFormat::*
      */
-    private $format;
-
-    /**
-     * @var bool
-     */
-    private $formatIfInvalid;
-
-    /**
-     * @var PhoneNumberUtil|null
-     */
-    private $formatter;
+    private PhoneNumberFormat|int $format;
+    private bool $formatIfInvalid;
+    private ?PhoneNumberUtil $formatter;
 
     /**
      * PhoneNumberToStringTransformer constructor.
@@ -39,17 +32,15 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
      * @param bool $formatIfInvalid
      * @param PhoneNumberUtil|null $formatter
      */
-    public function __construct($format = PhoneNumberFormat::E164, bool $formatIfInvalid = false, ?PhoneNumberUtil $formatter = null)
+    public function __construct(PhoneNumberFormat|int $format = PhoneNumberFormat::E164, bool $formatIfInvalid = false, ?PhoneNumberUtil $formatter = null)
     {
         $this->format = $format;
         $this->formatIfInvalid = $formatIfInvalid;
         $this->formatter = $formatter;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function transformToHttp($value, ElementInterface $input): ?PhoneNumber
+    #[Override]
+    public function transformToHttp(mixed $value, ElementInterface $input): ?PhoneNumber
     {
         if ($value === null) {
             return null;
@@ -64,10 +55,8 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
         return $formatter->parse($value, null, null, true);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function transformFromHttp($value, ElementInterface $input): ?string
+    #[Override]
+    public function transformFromHttp(mixed $value, ElementInterface $input): ?string
     {
         if (!$value instanceof PhoneNumber) {
             return null;
@@ -75,7 +64,7 @@ final class PhoneNumberToStringTransformer implements TransformerInterface
 
         $formatter = $this->formatter ?? ($input instanceof PhoneElement ? $input->getFormatter() : PhoneNumberUtil::getInstance());
 
-        if ((!$this->formatIfInvalid && !$formatter->isValidNumber($value)) || !$value->getNationalNumber()) {
+        if ((!$this->formatIfInvalid && !$formatter->isValidNumber($value)) || !$value->hasNationalNumber()) {
             return $value->getRawInput();
         }
 

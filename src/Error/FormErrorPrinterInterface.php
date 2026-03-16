@@ -55,5 +55,5 @@ interface FormErrorPrinterInterface
      *
      * @return mixed
      */
-    public function print();
+    public function print(): mixed;
 }

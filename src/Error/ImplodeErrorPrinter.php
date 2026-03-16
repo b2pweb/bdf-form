@@ -3,6 +3,7 @@
 namespace Bdf\Form\Error;
 
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Override;
 
 /**
  * Implode all errors into a string
@@ -15,14 +16,14 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
      *
      * @var string
      */
-    private $separator;
+    private readonly string $separator;
 
     /**
      * Lines of errors
      *
      * @var string[]
      */
-    private $lines = [];
+    private array $lines = [];
 
     /**
      * Does the printer is visiting a child ?
@@ -30,7 +31,7 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
      *
      * @var bool
      */
-    private $inChild = false;
+    private bool $inChild = false;
 
 
     /**
@@ -43,33 +44,25 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
         $this->separator = $separator;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function field(HttpFieldPath $field): void
     {
         // Ignore field name
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function global(string $error): void
     {
         $this->lines[] = $error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function code(string $code): void
     {
         // Ignore code
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function child(string $name, FormError $error): void
     {
         $this->inChild = true;
@@ -77,10 +70,8 @@ final class ImplodeErrorPrinter implements FormErrorPrinterInterface
         $this->inChild = false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function print()
+    #[Override]
+    public function print(): ?string
     {
         return $this->inChild ? null : implode($this->separator, $this->lines);
     }

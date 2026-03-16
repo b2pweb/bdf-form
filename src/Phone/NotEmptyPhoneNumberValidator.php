@@ -4,18 +4,18 @@ namespace Bdf\Form\Phone;
 
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
+use Override;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\NotBlankValidator;
 
 /**
  * NotBlank implementation for PhoneNumber value
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
-class NotEmptyPhoneNumberValidator extends NotBlankValidator
+final class NotEmptyPhoneNumberValidator extends NotBlankValidator
 {
-    /**
-     * @var PhoneNumberUtil
-     */
-    private $formatter;
+    private readonly PhoneNumberUtil $formatter;
 
 
     /**
@@ -27,10 +27,8 @@ class NotEmptyPhoneNumberValidator extends NotBlankValidator
         $this->formatter = $formatter ?? PhoneNumberUtil::getInstance();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function validate($value, Constraint $constraint): void
+    #[Override]
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if ($value instanceof PhoneNumber) {
             if ($value->hasRawInput()) {

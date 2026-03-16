@@ -3,6 +3,12 @@
 namespace Bdf\Form\Aggregate\Value;
 
 use Bdf\Form\ElementInterface;
+use Override;
+
+use function class_exists;
+use function is_callable;
+use function is_object;
+use function is_string;
 
 /**
  * The base value generator implementation
@@ -22,41 +28,37 @@ final class ValueGenerator implements ValueGeneratorInterface
     /**
      * @var callable():T|T|class-string<T>
      */
-    private $value;
+    private mixed $value;
 
     /**
      * @var callable():T|T|class-string<T>|null
      */
-    private $attachment;
+    private mixed $attachment = null;
 
     /**
      * ValueGenerator constructor.
      *
      * @param callable():T|T|class-string<T> $value
      */
-    public function __construct($value = [])
+    public function __construct(mixed $value = [])
     {
         /** @psalm-suppress PropertyTypeCoercion */
         $this->value = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attach($entity): void
+    #[Override]
+    public function attach(mixed $entity): void
     {
         /** @psalm-suppress PropertyTypeCoercion */
         $this->attachment = $entity;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function generate(ElementInterface $element)
+    #[Override]
+    public function generate(ElementInterface $element): mixed
     {
         $value = $this->attachment ?? $this->value;
 
-        if (is_string($value)) {
+        if (is_string($value) && class_exists($value)) {
             /** @var T */
             return new $value;
         }
@@ -66,10 +68,11 @@ final class ValueGenerator implements ValueGeneratorInterface
         }
 
         // Only clone value if it's not attached
-        if (!$this->attachment && is_object($value)) {
+        if ($this->attachment === null && is_object($value)) {
             return clone $value;
         }
 
+        /** @var T */
         return $value;
     }
 }

@@ -7,7 +7,7 @@ namespace Bdf\Form\PropertyAccess;
  */
 interface ExtractorInterface extends AccessorInterface
 {
-    const EXTRACTION = 'extraction';
+    public const string EXTRACTION = 'extraction';
 
     /**
      * Extract the target property value
@@ -16,5 +16,5 @@ interface ExtractorInterface extends AccessorInterface
      *
      * @return mixed The extracted value
      */
-    public function extract($source);
+    public function extract(array|object $source)/*: mixed*/;
 }

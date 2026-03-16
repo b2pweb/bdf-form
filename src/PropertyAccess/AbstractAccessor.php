@@ -3,49 +3,38 @@
 namespace Bdf\Form\PropertyAccess;
 
 use Bdf\Form\Child\ChildInterface;
+use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+
+use function is_string;
 
 /**
  * Base access implementation
  */
 abstract class AbstractAccessor implements AccessorInterface
 {
-    /**
-     * @var string|null
-     */
-    private $propertyName;
+    private ?string $propertyName = null;
 
     /**
      * @var callable|null
      */
-    protected $transformer;
+    protected mixed $transformer = null;
 
     /**
      * @var callable|null
      */
-    protected $customAccessor;
+    protected mixed $customAccessor = null;
+    protected ?PropertyAccessorInterface $propertyAccessor = null;
+    protected ?ChildInterface $input = null;
 
     /**
-     * @var PropertyAccessorInterface
-     */
-    protected $propertyAccessor;
-
-    /**
-     * @var ChildInterface|null
-     */
-    protected $input;
-
-
-    /**
-     * Getter constructor.
-     *
-     * @param string|callable $propertyName
+     * @param string|callable|null $propertyName
      * @param callable|null $transformer
      * @param callable|null $customAccessor
      */
-    public function __construct($propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null)
+    public function __construct(string|callable|null $propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null)
     {
-        if (is_callable($propertyName)) {
+        if ($propertyName !== null && !is_string($propertyName)) {
             $customAccessor = $transformer;
             $transformer = $propertyName;
             $propertyName = null;
@@ -56,17 +45,13 @@ abstract class AbstractAccessor implements AccessorInterface
         $this->customAccessor = $customAccessor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function setPropertyAccessor(PropertyAccessorInterface $propertyAccessor): void
     {
         $this->propertyAccessor = $propertyAccessor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function setFormElement(?ChildInterface $formElement): void
     {
         $this->input = $formElement;
@@ -78,7 +63,7 @@ abstract class AbstractAccessor implements AccessorInterface
      * @param array|object $target
      * @return string
      */
-    final protected function prepareAccessorPath($target): string
+    final protected function prepareAccessorPath(array|object $target): string
     {
         $propertyName = $this->getPropertyName();
 
@@ -100,7 +85,7 @@ abstract class AbstractAccessor implements AccessorInterface
      *
      * @return string
      */
-    final protected function getPropertyName()
+    final protected function getPropertyName(): string
     {
         if ($this->propertyName === null && $this->input) {
             $this->propertyName = $this->input->name();

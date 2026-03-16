@@ -7,14 +7,10 @@ use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
-use ReflectionClass;
+use Override;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Positive;
-
-use function is_array;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Base builder for an number element
@@ -26,10 +22,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
 {
     use ChoiceBuilderTrait;
 
-    /**
-     * @var bool
-     */
-    private $raw = false;
+    private bool $raw = false;
 
 
     /**
@@ -41,7 +34,7 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
     {
         parent::__construct($registry);
 
-        $this->addTransformerProvider([$this, 'provideNumberTransformer']);
+        $this->addTransformerProvider($this->provideNumberTransformer(...));
     }
 
     /**
@@ -52,19 +45,9 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function min($min, ?string $message = null): self
+    public function min(int|float $min, ?string $message = null): self
     {
-        static $isSf4 = null;
-
-        if ($isSf4 === null) {
-            /** @psalm-suppress PossiblyNullReference */
-            $isSf4 = (new ReflectionClass(GreaterThanOrEqual::class))->getConstructor()->getNumberOfParameters() === 1;
-        }
-
-        $this->satisfy($isSf4
-            ? new GreaterThanOrEqual(['value' => $min, 'message' => $message])
-            : new GreaterThanOrEqual($min, null, $message)
-        );
+        $this->satisfy(new GreaterThanOrEqual(value: $min, message: $message));
 
         return $this;
     }
@@ -77,19 +60,9 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function max($max, ?string $message = null): self
+    public function max(int|float $max, ?string $message = null): self
     {
-        static $isSf4 = null;
-
-        if ($isSf4 === null) {
-            /** @psalm-suppress PossiblyNullReference */
-            $isSf4 = (new ReflectionClass(LessThanOrEqual::class))->getConstructor()->getNumberOfParameters() === 1;
-        }
-
-        $this->satisfy($isSf4
-            ? new LessThanOrEqual(['value' => $max, 'message' => $message])
-            : new LessThanOrEqual($max, null, $message)
-        );
+        $this->satisfy(new LessThanOrEqual(value: $max, message: $message));
 
         return $this;
     }
@@ -97,29 +70,14 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
     /**
      * The number must be positive
      *
-     * @param array|string|null $message The error message
+     * @param string|null $message The error message
      *
      * @return $this
      * @see Positive
      */
-    public function positive($message = null): self
+    public function positive(?string $message = null): self
     {
-        static $isSf4 = null;
-
-        if ($isSf4 === null) {
-            /** @psalm-suppress PossiblyNullReference */
-            $isSf4 = (new ReflectionClass(Positive::class))->getConstructor()->getNumberOfParameters() === 1;
-        }
-
-        if (is_array($message)) {
-            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
-            $message = $message['message'] ?? null;
-        }
-
-        return $this->satisfy($isSf4
-            ? new Positive(['message' => $message])
-            : new Positive(null, $message)
-        );
+        return $this->satisfy(new Positive(message: $message));
     }
 
     /**
@@ -139,26 +97,12 @@ abstract class NumberElementBuilder extends AbstractElementBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function defaultTransformerExceptionConstraintOptions(): array
-    {
-        return [
-            'message' => 'The value is not a valid number.',
-            'code' => 'INVALID_NUMBER_ERROR',
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function defaultTransformerExceptionConstraint(): TransformerExceptionConstraint
     {
         return new TransformerExceptionConstraint(
-            null,
-            /*message:*/ 'The value is not a valid number.',
-            /*code:*/ 'INVALID_NUMBER_ERROR',
+            message: 'The value is not a valid number.',
+            code: 'INVALID_NUMBER_ERROR',
         );
     }
 

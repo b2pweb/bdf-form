@@ -498,7 +498,7 @@ class MyCustomChild implements ChildInterface
     {
     }
 
-    public function setParent(ChildAggregateInterface $parent): ChildInterface
+    public function setParent(ChildAggregateInterface $parent): static
     {
     }
 

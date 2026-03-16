@@ -14,12 +14,12 @@ trait ElementViewTrait
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var string|null
      */
-    private $error;
+    private ?string $error = null;
 
     /**
      * {@inheritdoc}
@@ -40,7 +40,7 @@ trait ElementViewTrait
     /**
      * {@inheritdoc}
      */
-    public function setError(?string $error): ElementViewInterface
+    public function setError(?string $error): static
     {
         $this->error = $error;
 
@@ -58,7 +58,7 @@ trait ElementViewTrait
     /**
      * {@inheritdoc}
      */
-    public function onError($action): ?string
+    public function onError(string|callable $action): ?string
     {
         if (!$this->hasError()) {
             return null;

@@ -7,10 +7,8 @@ use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
-use ReflectionClass;
+use Override;
 use Symfony\Component\Validator\Constraints\Email;
-
-use function is_array;
 
 /**
  * Provide email constraint builder for a StringElementBuilder
@@ -29,15 +27,19 @@ class EmailElementBuilder extends StringElementBuilder
     /**
      * @var bool
      */
-    private $useConstraint = true;
+    private bool $useConstraint = true;
 
     private ?string $errorMessage = null;
+
+    /**
+     * @var value-of<Email::VALIDATION_MODES>|null
+     */
     private ?string $mode = null;
 
     /**
      * @var (callable(string):string)|null
      */
-    private $normalizer = null;
+    private mixed $normalizer = null;
 
     /**
      * EmailElementBuilder constructor.
@@ -48,14 +50,14 @@ class EmailElementBuilder extends StringElementBuilder
     {
         parent::__construct($registry);
 
-        $this->addConstraintsProvider([$this, 'createEmailConstraint']);
+        $this->addConstraintsProvider($this->createEmailConstraint(...));
     }
 
     /**
      * The validation mode
      * See Email::VALIDATION_MODE_* constants
      *
-     * @param string $mode
+     * @param value-of<Email::VALIDATION_MODES> $mode
      *
      * @return $this
      *
@@ -63,7 +65,7 @@ class EmailElementBuilder extends StringElementBuilder
      * @see Email::VALIDATION_MODE_LOOSE
      * @see Email::VALIDATION_MODE_STRICT
      */
-    public function mode(string $mode): self
+    public function mode(string $mode): static
     {
         $this->mode = $mode;
 
@@ -77,7 +79,7 @@ class EmailElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function errorMessage(string $message): self
+    public function errorMessage(string $message): static
     {
         $this->errorMessage = $message;
 
@@ -102,7 +104,7 @@ class EmailElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function normalizer(callable $normalizer): self
+    public function normalizer(callable $normalizer): static
     {
         $this->normalizer = $normalizer;
 
@@ -114,7 +116,7 @@ class EmailElementBuilder extends StringElementBuilder
      *
      * @return $this
      */
-    public function disableConstraint(): self
+    public function disableConstraint(): static
     {
         $this->useConstraint = false;
 
@@ -125,27 +127,18 @@ class EmailElementBuilder extends StringElementBuilder
      * Define the email validation constraint options
      *
      * <code>
-     * $builder->email('contact')->useConstraint(['mode' => Email::VALIDATION_MODE_HTML5, 'message' => 'my error']);
+     * $builder->email('contact')->useConstraint(mode: Email::VALIDATION_MODE_HTML5, message: 'my error');
      * </code>
      *
-     * @param string|array|null $message
+     * @param value-of<Email::VALIDATION_MODES> $mode
      *
      * @return $this
      *
      * @see Email for list of options
      */
-    public function useConstraint($message = null, ?string $mode = null, ?string $normalizer = null): self
+    public function useConstraint(?string $message = null, ?string $mode = null, ?callable $normalizer = null): static
     {
         $this->useConstraint = true;
-
-        if (is_array($message)) {
-            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
-
-            $mode = $mode ?? $message['mode'] ?? null;
-            $normalizer = $normalizer ?? $message['normalizer'] ?? null;
-            $message = $message['message'] ?? null;
-        }
-
         $this->errorMessage = $message;
         $this->mode = $mode;
         $this->normalizer = $normalizer;
@@ -162,24 +155,17 @@ class EmailElementBuilder extends StringElementBuilder
             return [];
         }
 
-        static $isSf4 = null;
-
-        if (null === $isSf4) {
-            /** @psalm-suppress PossiblyNullReference */
-            $isSf4 = (new ReflectionClass(Email::class))->getConstructor()->getNumberOfParameters() === 1;
-        }
-
         return [
-            $isSf4
-                ? new Email(['mode' => $this->mode, 'message' => $this->errorMessage, 'normalizer' => $this->normalizer])
-                : new Email(null, $this->errorMessage, $this->mode, $this->normalizer)
+            new Email(
+                message: $this->errorMessage,
+                mode: $this->mode,
+                normalizer: $this->normalizer
+            ),
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): EmailElement
     {
         return new EmailElement($validator, $transformer, $this->getChoices());
     }

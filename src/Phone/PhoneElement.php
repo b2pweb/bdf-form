@@ -9,6 +9,7 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use Override;
 use TypeError;
 
 use function strtoupper;
@@ -25,14 +26,10 @@ use function strtoupper;
 final class PhoneElement extends LeafElement
 {
     /**
-     * @var callable(PhoneElement):string
+     * @var callable(PhoneElement):(string|null)
      */
-    private $regionResolver;
-
-    /**
-     * @var PhoneNumberUtil
-     */
-    private $formatter;
+    private readonly mixed $regionResolver;
+    private readonly PhoneNumberUtil $formatter;
 
 
     /**
@@ -51,10 +48,8 @@ final class PhoneElement extends LeafElement
         $this->formatter = $formatter ?? PhoneNumberUtil::getInstance();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function toPhp($httpValue)
+    #[Override]
+    protected function toPhp(mixed $httpValue): ?PhoneNumber
     {
         if ($httpValue === null || $httpValue === '') {
             return null;
@@ -63,10 +58,8 @@ final class PhoneElement extends LeafElement
         return $this->parseValue($httpValue);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function toHttp($phpValue)
+    #[Override]
+    protected function toHttp(mixed $phpValue): ?string
     {
         if (!$phpValue) {
             return null;
@@ -75,11 +68,7 @@ final class PhoneElement extends LeafElement
         return $phpValue->getRawInput() ?? $this->formatter->format($phpValue, PhoneNumberFormat::E164);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return PhoneNumber|null
-     */
+    #[Override]
     protected function tryCast($value): ?PhoneNumber
     {
         if ($value === null) {
@@ -130,13 +119,11 @@ final class PhoneElement extends LeafElement
         try {
             return $this->formatter->parse($rawPhoneNumber, $this->resolveRegion(), null, true);
         } catch (NumberParseException $e) {
-            return (new PhoneNumber())->setRawInput($rawPhoneNumber);
+            return new PhoneNumber()->setRawInput($rawPhoneNumber);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function parseConstraints(ValueValidatorInterface $validator): array
     {
         $result = parent::parseConstraints($validator);

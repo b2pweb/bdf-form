@@ -8,6 +8,7 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use InvalidArgumentException;
+use Override;
 
 /**
  * Builder for a boolean element
@@ -28,15 +29,8 @@ use InvalidArgumentException;
  */
 class BooleanElementBuilder extends AbstractElementBuilder
 {
-    /**
-     * @var string
-     */
-    private $httpValue = '1';
-
-    /**
-     * @var bool
-     */
-    private $booleanString = false;
+    private string $httpValue = '1';
+    private bool $booleanString = false;
 
     /**
      * Define the HTTP value used for represent the true value
@@ -83,10 +77,8 @@ class BooleanElementBuilder extends AbstractElementBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): BooleanStringElement|BooleanElement
     {
         return $this->booleanString
             ? new BooleanStringElement($validator, $transformer)

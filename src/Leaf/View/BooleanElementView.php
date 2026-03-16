@@ -7,6 +7,7 @@ use Bdf\Form\View\ElementViewTrait;
 use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\FieldViewTrait;
+use Override;
 
 /**
  * Element view for boolean / checkbox
@@ -18,15 +19,8 @@ final class BooleanElementView implements FieldViewInterface
     use ElementViewTrait;
     use FieldViewTrait;
 
-    /**
-     * @var string
-     */
-    private $httpValue;
-
-    /**
-     * @var bool
-     */
-    private $checked;
+    public readonly string $httpValue;
+    public private(set) bool $checked;
 
     /**
      * BooleanElementView constructor.
@@ -38,7 +32,7 @@ final class BooleanElementView implements FieldViewInterface
      * @param bool $checked
      * @param string|null $error
      */
-    public function __construct(string $type, string $name, $value, string $httpValue, bool $checked, ?string $error)
+    public function __construct(string $type, string $name, mixed $value, string $httpValue, bool $checked, ?string $error)
     {
         $this->type = $type;
         $this->name = $name;
@@ -70,9 +64,7 @@ final class BooleanElementView implements FieldViewInterface
         return $this->checked;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function defaultRenderer(): FieldViewRendererInterface
     {
         return CheckboxHtmlRenderer::instance();

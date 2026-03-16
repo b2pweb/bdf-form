@@ -13,15 +13,16 @@ class MyCustomForm extends CustomForm
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function configure(FormBuilderInterface $builder): void
     {
         $builder->generates(MyGeneratedEntity::class);
 
-        $builder->string('foo')->length(['min' => 1])->getter()->setter();
+        $builder->string('foo')->length(min: 1)->getter()->setter();
         $builder->string('bar')->required()->getter()->setter();
     }
 
-    public static function test()
+    public static function test(): void
     {
         $form = new MyCustomForm();
         $form->submit(['foo' => 'a', 'bar' => 'b']);
@@ -34,6 +35,9 @@ class MyCustomForm extends CustomForm
     }
 }
 
+/**
+ * @psalm-suppress MissingConstructor
+ */
 class MyGeneratedEntity
 {
     /**

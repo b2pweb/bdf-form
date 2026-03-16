@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+use function array_intersect_key;
 use function assert;
 use function get_object_vars;
 
@@ -22,7 +23,7 @@ final class ConstraintsNormalizer
     /**
      * @var array<class-string<\Symfony\Component\Validator\Constraint>, array<string, mixed>>
      */
-    static private $constraints = [
+    static private array $constraints = [
         NotBlank::class => [],
         Length::class => ['min' => null, 'max' => null],
         Count::class => ['min' => null, 'max' => null],
@@ -46,7 +47,7 @@ final class ConstraintsNormalizer
         $normalizedConstraints = [];
 
         foreach ($validator->constraints() as $constraint) {
-            $className = get_class($constraint);
+            $className = $constraint::class;
 
             if (isset(self::$constraints[$className])) {
                 $normalizedConstraints[$className] = array_intersect_key(get_object_vars($constraint), self::$constraints[$className]);
@@ -69,16 +70,13 @@ final class ConstraintsNormalizer
      */
     private static function getDefaultOption(Constraint $constraint): ?array
     {
-        $ctor = (new ReflectionClass($constraint))->getConstructor();
+        $ctor = new ReflectionClass($constraint)->getConstructor();
         assert($ctor !== null);
 
         $firstParam = $ctor->getParameters()[0] ?? null;
-        $firstParamName = $firstParam ? $firstParam->getName() : null;
+        $firstParamName = $firstParam?->getName();
 
-        // Sf < 5.3
-        if ($ctor->getNumberOfParameters() === 1 && $firstParamName === 'options') {
-            $option = $constraint->getDefaultOption();
-        } elseif ($firstParamName !== 'options') {
+        if ($firstParamName !== 'options' && $firstParamName !== 'message') {
             $option = $firstParamName;
         } else {
             return null;
@@ -89,7 +87,7 @@ final class ConstraintsNormalizer
         }
 
         // Cache the option name for the constraint class, to avoid reflection on next calls
-        self::$constraints[get_class($constraint)][$option] = null;
+        self::$constraints[$constraint::class][$option] = null;
 
         $value = $constraint->{$option} ?? null;
 

@@ -5,6 +5,7 @@ namespace Bdf\Form\Filter;
 use Attribute;
 use Bdf\Form\Aggregate\ArrayChildBuilder;
 use Bdf\Form\Child\ChildInterface;
+use Override;
 
 /**
  * Filter empty values from an array
@@ -14,15 +15,10 @@ use Bdf\Form\Child\ChildInterface;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class EmptyArrayValuesFilter implements FilterInterface
 {
-    /**
-     * @var EmptyArrayValuesFilter
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function filter($value, ChildInterface $input, $default)
+    #[Override]
+    public function filter(mixed $value, ChildInterface $input, mixed $default): mixed
     {
         if (!is_array($value)) {
             return $value;
@@ -44,10 +40,6 @@ final class EmptyArrayValuesFilter implements FilterInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

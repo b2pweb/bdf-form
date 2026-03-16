@@ -11,6 +11,7 @@ use Bdf\Form\View\FieldSetViewInterface;
 use Bdf\Form\View\FieldSetViewTrait;
 use Bdf\Form\View\FieldViewInterface;
 use IteratorAggregate;
+use Override;
 
 /**
  * View for a form element
@@ -43,7 +44,7 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
     /**
      * @var ButtonViewInterface[]
      */
-    private $buttons = [];
+    private array $buttons = [];
 
     /**
      * FormView constructor.
@@ -59,21 +60,14 @@ final class FormView implements IteratorAggregate, FieldSetViewInterface
         $this->elements = $elements;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return ElementViewInterface|ButtonViewInterface
-     */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    #[Override]
+    public function offsetGet(mixed $offset): ElementViewInterface|ButtonViewInterface
     {
         return $this->elements[$offset] ?? $this->buttons[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset): bool
+    #[Override]
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->elements[$offset]) || isset($this->buttons[$offset]);
     }

@@ -8,6 +8,7 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Constraint\Closure;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
@@ -42,9 +43,7 @@ class SimpleFieldHtmlRendererTest extends TestCase
         $this->assertEquals('<input type="email" name="foo" value="bar" minlength="5" />', $renderer->render($view, ['type' => 'email', 'required' => false]));
     }
 
-    /**
-     * @dataProvider provideType
-     */
+    #[DataProvider('provideType')]
     public function test_render_type($elementType, $htmlType)
     {
         $view = new SimpleElementView($elementType, 'foo', 'bar', null, false, []);
@@ -53,7 +52,7 @@ class SimpleFieldHtmlRendererTest extends TestCase
         $this->assertEquals('<input type="'.$htmlType.'" name="foo" value="bar" />', $renderer->render($view, []));
     }
 
-    public function provideType()
+    public static function provideType()
     {
         return [
             [StringElement::class, 'text'],
@@ -64,9 +63,7 @@ class SimpleFieldHtmlRendererTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideConstraints
-     */
+    #[DataProvider('provideConstraints')]
     public function test_render_constraints($constraints, $attributes)
     {
         $view = new SimpleElementView(StringElement::class, 'foo', 'bar', null, false, $constraints);
@@ -75,7 +72,7 @@ class SimpleFieldHtmlRendererTest extends TestCase
         $this->assertEquals('<input type="text" name="foo" value="bar"'.$attributes.' />', $renderer->render($view, []));
     }
 
-    public function provideConstraints()
+    public static function provideConstraints()
     {
         return [
             [[], ''],

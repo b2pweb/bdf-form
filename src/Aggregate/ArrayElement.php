@@ -25,6 +25,7 @@ use Bdf\Form\View\ElementViewInterface;
 use Countable;
 use Exception;
 use Iterator;
+use Override;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use TypeError;
 
@@ -49,37 +50,17 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
     /**
      * @var ElementInterface<T>
      */
-    private $templateElement;
-
-    /**
-     * @var TransformerInterface
-     */
-    private $transformer;
-
-    /**
-     * @var ValueValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var ChoiceInterface|null
-     */
-    private $choices;
-
-    /**
-     * @var bool
-     */
-    private $valid = false;
-
-    /**
-     * @var FormError
-     */
-    private $error;
+    private readonly ElementInterface $templateElement;
+    private readonly TransformerInterface $transformer;
+    private readonly ValueValidatorInterface $validator;
+    private readonly ?ChoiceInterface $choices;
+    private bool $valid = false;
+    private FormError $error;
 
     /**
      * @var ChildInterface[]
      */
-    private $children = [];
+    private array $children = [];
 
 
     /**
@@ -99,66 +80,50 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         $this->choices = $choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset): ChildInterface
+    #[Override]
+    public function offsetGet(mixed $offset): ChildInterface
     {
         return $this->children[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset): bool
+    #[Override]
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->children[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value): void
+    #[Override]
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new BadMethodCallException('Use import() or submit() for set an offset value');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($offset): void
+    #[Override]
+    public function offsetUnset(mixed $offset): void
     {
         throw new BadMethodCallException('Use import() or submit() for set an offset value');
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getIterator(): Iterator
     {
         return new ArrayIterator($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function count(): int
     {
         return count($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function choices(): ?ChoiceInterface
     {
         return $this->choices;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submit($data): ElementInterface
+    #[Override]
+    public function submit(mixed $data): static
     {
         $this->valid = true;
 
@@ -180,7 +145,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         $errors = [];
 
         foreach ($data as $key => $value) {
-            $child = $lastChildren[$key] ?? (new Child($key, $this->templateElement))->setParent($this);
+            $child = $lastChildren[$key] ?? new Child($key, $this->templateElement)->setParent($this);
 
             $child->element()->submit($value);
 
@@ -204,10 +169,8 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function patch($data): ElementInterface
+    #[Override]
+    public function patch(mixed $data): static
     {
         $this->valid = true;
 
@@ -231,10 +194,8 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function import($entity): ElementInterface
+    #[Override]
+    public function import(mixed $entity): static
     {
         if ($entity === null) {
             $entity = [];
@@ -261,6 +222,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
      *
      * @return T[]
      */
+    #[Override]
     public function value(): array
     {
         $value = [];
@@ -272,10 +234,8 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function httpValue()
+    #[Override]
+    public function httpValue(): mixed
     {
         $value = [];
 
@@ -286,33 +246,25 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return $this->transformer->transformToHttp($value, $this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->valid;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         return !$this->valid;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $field ? $this->error->withField($field) : $this->error;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         if ($container = $this->container()) {
@@ -323,9 +275,7 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         return new LeafRootElement($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         $elements = [];
@@ -348,9 +298,6 @@ final class ArrayElement implements ChildAggregateInterface, Countable, Choiceab
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __clone()
     {
         $children = $this->children;

@@ -12,6 +12,8 @@ use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Validator\Constraints\EqualTo;
@@ -33,15 +35,15 @@ class BooleanStringElementTest extends TestCase
         $this->assertTrue($element->error()->empty());
     }
 
-    /**
-     * @testWith [true]
-     *           [1]
-     *           ["1"]
-     *           ["true"]
-     *           ["on"]
-     *           ["yes"]
-     *           [" True "]
-     */
+    #[
+        TestWith([true]),
+        TestWith([1]),
+        TestWith(["1"]),
+        TestWith(["true"]),
+        TestWith(["on"]),
+        TestWith(["yes"]),
+        TestWith([" True "]),
+    ]
     public function test_submit_true($value)
     {
         $element = new BooleanStringElement();
@@ -51,15 +53,15 @@ class BooleanStringElementTest extends TestCase
         $this->assertTrue($element->error()->empty());
     }
 
-    /**
-     * @testWith [false]
-     *           [0]
-     *           ["0"]
-     *           ["false"]
-     *           ["off"]
-     *           ["no"]
-     *           [" False "]
-     */
+    #[
+        TestWith([false]),
+        TestWith([0]),
+        TestWith(["0"]),
+        TestWith(["false"]),
+        TestWith(["off"]),
+        TestWith(["no"]),
+        TestWith([" False "]),
+    ]
     public function test_submit_false($value)
     {
         $element = new BooleanStringElement();
@@ -145,7 +147,7 @@ class BooleanStringElementTest extends TestCase
         $transformer = $this->createMock(TransformerInterface::class);
         $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
         $element = new BooleanStringElement(
-            new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])),
+            new ConstraintValueValidator([], new TransformerExceptionConstraint(ignoreException: true)),
             $transformer
         );
 
@@ -163,7 +165,7 @@ class BooleanStringElementTest extends TestCase
         $element = new BooleanStringElement(
             new ConstraintValueValidator(
                 [new Closure(function () { return 'validation error'; })],
-                new TransformerExceptionConstraint(['ignoreException' => true])
+                new TransformerExceptionConstraint(ignoreException: true)
             ),
             $transformer
         );
@@ -196,9 +198,7 @@ class BooleanStringElementTest extends TestCase
         $this->assertSame('-', $element->httpValue());
     }
 
-    /**
-     * @dataProvider provideValidValues
-     */
+    #[DataProvider('provideValidValues')]
     public function test_import($value, $expected)
     {
         $element = new BooleanStringElement();
@@ -206,7 +206,7 @@ class BooleanStringElementTest extends TestCase
         $this->assertSame($expected, $element->import($value)->value());
     }
 
-    public function provideValidValues()
+    public static function provideValidValues()
     {
         return [
             ['hello', true],
@@ -220,9 +220,7 @@ class BooleanStringElementTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideInvalidValue
-     */
+    #[DataProvider('provideInvalidValue')]
     public function test_import_invalid_type($value)
     {
         $this->expectException(\TypeError::class);
@@ -235,7 +233,7 @@ class BooleanStringElementTest extends TestCase
     /**
      *
      */
-    public function provideInvalidValue()
+    public static function provideInvalidValue()
     {
         return [
             [[]],

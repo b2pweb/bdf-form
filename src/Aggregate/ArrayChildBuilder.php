@@ -14,10 +14,7 @@ use Bdf\Form\Registry\RegistryInterface;
  */
 class ArrayChildBuilder extends ChildBuilder
 {
-    /**
-     * @var bool
-     */
-    private $filterEmptyValues = true;
+    private bool $filterEmptyValues = true;
 
     /**
      * ArrayChildBuilder constructor.
@@ -30,7 +27,7 @@ class ArrayChildBuilder extends ChildBuilder
     {
         parent::__construct($name, $elementBuilder, $registry);
 
-        $this->addFilterProvider([$this, 'provideEmptyValueFilter']);
+        $this->addFilterProvider($this->provideEmptyValueFilter(...));
     }
 
     /**

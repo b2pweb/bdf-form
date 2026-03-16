@@ -15,62 +15,43 @@ use Bdf\Form\Transformer\NullTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\HttpValue;
 use Bdf\Form\View\ElementViewInterface;
+use LogicException;
+use Override;
 use WeakReference;
+
+use function assert;
 
 /**
  * Child which extract HTTP field value from a simple array access
  */
 final class Child implements ChildInterface
 {
-    /**
-     * @var ElementInterface
-     */
-    private $element;
+    private readonly ElementInterface $element;
 
     /**
      * @var WeakReference<ChildAggregateInterface>
      */
-    private $parent;
-
-    /**
-     * @var string
-     */
-    private $name;
+    private ?WeakReference $parent = null;
+    private readonly string $name;
 
     /**
      * @var HttpFieldsInterface
      */
-    private $fields;
-
-    /**
-     * @var mixed
-     */
-    private $defaultValue;
+    private readonly HttpFieldsInterface $fields;
+    private readonly mixed $defaultValue;
 
     /**
      * @var FilterInterface[]
      */
-    private $filters;
-
-    /**
-     * @var HydratorInterface|null
-     */
-    private $hydrator;
-
-    /**
-     * @var ExtractorInterface|null
-     */
-    private $extractor;
+    private readonly array $filters;
+    private readonly ?HydratorInterface $hydrator;
+    private readonly ?ExtractorInterface $extractor;
 
     /**
      * @var string[]
      */
-    private $dependencies;
-
-    /**
-     * @var TransformerInterface
-     */
-    private $transformer;
+    private readonly array $dependencies;
+    private readonly TransformerInterface $transformer;
 
 
     /**
@@ -98,9 +79,7 @@ final class Child implements ChildInterface
         $this->transformer = $transformer ?? NullTransformer::instance();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function element(): ElementInterface
     {
         return $this->element;
@@ -108,19 +87,15 @@ final class Child implements ChildInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @psalm-suppress NullableReturnStatement
-     * @psalm-suppress InvalidNullableReturnType
      */
+    #[Override]
     public function parent(): ChildAggregateInterface
     {
-        return $this->parent->get();
+        return $this->parent?->get() ?? throw new LogicException('No parent has been set.');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setParent(ChildAggregateInterface $parent): ChildInterface
+    #[Override]
+    public function setParent(ChildAggregateInterface $parent): static
     {
         if ($this->parent === null) {
             $this->parent = WeakReference::create($parent);
@@ -133,33 +108,32 @@ final class Child implements ChildInterface
         return $child;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function dependencies(): array
     {
         return $this->dependencies;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function import($entity): void
+    #[Override]
+    public function import(array|object|null $entity): void
     {
         if (!$this->extractor) {
             return;
         }
 
-        /** @psalm-suppress PossiblyNullReference */
-        $propertyAccessor = $this->parent->get()->root()->getPropertyAccessor();
+        if ($entity === null) {
+            $this->element->import(null);
+            return;
+        }
+
+        $propertyAccessor = $this->parent?->get()?->root()?->getPropertyAccessor();
+        assert($propertyAccessor !== null);
 
         $this->extractor->setPropertyAccessor($propertyAccessor);
         $this->extractor->setFormElement($this);
@@ -171,17 +145,15 @@ final class Child implements ChildInterface
         $this->element->import($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function fill(&$entity): void
+    #[Override]
+    public function fill(array|object &$entity): void
     {
         if (!$this->hydrator) {
             return;
         }
 
-        /** @psalm-suppress PossiblyNullReference */
-        $propertyAccessor = $this->parent->get()->root()->getPropertyAccessor();
+        $propertyAccessor = $this->parent?->get()?->root()?->getPropertyAccessor();
+        assert($propertyAccessor !== null);
 
         $this->hydrator->setPropertyAccessor($propertyAccessor);
         $this->hydrator->setFormElement($this);
@@ -193,20 +165,16 @@ final class Child implements ChildInterface
         $this->hydrator->setFormElement(null);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submit($data): bool
+    #[Override]
+    public function submit(mixed $data): bool
     {
         $value = $this->extractValue($data);
 
         return $this->element->submit($value)->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function patch($data): bool
+    #[Override]
+    public function patch(mixed $data): bool
     {
         $value = $data !== null && $this->fields->contains($data)
             ? $this->extractValue($data)
@@ -216,33 +184,24 @@ final class Child implements ChildInterface
         return $this->element->patch($value)->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function httpFields(): array
     {
         return $this->fields->format($this->element->httpValue());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $this->element->error($this->fields->get($field));
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $field = null): ElementViewInterface
     {
         return $this->element->view($this->fields->get($field));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __clone()
     {
         $this->element = $this->element->setContainer($this);
@@ -254,7 +213,7 @@ final class Child implements ChildInterface
      * @param mixed $httpValue
      * @return mixed The filtered value
      */
-    private function extractValue($httpValue)
+    private function extractValue(mixed $httpValue): mixed
     {
         $value = $this->fields->extract($httpValue);
         $default = $this->defaultValue;

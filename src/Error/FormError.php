@@ -6,6 +6,7 @@ use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
 use Bdf\Form\ElementInterface;
 use InvalidArgumentException;
+use Override;
 use Stringable;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -26,22 +27,22 @@ final class FormError implements Stringable
     /**
      * @var HttpFieldPath|null
      */
-    private $field;
+    private ?HttpFieldPath $field = null;
 
     /**
      * @var string|null
      */
-    private $global;
+    private ?string $global;
 
     /**
      * @var string|null
      */
-    private $code;
+    private ?string $code;
 
     /**
      * @var FormError[]
      */
-    private $children;
+    private array $children;
 
 
     /**
@@ -111,7 +112,7 @@ final class FormError implements Stringable
      */
     public function empty(): bool
     {
-        return empty($this->global) && empty($this->code) && empty($this->children);
+        return $this->global === null && $this->code === null && $this->children === [];
     }
 
     /**
@@ -129,7 +130,7 @@ final class FormError implements Stringable
     {
         $child = $this->children[$child] ?? null;
 
-        return $child ? $child->global : null;
+        return $child?->global;
     }
 
     /**
@@ -159,12 +160,12 @@ final class FormError implements Stringable
     {
         $errors = [];
 
-        if ($this->global) {
+        if ($this->global !== null) {
             $errors[0] = $this->global;
         }
 
         foreach ($this->children as $name => $child) {
-            if ($child->global) {
+            if ($child->global !== null) {
                 $errors[$name] = $child->global;
             } else {
                 $errors[$name] = $child->toArray();
@@ -181,17 +182,17 @@ final class FormError implements Stringable
      *
      * @return mixed The printer result
      */
-    public function print(FormErrorPrinterInterface $printer)
+    public function print(FormErrorPrinterInterface $printer): mixed
     {
-        if ($this->field) {
+        if ($this->field !== null) {
             $printer->field($this->field);
         }
 
-        if ($this->global) {
+        if ($this->global !== null) {
             $printer->global($this->global);
         }
 
-        if ($this->code) {
+        if ($this->code !== null) {
             $printer->code($this->code);
         }
 
@@ -207,6 +208,7 @@ final class FormError implements Stringable
      *
      * @return string
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->print(new StringErrorPrinter());
@@ -285,7 +287,7 @@ final class FormError implements Stringable
         $message = (string) $violation->getMessage();
         $code = $violation->getCode();
 
-        if ($code !== null && $violation instanceof ConstraintViolation && ($constraint = $violation->getConstraint()) !== null) {
+        if ($code !== null && ($constraint = $violation->getConstraint()) !== null) {
             try {
                 $code = $constraint->getErrorName($code);
             } catch (InvalidArgumentException $e) {

@@ -17,7 +17,7 @@ trait MagicCallForwarding
      *
      * @return $this|mixed
      */
-    final public function __call(string $name, array $arguments)
+    final public function __call(string $name, array $arguments): mixed
     {
         $builder = $this->getElementBuilder();
         $return = $builder->$name(...$arguments);

@@ -8,17 +8,11 @@ use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
 use Bdf\Form\Validator\ValueValidatorInterface;
-use ReflectionClass;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use TypeError;
 
-use function get_debug_type;
-use function is_array;
-use function is_bool;
+use function array_unshift;
 use function is_callable;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Trait for implements build of constraint validator
@@ -28,19 +22,15 @@ use function trigger_error;
 trait ValidatorBuilderTrait
 {
     /**
-     * @var array<Constraint|string|array>
+     * @var array<Constraint>
      */
-    private $constraints = [];
+    private array $constraints = [];
+    private ?TransformerExceptionConstraint $transformerExceptionConstraint = null;
 
     /**
-     * @var TransformerExceptionConstraint|null
+     * @var array<callable(RegistryInterface):(Constraint[])>
      */
-    private $transformerExceptionConstraint;
-
-    /**
-     * @var callable[]
-     */
-    private $constraintsProviders = [];
+    private array $constraintsProviders = [];
 
     /**
      * Mark this input as required
@@ -56,7 +46,7 @@ trait ValidatorBuilderTrait
      * $builder->required(['allowNull' => true]); // With custom options
      * </code>
      *
-     * @param array|string|null $options The constraint option. Is a string is given, it will be used as error message
+     * @param string|Constraint|null $message The error message. A custom constraint can be passed.
      * @param bool|null $allowNull Allow null value (default false).
      * @param callable|null $normalizer A normalizer callback to apply on the value before validation.
      *
@@ -64,48 +54,13 @@ trait ValidatorBuilderTrait
      *
      * @see NotBlank The used constraint
      */
-    public function required($options = null/*, ?bool $allowNull = null, ?callable $normalizer = null*/)
+    public function required(string|Constraint|null $message = null, ?bool $allowNull = null, ?callable $normalizer = null): static
     {
-        // @todo rename $options to $message on bdf-form 2.0
-        if (is_array($options)) {
-            @trigger_error('Passing an array of options to required() is deprecated since 1.7. Pass the options as individual parameters instead.', E_USER_DEPRECATED);
+        if (!$message instanceof Constraint) {
+            $message = new NotBlank(message: $message, allowNull: $allowNull, normalizer: $normalizer);
         }
 
-        // @todo declare allowNull and normalizer as actual parameters on bdf-form 2.0
-        $allowNull = func_num_args() > 1 ? func_get_arg(1) : null;
-        $normalizer = func_num_args() > 2 ? func_get_arg(2) : null;
-
-        if ($allowNull !== null && !is_bool($allowNull)) {
-            throw new TypeError(sprintf('The "allowNull" option of required() must be a boolean or null, "%s" given.', get_debug_type($allowNull)));
-        }
-
-        if ($normalizer !== null && !is_callable($normalizer)) {
-            throw new TypeError(sprintf('The "normalizer" option of required() must be a valid callable or null, "%s" given.', get_debug_type($normalizer)));
-        }
-
-        if (!$options instanceof Constraint) {
-            static $isSf4 = null;
-
-            if ($isSf4 === null) {
-                /** @psalm-suppress PossiblyNullReference */
-                $isSf4 = (new ReflectionClass(NotBlank::class))->getConstructor()->getNumberOfParameters() === 1;
-            }
-
-            if (is_array($options)) {
-                $message = $options['message'] ?? null;
-                $allowNull ??= $options['allowNull'] ?? null;
-                $normalizer ??= $options['normalizer'] ?? null;
-            } else {
-                $message = $options;
-            }
-
-            $options = $isSf4
-                ? new NotBlank(['message' => $message, 'allowNull' => $allowNull, 'normalizer' => $normalizer])
-                : new NotBlank(null, $message, $allowNull, $normalizer) // The constructor is consistent from sf 5 to 8, so we can safely use ordered parameters.
-            ;
-        }
-
-        return $this->satisfy($options);
+        return $this->satisfy($message);
     }
 
     /**
@@ -113,19 +68,10 @@ trait ValidatorBuilderTrait
      *
      * @see ElementBuilderInterface::satisfy()
      */
-    final public function satisfy($constraint, $options = null, bool $append = true)
+    final public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static
     {
-        // @todo rename $options to $message in bdf-form 2.0
         if (is_callable($constraint)) {
-            $constraint = new Closure($constraint, $options);
-        }
-
-        if (!$constraint instanceof Constraint) {
-            @trigger_error('Passing a non constraint to satisfy() is deprecated since 1.7. Pass a constraint instance, or a callback, instead of a class name.', E_USER_DEPRECATED);
-        }
-
-        if ($options !== null) {
-            $constraint = [$constraint, $options];
+            $constraint = new Closure($constraint, $message);
         }
 
         if ($append === true) {
@@ -147,7 +93,7 @@ trait ValidatorBuilderTrait
      *
      * @see TransformerExceptionConstraint::$ignoreException
      */
-    final public function ignoreTransformerException(bool $flag = true)
+    final public function ignoreTransformerException(bool $flag = true): static
     {
         $this->getTransformerExceptionConstraint()->ignoreException = $flag;
 
@@ -162,7 +108,7 @@ trait ValidatorBuilderTrait
      *
      * @see TransformerExceptionConstraint::$message
      */
-    final public function transformerErrorMessage(string $message)
+    final public function transformerErrorMessage(string $message): static
     {
         $this->getTransformerExceptionConstraint()->message = $message;
 
@@ -177,7 +123,7 @@ trait ValidatorBuilderTrait
      *
      * @see TransformerExceptionConstraint::$code
      */
-    final public function transformerErrorCode(string $code)
+    final public function transformerErrorCode(string $code): static
     {
         $this->getTransformerExceptionConstraint()->code = $code;
 
@@ -215,7 +161,7 @@ trait ValidatorBuilderTrait
      *
      * @see TransformerExceptionConstraint::$code
      */
-    final public function transformerExceptionValidation(callable $validationCallback)
+    final public function transformerExceptionValidation(callable $validationCallback): static
     {
         $this->getTransformerExceptionConstraint()->validationCallback = $validationCallback;
 
@@ -236,7 +182,7 @@ trait ValidatorBuilderTrait
      * });
      * </code>
      *
-     * @param callable(RegistryInterface):Constraint[] $constraintsProvider
+     * @param callable(RegistryInterface):(Constraint[]) $constraintsProvider
      */
     final protected function addConstraintsProvider(callable $constraintsProvider): void
     {
@@ -258,36 +204,12 @@ trait ValidatorBuilderTrait
     }
 
     /**
-     * Define the default constraints options for the TransformerExceptionConstraint
-     * This method should be overridden for define options
-     *
-     * @return array
-     * @deprecated Use {@see ValidatorBuilderTrait::defaultTransformerExceptionConstraint()} instead to define the default constraint with options. Will be removed in bdf-form 2.0
-     */
-    protected function defaultTransformerExceptionConstraintOptions(): array
-    {
-        return [];
-    }
-
-    /**
      * Define the default TransformerExceptionConstraint
      * This method should be overridden to define options
      */
     protected function defaultTransformerExceptionConstraint(): TransformerExceptionConstraint
     {
-        $options = $this->defaultTransformerExceptionConstraintOptions();
-
-        if ($options !== []) {
-            @trigger_error(sprintf('The %s::defaultTransformerExceptionConstraintOptions() method is deprecated since 1.7. Override %s::defaultTransformerExceptionConstraint() instead to define the default constraint with options.', static::class, static::class), E_USER_DEPRECATED);
-        }
-
-        return new TransformerExceptionConstraint(
-            $options['exception'] ?? null,
-            $options['message'] ?? null,
-            $options['code'] ?? null,
-            $options['validationCallback'] ?? null,
-            $options['ignoreException'] ?? null,
-        );
+        return new TransformerExceptionConstraint();
     }
 
     /**
@@ -308,12 +230,10 @@ trait ValidatorBuilderTrait
         $constraints = [];
 
         foreach ($this->constraintsProviders as $provider) {
-            $constraints = array_merge($constraints, $provider($registry));
+            $constraints = [...$constraints, ...$provider($registry)];
         }
 
-        foreach ($this->constraints as $constraint) {
-            $constraints[] = $registry->constraint($constraint);
-        }
+        $constraints = [...$constraints, ...$this->constraints];
 
         return new ConstraintValueValidator($constraints, $this->getTransformerExceptionConstraint());
     }

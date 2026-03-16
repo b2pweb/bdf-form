@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Choice;
 
+use Override;
+
 /**
  * Proxy choice using a callback for generate the choices array
  *
@@ -10,21 +12,21 @@ namespace Bdf\Form\Choice;
  *
  * @final
  */
-/*final*/ class LazyChoice implements ChoiceInterface
+final class LazyChoice implements ChoiceInterface
 {
     /**
      * The lazy callback with returns choices
      *
      * @var callable():(T[]|ChoiceInterface<T>)
      */
-    private $resolver;
+    private readonly mixed $resolver;
 
     /**
      * The choice object
      *
      * @var ChoiceInterface<T>|null
      */
-    private $choices;
+    private ?ChoiceInterface $choices = null;
 
     /**
      * LazyChoice constructor.
@@ -36,17 +38,13 @@ namespace Bdf\Form\Choice;
         $this->resolver = $resolver;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function values(): array
     {
         return $this->build()->values();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?callable $configuration = null): array
     {
         return $this->build()->view($configuration);

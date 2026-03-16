@@ -10,6 +10,7 @@ use Bdf\Form\Filter\ClosureFilter;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Setter;
 use Bdf\Form\Validator\ConstraintValueValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
 
@@ -18,9 +19,7 @@ use Symfony\Component\Validator\Constraints\NotEqualTo;
  */
 class ArrayOffsetHttpFieldsTest extends TestCase
 {
-    /**
-     * @dataProvider emptyValues
-     */
+    #[DataProvider('emptyValues')]
     public function test_submit_empty($value)
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
@@ -57,9 +56,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
         $this->assertTrue($field->contains(['child' => 'xxx']));
     }
 
-    /**
-     * @dataProvider emptyValues
-     */
+    #[DataProvider('emptyValues')]
     public function test_submit_empty_with_default_value($value)
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], 'default', new Setter());
@@ -69,9 +66,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
         $this->assertEquals('default', $child->element()->value());
     }
 
-    /**
-     * @dataProvider notEmptyValues
-     */
+    #[DataProvider('notEmptyValues')]
     public function test_submit_not_empty($value)
     {
         $child = new Child('child', new StringElement(), new ArrayOffsetHttpFields('child'), [], null, new Setter());
@@ -136,7 +131,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
     /**
      * @return array
      */
-    public function emptyValues()
+    public static function emptyValues()
     {
         return [
             [null],
@@ -150,7 +145,7 @@ class ArrayOffsetHttpFieldsTest extends TestCase
     /**
      * @return array
      */
-    public function notEmptyValues()
+    public static function notEmptyValues()
     {
         return [
             ['0'],

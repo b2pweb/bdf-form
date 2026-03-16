@@ -7,6 +7,7 @@ use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\ElementInterface;
 use Iterator;
 use IteratorAggregate;
+use Override;
 
 /**
  * Form element consists of an aggregation of sub-elements wrapped into a ChildInterface
@@ -27,7 +28,8 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @param string $offset The child name
      */
-    public function offsetGet($offset): ChildInterface;
+    #[Override]
+    public function offsetGet(mixed $offset): ChildInterface;
 
     /**
      * {@inheritdoc}
@@ -36,7 +38,8 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @param string $offset The child name
      */
-    public function offsetExists($offset): bool;
+    #[Override]
+    public function offsetExists(mixed $offset): bool;
 
     /**
      * {@inheritdoc}
@@ -48,7 +51,8 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @throws \BadMethodCallException
      */
-    public function offsetSet($offset, $value): void;
+    #[Override]
+    public function offsetSet(mixed $offset, mixed $value): void;
 
     /**
      * {@inheritdoc}
@@ -57,7 +61,8 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @throws \BadMethodCallException
      */
-    public function offsetUnset($offset): void;
+    #[Override]
+    public function offsetUnset(mixed $offset): void;
 
     /**
      * {@inheritdoc}
@@ -66,5 +71,6 @@ interface ChildAggregateInterface extends ElementInterface, ArrayAccess, Iterato
      *
      * @return Iterator<string, ChildInterface>
      */
+    #[Override]
     public function getIterator(): Iterator;
 }

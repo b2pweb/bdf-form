@@ -9,7 +9,6 @@ use Bdf\Form\Constraint\GreaterThanField;
 use Bdf\Form\Constraint\GreaterThanOrEqualField;
 use Bdf\Form\Constraint\LessThanField;
 use Bdf\Form\Constraint\LessThanOrEqualField;
-use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\FieldPath;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
@@ -18,6 +17,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use Override;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\LessThan;
@@ -48,24 +48,14 @@ class DateTimeElementBuilder extends AbstractElementBuilder
     /**
      * @var class-string<DateTimeInterface>
      */
-    private $dateTimeClassName = DateTime::class;
-
-    /**
-     * @var string
-     */
-    private $dateFormat = DateTime::ATOM;
-
-    /**
-     * @var DateTimeZone|null
-     */
-    private $timezone;
+    private string $dateTimeClassName = DateTime::class;
+    private string $dateFormat = DateTime::ATOM;
+    private ?DateTimeZone $timezone = null;
 
     /**
      * Reset the fields value which are not provided by the format
-     *
-     * @var bool
      */
-    private $resetNotProvidedFields = true;
+    private bool $resetNotProvidedFields = true;
 
     /**
      * Define the date time class name to use
@@ -80,7 +70,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @see DateTimeElementBuilder::immutable() For use DateTimeImmutable
      */
-    public function className(string $dateTimeClassName): self
+    public function className(string $dateTimeClassName): static
     {
         $this->dateTimeClassName = $dateTimeClassName;
 
@@ -96,7 +86,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      * @see DateTimeImmutable
      * @see DateTimeElementBuilder::className()
      */
-    public function immutable(): self
+    public function immutable(): static
     {
         return $this->className(DateTimeImmutable::class);
     }
@@ -115,7 +105,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @see https://www.php.net/manual/en/datetime.createfromformat.php#refsect1-datetime.createfromformat-parameters For the format
      */
-    public function format(string $format): self
+    public function format(string $format): static
     {
         $this->dateFormat = $format;
 
@@ -136,7 +126,7 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function timezone($timezone): self
+    public function timezone(string|DateTimeZone|null $timezone): static
     {
         if (is_string($timezone)) {
             $timezone = new DateTimeZone($timezone);
@@ -160,11 +150,11 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function before(DateTimeInterface $dateTime, ?string $message = null, bool $orEqual = false): self
+    public function before(DateTimeInterface $dateTime, ?string $message = null, bool $orEqual = false): static
     {
         $constraint = $orEqual ? new LessThanOrEqual($dateTime) : new LessThan($dateTime);
 
-        if ($message) {
+        if ($message !== null) {
             $constraint->message = $message;
         }
 
@@ -192,11 +182,11 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @see FieldPath::parse() For the field path syntax
      */
-    public function beforeField(string $field, ?string $message = null, bool $orEqual = false): self
+    public function beforeField(string $field, ?string $message = null, bool $orEqual = false): static
     {
         $constraint = $orEqual ? new LessThanOrEqualField($field) : new LessThanField($field);
 
-        if ($message) {
+        if ($message !== null) {
             $constraint->message = $message;
         }
 
@@ -216,11 +206,11 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function after(DateTimeInterface $dateTime, ?string $message = null, bool $orEqual = false): self
+    public function after(DateTimeInterface $dateTime, ?string $message = null, bool $orEqual = false): static
     {
         $constraint = $orEqual ? new GreaterThanOrEqual($dateTime) : new GreaterThan($dateTime);
 
-        if ($message) {
+        if ($message !== null) {
             $constraint->message = $message;
         }
 
@@ -248,11 +238,11 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @see FieldPath::parse() For the field path syntax
      */
-    public function afterField(string $field, ?string $message = null, bool $orEqual = false): self
+    public function afterField(string $field, ?string $message = null, bool $orEqual = false): static
     {
         $constraint = $orEqual ? new GreaterThanOrEqualField($field) : new GreaterThanField($field);
 
-        if ($message) {
+        if ($message !== null) {
             $constraint->message = $message;
         }
 
@@ -283,42 +273,24 @@ class DateTimeElementBuilder extends AbstractElementBuilder
      *
      * @return $this
      */
-    public function resetNotProvidedFields(bool $flag = true): self
+    public function resetNotProvidedFields(bool $flag = true): static
     {
         $this->resetNotProvidedFields = $flag;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function defaultTransformerExceptionConstraintOptions(): array
-    {
-        return [
-            'message' => 'This value is not a valid datetime.',
-            'code' => 'INVALID_DATETIME_ERROR',
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function defaultTransformerExceptionConstraint(): TransformerExceptionConstraint
     {
         return new TransformerExceptionConstraint(
-            null,
-            /*message:*/ 'This value is not a valid datetime.',
-            /*code:*/ 'INVALID_DATETIME_ERROR',
+            message: 'This value is not a valid datetime.',
+            code: 'INVALID_DATETIME_ERROR',
         );
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return DateTimeElement
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): DateTimeElement
     {
         return new DateTimeElement(
             $validator,

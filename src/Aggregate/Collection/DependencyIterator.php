@@ -4,6 +4,9 @@ namespace Bdf\Form\Aggregate\Collection;
 
 use Bdf\Form\Child\ChildInterface;
 use Iterator;
+use Override;
+
+use function assert;
 
 /**
  * Iterate over @see DependencyTree
@@ -17,27 +20,11 @@ final class DependencyIterator implements Iterator
     /**
      * @var ChildInterface[]
      */
-    private $children;
-
-    /**
-     * @var Level
-     */
-    private $first;
-
-    /**
-     * @var bool
-     */
-    private $reverse;
-
-    /**
-     * @var Level|null
-     */
-    private $currentLevel;
-
-    /**
-     * @var Iterator|null
-     */
-    private $levelIterator;
+    private array $children;
+    private Level $first;
+    private bool $reverse;
+    private ?Level $currentLevel = null;
+    private ?Iterator $levelIterator = null;
 
 
     /**
@@ -47,38 +34,30 @@ final class DependencyIterator implements Iterator
      * @param Level $first
      * @param bool $reverse Does iterate on reverse order on levels ?
      */
-    public function __construct(array $children, Level $first, $reverse = true)
+    public function __construct(array $children, Level $first, bool $reverse = true)
     {
         $this->children = $children;
         $this->first    = $first;
         $this->reverse  = $reverse;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return ChildInterface
-     */
+    #[Override]
     public function current(): ChildInterface
     {
         return $this->children[$this->key()];
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @psalm-suppress PossiblyNullReference
-     * @psalm-suppress PossiblyNullReference
-     */
+    #[Override]
     public function next(): void
     {
+        assert($this->levelIterator !== null);
         $this->levelIterator->next();
 
         // The level iterator can be invalid if the level is empty
         // We need to skip empty levels
         while (!$this->levelIterator->valid()) {
             $this->levelIterator = null;
-            $this->currentLevel  = $this->reverse ? $this->currentLevel->prev() : $this->currentLevel->next();
+            $this->currentLevel = $this->reverse ? $this->currentLevel?->prev() : $this->currentLevel?->next();
 
             // There is no more level, the iterator will be "invalid"
             if ($this->currentLevel === null) {
@@ -97,28 +76,20 @@ final class DependencyIterator implements Iterator
         }
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @psalm-suppress PossiblyNullReference
-     */
-    #[\ReturnTypeWillChange]
-    public function key()
+    #[Override]
+    public function key(): string|int
     {
+        assert($this->levelIterator !== null);
         return $this->levelIterator->key();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->levelIterator !== null && $this->levelIterator->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function rewind(): void
     {
         $this->currentLevel  = $this->first;

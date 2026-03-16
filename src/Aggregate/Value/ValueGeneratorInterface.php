@@ -23,7 +23,7 @@ interface ValueGeneratorInterface
      * @param T|callable():T|class-string<T> $entity
      * @see FormInterface::attach()
      */
-    public function attach($entity): void;
+    public function attach(mixed $entity): void;
 
     /**
      * Generate the value
@@ -34,5 +34,5 @@ interface ValueGeneratorInterface
      * @return T
      * @see FormInterface::value()
      */
-    public function generate(ElementInterface $element);
+    public function generate(ElementInterface $element): mixed;
 }

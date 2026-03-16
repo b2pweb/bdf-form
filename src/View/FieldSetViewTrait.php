@@ -18,12 +18,12 @@ trait FieldSetViewTrait
     /**
      * @var array<string, ElementViewInterface>
      */
-    private $elements = [];
+    private array $elements = [];
 
     /**
      * {@inheritdoc}
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->elements[$offset]);
     }
@@ -31,7 +31,7 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset): ElementViewInterface
+    public function offsetGet(mixed $offset): ElementViewInterface
     {
         return $this->elements[$offset];
     }
@@ -39,7 +39,7 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new BadMethodCallException('FormView is read only');
     }
@@ -47,7 +47,7 @@ trait FieldSetViewTrait
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         throw new BadMethodCallException('FormView is read only');
     }
@@ -72,6 +72,8 @@ trait FieldSetViewTrait
 
     /**
      * {@inheritdoc}
+     *
+     * @return array<array-key, string|array>
      */
     public function errors(): array
     {
@@ -82,9 +84,9 @@ trait FieldSetViewTrait
                 continue;
             }
 
-            if ($element instanceof FieldSetViewInterface && method_exists($element, 'errors')) {
+            if ($element instanceof FieldSetViewInterface) {
                 $errors[$name] = $element->errors();
-            } elseif ($error = $element->error()) {
+            } elseif (($error = $element->error()) !== null) {
                 $errors[$name] = $error;
             }
         }

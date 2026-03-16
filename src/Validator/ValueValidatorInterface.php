@@ -24,7 +24,7 @@ interface ValueValidatorInterface
      *
      * @return FormError The error. Return an empty error if the value is valid
      */
-    public function validate($value, ElementInterface $element): FormError;
+    public function validate(mixed $value, ElementInterface $element): FormError;
 
     /**
      * Handle a transformer exception
@@ -35,7 +35,7 @@ interface ValueValidatorInterface
      *
      * @return FormError The real error
      */
-    public function onTransformerException(Exception $exception, $value, ElementInterface $element): FormError;
+    public function onTransformerException(Exception $exception, mixed $value, ElementInterface $element): FormError;
 
     /**
      * Get validator constraints

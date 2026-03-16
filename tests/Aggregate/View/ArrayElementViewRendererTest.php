@@ -4,6 +4,7 @@ namespace Bdf\Form\Aggregate\View;
 
 use Bdf\Form\Aggregate\ArrayElement;
 use Bdf\Form\Choice\ChoiceView;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
@@ -45,9 +46,7 @@ class ArrayElementViewRendererTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider provideConstraints
-     */
+    #[DataProvider('provideConstraints')]
     public function test_render_csv_constraints($constraints, $attributes)
     {
         $view = new ArrayElementView(ArrayElement::class, 'foo', 'aaa,bbb,ccc', null, [], false, $constraints);
@@ -56,7 +55,7 @@ class ArrayElementViewRendererTest extends TestCase
         $this->assertEquals('<input type="text" name="foo" value="aaa,bbb,ccc"'.$attributes.' />', $renderer->render($view, []));
     }
 
-    public function provideConstraints()
+    public static function provideConstraints()
     {
         return [
             [[], ''],

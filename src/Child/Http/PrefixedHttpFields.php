@@ -2,6 +2,12 @@
 
 namespace Bdf\Form\Child\Http;
 
+use Override;
+
+use function str_starts_with;
+use function strlen;
+use function substr;
+
 /**
  * Extract HTTP fields value prefixed by a given string
  *
@@ -14,28 +20,17 @@ namespace Bdf\Form\Child\Http;
  * $fields->extract(['other' => 'value'], ['not found']); // => ['not found']
  * </code>
  */
-final class PrefixedHttpFields implements HttpFieldsInterface
+final readonly class PrefixedHttpFields implements HttpFieldsInterface
 {
-    /**
-     * @var string
-     */
-    private $prefix;
+    public function __construct(
+        /**
+         * The http fields prefix
+         */
+        private string $prefix
+    ) {}
 
-
-    /**
-     * ArrayOffsetHttpFields constructor.
-     *
-     * @param string $prefix The http fields prefix
-     */
-    public function __construct(string $prefix)
-    {
-        $this->prefix = $prefix;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function extract($httpFields)
+    #[Override]
+    public function extract(mixed $httpFields): array
     {
         $data = (array) $httpFields;
         $prefixLen = strlen($this->prefix);
@@ -55,31 +50,25 @@ final class PrefixedHttpFields implements HttpFieldsInterface
         return $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function contains($httpFields): bool
     {
         return true; // Always true ?
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function format($value)
+    #[Override]
+    public function format(mixed $value): array
     {
         $http = [];
 
-        foreach ($value as $field => $fieldValue) {
+        foreach ((array) $value as $field => $fieldValue) {
             $http[$this->prefix.$field] = $fieldValue;
         }
 
         return $http;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function get(?HttpFieldPath $path = null): HttpFieldPath
     {
         return $path === null ? HttpFieldPath::prefixed($this->prefix) : $path->prefix($this->prefix);

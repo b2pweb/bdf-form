@@ -2,6 +2,8 @@
 
 namespace Bdf\Form\Leaf;
 
+use Override;
+
 /**
  * Element which supports any type of values
  * This element allow to perform any type transformation from transformers on the form declaration
@@ -13,26 +15,20 @@ namespace Bdf\Form\Leaf;
  */
 class AnyElement extends LeafElement
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function toPhp($httpValue)
+    #[Override]
+    protected function toPhp(mixed $httpValue): mixed
     {
         return $httpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function toHttp($phpValue)
+    #[Override]
+    protected function toHttp(mixed $phpValue): mixed
     {
         return $phpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function sanitize($rawValue)
+    #[Override]
+    protected function sanitize(mixed $rawValue): mixed
     {
         return $rawValue;
     }

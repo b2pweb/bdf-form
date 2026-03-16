@@ -61,7 +61,7 @@ class FilterVarTest extends TestCase
     public function test_functionnal()
     {
         $builder = new FormBuilder();
-        $builder->string('foo')->filter(FilterVar::class);
+        $builder->string('foo')->filter(new FilterVar());
         $form = $builder->buildElement();
 
         $form->submit(['foo' => '<span="class">"Test"</span>']);

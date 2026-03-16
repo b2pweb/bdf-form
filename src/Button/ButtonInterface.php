@@ -34,7 +34,7 @@ interface ButtonInterface
      *
      * @return bool true is the button is clicked, or false
      */
-    public function submit($data): bool;
+    public function submit(mixed $data): bool;
 
     /**
      * Get the http value of the button

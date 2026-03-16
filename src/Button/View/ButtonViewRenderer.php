@@ -3,6 +3,7 @@
 namespace Bdf\Form\Button\View;
 
 use Bdf\Form\View\HtmlRenderer;
+use Override;
 
 /**
  * Renderer for @see ButtonViewInterface
@@ -14,9 +15,7 @@ final class ButtonViewRenderer implements ButtonViewRendererInterface
      */
     private static $instance;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function render(ButtonViewInterface $view, array $attributes): string
     {
         if (!isset($attributes['type'])) {

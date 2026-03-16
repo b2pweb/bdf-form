@@ -5,6 +5,11 @@ namespace Bdf\Form\Filter;
 use Attribute;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildInterface;
+use Override;
+
+use function is_string;
+use function preg_replace;
+use function trim;
 
 /**
  * Perform a trim on the input value
@@ -15,15 +20,10 @@ use Bdf\Form\Child\ChildInterface;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class TrimFilter implements FilterInterface
 {
-    /**
-     * @var self
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function filter($value, ChildInterface $input, $default)
+    #[Override]
+    public function filter(mixed $value, ChildInterface $input, mixed $default): mixed
     {
         if (!is_string($value)) {
             return $value;
@@ -44,10 +44,6 @@ final class TrimFilter implements FilterInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

@@ -7,8 +7,6 @@ use Stringable;
 
 /**
  * Base type for a renderable element of the form view tree
- *
- * @method self with(array $attributes)
  */
 interface Renderable extends Stringable
 {
@@ -20,17 +18,17 @@ interface Renderable extends Stringable
      *
      * @return $this
      */
-    public function __call(string $name, array $arguments);
+    public function __call(string $name, array $arguments): static;
 
     /**
      * Define an attribute value
      *
      * @param string $name The attribute name
-     * @param string|bool $value The attribute value. Use true for a simple flag attribute
+     * @param scalar|bool $value The attribute value. Use true for a simple flag attribute
      *
      * @return $this
      */
-    public function set(string $name, $value);
+    public function set(string $name, string|int|float|bool $value): static;
 
     /**
      * Define multiple attributes
@@ -44,9 +42,8 @@ interface Renderable extends Stringable
      * @param array<scalar> $attributes
      * @return $this
      * @since 1.5
-     * @todo uncomment in 2.0
      */
-    //public function with(array $attributes);
+    public function with(array $attributes): static;
 
     /**
      * Remove an attribute
@@ -55,7 +52,7 @@ interface Renderable extends Stringable
      *
      * @return $this
      */
-    public function unset(string $name);
+    public function unset(string $name): static;
 
     /**
      * Get all defined attributes

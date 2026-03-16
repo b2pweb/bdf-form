@@ -63,7 +63,7 @@ class FormErrorTest extends TestCase
     public function test_violation()
     {
         $validator = (new ValidatorBuilder)->getValidator();
-        $violation = $validator->validate('foo', new Length(['min' => 5]))->get(0);
+        $violation = $validator->validate('foo', new Length(min: 5))->get(0);
         $error = FormError::violation($violation);
 
         $this->assertInstanceOf(FormError::class, $error);

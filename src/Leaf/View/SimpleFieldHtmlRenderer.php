@@ -9,6 +9,7 @@ use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\HtmlRenderer;
+use Override;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
@@ -21,10 +22,7 @@ use Symfony\Component\Validator\Constraints\PositiveOrZero;
  */
 final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
 {
-    /**
-     * @var SimpleFieldHtmlRenderer|null
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * Map constraint class name to mapped attributes in form :
@@ -32,7 +30,7 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
      *
      * @var string[][]
      */
-    private $constraintMapping = [
+    private array $constraintMapping = [
         Length::class => ['min' => 'minlength', 'max' => 'maxlength'],
         LessThanOrEqual::class => ['value' => 'max'],
         GreaterThanOrEqual::class => ['value' => 'min'],
@@ -44,16 +42,14 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
      *
      * @var string[]
      */
-    private $typesMapping = [
+    private array $typesMapping = [
         IntegerElement::class => 'number',
         PhoneElement::class => 'tel',
         CsrfElement::class => 'hidden',
         EmailElement::class => 'email',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
     {
         if (!isset($attributes['type'])) {
@@ -98,10 +94,6 @@ final class SimpleFieldHtmlRenderer implements FieldViewRendererInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

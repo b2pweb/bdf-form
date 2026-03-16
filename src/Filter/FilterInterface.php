@@ -22,5 +22,5 @@ interface FilterInterface
      * 
      * @return mixed Returns the filtered value
      */
-    public function filter($value, ChildInterface $input, $default);
+    public function filter(mixed $value, ChildInterface $input, mixed $default)/*: mixed*/;
 }

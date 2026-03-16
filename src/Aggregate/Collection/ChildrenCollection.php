@@ -8,6 +8,7 @@ use Bdf\Form\Child\ChildInterface;
 use Countable;
 use Iterator;
 use IteratorAggregate;
+use Override;
 
 /**
  * Simple implementation of children collection for handle dependencies order
@@ -20,14 +21,12 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
      *
      * @var ChildInterface[]
      */
-    private $children = [];
+    private array $children = [];
 
     /**
      * Flag to know if the form has view dependencies in its children
-     *
-     * @var boolean
      */
-    private $hasViewDependencies = false;
+    private bool $hasViewDependencies = false;
 
 
     /**
@@ -42,25 +41,19 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function add(ChildInterface $child): void
     {
         $this->addNamed($child->name(), $child);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function has(string $name): bool
     {
         return isset($this->children[$name]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function remove(string $name): bool
     {
         if (!$this->has($name)) {
@@ -72,81 +65,61 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset): bool
+    #[Override]
+    public function offsetExists(mixed $offset): bool
     {
         return $this->has($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset): ChildInterface
+    #[Override]
+    public function offsetGet(mixed $offset): ChildInterface
     {
         return $this->children[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value): void
+    #[Override]
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->add($value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($offset): void
+    #[Override]
+    public function offsetUnset(mixed $offset): void
     {
         $this->remove($offset);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function count(): int
     {
         return count($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getIterator(): Iterator
     {
         return new ArrayIterator($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function reverseIterator(): Iterator
     {
         return new ArrayIterator($this->hasViewDependencies ? array_reverse($this->children) : $this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function forwardIterator(): Iterator
     {
         return new ArrayIterator($this->children);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function all(): array
     {
         return $this->children;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function duplicate(ChildAggregateInterface $newParent): ChildrenCollectionInterface
     {
         $children = [];
@@ -155,7 +128,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
             $children[$key] = $child->setParent($newParent);
         }
 
-        $collection = new static();
+        $collection = new self();
 
         $collection->children = $children;
         $collection->hasViewDependencies = $this->hasViewDependencies;
@@ -169,7 +142,7 @@ final class ChildrenCollection implements Countable, ChildrenCollectionInterface
      * @param string $name
      * @param ChildInterface $child
      */
-    private function addNamed($name, ChildInterface $child): void
+    private function addNamed(string $name, ChildInterface $child): void
     {
         $this->children[$name] = $child;
         $this->orderDependencies($child);

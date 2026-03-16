@@ -14,6 +14,7 @@ use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
@@ -102,7 +103,7 @@ class IntegerElementTest extends TestCase
         $transformer = $this->createMock(TransformerInterface::class);
         $transformer->expects($this->once())->method('transformFromHttp')->willThrowException(new TransformationFailedException('my error'));
         $element = new IntegerElement(
-            new ConstraintValueValidator([], new TransformerExceptionConstraint(['ignoreException' => true])),
+            new ConstraintValueValidator([], new TransformerExceptionConstraint(ignoreException: true)),
             $transformer
         );
 
@@ -120,7 +121,7 @@ class IntegerElementTest extends TestCase
         $element = new IntegerElement(
             new ConstraintValueValidator(
                 [new Closure(function () { return 'validation error'; })],
-                new TransformerExceptionConstraint(['ignoreException' => true])
+                new TransformerExceptionConstraint(ignoreException: true)
             ),
             $transformer
         );
@@ -188,9 +189,7 @@ class IntegerElementTest extends TestCase
         $this->assertEquals(1, $element->httpValue());
     }
 
-    /**
-     * @dataProvider provideValidValues
-     */
+    #[DataProvider('provideValidValues')]
     public function test_import($value, $expected)
     {
         $element = new IntegerElement();
@@ -198,7 +197,7 @@ class IntegerElementTest extends TestCase
         $this->assertSame($expected, $element->import($value)->value());
     }
 
-    public function provideValidValues()
+    public static function provideValidValues()
     {
         return [
             [15, 15],
@@ -209,9 +208,7 @@ class IntegerElementTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideInvalidValue
-     */
+    #[DataProvider('provideInvalidValue')]
     public function test_import_invalid_type($value)
     {
         $this->expectException(\TypeError::class);
@@ -224,7 +221,7 @@ class IntegerElementTest extends TestCase
     /**
      *
      */
-    public function provideInvalidValue()
+    public static function provideInvalidValue()
     {
         return [
             [[]],
@@ -376,7 +373,7 @@ class IntegerElementTest extends TestCase
 
         $view = $element->view(HttpFieldPath::named('val'));
 
-        $this->assertContainsOnly(ChoiceView::class, $view->choices());
+        $this->assertContainsOnlyInstancesOf(ChoiceView::class, $view->choices());
         $this->assertCount(3, $view->choices());
 
         $this->assertSame('12', $view->choices()[0]->value());
@@ -409,7 +406,7 @@ class IntegerElementTest extends TestCase
 
         $view = $element->view(HttpFieldPath::named('val'));
 
-        $this->assertContainsOnly(ChoiceView::class, $view->choices());
+        $this->assertContainsOnlyInstancesOf(ChoiceView::class, $view->choices());
         $this->assertCount(3, $view->choices());
 
         $this->assertSame('c', $view->choices()[0]->value());

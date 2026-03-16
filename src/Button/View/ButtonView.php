@@ -3,6 +3,7 @@
 namespace Bdf\Form\Button\View;
 
 use Bdf\Form\View\RenderableTrait;
+use Override;
 
 /**
  * Base view object for buttons
@@ -16,20 +17,9 @@ final class ButtonView implements ButtonViewInterface
 {
     use RenderableTrait;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $value;
-
-    /**
-     * @var bool
-     */
-    private $clicked;
+    public private(set) string $name;
+    public private(set) string $value;
+    public private(set) bool $clicked;
 
     /**
      * ButtonView constructor.
@@ -45,33 +35,25 @@ final class ButtonView implements ButtonViewInterface
         $this->clicked = $clicked;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function value(): string
     {
         return $this->value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function clicked(): bool
     {
         return $this->clicked;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function render(?ButtonViewRendererInterface $renderer = null): string
     {
         return ($renderer ?? ButtonViewRenderer::instance())->render($this, $this->attributes);

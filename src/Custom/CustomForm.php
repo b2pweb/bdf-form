@@ -14,6 +14,7 @@ use Bdf\Form\Error\FormError;
 use Bdf\Form\RootElementInterface;
 use Bdf\Form\View\ElementViewInterface;
 use Iterator;
+use Override;
 use WeakReference;
 
 use function method_exists;
@@ -47,37 +48,34 @@ use function method_exists;
  * </code>
  *
  * @todo implements root form interface ?
- * @template T
+ * @template T as array|object
  * @implements FormInterface<T>
  */
 abstract class CustomForm implements FormInterface
 {
-    /**
-     * @var FormBuilderInterface
-     */
-    private $builder;
+    private readonly FormBuilderInterface $builder;
 
     /**
      * The inner form
      *
      * @var FormInterface<T>|null
      */
-    private $form;
+    private ?FormInterface $form = null;
 
     /**
      * @var WeakReference<ChildInterface>|null
      */
-    private $container;
+    private ?WeakReference $container = null;
 
     /**
      * @var list<callable(static, FormBuilderInterface): void>
      */
-    private $preConfigureHooks = [];
+    private array $preConfigureHooks = [];
 
     /**
      * @var list<callable(static, FormInterface<T>): void>
      */
-    private $postConfigureHooks = [];
+    private array $postConfigureHooks = [];
 
     /**
      * CustomForm constructor.
@@ -89,128 +87,98 @@ abstract class CustomForm implements FormInterface
         $this->builder = $builder ?? new FormBuilder();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset): ChildInterface
+    #[Override]
+    public function offsetGet(mixed $offset): ChildInterface
     {
         return $this->form()[$offset];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset): bool
+    #[Override]
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->form()[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value): void
+    #[Override]
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->form()[$offset] = $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($offset): void
+    #[Override]
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->form()[$offset]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function getIterator(): Iterator
     {
         return $this->form()->getIterator();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function submit($data): ElementInterface
+    #[Override]
+    public function submit(mixed $data): static
     {
         $this->submitTarget()->submit($data);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function patch($data): ElementInterface
+    #[Override]
+    public function patch(mixed $data): static
     {
         $this->submitTarget()->patch($data);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function import($entity): ElementInterface
+    #[Override]
+    public function import($entity): static
     {
         $this->form()->import($entity);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function value()
+    #[Override]
+    public function value(): array|object|null
     {
         return $this->form()->value();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function httpValue()
+    #[Override]
+    public function httpValue(): mixed
     {
         return $this->form()->httpValue();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function valid(): bool
     {
         return $this->form()->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function failed(): bool
     {
         // Do not use $this->form()->failed() because it may be not implemented
         return !$this->valid();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function error(?HttpFieldPath $field = null): FormError
     {
         return $this->form()->error($field);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function container(): ?ChildInterface
     {
-        return $this->container ? $this->container->get() : null;
+        return $this->container?->get();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function setContainer(ChildInterface $container): ElementInterface
     {
         $form = clone $this;
@@ -220,29 +188,23 @@ abstract class CustomForm implements FormInterface
         return $form;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function root(): RootElementInterface
     {
         // @todo bad root form ?
         return $this->form()->root();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function attach($entity): FormInterface
+    #[Override]
+    public function attach(mixed $entity): FormInterface
     {
         $this->form()->attach($entity);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    #[Override]
+    public function view(?HttpFieldPath $field = null): FormView
     {
         $form = $this->form();
         /** @var FormView $view */
@@ -322,11 +284,7 @@ abstract class CustomForm implements FormInterface
      */
     final public function disableCsrfValidation(): void
     {
-        $root = $this->root();
-
-        if (method_exists($root, 'set')) {
-            $root->set(CsrfValueValidator::FLAG_DISABLE_CSRF_VALIDATION, true);
-        }
+        $this->root()->set(CsrfValueValidator::FLAG_DISABLE_CSRF_VALIDATION, true);
     }
 
     /**
@@ -343,8 +301,6 @@ abstract class CustomForm implements FormInterface
         // Form can be rebuilt, so we need to clone the builder to avoid side effects
         $builder = clone $this->builder;
 
-        /** @var static $this Psalm cannot infer this type */
-
         foreach ($this->preConfigureHooks as $hook) {
             $hook($this, $builder);
         }
@@ -352,6 +308,7 @@ abstract class CustomForm implements FormInterface
         /** @psalm-suppress ArgumentTypeCoercion */
         $this->configure($builder);
 
+        /** @var FormInterface<T> $form */
         $form = $builder->buildElement();
 
         if ($this->container && $container = $this->container->get()) {

@@ -18,24 +18,18 @@ class ChoiceView
 {
     /**
      * The label displayed to humans.
-     *
-     * @var string
      */
-    private $label;
+    public string $label;
 
     /**
      * The view representation of the choice.
-     *
-     * @var mixed
      */
-    private $value;
+    public mixed $value;
 
     /**
      * The view representation of the choice.
-     *
-     * @var boolean
      */
-    private $selected;
+    public bool $selected;
 
     /**
      * Creates a new choice view.
@@ -44,7 +38,7 @@ class ChoiceView
      * @param string|int $label The label displayed to humans
      * @param boolean $selected This choice is selected
      */
-    public function __construct($value, $label, bool $selected = false)
+    public function __construct(mixed $value, int|string $label, bool $selected = false)
     {
         $this->value = $value;
         $this->selected = $selected;

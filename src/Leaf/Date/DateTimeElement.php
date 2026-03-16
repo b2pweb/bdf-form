@@ -10,6 +10,7 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use InvalidArgumentException;
+use Override;
 use TypeError;
 
 /**
@@ -24,24 +25,14 @@ final class DateTimeElement extends LeafElement
     /**
      * @var class-string<DateTimeInterface>
      */
-    private $className;
-
-    /**
-     * @var string
-     */
-    private $format;
-
-    /**
-     * @var DateTimeZone|null
-     */
-    private $timezone;
+    private readonly string $className;
+    private readonly string $format;
+    private readonly ?DateTimeZone $timezone;
 
     /**
      * Reset the fields value which are not provided by the format
-     *
-     * @var bool
      */
-    private $resetNotProvidedFields;
+    private bool $resetNotProvidedFields;
 
     /**
      * DateTimeType constructor.
@@ -84,10 +75,8 @@ final class DateTimeElement extends LeafElement
         return $this->className;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function toPhp($httpValue): ?DateTimeInterface
+    #[Override]
+    protected function toPhp(mixed $httpValue): ?DateTimeInterface
     {
         if ($httpValue === null || $httpValue === '') {
             return null;
@@ -129,10 +118,8 @@ final class DateTimeElement extends LeafElement
         return $dateTime;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function toHttp($phpValue)
+    #[Override]
+    protected function toHttp(mixed $phpValue): mixed
     {
         // Because of legacy behavior, the raw value can be saved when a transformer failed
         // So the raw string is kept as is
@@ -148,12 +135,8 @@ final class DateTimeElement extends LeafElement
         return $phpValue->format($this->format);
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return DateTimeInterface|null
-     */
-    protected function tryCast($value): ?DateTimeInterface
+    #[Override]
+    protected function tryCast(mixed $value): ?DateTimeInterface
     {
         if ($value === null) {
             return null;

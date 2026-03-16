@@ -14,89 +14,91 @@ use Bdf\Form\Transformer\TransformerInterface;
  */
 final class ChildParameters
 {
-    /**
-     * The child name
-     *
-     * @var string
-     */
-    public $name;
+    public function __construct(
+        /**
+         * The child name
+         *
+         * @var string
+         */
+        public string $name,
 
-    /**
-     * The inner element instance
-     *
-     * @var ElementInterface
-     */
-    public $element;
+        /**
+         * The inner element instance
+         *
+         * @var ElementInterface
+         */
+        public ElementInterface $element,
 
-    /**
-     * Http Fields to use
-     *
-     * @var HttpFieldsInterface
-     */
-    public $fields;
+        /**
+         * Http Fields to use
+         *
+         * @var HttpFieldsInterface
+         */
+        public HttpFieldsInterface $fields,
 
-    /**
-     * @var FilterInterface[]
-     */
-    public $filters;
+        /**
+         * @var HydratorInterface|null
+         */
+        public ?HydratorInterface $hydrator,
 
-    /**
-     * @var mixed
-     */
-    public $defaultValue;
+        /**
+         * @var ExtractorInterface|null
+         */
+        public ?ExtractorInterface $extractor,
 
-    /**
-     * @var HydratorInterface|null
-     */
-    public $hydrator;
+        /**
+         * Array of dependencies child names
+         *
+         * @var string[]
+         */
+        public array $dependencies,
 
-    /**
-     * @var ExtractorInterface|null
-     */
-    public $extractor;
+        /**
+         * @var TransformerInterface|null
+         */
+        public ?TransformerInterface $modelTransformer,
 
-    /**
-     * Array of dependencies child names
-     *
-     * @var string[]
-     */
-    public $dependencies;
+        /**
+         * The child class name
+         *
+         * @var class-string<ChildInterface>
+         */
+        public string $className,
 
-    /**
-     * @var TransformerInterface|null
-     */
-    public $modelTransformer;
+        /**
+         * @var mixed
+         */
+        public mixed $defaultValue = null,
 
-    /**
-     * The child class name
-     *
-     * @var class-string<ChildInterface>
-     */
-    public $className;
+        /**
+         * @var FilterInterface[]
+         */
+        public array $filters = [],
 
-    /**
-     * The child instance
-     * Set a value to ignore the default child instantiation on the ChildBuilder
-     *
-     * @var ChildInterface|null
-     */
-    public $child;
+        /**
+         * The child instance
+         * Set a value to ignore the default child instantiation on the ChildBuilder
+         *
+         * @var ChildInterface|null
+         */
+        public ?ChildInterface $child = null,
 
-    /**
-     * List of child factories to apply
-     * The return value of each factories will fill the $this->child field
-     *
-     * This parameter can be used to decorate a child instance like :
-     * <code>
-     * public function decorateChild(ChildParameters $parameters)
-     * {
-     *     $parameters->factories[] = function (ChildParameters $parameters) {
-     *         return new MyChildWrapper($parameters->child);
-     *     };
-     * }
-     * </code>
-     *
-     * @var (callable(ChildParameters):ChildInterface)[]
-     */
-    public $factories = [];
+        /**
+         * List of child factories to apply
+         * The return value of each factories will fill the $this->child field
+         *
+         * This parameter can be used to decorate a child instance like :
+         * <code>
+         * public function decorateChild(ChildParameters $parameters)
+         * {
+         *     $parameters->factories[] = function (ChildParameters $parameters) {
+         *         return new MyChildWrapper($parameters->child);
+         *     };
+         * }
+         * </code>
+         *
+         * @var (callable(ChildParameters):ChildInterface)[]
+         */
+        public array $factories = [],
+    ) {}
 }

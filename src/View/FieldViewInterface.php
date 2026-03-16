@@ -5,12 +5,11 @@ namespace Bdf\Form\View;
 use Bdf\Form\Choice\Choiceable;
 use Bdf\Form\Choice\ChoiceInterface;
 use Bdf\Form\Choice\ChoiceView;
+use Override;
 
 /**
  * Base type for HTTP input / field
  * The implementations must be renderable
- *
- * @method self setValue($value) Override the value
  */
 interface FieldViewInterface extends ElementViewInterface, Renderable
 {
@@ -26,7 +25,7 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      *
      * @return mixed
      */
-    public function value();
+    public function value(): mixed;
 
     /**
      * Override the value
@@ -36,9 +35,8 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      *
      * @return $this Return the current instance
      * @since 1.5
-     * @todo uncomment in 2.0
      */
-    //public function setValue($value): self;
+    public function setValue(mixed $value): static;
 
     /**
      * Does the current field is required (i.e. the value must not be empty)
@@ -94,5 +92,6 @@ interface FieldViewInterface extends ElementViewInterface, Renderable
      *
      * @return string
      */
+    #[Override]
     public function render(?FieldViewRendererInterface $renderer = null): string;
 }

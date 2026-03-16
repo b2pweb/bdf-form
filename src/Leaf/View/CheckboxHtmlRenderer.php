@@ -5,6 +5,7 @@ namespace Bdf\Form\Leaf\View;
 use Bdf\Form\View\FieldViewInterface;
 use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\HtmlRenderer;
+use Override;
 
 /**
  * Default renderer for @see BooleanElementView
@@ -13,16 +14,9 @@ use Bdf\Form\View\HtmlRenderer;
  */
 final class CheckboxHtmlRenderer implements FieldViewRendererInterface
 {
-    /**
-     * @var CheckboxHtmlRenderer|null
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
-    /**
-     * {@inheritdoc}
-     *
-     * @param BooleanElementView $view
-     */
+    #[Override]
     public function render(FieldViewInterface $view, array $attributes): string
     {
         if (!isset($attributes['type'])) {
@@ -43,10 +37,6 @@ final class CheckboxHtmlRenderer implements FieldViewRendererInterface
      */
     public static function instance(): self
     {
-        if (self::$instance) {
-            return self::$instance;
-        }
-
-        return self::$instance = new self;
+        return self::$instance ??= new self;
     }
 }

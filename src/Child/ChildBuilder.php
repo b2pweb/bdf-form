@@ -18,10 +18,9 @@ use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\MagicCallForwarding;
 use Bdf\Form\Util\TransformerBuilderTrait;
-use Symfony\Component\Form\DataTransformerInterface;
+use Override;
 
 use function is_callable;
-use function trigger_error;
 
 /**
  * Base builder for a child
@@ -40,7 +39,6 @@ use function trigger_error;
  *
  * @method $this satisfy($constraint, $options = null, bool $append = true)
  * @method $this value($value)
- * @method $this transformer($transformer, bool $append = true)
  * @method $this required($options = null)
  *
  * @template B as ElementBuilderInterface
@@ -53,75 +51,56 @@ class ChildBuilder implements ChildBuilderInterface
         transformer as modelTransformer;
     }
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var RegistryInterface
-     */
-    private $registry;
+    private readonly string $name;
+    private readonly RegistryInterface $registry;
 
     /**
      * The list of input dependencies
      *
      * @var string[]
      */
-    private $viewDependencies = [];
+    private array $viewDependencies = [];
+    private mixed $default = null;
 
     /**
-     * @var mixed
+     * @var array<FilterInterface>
      */
-    private $default;
-
-    /**
-     * @var array
-     */
-    private $filters = [];
+    private array $filters = [];
 
     /**
      * @var list<callable(RegistryInterface):\Bdf\Form\Filter\FilterInterface[]>
      */
-    private $filtersProviders = [];
+    private array $filtersProviders = [];
 
     /**
      * @var class-string<ChildInterface>
      */
-    private $childClassName = Child::class;
+    private string $childClassName = Child::class;
 
     /**
      * @var list<callable(ChildParameters):void>
      */
-    private $parametersConfigurators = [];
+    private array $parametersConfigurators = [];
 
     /**
      * @var HttpFieldsInterface|null
      */
-    private $fields;
+    private ?HttpFieldsInterface $fields = null;
 
     /**
      * @var ElementBuilderInterface
      * @psalm-var B
      */
-    private $elementBuilder;
-
-    /**
-     * @var HydratorInterface|null
-     */
-    private $hydrator;
-
-    /**
-     * @var ExtractorInterface|null
-     */
-    private $extractor;
+    private readonly ElementBuilderInterface $elementBuilder;
+    private ?HydratorInterface $hydrator = null;
+    private ?ExtractorInterface $extractor = null;
 
     /**
      * Add the trim filter
      *
      * @var bool
      */
-    private $trim = true;
+    private bool $trim = true;
 
 
     /**
@@ -135,40 +114,30 @@ class ChildBuilder implements ChildBuilderInterface
     {
         $this->name = $name;
         $this->elementBuilder = $elementBuilder;
-        $this->registry = $registry ?: new Registry();
+        $this->registry = $registry ?? new Registry();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function hydrator(HydratorInterface $hydrator)
+    #[Override]
+    final public function hydrator(HydratorInterface $hydrator): static
     {
         $this->hydrator = $hydrator;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function extractor(ExtractorInterface $extractor)
+    #[Override]
+    final public function extractor(ExtractorInterface $extractor): static
     {
         $this->extractor = $extractor;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function filter($filter, bool $append = true)
+    #[Override]
+    final public function filter(FilterInterface|callable $filter, bool $append = true): static
     {
         if (is_callable($filter)) {
             $filter = new ClosureFilter($filter);
-        }
-
-        if (!$filter instanceof FilterInterface) {
-            @trigger_error('Not passing a callable or a filter instance is deprecated since 1.7 and will be removed in 2.0.', E_USER_DEPRECATED);
         }
 
         if ($append === true) {
@@ -180,20 +149,16 @@ class ChildBuilder implements ChildBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function default($default)
+    #[Override]
+    final public function default(mixed $default): static
     {
         $this->default = $default;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    final public function depends(string ...$inputNames)
+    #[Override]
+    final public function depends(string ...$inputNames): static
     {
         foreach ($inputNames as $inputName) {
             $this->viewDependencies[$inputName] = $inputName;
@@ -202,19 +167,15 @@ class ChildBuilder implements ChildBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function addParametersConfigurator(callable $configurator)
+    #[Override]
+    public function addParametersConfigurator(callable $configurator): static
     {
         $this->parametersConfigurators[] = $configurator;
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final public function buildChild(): ChildInterface
     {
         $parameters = $this->buildParameters();
@@ -290,7 +251,7 @@ class ChildBuilder implements ChildBuilderInterface
      * @see ChildBuilderInterface::extractor()
      * @see ChildInterface::import()
      */
-    final public function getter($propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null): self
+    final public function getter(string|callable|null $propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null): static
     {
         return $this->extractor(new Getter($propertyName, $transformer, $customAccessor));
     }
@@ -341,7 +302,7 @@ class ChildBuilder implements ChildBuilderInterface
      * @see ChildBuilderInterface::hydrator()
      * @see ChildInterface::fill()
      */
-    final public function setter($propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null): self
+    final public function setter(string|callable|null $propertyName = null, ?callable $transformer = null, ?callable $customAccessor = null): static
     {
         return $this->hydrator(new Setter($propertyName, $transformer, $customAccessor));
     }
@@ -369,7 +330,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @since 1.5
      */
-    final public function getset(?string $propertyName = null): self
+    final public function getset(?string $propertyName = null): static
     {
         return $this->getter($propertyName)->setter($propertyName);
     }
@@ -381,7 +342,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @return $this
      */
-    final public function childClassName(string $factory): self
+    final public function childClassName(string $factory): static
     {
         $this->childClassName = $factory;
 
@@ -395,7 +356,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @return $this
      */
-    final public function httpFields(HttpFieldsInterface $fields): self
+    final public function httpFields(HttpFieldsInterface $fields): static
     {
         $this->fields = $fields;
 
@@ -428,7 +389,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @see PrefixedHttpFields
      */
-    final public function prefix(?string $prefix = null): self
+    final public function prefix(?string $prefix = null): static
     {
         return $this->httpFields(new PrefixedHttpFields($prefix ?? $this->name.'_'));
     }
@@ -442,7 +403,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @return $this
      */
-    final public function trim(bool $active = true): self
+    final public function trim(bool $active = true): static
     {
         $this->trim = $active;
 
@@ -454,7 +415,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * <code>
      * $builder->string('foo')->configure(function (StringElementBuilder $builder) {
-     *     $builder->length(['min' => 3]);
+     *     $builder->length(min: 3);
      * });
      * </code>
      *
@@ -462,7 +423,7 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @return $this
      */
-    final public function configure(callable $configurator): self
+    final public function configure(callable $configurator): static
     {
         $configurator($this->elementBuilder);
 
@@ -472,13 +433,13 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * Forward call to element builder
      *
-     * @param callable|TransformerInterface|DataTransformerInterface $transformer
+     * @param callable|TransformerInterface $transformer
      * @param bool $append
      * @return $this
      *
      * @see ElementBuilderInterface::transformer()
      */
-    public function transformer($transformer, bool $append = true)
+    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
     {
         $this->elementBuilder->transformer($transformer, $append);
 
@@ -490,14 +451,13 @@ class ChildBuilder implements ChildBuilderInterface
      *
      * @return B
      */
+    #[Override]
     final protected function getElementBuilder(): ElementBuilderInterface
     {
         return $this->elementBuilder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     final protected function registry(): RegistryInterface
     {
         return $this->registry;
@@ -522,27 +482,23 @@ class ChildBuilder implements ChildBuilderInterface
      */
     private function buildParameters(): ChildParameters
     {
-        $parameters = new ChildParameters();
-
-        $parameters->name = $this->name;
-        $parameters->hydrator = $this->hydrator;
-        $parameters->extractor = $this->extractor;
-        $parameters->dependencies = $this->viewDependencies;
-        $parameters->modelTransformer = $this->buildTransformer();
-        $parameters->className = $this->childClassName;
+        $parameters = new ChildParameters(
+            name: $this->name,
+            element: $this->elementBuilder->buildElement(),
+            fields: $this->fields ?: new ArrayOffsetHttpFields($this->name),
+            hydrator: $this->hydrator,
+            extractor: $this->extractor,
+            dependencies: $this->viewDependencies,
+            modelTransformer: $this->buildTransformer(),
+            className: $this->childClassName,
+        );
 
         $parameters->filters = $this->trim ? [TrimFilter::instance()] : [];
-
-        foreach ($this->filters as $filter) {
-            $parameters->filters[] = $this->registry->filter($filter);
-        }
+        $parameters->filters = [...$parameters->filters, ...$this->filters];
 
         foreach ($this->filtersProviders as $provider) {
-            $parameters->filters = array_merge($parameters->filters, $provider($this->registry));
+            $parameters->filters = [...$parameters->filters, ...$provider($this->registry)];
         }
-
-        $parameters->fields = $this->fields ?: new ArrayOffsetHttpFields($this->name);
-        $parameters->element = $this->elementBuilder->buildElement();
 
         // Apply element transformation to the default value
         if ($this->default !== null) {

@@ -9,17 +9,17 @@ use Bdf\Form\Validator\ConstraintValueValidator;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Exception;
 
-use function is_array;
+use Override;
+
+use function assert;
 use function method_exists;
-use function sprintf;
-use function trigger_error;
 
 /**
  * Class CsrfValueValidator
  *
  * @implements ValueValidatorInterface<\Symfony\Component\Security\Csrf\CsrfToken>
  */
-final class CsrfValueValidator implements ValueValidatorInterface
+final readonly class CsrfValueValidator implements ValueValidatorInterface
 {
     /**
      * Flag for disable the CSRF validation
@@ -34,41 +34,29 @@ final class CsrfValueValidator implements ValueValidatorInterface
 
     /**
      * Invalidate the token after verification ?
-     *
-     * @var boolean
      */
-    private $invalidate;
+    private bool $invalidate;
 
     /**
      * The error message
-     *
-     * @var string|null
      */
-    private $message;
+    private ?string $message;
 
     /**
      * Only validate the csrf token if the element is on the root form
      * If false, all csrf tokens on sub forms will be validated
-     *
-     * @var bool
      */
-    private $onlyValidateRoot;
+    private bool $onlyValidateRoot;
 
     /**
      * CsrfValueValidator constructor.
      *
      * @param bool $invalidate Always invalidate the token after validation
-     * @param array|string|null $message The error message
+     * @param string|null $message The error message
      * @param bool $onlyValidateRoot Only validate the csrf token if the element is on the root form
      */
-    public function __construct(bool $invalidate = false, $message = null, bool $onlyValidateRoot = false)
+    public function __construct(bool $invalidate = false, ?string $message = null, bool $onlyValidateRoot = false)
     {
-        if (is_array($message)) {
-            @trigger_error(sprintf('Passing an array of options on %s is deprecated since 1.7 and will be removed on 2.0, use named arguments instead.', __METHOD__), E_USER_DEPRECATED);
-
-            $message = $message['message'] ?? null;
-        }
-
         $this->invalidate = $invalidate;
         $this->message = $message;
         $this->onlyValidateRoot = $onlyValidateRoot;
@@ -76,15 +64,15 @@ final class CsrfValueValidator implements ValueValidatorInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @param CsrfElement $element
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
-    public function validate($value, ElementInterface $element): FormError
+    #[Override]
+    public function validate(mixed $value, ElementInterface $element): FormError
     {
+        assert($element instanceof CsrfElement);
+
         $root = $element->root();
 
-        if (method_exists($root, 'is') && $root->is(self::FLAG_DISABLE_CSRF_VALIDATION)) {
+        if ($root->is(self::FLAG_DISABLE_CSRF_VALIDATION)) {
             return FormError::null();
         }
 
@@ -93,7 +81,7 @@ final class CsrfValueValidator implements ValueValidatorInterface
         }
 
         try {
-            return (new ConstraintValueValidator([new CsrfConstraint($element->getTokenManager(), $this->message)]))->validate($value, $element);
+            return new ConstraintValueValidator([new CsrfConstraint($element->getTokenManager(), $this->message)])->validate($value, $element);
         } finally {
             if ($this->invalidate) {
                 $element->invalidateToken();
@@ -101,26 +89,20 @@ final class CsrfValueValidator implements ValueValidatorInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onTransformerException(Exception $exception, $value, ElementInterface $element): FormError
     {
         // Ignore transformer exception: the CSRF token will be validated after
         return FormError::null();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function constraints(): array
     {
         return []; // Does CsrfConstraint should be returns ?
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function hasConstraints(): bool
     {
         return true;

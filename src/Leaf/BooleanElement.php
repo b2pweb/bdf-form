@@ -8,6 +8,7 @@ use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Bdf\Form\View\ElementViewInterface;
 use Bdf\Form\View\FieldViewInterface;
+use Override;
 
 /**
  * Handle a boolean value, like with checkbox input
@@ -17,10 +18,7 @@ use Bdf\Form\View\FieldViewInterface;
  */
 class BooleanElement extends AbstractBooleanElement
 {
-    /**
-     * @var string
-     */
-    private $httpValue = '1';
+    private string $httpValue = '1';
 
     /**
      * BooleanElement constructor.
@@ -36,28 +34,20 @@ class BooleanElement extends AbstractBooleanElement
         $this->httpValue = $httpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function toPhp($httpValue)
+    #[Override]
+    protected function toPhp(mixed $httpValue): bool
     {
         return (bool) $httpValue;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function toHttp($phpValue)
+    #[Override]
+    protected function toHttp(mixed $phpValue): ?string
     {
         return $phpValue ? $this->httpValue : null;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return FieldViewInterface
-     */
-    public function view(?HttpFieldPath $field = null): ElementViewInterface
+    #[Override]
+    public function view(?HttpFieldPath $field = null): FieldViewInterface
     {
         return new BooleanElementView(self::class, (string) $field, $this->httpValue(), $this->httpValue, (bool) $this->value(), $this->error()->global());
     }

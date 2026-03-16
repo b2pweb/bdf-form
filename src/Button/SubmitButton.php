@@ -5,6 +5,7 @@ namespace Bdf\Form\Button;
 use Bdf\Form\Button\View\ButtonView;
 use Bdf\Form\Button\View\ButtonViewInterface;
 use Bdf\Form\Child\Http\HttpFieldPath;
+use Override;
 
 /**
  * Simple button implementation
@@ -12,26 +13,14 @@ use Bdf\Form\Child\Http\HttpFieldPath;
  */
 final class SubmitButton implements ButtonInterface
 {
-    /**
-     * @var string
-     */
-    private $name;
+    private readonly string $name;
+    private readonly string $value;
 
     /**
-     * @var string
+     * @var string[]
      */
-    private $value;
-
-    /**
-     * @var array
-     */
-    private $groups;
-
-    /**
-     * @var bool
-     */
-    private $clicked = false;
-
+    private readonly array $groups;
+    private bool $clicked = false;
 
     /**
      * SubmitButton constructor.
@@ -47,41 +36,31 @@ final class SubmitButton implements ButtonInterface
         $this->groups = $groups;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function clicked(): bool
     {
         return $this->clicked;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function constraintGroups(): array
     {
         return $this->groups;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function submit($data): bool
     {
         return $this->clicked = isset($data[$this->name]) && (string) $data[$this->name] === $this->value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function toHttp(): array
     {
         if (!$this->clicked) {
@@ -91,9 +70,7 @@ final class SubmitButton implements ButtonInterface
         return [$this->name => $this->value];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function view(?HttpFieldPath $parent = null): ButtonViewInterface
     {
         return new ButtonView($parent ? $parent->add($this->name)->get() : $this->name, $this->value, $this->clicked());

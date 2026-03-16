@@ -13,6 +13,7 @@ use Bdf\Form\View\FieldViewRendererInterface;
 use Bdf\Form\View\FieldViewTrait;
 use Countable;
 use IteratorAggregate;
+use Override;
 
 /**
  * View object for the ArrayElement
@@ -55,7 +56,7 @@ final class ArrayElementView implements IteratorAggregate, FieldViewInterface, F
      * @param array $constraints
      * @param ChoiceView[]|null $choices
      */
-    public function __construct(string $type, string $name, $value, ?string $error, array $elements, bool $required, array $constraints, ?array $choices = [])
+    public function __construct(string $type, string $name, mixed $value, ?string $error, array $elements, bool $required, array $constraints, ?array $choices = [])
     {
         $this->type = $type;
         $this->name = $name;
@@ -78,17 +79,13 @@ final class ArrayElementView implements IteratorAggregate, FieldViewInterface, F
         return is_scalar($this->value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function count(): int
     {
         return count($this->elements);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function defaultRenderer(): FieldViewRendererInterface
     {
         return ArrayElementViewRenderer::instance();
@@ -96,10 +93,8 @@ final class ArrayElementView implements IteratorAggregate, FieldViewInterface, F
 
     /**
      * Ignore property "attributes"
-     *
-     * @return array
      */
-    public function __sleep()
+    public function __sleep(): array
     {
         return ['type', 'name', 'error', 'value', 'elements', 'required', 'constraints', 'choices'];
     }

@@ -241,7 +241,7 @@ class CustomFormTest extends TestCase
         $this->assertFalse($array->failed());
         $this->assertCount(2, $array);
 
-        $this->assertContainsOnly(Person::class, $array->value());
+        $this->assertContainsOnlyInstancesOf(Person::class, $array->value());
         $this->assertSame('Mickey', $array->value()[0]->firstName);
         $this->assertSame('Mouse', $array->value()[0]->lastName);
         $this->assertSame('Minnie', $array->value()[1]->firstName);
@@ -301,7 +301,7 @@ class CustomFormTest extends TestCase
                 $error->print($this);
             }
 
-            public function print()
+            public function print(): mixed
             {
                 if ($this->global || $this->code) {
                     $this->errors[] = [

@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Child\Child;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberUtil;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -165,9 +166,7 @@ class PhoneElementBuilderTest extends TestCase
         $this->assertSame($phone, $element->value());
     }
 
-    /**
-     * @dataProvider emptyValues
-     */
+    #[DataProvider('emptyValues')]
     public function test_required($value)
     {
         $element = $this->builder->required()->allowInvalidNumber()->buildElement();
@@ -179,7 +178,7 @@ class PhoneElementBuilderTest extends TestCase
     /**
      * @return array
      */
-    public function emptyValues()
+    public static function emptyValues()
     {
         return [
             [null],

@@ -7,6 +7,7 @@ use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
+use Override;
 
 /**
  * Builder for any element
@@ -19,10 +20,8 @@ class AnyElementBuilder extends AbstractElementBuilder
 {
     use ChoiceBuilderTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): ElementInterface
+    #[Override]
+    protected function createElement(ValueValidatorInterface $validator, TransformerInterface $transformer): AnyElement
     {
         return new AnyElement($validator, $transformer, $this->getChoices());
     }

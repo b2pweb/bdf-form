@@ -11,14 +11,11 @@ use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildBuilderInterface;
-use Bdf\Form\Constraint\Closure;
 use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Csrf\CsrfElementBuilder;
 use Bdf\Form\Custom\CustomForm;
 use Bdf\Form\Custom\CustomFormBuilder;
 use Bdf\Form\ElementBuilderInterface;
-use Bdf\Form\Filter\ClosureFilter;
-use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\Leaf\AnyElement;
 use Bdf\Form\Leaf\AnyElementBuilder;
 use Bdf\Form\Leaf\BooleanElement;
@@ -39,25 +36,21 @@ use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
-use Bdf\Form\Transformer\ClosureTransformer;
-use Bdf\Form\Transformer\DataTransformerAdapter;
-use Bdf\Form\Transformer\TransformerInterface;
 use InvalidArgumentException;
-use LogicException;
-use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Validator\Constraint;
+use Override;
 
-use function trigger_error;
+use function is_string;
+use function is_subclass_of;
 
 /**
  * Base registry interface
  */
-class Registry implements RegistryInterface
+final class Registry implements RegistryInterface
 {
     /**
      * @var class-string<ElementBuilderInterface>[]|callable[]
      */
-    private $elementBuilderFactories = [
+    private array $elementBuilderFactories = [
         StringElement::class => StringElementBuilder::class,
         IntegerElement::class => IntegerElementBuilder::class,
         FloatElement::class => FloatElementBuilder::class,
@@ -79,7 +72,7 @@ class Registry implements RegistryInterface
     /**
      * @var class-string<ChildBuilderInterface>[]|callable[]
      */
-    private $childBuilderFactories = [
+    private array $childBuilderFactories = [
         DateTimeElement::class => DateTimeChildBuilder::class,
         PhoneElement::class => PhoneChildBuilder::class,
         ArrayElement::class => ArrayChildBuilder::class,
@@ -96,82 +89,7 @@ class Registry implements RegistryInterface
         });
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function filter($filter): FilterInterface
-    {
-        if ($filter instanceof FilterInterface) {
-            return $filter;
-        }
-
-        @trigger_error('Using the registry to create filters is deprecated since 1.7. Instantiate the filter directly instead of using the registry.', E_USER_DEPRECATED);
-
-        if (is_callable($filter)) {
-            return new ClosureFilter($filter);
-        }
-
-        // @todo container ?
-        /** @var class-string<FilterInterface> $filter */
-        return new $filter();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function constraint($constraint): Constraint
-    {
-        if ($constraint instanceof Constraint) {
-            return $constraint;
-        }
-
-        @trigger_error('Using the registry to create constraints is deprecated since 1.7. Instantiate the constraint directly instead of using the registry.', E_USER_DEPRECATED);
-
-        if (is_callable($constraint)) {
-            return new Closure(['callback' => $constraint]);
-        }
-
-        if (is_array($constraint)) {
-            $options = $constraint[1];
-            $constraint = $constraint[0];
-
-            if (is_string($options)) {
-                $options = ['message' => $options];
-            }
-
-            /** @var class-string<Constraint> $constraint */
-            return new $constraint($options);
-        }
-
-        /** @var class-string<Constraint> $constraint */
-        return new $constraint();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function transformer($transformer): TransformerInterface
-    {
-        if ($transformer instanceof TransformerInterface) {
-            return $transformer;
-        }
-
-        @trigger_error('Using the registry to create transformers is deprecated since 1.7. Instantiate the transformer directly instead of using the registry.', E_USER_DEPRECATED);
-
-        if ($transformer instanceof DataTransformerInterface) {
-            return new DataTransformerAdapter($transformer);
-        }
-
-        if (is_callable($transformer)) {
-            return new ClosureTransformer($transformer);
-        }
-
-        throw new LogicException('Invalid view transformer given for input '.var_export($transformer, true));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function childBuilder(string $element, string $name): ChildBuilderInterface
     {
         $elementBuilder = $this->elementBuilder($element);
@@ -193,6 +111,7 @@ class Registry implements RegistryInterface
      * @psalm-template E as \Bdf\Form\ElementInterface
      * @psalm-return ElementBuilderInterface<E>
      */
+    #[Override]
     public function elementBuilder(string $element): ElementBuilderInterface
     {
         $builderFactory = null;
@@ -208,7 +127,7 @@ class Registry implements RegistryInterface
             }
         }
 
-        if (!$builderFactory) {
+        if ($builderFactory === null) {
             throw new InvalidArgumentException('The element '.$element.' is not registered');
         }
 
@@ -220,9 +139,7 @@ class Registry implements RegistryInterface
         return ($builderFactory)($this, $element);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function buttonBuilder(string $name): ButtonBuilderInterface
     {
         return new SubmitButtonBuilder($name);
@@ -252,7 +169,7 @@ class Registry implements RegistryInterface
      *
      * @see Registry::elementBuilder()
      */
-    public function register(string $elementType, $builderFactory, $childBuilderFactory = null): void
+    public function register(string $elementType, string|callable $builderFactory, string|callable|null $childBuilderFactory = null): void
     {
         $this->elementBuilderFactories[$elementType] = $builderFactory;
 

@@ -31,7 +31,7 @@ class StringErrorPrinterTest extends TestCase
         $builder->string('foo')->required();
         $builder->integer('bar')->min(5);
         $builder->embedded('embedded', function ($builder) {
-            $builder->string('inner')->length(['min' => 5]);
+            $builder->string('inner')->length(min: 5);
         });
 
         $element = $builder->buildElement();
@@ -57,7 +57,7 @@ ERROR
         $builder->string('foo')->required();
         $builder->integer('bar')->min(5);
         $builder->embedded('embedded', function ($builder) {
-            $builder->string('inner')->length(['min' => 5]);
+            $builder->string('inner')->length(min: 5);
         });
 
         $element = $builder->buildElement();
@@ -80,7 +80,7 @@ ERROR
         $builder->string('foo')->required();
         $builder->integer('bar')->min(5);
         $builder->embedded('embedded', function ($builder) {
-            $builder->string('inner')->length(['min' => 5]);
+            $builder->string('inner')->length(min: 5);
         });
 
         $element = $builder->buildElement();
@@ -106,7 +106,7 @@ ERROR
         $builder->string('foo')->required();
         $builder->integer('bar')->min(5);
         $builder->embedded('embedded', function ($builder) {
-            $builder->string('inner')->length(['min' => 5]);
+            $builder->string('inner')->length(min: 5);
         });
 
         $element = $builder->buildElement();
@@ -132,7 +132,7 @@ ERROR
         $builder->string('foo')->required();
         $builder->integer('bar')->min(5);
         $builder->embedded('embedded', function ($builder) {
-            $builder->string('inner')->length(['min' => 5]);
+            $builder->string('inner')->length(min: 5);
         });
 
         $element = $builder->buildElement();

@@ -6,9 +6,9 @@ use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\ElementBuilderInterface;
-use Bdf\Form\ElementInterface;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\Util\DelegateElementBuilderTrait;
+use Override;
 
 use function is_string;
 
@@ -33,25 +33,22 @@ class CustomFormBuilder implements ElementBuilderInterface
 {
     use DelegateElementBuilderTrait;
 
-    /**
-     * @var FormBuilderInterface
-     */
-    private $builder;
+    private readonly FormBuilderInterface $builder;
 
     /**
      * @var class-string<CustomForm>|callable(FormBuilderInterface):CustomForm
      */
-    private $formFactory;
+    private readonly mixed $formFactory;
 
     /**
      * @var list<callable(CustomForm, FormBuilderInterface): void>
      */
-    private $preConfigureHooks = [];
+    private array $preConfigureHooks = [];
 
     /**
      * @var list<callable(CustomForm, FormInterface): void>
      */
-    private $postConfigureHooks = [];
+    private array $postConfigureHooks = [];
 
 
     /**
@@ -66,17 +63,14 @@ class CustomFormBuilder implements ElementBuilderInterface
         $this->builder = $builder ?: new FormBuilder();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return CustomForm
-     */
-    public function buildElement(): ElementInterface
+    #[Override]
+    public function buildElement(): CustomForm
     {
         if (is_string($this->formFactory)) {
             /** @var class-string<CustomForm> $className */
             $className = $this->formFactory;
 
+            /** @psalm-suppress UnsafeInstantiation */
             $form = new $className($this->builder);
         } else {
             $form = ($this->formFactory)($this->builder);
@@ -128,9 +122,7 @@ class CustomFormBuilder implements ElementBuilderInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function getElementBuilder(): ElementBuilderInterface
     {
         return $this->builder;
