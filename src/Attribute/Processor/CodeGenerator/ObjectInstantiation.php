@@ -4,6 +4,7 @@ namespace Bdf\Form\Attribute\Processor\CodeGenerator;
 
 use Nette\PhpGenerator\Literal;
 use ReflectionObject;
+use Symfony\Component\Validator\Constraint;
 
 use function get_class;
 
@@ -76,6 +77,11 @@ final readonly class ObjectInstantiation
 
         foreach ($reflectionObject->getConstructor()?->getParameters() ?? [] as $param) {
             $value = $object->{$param->name} ?? null;
+
+            // Compatibility with SF 6: ignore options parameter
+            if ($param->name === 'options' && $object instanceof Constraint) {
+                continue;
+            }
 
             if ($param->isDefaultValueAvailable() && $value === $param->getDefaultValue()) {
                 continue;
