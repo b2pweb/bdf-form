@@ -7,6 +7,7 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 
 /**
  * Define the date format to use for parse the date string
@@ -34,7 +35,7 @@ use Bdf\Form\Child\ChildBuilderInterface;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class DateFormat implements ChildBuilderAttributeInterface
+final readonly class DateFormat implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -46,20 +47,15 @@ final class DateFormat implements ChildBuilderAttributeInterface
          * @see https://www.php.net/manual/en/datetime.createfromformat.php#refsect1-datetime.createfromformat-parameters For the format
          */
         private string $format,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->format($this->format);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$?->format(?);', [$name, $this->format]);

@@ -19,6 +19,7 @@ use Nette\PhpGenerator\Factory;
 use Nette\PhpGenerator\Literal;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PsrPrinter;
+use Override;
 
 /**
  * Add a HTTP transformer on the child element, by using method
@@ -104,9 +105,7 @@ final readonly class CallbackTransformer implements ChildBuilderAttributeInterfa
         private ?string $toHttp = null,
     ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         if ($this->callback !== null) {
@@ -122,9 +121,7 @@ final readonly class CallbackTransformer implements ChildBuilderAttributeInterfa
             ) {
             }
 
-            /**
-             * {@inheritdoc}
-             */
+            #[Override]
             public function transformToHttp(mixed $value, ElementInterface $input): mixed
             {
                 if ($this->toHttp === null) {
@@ -134,9 +131,7 @@ final readonly class CallbackTransformer implements ChildBuilderAttributeInterfa
                 return $this->form->{$this->toHttp}($value, $input);
             }
 
-            /**
-             * {@inheritdoc}
-             */
+            #[Override]
             public function transformFromHttp(mixed $value, ElementInterface $input): mixed
             {
                 if ($this->fromHttp === null) {
@@ -148,9 +143,7 @@ final readonly class CallbackTransformer implements ChildBuilderAttributeInterfa
         });
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         if ($this->callback !== null) {

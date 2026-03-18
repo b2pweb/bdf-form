@@ -10,6 +10,7 @@ use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\PropertyAccess\Getter;
 use Bdf\Form\PropertyAccess\Setter;
+use Override;
 
 /**
  * Define simple hydrator and extractor on the element, using the name property or accessor name
@@ -42,7 +43,7 @@ use Bdf\Form\PropertyAccess\Setter;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class GetSet implements ChildBuilderAttributeInterface
+final readonly class GetSet implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -55,20 +56,15 @@ final class GetSet implements ChildBuilderAttributeInterface
          * @readonly
          */
         private ?string $propertyName = null,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->hydrator(new Setter($this->propertyName))->extractor(new Getter($this->propertyName));
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->use(Setter::class)->use(Getter::class);

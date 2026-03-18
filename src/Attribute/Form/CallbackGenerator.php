@@ -9,6 +9,7 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Nette\PhpGenerator\Method;
+use Override;
 
 /**
  * Define the value generator of the form, using a callback method
@@ -39,7 +40,7 @@ use Nette\PhpGenerator\Method;
  * @api
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class CallbackGenerator implements FormBuilderAttributeInterface
+final readonly class CallbackGenerator implements FormBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -50,20 +51,15 @@ final class CallbackGenerator implements FormBuilderAttributeInterface
          * @readonly
          */
         private string $callback,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnFormBuilder(AttributeForm $form, FormBuilderInterface $builder): void
     {
         $builder->generates([$form, $this->callback]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$builder->generates([$this, ?]);', [$this->callback]);

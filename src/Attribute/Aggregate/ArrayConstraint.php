@@ -10,6 +10,7 @@ use Bdf\Form\Attribute\Constraint\Satisfy;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\CodeGenerator\ObjectInstantiation;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -60,17 +61,13 @@ final readonly class ArrayConstraint implements ChildBuilderAttributeInterface
         private Constraint $constraint,
     ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->arrayConstraint($this->constraint);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $constraint = ObjectInstantiation::promotedProperties($this->constraint)->render($generator);

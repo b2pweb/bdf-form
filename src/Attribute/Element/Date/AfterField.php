@@ -7,6 +7,7 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 
 /**
  * Define that the element date must be after the date of the other field
@@ -37,7 +38,7 @@ use Bdf\Form\Child\ChildBuilderInterface;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class AfterField implements ChildBuilderAttributeInterface
+final readonly class AfterField implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -60,20 +61,15 @@ final class AfterField implements ChildBuilderAttributeInterface
          * @var bool
          */
         private bool $orEqual = false,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->afterField($this->field, $this->message, $this->orEqual);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$?->afterField(?, ?, ?);', [$name, $this->field, $this->message, $this->orEqual]);

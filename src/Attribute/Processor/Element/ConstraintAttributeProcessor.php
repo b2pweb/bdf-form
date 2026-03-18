@@ -4,6 +4,7 @@ namespace Bdf\Form\Attribute\Processor\Element;
 
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -18,25 +19,19 @@ final class ConstraintAttributeProcessor implements ElementAttributeProcessorInt
 {
     use SimpleMethodCallGeneratorTrait;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function type(): string
     {
         return Constraint::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function process(ChildBuilderInterface $builder, object $attribute): void
     {
         $builder->satisfy($attribute);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     private function methodName(): string
     {
         return 'satisfy';

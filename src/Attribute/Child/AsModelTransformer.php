@@ -7,6 +7,7 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Element\CallbackTransformer;
 use Bdf\Form\Attribute\Processor\MethodChildBuilderAttributeInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 use ReflectionMethod;
 
 /**
@@ -47,7 +48,7 @@ use ReflectionMethod;
  * @api
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class AsModelTransformer implements MethodChildBuilderAttributeInterface
+final readonly class AsModelTransformer implements MethodChildBuilderAttributeInterface
 {
     /**
      * @var list<non-empty-string>
@@ -64,17 +65,13 @@ final class AsModelTransformer implements MethodChildBuilderAttributeInterface
         $this->targets = $targets;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function targetElements(): array
     {
         return $this->targets;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function attribute(ReflectionMethod $method): ChildBuilderAttributeInterface
     {
         return new CallbackModelTransformer($method->getName());

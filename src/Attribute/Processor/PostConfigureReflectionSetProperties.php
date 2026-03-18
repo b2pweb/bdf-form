@@ -4,12 +4,13 @@ namespace Bdf\Form\Attribute\Processor;
 
 use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Attribute\AttributeForm;
+use Override;
 use ReflectionProperty;
 
 /**
  * Fill the form properties using reflection
  */
-final class PostConfigureReflectionSetProperties implements PostConfigureInterface
+final readonly class PostConfigureReflectionSetProperties implements PostConfigureInterface
 {
     public function __construct(
         /**
@@ -26,12 +27,9 @@ final class PostConfigureReflectionSetProperties implements PostConfigureInterfa
          * @var array<non-empty-string, ReflectionProperty>
          */
         private array $buttonProperties,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function postConfigure(AttributeForm $form, FormInterface $inner): void
     {
         foreach ($this->elementProperties as $name => $reflection) {

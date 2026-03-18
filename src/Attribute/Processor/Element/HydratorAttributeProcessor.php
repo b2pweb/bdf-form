@@ -4,6 +4,7 @@ namespace Bdf\Form\Attribute\Processor\Element;
 
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
+use Override;
 
 /**
  * Define as hydrator by calling hydrator()
@@ -17,25 +18,19 @@ final class HydratorAttributeProcessor implements ElementAttributeProcessorInter
 {
     use SimpleMethodCallGeneratorTrait;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function type(): string
     {
         return HydratorInterface::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function process(ChildBuilderInterface $builder, object $attribute): void
     {
         $builder->hydrator($attribute);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     private function methodName(): string
     {
         return 'hydrator';

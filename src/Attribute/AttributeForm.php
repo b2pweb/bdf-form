@@ -9,11 +9,12 @@ use Bdf\Form\Attribute\Processor\ConfigureFormBuilderStrategy;
 use Bdf\Form\Attribute\Processor\PostConfigureInterface;
 use Bdf\Form\Attribute\Processor\ReflectionProcessor;
 use Bdf\Form\Custom\CustomForm;
+use Override;
 
 /**
  * Utility class for declare a form using PHP 8 attributes and declare elements using typed properties
  *
- * @template T
+ * @template T as array|object
  * @extends CustomForm<T>
  *
  * @api
@@ -48,17 +49,13 @@ abstract class AttributeForm extends CustomForm
         $this->processor = $processor ?? new ReflectionProcessor(new ConfigureFormBuilderStrategy());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     protected function configure(FormBuilderInterface $builder): void
     {
         $this->postConfigure = $this->processor->configureBuilder($this, $builder);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function postConfigure(FormInterface $form): void
     {
         if ($this->postConfigure) {

@@ -11,6 +11,7 @@ use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\ElementInterface;
 use Nette\PhpGenerator\Literal;
+use Override;
 
 /**
  * Attribute for define the array element type
@@ -66,18 +67,14 @@ class ElementType implements ChildBuilderAttributeInterface
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $configurator = $this->configurator !== null ? [$form, $this->configurator] : null;
         $builder->element($this->elementType, $configurator);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $elementType = new Literal($generator->useAndSimplifyType($this->elementType));

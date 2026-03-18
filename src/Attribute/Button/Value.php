@@ -7,6 +7,7 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Button\ButtonBuilderInterface;
+use Override;
 
 /**
  * Attribute for define the button value, used to check if the button is clicked
@@ -32,7 +33,7 @@ use Bdf\Form\Button\ButtonBuilderInterface;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Value implements ButtonBuilderAttributeInterface
+final readonly class Value implements ButtonBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -40,20 +41,15 @@ final class Value implements ButtonBuilderAttributeInterface
          * @readonly
          */
         private string $value,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnButtonBuilder(AttributeForm $form, ButtonBuilderInterface $builder): void
     {
         $builder->value($this->value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForButtonBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('    ->value(?)', [$this->value]);

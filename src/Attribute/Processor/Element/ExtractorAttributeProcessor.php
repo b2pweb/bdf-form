@@ -4,6 +4,7 @@ namespace Bdf\Form\Attribute\Processor\Element;
 
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\PropertyAccess\ExtractorInterface;
+use Override;
 
 /**
  * Define the extractor by calling extract()
@@ -17,25 +18,19 @@ final class ExtractorAttributeProcessor implements ElementAttributeProcessorInte
 {
     use SimpleMethodCallGeneratorTrait;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function type(): string
     {
         return ExtractorInterface::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function process(ChildBuilderInterface $builder, object $attribute): void
     {
         $builder->extractor($attribute);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     private function methodName(): string
     {
         return 'extractor';

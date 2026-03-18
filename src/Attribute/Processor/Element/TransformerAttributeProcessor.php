@@ -5,6 +5,7 @@ namespace Bdf\Form\Attribute\Processor\Element;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Transformer\TransformerInterface;
+use Override;
 
 /**
  * Add the transformer by calling transformer()
@@ -18,25 +19,19 @@ final class TransformerAttributeProcessor implements ElementAttributeProcessorIn
 {
     use SimpleMethodCallGeneratorTrait;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function type(): string
     {
         return TransformerInterface::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function process(ChildBuilderInterface $builder, object $attribute): void
     {
         $builder->transformer($attribute);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     private function methodName(): string
     {
         return 'transformer';

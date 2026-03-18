@@ -8,6 +8,7 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Leaf\NumberElementBuilder;
+use Override;
 
 /**
  * Change the raw number mode
@@ -35,7 +36,7 @@ use Bdf\Form\Leaf\NumberElementBuilder;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Raw implements ChildBuilderAttributeInterface
+final readonly class Raw implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -44,20 +45,15 @@ final class Raw implements ChildBuilderAttributeInterface
          * @readonly
          */
         private bool $flag = true,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->raw($this->flag);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$?->raw(?);', [$name, $this->flag]);

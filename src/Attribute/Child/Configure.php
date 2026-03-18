@@ -8,6 +8,7 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\MethodChildBuilderAttributeInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 use ReflectionMethod;
 
 /**
@@ -60,37 +61,28 @@ class Configure implements ChildBuilderAttributeInterface, MethodChildBuilderAtt
          * @var non-empty-string
          * @readonly
          */
-        private string $target
-    ) {
-    }
+        private readonly string $target,
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $form->{$this->target}($builder);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$form->?($?);', [$this->target, $name]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function targetElements(): array
     {
         return [$this->target];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function attribute(ReflectionMethod $method): ChildBuilderAttributeInterface
     {
         return new self($method->getName());

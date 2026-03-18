@@ -8,6 +8,7 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 use Symfony\Component\Validator\Constraints\Count as CountConstraint;
 
 /**
@@ -41,25 +42,19 @@ use Symfony\Component\Validator\Constraints\Count as CountConstraint;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Count extends CountConstraint implements ChildBuilderAttributeInterface
 {
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->arrayConstraint($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function validatedBy(): string
     {
         return CountConstraint::class . 'Validator';
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $defaultParameters = get_class_vars(CountConstraint::class);

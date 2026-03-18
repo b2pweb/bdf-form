@@ -7,6 +7,7 @@ use Bdf\Form\Aggregate\ArrayElementBuilder;
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\MethodChildBuilderAttributeInterface;
 use Bdf\Form\Constraint\Closure;
+use Override;
 use ReflectionMethod;
 use Symfony\Component\Validator\Constraint;
 
@@ -73,17 +74,13 @@ final readonly class AsArrayConstraint implements MethodChildBuilderAttributeInt
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function targetElements(): array
     {
         return [$this->target];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function attribute(ReflectionMethod $method): ChildBuilderAttributeInterface
     {
         return new CallbackArrayConstraint($method->getName(), $this->message);

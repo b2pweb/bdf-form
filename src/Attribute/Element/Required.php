@@ -8,6 +8,7 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 
 /**
  * Define the element as required
@@ -35,7 +36,7 @@ use Bdf\Form\Child\ChildBuilderInterface;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Required implements ChildBuilderAttributeInterface
+final readonly class Required implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -45,20 +46,15 @@ final class Required implements ChildBuilderAttributeInterface
          * @readonly
          */
         private ?string $message = null,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->required($this->message);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$?->required(?);', [$name, $this->message]);

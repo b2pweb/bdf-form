@@ -11,6 +11,7 @@ use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Child\Http\ArrayOffsetHttpFields;
 use LogicException;
+use Override;
 
 /**
  * Define the HTTP field name for the child element
@@ -42,7 +43,7 @@ use LogicException;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class HttpField implements ChildBuilderAttributeInterface
+final readonly class HttpField implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -52,12 +53,9 @@ final class HttpField implements ChildBuilderAttributeInterface
          * @readonly
          */
         private string $name,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         if (!$builder instanceof ChildBuilder) {
@@ -67,9 +65,7 @@ final class HttpField implements ChildBuilderAttributeInterface
         $builder->httpFields(new ArrayOffsetHttpFields($this->name));
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->use(ArrayOffsetHttpFields::class);

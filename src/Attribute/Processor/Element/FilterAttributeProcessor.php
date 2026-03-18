@@ -4,6 +4,7 @@ namespace Bdf\Form\Attribute\Processor\Element;
 
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Filter\FilterInterface;
+use Override;
 
 /**
  * Add the filter by calling filter()
@@ -17,25 +18,19 @@ final class FilterAttributeProcessor implements ElementAttributeProcessorInterfa
 {
     use SimpleMethodCallGeneratorTrait;
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function type(): string
     {
         return FilterInterface::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function process(ChildBuilderInterface $builder, object $attribute): void
     {
         $builder->filter($attribute);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     private function methodName(): string
     {
         return 'filter';

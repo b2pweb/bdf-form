@@ -17,6 +17,7 @@ use Bdf\Form\Choice\LazyChoice;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Nette\PhpGenerator\Literal;
+use Override;
 
 /**
  * Define available values choice for the element
@@ -103,9 +104,7 @@ final readonly class Choices implements ChildBuilderAttributeInterface
         private array $options = [],
     ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $options = $this->options;
@@ -122,9 +121,7 @@ final readonly class Choices implements ChildBuilderAttributeInterface
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $options = $this->options;

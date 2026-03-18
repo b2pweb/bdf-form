@@ -10,6 +10,7 @@ use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Transformer\TransformerInterface;
+use Override;
 
 /**
  * Fine grain configure error triggered by transformers
@@ -41,7 +42,7 @@ use Bdf\Form\Transformer\TransformerInterface;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-class TransformerError implements ChildBuilderAttributeInterface
+final readonly class TransformerError implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -69,12 +70,9 @@ class TransformerError implements ChildBuilderAttributeInterface
          * @readonly
          */
         private ?string $validationCallback = null,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         if ($this->message !== null) {
@@ -90,9 +88,7 @@ class TransformerError implements ChildBuilderAttributeInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$?', [$name]);

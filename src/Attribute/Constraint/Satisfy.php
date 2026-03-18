@@ -9,6 +9,7 @@ use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\CodeGenerator\ObjectInstantiation;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Nette\PhpGenerator\Literal;
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 use function is_string;
@@ -58,17 +59,13 @@ final readonly class Satisfy implements ChildBuilderAttributeInterface
         private Constraint $constraint,
     ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->satisfy($this->constraint);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $constraint = ObjectInstantiation::promotedProperties($this->constraint)->render($generator);

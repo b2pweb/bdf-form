@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Attribute\AttributeForm;
 use LogicException;
+use Override;
 
 /**
  * Processor for compile attributes to native PHP code for build the form
@@ -19,7 +20,7 @@ use LogicException;
  *
  * @api
  */
-final class CompileAttributesProcessor implements AttributesProcessorInterface
+final readonly class CompileAttributesProcessor implements AttributesProcessorInterface
 {
     public function __construct(
         /**
@@ -30,21 +31,21 @@ final class CompileAttributesProcessor implements AttributesProcessorInterface
          *
          * @var callable(AttributeForm):non-empty-string
          */
-        private $classNameResolver,
+        private mixed $classNameResolver,
         /**
          * Resolve the file name from the generated processor class name
          *
          * @var callable(class-string<AttributesProcessorInterface>):non-empty-string
          */
-        private $fileNameResolver,
-    ) {
-    }
+        private mixed $fileNameResolver,
+    ) {}
 
     /**
      * {@inheritdoc}
      *
      * @psalm-suppress PossiblyUnusedReturnValue
      */
+     #[Override]
     public function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): PostConfigureInterface
     {
         /** @var class-string<AttributesProcessorInterface&PostConfigureInterface> $className */

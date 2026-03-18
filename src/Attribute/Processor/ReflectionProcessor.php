@@ -6,6 +6,7 @@ use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Button\ButtonInterface;
 use Bdf\Form\ElementInterface;
+use Override;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -19,7 +20,7 @@ use ReflectionNamedType;
  *
  * @api
  */
-final class ReflectionProcessor implements AttributesProcessorInterface
+final readonly class ReflectionProcessor implements AttributesProcessorInterface
 {
     /**
      * Strategy to use on each field / class
@@ -36,9 +37,7 @@ final class ReflectionProcessor implements AttributesProcessorInterface
         $this->strategy = $strategy;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $metadata = new ProcessorMetadata();
@@ -102,7 +101,7 @@ final class ReflectionProcessor implements AttributesProcessorInterface
      */
     private function registerMethodsMetadata(AttributeForm $form, ProcessorMetadata $metadata): void
     {
-        foreach ((new ReflectionClass($form))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach (new ReflectionClass($form)->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             foreach ($method->getAttributes(MethodChildBuilderAttributeInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
                 /** @var MethodChildBuilderAttributeInterface $attributeInstance */
                 $attributeInstance = $attribute->newInstance();

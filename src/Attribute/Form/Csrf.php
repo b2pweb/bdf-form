@@ -7,6 +7,7 @@ use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Csrf\CsrfElementBuilder;
+use Override;
 
 /**
  * Add a CSRF check on the form
@@ -35,7 +36,7 @@ use Bdf\Form\Csrf\CsrfElementBuilder;
  * @api
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Csrf implements FormBuilderAttributeInterface
+final readonly class Csrf implements FormBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -74,12 +75,9 @@ final class Csrf implements FormBuilderAttributeInterface
          * @see CsrfElementBuilder::invalidate() The called method if defined
          */
         private ?bool $invalidate = null,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnFormBuilder(AttributeForm $form, FormBuilderInterface $builder): void
     {
         $csrf = $builder->csrf($this->name);
@@ -97,9 +95,7 @@ final class Csrf implements FormBuilderAttributeInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $parameters = [$this->name];

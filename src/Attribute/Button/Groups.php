@@ -9,6 +9,7 @@ use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Button\ButtonBuilderInterface;
 use Bdf\Form\Button\ButtonInterface;
 use Bdf\Form\RootElementInterface;
+use Override;
 
 /**
  * Attribute for define the validation group to use when the related button is clicked
@@ -53,17 +54,13 @@ final class Groups implements ButtonBuilderAttributeInterface
         $this->groups = $groups;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnButtonBuilder(AttributeForm $form, ButtonBuilderInterface $builder): void
     {
         $builder->groups($this->groups);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForButtonBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('    ->groups(?)', [$this->groups]);

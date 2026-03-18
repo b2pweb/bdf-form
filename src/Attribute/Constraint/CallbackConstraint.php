@@ -11,6 +11,7 @@ use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Constraint\Closure;
 use Bdf\Form\ElementBuilderInterface;
 use Nette\PhpGenerator\Literal;
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -77,9 +78,7 @@ final readonly class CallbackConstraint implements ChildBuilderAttributeInterfac
         private ?string $message = null,
     ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $constraint = new Closure($form->{$this->methodName}(...), $this->message);
@@ -87,9 +86,7 @@ final readonly class CallbackConstraint implements ChildBuilderAttributeInterfac
         $builder->satisfy($constraint);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->use(Closure::class, 'ClosureConstraint');

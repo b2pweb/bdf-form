@@ -5,6 +5,7 @@ namespace Bdf\Form\Attribute\Child;
 use Attribute;
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\MethodChildBuilderAttributeInterface;
+use Override;
 use ReflectionMethod;
 
 /**
@@ -39,7 +40,7 @@ use ReflectionMethod;
  * @api
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class AsFilter implements MethodChildBuilderAttributeInterface
+final readonly class AsFilter implements MethodChildBuilderAttributeInterface
 {
     /**
      * @var list<non-empty-string>
@@ -56,17 +57,13 @@ final class AsFilter implements MethodChildBuilderAttributeInterface
         $this->targets = $targets;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function targetElements(): array
     {
         return $this->targets;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function attribute(ReflectionMethod $method): ChildBuilderAttributeInterface
     {
         return new CallbackFilter($method->getName());

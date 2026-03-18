@@ -13,6 +13,7 @@ use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Nette\PhpGenerator\Literal;
+use Override;
 
 /**
  * Add a transformer on the element, using a transformer class
@@ -51,14 +52,14 @@ class Transformer implements ChildBuilderAttributeInterface
          * @var class-string<TransformerInterface>
          * @readonly
          */
-        private string $transformerClass,
+        private readonly string $transformerClass,
         /**
          * Arguments to provide on the transformer constructor
          *
          * @var array
          * @readonly
          */
-        private array $constructorArguments = [],
+        private readonly array $constructorArguments = [],
         /**
          * Apply the transformer on the whole array element
          * instead of each element
@@ -72,13 +73,10 @@ class Transformer implements ChildBuilderAttributeInterface
          *
          * @see ArrayTransformer Prefer use this attribute for array element, instead of manually set this flag
          */
-        private bool $array = false,
-    ) {
-    }
+        private readonly bool $array = false,
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $transformer = new $this->transformerClass(...$this->constructorArguments);
@@ -91,9 +89,7 @@ class Transformer implements ChildBuilderAttributeInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $transformer = $generator->useAndSimplifyType($this->transformerClass);

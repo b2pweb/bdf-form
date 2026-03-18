@@ -8,6 +8,7 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Element\CallbackTransformer;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 
 /**
  * Add a filter on the child element, by using method
@@ -41,7 +42,7 @@ use Bdf\Form\Child\ChildBuilderInterface;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class CallbackFilter implements ChildBuilderAttributeInterface
+final readonly class CallbackFilter implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -53,20 +54,15 @@ final class CallbackFilter implements ChildBuilderAttributeInterface
          * @readonly
          */
         private string $method,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->filter([$form, $this->method]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$?->filter([$form, ?]);', [$name, $this->method]);

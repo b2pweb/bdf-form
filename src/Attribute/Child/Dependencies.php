@@ -8,6 +8,7 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Override;
 
 /**
  * Add dependencies on other sibling elements
@@ -35,7 +36,7 @@ use Bdf\Form\Child\ChildBuilderInterface;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Dependencies implements ChildBuilderAttributeInterface
+final readonly class Dependencies implements ChildBuilderAttributeInterface
 {
     /**
      * @var list<string>
@@ -52,17 +53,13 @@ final class Dependencies implements ChildBuilderAttributeInterface
         $this->dependencies = $dependencies;
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->depends(...$this->dependencies);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$?->depends(...?);', [$name, $this->dependencies]);

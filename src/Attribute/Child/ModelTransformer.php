@@ -10,6 +10,7 @@ use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Transformer\TransformerInterface;
 use Nette\PhpGenerator\Literal;
+use Override;
 
 /**
  * Add a model transformer on the child, using a transformer class
@@ -36,7 +37,7 @@ use Nette\PhpGenerator\Literal;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class ModelTransformer implements ChildBuilderAttributeInterface
+final readonly class ModelTransformer implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -56,17 +57,13 @@ final class ModelTransformer implements ChildBuilderAttributeInterface
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->modelTransformer(new $this->transformerClass(...$this->constructorArguments));
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $transformer = $generator->useAndSimplifyType($this->transformerClass);

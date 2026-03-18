@@ -16,6 +16,7 @@ use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Literal;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PsrPrinter;
+use Override;
 
 /**
  * Add a model transformer on the child element, by using method
@@ -75,7 +76,7 @@ use Nette\PhpGenerator\PsrPrinter;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class CallbackModelTransformer implements ChildBuilderAttributeInterface
+final readonly class CallbackModelTransformer implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -100,12 +101,9 @@ final class CallbackModelTransformer implements ChildBuilderAttributeInterface
          * @readonly
          */
         private ?string $toInput = null,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         if ($this->callback !== null) {
@@ -121,10 +119,8 @@ final class CallbackModelTransformer implements ChildBuilderAttributeInterface
             ) {
             }
 
-            /**
-             * {@inheritdoc}
-             */
-            public function transformToHttp($value, ElementInterface $input)
+            #[Override]
+            public function transformToHttp(mixed $value, ElementInterface $input): mixed
             {
                 if ($this->toInput === null) {
                     return $value;
@@ -133,10 +129,8 @@ final class CallbackModelTransformer implements ChildBuilderAttributeInterface
                 return $this->form->{$this->toInput}($value, $input);
             }
 
-            /**
-             * {@inheritdoc}
-             */
-            public function transformFromHttp($value, ElementInterface $input)
+            #[Override]
+            public function transformFromHttp(mixed $value, ElementInterface $input): mixed
             {
                 if ($this->toEntity === null) {
                     return $value;
@@ -147,9 +141,7 @@ final class CallbackModelTransformer implements ChildBuilderAttributeInterface
         });
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         if ($this->callback !== null) {

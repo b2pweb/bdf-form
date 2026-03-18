@@ -8,6 +8,7 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Nette\PhpGenerator\Literal;
+use Override;
 
 /**
  * Define the DateTime type to use on the date input
@@ -35,7 +36,7 @@ use Nette\PhpGenerator\Literal;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class DateTimeClass implements ChildBuilderAttributeInterface
+final readonly class DateTimeClass implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -45,20 +46,15 @@ final class DateTimeClass implements ChildBuilderAttributeInterface
          * @readonly
          */
         private string $className,
-    ) {
-    }
+    ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $builder->className($this->className);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->line('$?->className(?::class);', [$name, new Literal($generator->useAndSimplifyType($this->className))]);

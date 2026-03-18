@@ -16,6 +16,7 @@ use Bdf\Form\Attribute\Processor\Element\HydratorAttributeProcessor;
 use Bdf\Form\Attribute\Processor\Element\TransformerAttributeProcessor;
 use Nette\PhpGenerator\Closure;
 use Nette\PhpGenerator\Literal;
+use Override;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionProperty;
@@ -47,9 +48,7 @@ final class GenerateConfiguratorStrategy implements ReflectionStrategyInterface
         $this->registerElementAttributeProcessor(new ExtractorAttributeProcessor());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onFormClass(ReflectionClass $formClass, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
     {
         $empty = true;
@@ -64,9 +63,7 @@ final class GenerateConfiguratorStrategy implements ReflectionStrategyInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onButtonProperty(ReflectionProperty $property, string $name, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
     {
         $this->generator->line('$builder->submit(?)', [$name]);
@@ -78,9 +75,7 @@ final class GenerateConfiguratorStrategy implements ReflectionStrategyInterface
         $this->generator->line(";\n");
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onElementProperty(ReflectionProperty $property, string $name, string $elementType, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
     {
         $elementType = $this->generator->useAndSimplifyType($elementType);
@@ -108,9 +103,7 @@ final class GenerateConfiguratorStrategy implements ReflectionStrategyInterface
         $this->generator->line(); // Add empty line
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onPostConfigure(ProcessorMetadata $metadata, AttributeForm $form): ?PostConfigureInterface
     {
         $this->generator->line('return $this;');

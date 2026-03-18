@@ -7,6 +7,7 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\MethodChildBuilderAttributeInterface;
 use Bdf\Form\Constraint\Closure;
 use Bdf\Form\ElementBuilderInterface;
+use Override;
 use ReflectionMethod;
 use Symfony\Component\Validator\Constraint;
 
@@ -72,17 +73,14 @@ final readonly class AsConstraint implements MethodChildBuilderAttributeInterfac
         private ?string $message = null,
     ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function targetElements(): array
     {
+        /** @var list<non-empty-string> */
         return [$this->target];
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function attribute(ReflectionMethod $method): ChildBuilderAttributeInterface
     {
         return new CallbackConstraint($method->getName(), $this->message);

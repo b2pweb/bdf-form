@@ -13,6 +13,7 @@ use Bdf\Form\Attribute\Processor\Element\ExtractorAttributeProcessor;
 use Bdf\Form\Attribute\Processor\Element\FilterAttributeProcessor;
 use Bdf\Form\Attribute\Processor\Element\HydratorAttributeProcessor;
 use Bdf\Form\Attribute\Processor\Element\TransformerAttributeProcessor;
+use Override;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionProperty;
@@ -36,9 +37,7 @@ final class ConfigureFormBuilderStrategy implements ReflectionStrategyInterface
         $this->registerElementAttributeProcessor(new ExtractorAttributeProcessor());
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onFormClass(ReflectionClass $formClass, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
     {
         foreach ($formClass->getAttributes(FormBuilderAttributeInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
@@ -46,9 +45,7 @@ final class ConfigureFormBuilderStrategy implements ReflectionStrategyInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onButtonProperty(ReflectionProperty $property, string $name, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
     {
         $submitBuilder = $builder->submit($name);
@@ -58,9 +55,7 @@ final class ConfigureFormBuilderStrategy implements ReflectionStrategyInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onElementProperty(ReflectionProperty $property, string $name, string $elementType, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
     {
         $elementBuilder = $builder->add($name, $elementType);
@@ -85,9 +80,7 @@ final class ConfigureFormBuilderStrategy implements ReflectionStrategyInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function onPostConfigure(ProcessorMetadata $metadata, AttributeForm $form): ?PostConfigureInterface
     {
         return new PostConfigureReflectionSetProperties($metadata->elementProperties(), $metadata->buttonProperties());

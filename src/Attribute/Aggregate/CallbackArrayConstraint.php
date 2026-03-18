@@ -10,6 +10,7 @@ use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Constraint\Closure;
 use Nette\PhpGenerator\Literal;
+use Override;
 use Symfony\Component\Validator\Constraint;
 
 /**
@@ -74,9 +75,7 @@ final readonly class CallbackArrayConstraint implements ChildBuilderAttributeInt
         private ?string $message = null,
     ) {}
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
         $constraint = new Closure($form->{$this->methodName}(...), $this->message);
@@ -84,9 +83,7 @@ final readonly class CallbackArrayConstraint implements ChildBuilderAttributeInt
         $builder->arrayConstraint($constraint);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    #[Override]
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
         $generator->use(Closure::class, 'ClosureConstraint');
