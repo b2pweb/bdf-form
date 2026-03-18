@@ -2,15 +2,19 @@
 
 namespace Bdf\Form\Aggregate;
 
+use BackedEnum;
 use Bdf\Form\Choice\ChoiceBuilderTrait;
 use Bdf\Form\Choice\ChoiceInterface;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\AnyElement;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\Leaf\EnumElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Leaf\UnitEnumElement;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Registry\RegistryInterface;
@@ -23,6 +27,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Choice as ChoiceConstraint;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use UnitEnum;
 
 use function assert;
 
@@ -278,6 +283,53 @@ class ArrayElementBuilder implements ElementBuilderInterface
     }
 
     /**
+     * Define as array of any values
+     *
+     * <code>
+     * $builder->array('values')->any();
+     * </code>
+     *
+     * @param callable(ElementBuilderInterface<ElementInterface<mixed>>):void|null $configurator Callback for configure the inner element builder
+     *
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<mixed>
+     *
+     * @since 2.0
+     */
+    public function any(?callable $configurator = null): static
+    {
+        return $this->element(AnyElement::class, $configurator);
+    }
+
+    /**
+     * Define as array of enum
+     *
+     * <code>
+     * $builder->array('types')->enum(Types::class, function(EnumElementBuilder $builder) {
+     *     $builder->backed(false);
+     * })->getset();
+     * </code>
+     *
+     * @param class-string<UnitEnum> $enumClass The enum class
+     * @param callable(EnumElementBuilder):void|null $configurator Callback for configure the inner element builder
+     *
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<\UnitEnum>
+     *
+     * @since 2.0
+     */
+    public function enum(string $enumClass, ?callable $configurator = null): static
+    {
+        return $this->element(UnitEnumElement::class, function (EnumElementBuilder $builder) use ($enumClass, $configurator) {
+            $builder->enumClass($enumClass);
+
+            if ($configurator !== null) {
+                $configurator($builder);
+            }
+        });
+    }
+
+    /**
      * Define as array of embedded forms
      *
      * <code>
@@ -350,12 +402,12 @@ class ArrayElementBuilder implements ElementBuilderInterface
     /**
      * {@inheritdoc}
      *
-     * @param ChoiceInterface|array|callable $choices The allowed values in PHP form.
+     * @param ChoiceInterface|array|class-string<BackedEnum>|callable $choices The allowed values in PHP form.
      * @param string|null $message The error message.
      * @param non-negative-int $min
      * @param positive-int $max
      */
-    final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): static
+    final public function choices(ChoiceInterface|array|string|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): static
     {
         /** @psalm-suppress MissingConstructor */
         $builder = new class {

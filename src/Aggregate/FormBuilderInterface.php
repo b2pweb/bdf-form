@@ -13,6 +13,7 @@ use Bdf\Form\Leaf\AnyElementBuilder;
 use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
+use Bdf\Form\Leaf\EnumElementBuilder;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElementBuilder;
@@ -21,6 +22,7 @@ use Bdf\Form\Phone\PhoneElementBuilder;
 use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use UnitEnum;
 
 /**
  * Base builder type for a form
@@ -80,7 +82,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * Add a new string element on the form
      *
      * <code>
-     * $builder->string('id', 'aaa-aaa-aaa')->regex('/[a-z]{3}(-[a-z]{3}){2}/i')->length(['max' => 35]);
+     * $builder->string('id', 'aaa-aaa-aaa')->regex('/[a-z]{3}(-[a-z]{3}){2}/i')->length(max: 35);
      * </code>
      *
      * @param non-empty-string $name The child name
@@ -169,6 +171,23 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @psalm-return ChildBuilderInterface<PhoneElementBuilder>
      */
     public function phone(string $name): ChildBuilderInterface;
+
+    /**
+     * Add a new enum element on the form
+     *
+     * <code>
+     * $builder->enum('type', Types::class)->getset();
+     * </code>
+     *
+     * @param non-empty-string $name The child name
+     * @param class-string<UnitEnum> $enumClass The enum class
+     *
+     * @return ChildBuilder|EnumElementBuilder
+     * @psalm-return ChildBuilderInterface<EnumElementBuilder>
+     *
+     * @since 2.0
+     */
+    public function enum(string $name, string $enumClass): ChildBuilderInterface;
 
     /**
      * Add a new csrf token on form

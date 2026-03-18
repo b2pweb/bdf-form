@@ -21,6 +21,7 @@ use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
+use Bdf\Form\Leaf\EnumElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\Helper\EmailElement;
@@ -29,6 +30,7 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Leaf\UnitEnumElement;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
@@ -39,6 +41,7 @@ use Bdf\Form\Validator\ValueValidatorInterface;
 use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use UnitEnum;
 
 /**
  * Builder for a form
@@ -219,6 +222,21 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
     public function phone(string $name): ChildBuilderInterface
     {
         return $this->add($name, PhoneElement::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param non-empty-string $name The child name
+     * @param class-string<UnitEnum> $enumClass The enum class
+     * @return ChildBuilder<EnumElementBuilder>
+     */
+    #[Override]
+    public function enum(string $name, string $enumClass): ChildBuilderInterface
+    {
+        /** @var ChildBuilder<EnumElementBuilder> $builder */
+        $builder = $this->add($name, UnitEnumElement::class);
+        return $builder->enumClass($enumClass);
     }
 
     /**

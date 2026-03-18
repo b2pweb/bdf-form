@@ -2,11 +2,15 @@
 
 namespace Bdf\Form\Choice;
 
+use BackedEnum;
 use Bdf\Form\ElementBuilderInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Choice as ChoiceConstraint;
 
 use function is_array;
+use function is_callable;
+use function is_string;
+use function is_subclass_of;
 
 /**
  * Trait for configure choices on an element
@@ -38,11 +42,14 @@ trait ChoiceBuilderTrait
      *     return $this->repository->loadChoices();
      * });
      *
+     * // Using enum
+     * $builder->choices(MyEnum::class);
+     *
      * $builder->choices(['foo', 'bar'], 'my error'); // With message
      * $builder->choices(['foo', 'bar'], min: 2, max: 6); // With custom options
      * </code>
      *
-     * @param ChoiceInterface|array|callable $choices  The allowed values in PHP form.
+     * @param ChoiceInterface|array|class-string<BackedEnum>|callable $choices  The allowed values in PHP form.
      * @param string|null $message The error message.
      * @param non-negative-int|null $min
      * @param positive-int|null $max
@@ -50,10 +57,14 @@ trait ChoiceBuilderTrait
      * @return $this
      * @see ChoiceConstraint
      */
-    final public function choices(ChoiceInterface|array|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): static
+    final public function choices(ChoiceInterface|array|string|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): static
     {
         if (!$choices instanceof ChoiceInterface) {
-            $choices = is_array($choices) ? new ArrayChoice($choices) : new LazyChoice($choices);
+            $choices = match (true) {
+                is_array($choices) => new ArrayChoice($choices),
+                is_string($choices) && is_subclass_of($choices, BackedEnum::class) => new EnumChoice($choices),
+                is_callable($choices) => new LazyChoice($choices),
+            };
         }
 
         $callback = $choices->values(...);

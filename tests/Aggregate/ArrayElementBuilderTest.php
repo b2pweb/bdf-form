@@ -2,11 +2,15 @@
 
 namespace Bdf\Form\Aggregate;
 
+use Bdf\Form\Choice\EnumChoice;
 use Bdf\Form\Choice\LazyChoice;
+use Bdf\Form\Leaf\AnyElementBuilder;
 use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
+use Bdf\Form\Leaf\EnumElementBuilder;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
+use Bdf\Form\Leaf\MyStringEnum;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\PhoneElementBuilder;
@@ -14,6 +18,7 @@ use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
@@ -171,6 +176,24 @@ class ArrayElementBuilderTest extends TestCase
         $this->assertCount(2, $phones);
         $this->assertEquals('+33451236585', PhoneNumberUtil::getInstance()->format($phones[0], PhoneNumberFormat::E164));
         $this->assertEquals('+33241578932', PhoneNumberUtil::getInstance()->format($phones[1], PhoneNumberFormat::E164));
+    }
+
+    public function test_any()
+    {
+        $element = $this->builder->any(function (AnyElementBuilder $builder) {})->buildElement();
+
+        $values = $element->submit($data = ['foo', new stdClass()])->value();
+
+        $this->assertSame($data, $values);
+    }
+
+    public function test_enum()
+    {
+        $element = $this->builder->enum(MyStringEnum::class, function (EnumElementBuilder $builder) {})->buildElement();
+
+        $values = $element->submit(['bar'])->value();
+
+        $this->assertSame([MyStringEnum::Bar], $values);
     }
 
     /**
@@ -339,5 +362,12 @@ class ArrayElementBuilderTest extends TestCase
         $this->assertEquals('One or more of the given values is invalid.', $element->error()->global());
 
         $this->assertTrue($element->submit(['foo', 'baz'])->valid());
+
+        $element = $this->builder->choices(new EnumChoice(MyStringEnum::class))->buildElement();
+
+        $this->assertFalse($element->submit(['foo', 'bar', 'aaa'])->valid());
+        $this->assertEquals('One or more of the given values is invalid.', $element->error()->global());
+
+        $this->assertTrue($element->submit(['foo', 'bar'])->valid());
     }
 }

@@ -3,6 +3,7 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Choice\ArrayChoice;
+use Bdf\Form\Choice\EnumChoice;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -182,4 +183,36 @@ class StringElementBuilderTest extends TestCase
         $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
     }
+
+    /**
+     *
+     */
+    public function test_choices_enum()
+    {
+        $element = $this->builder->choices(MyStringEnum::class)->buildElement();
+
+        $this->assertEquals(new EnumChoice(MyStringEnum::class), $element->choices());
+
+        $element->submit('aaa');
+        $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
+        $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
+
+        $element->submit('foo');
+        $this->assertTrue($element->valid());
+
+        $view = $element->view()->choices();
+        $this->assertTrue($view[0]->selected);
+        $this->assertSame('Foo', $view[0]->label);
+        $this->assertSame('foo', $view[0]->value);
+        $this->assertFalse($view[1]->selected);
+        $this->assertSame('Bar', $view[1]->label);
+        $this->assertSame('bar', $view[1]->value);
+    }
+}
+
+enum MyStringEnum: string
+{
+    case Foo = 'foo';
+    case Bar = 'bar';
 }
