@@ -61,7 +61,6 @@ final class ReflectionProcessor implements AttributesProcessorInterface
                 }
 
                 $elementType = $property->getType()->getName();
-                PHP_VERSION_ID >= 80100 or $property->setAccessible(true);
 
                 if ($elementType === ButtonInterface::class) {
                     $metadata->addButtonProperty($name, $property);

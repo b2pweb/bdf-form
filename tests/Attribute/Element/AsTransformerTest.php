@@ -6,13 +6,12 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Element\AsTransformer;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\StringElement;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class AsTransformerTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

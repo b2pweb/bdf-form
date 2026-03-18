@@ -14,13 +14,12 @@ use Bdf\Form\Attribute\Processor\ReflectionProcessor;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\PropertyAccess\Setter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class HttpFieldTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

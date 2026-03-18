@@ -8,13 +8,12 @@ use Bdf\Form\Attribute\Element\Date\Timezone;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use DateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class TimezoneTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

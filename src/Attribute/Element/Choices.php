@@ -70,7 +70,7 @@ use Nette\PhpGenerator\Literal;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Choices implements ChildBuilderAttributeInterface
+final readonly class Choices implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -101,8 +101,7 @@ final class Choices implements ChildBuilderAttributeInterface
          * @readonly
          */
         private array $options = [],
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritdoc}
@@ -112,14 +111,14 @@ final class Choices implements ChildBuilderAttributeInterface
         $options = $this->options;
 
         if ($this->message !== null) {
-            $options['message'] = $options['multipleMessage'] = $this->message;
+            $options['message'] = $this->message;
         }
 
         // Q&D fix for psalm because it does not recognize trait as type
         /** @var StringElementBuilder $builder */
         $builder->choices(
-            is_string($this->choices) ? new LazyChoice([$form, $this->choices]) : $this->choices,
-            $options
+            is_string($this->choices) ? new LazyChoice($form->{$this->choices}(...)) : $this->choices,
+            ...$options
         );
     }
 
@@ -131,16 +130,16 @@ final class Choices implements ChildBuilderAttributeInterface
         $options = $this->options;
 
         if ($this->message !== null) {
-            $options['message'] = $options['multipleMessage'] = $this->message;
+            $options['message'] = $this->message;
         }
 
         if (is_string($this->choices)) {
             $generator->use(LazyChoice::class);
-            $choices = new Literal('new LazyChoice([$form, ?])', [$this->choices]);
+            $choices = new Literal('new LazyChoice($form->?(...))', [$this->choices]);
         } else {
             $choices = $this->choices;
         }
 
-        $generator->line('$?->choices(?, ?);', [$name, $choices, $options]);
+        $generator->line('$?->choices(?, ...?:);', [$name, $choices, $options]);
     }
 }

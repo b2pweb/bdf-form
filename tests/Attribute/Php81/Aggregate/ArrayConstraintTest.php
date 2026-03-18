@@ -9,18 +9,17 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Attribute\Processor\ReflectionProcessor;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Validator\Constraints\Unique;
 use Tests\Form\Attribute\TestCase;
 
 class ArrayConstraintTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
-            #[ArrayConstraint(new Unique(['message' => 'Not unique']))]
+            #[ArrayConstraint(new Unique(message: 'Not unique'))]
             public ArrayElement $values;
         };
 
@@ -33,28 +32,12 @@ class ArrayConstraintTest extends TestCase
     }
 
     /**
-     * @dataProvider provideAttributesProcessor
-     */
-    public function test_disallow_constraint_instance_with_option_arg(AttributesProcessorInterface $processor)
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cannot use options with constraint instance');
-
-        $form = new class(null, $processor) extends AttributeForm {
-            #[ArrayConstraint(new Unique(['message' => 'Not unique']), ['foo' => 'bar'])]
-            public ArrayElement $values;
-        };
-
-        $form->submit(['values' => ['aaa', 'aaa']]);
-    }
-
-    /**
      * @return void
      */
     public function test_code_generator()
     {
         $form = new class extends AttributeForm {
-            #[ArrayConstraint(new Unique(['message' => 'Not unique']))]
+            #[ArrayConstraint(new Unique(message: 'Not unique'))]
             public ArrayElement $values;
         };
 
@@ -77,7 +60,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $values = $builder->add('values', ArrayElement::class);
-        $values->arrayConstraint(new Unique(['message' => 'Not unique', 'groups' => ['Default']]));
+        $values->arrayConstraint(new Unique(message: 'Not unique', groups: ['Default']));
 
         return $this;
     }

@@ -44,7 +44,7 @@ use Symfony\Component\Validator\Constraint;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class CallbackArrayConstraint implements ChildBuilderAttributeInterface
+final readonly class CallbackArrayConstraint implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -72,19 +72,14 @@ final class CallbackArrayConstraint implements ChildBuilderAttributeInterface
          * @readonly
          */
         private ?string $message = null,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritdoc}
      */
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
-        $constraint = new Closure(['callback' => [$form, $this->methodName]]);
-
-        if ($this->message !== null) {
-            $constraint->message = $this->message;
-        }
+        $constraint = new Closure($form->{$this->methodName}(...), $this->message);
 
         $builder->arrayConstraint($constraint);
     }
@@ -97,8 +92,8 @@ final class CallbackArrayConstraint implements ChildBuilderAttributeInterface
         $generator->use(Closure::class, 'ClosureConstraint');
 
         $parameters = $this->message !== null
-            ? new Literal("['callback' => [\$form, ?], 'message' => ?]", [$this->methodName, $this->message])
-            : new Literal('[$form, ?]', [$this->methodName])
+            ? new Literal('$form->?(...), ?', [$this->methodName, $this->message])
+            : new Literal('$form->?(...)', [$this->methodName])
         ;
 
         $generator->line('$?->arrayConstraint(new ClosureConstraint(?));', [$name, $parameters]);

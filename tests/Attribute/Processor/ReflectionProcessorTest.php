@@ -4,6 +4,7 @@ namespace Tests\Form\Attribute\Processor;
 
 use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Attribute\AttributeForm;
+use Bdf\Form\Attribute\Processor\ProcessorMetadata;
 use Bdf\Form\Attribute\Processor\ReflectionProcessor;
 use Bdf\Form\Attribute\Processor\ReflectionStrategyInterface;
 use Bdf\Form\Button\ButtonInterface;
@@ -20,12 +21,12 @@ class ReflectionProcessorTest extends TestCase
         $form = new B();
         $builder = new FormBuilder();
 
-        $strategy->expects($this->exactly(2))->method('onFormClass')
-            ->withConsecutive(
-                [new \ReflectionClass(B::class), $form, $builder],
-                [new \ReflectionClass(A::class), $form, $builder],
-            )
-        ;
+        $strategy->expects($matcher = $this->exactly(2))->method('onFormClass')->willReturnCallback(function (...$args) use ($matcher, $form, $builder) {
+            match ($matcher->numberOfInvocations()) {
+                1 => $this->assertEquals([new \ReflectionClass(B::class), $form, $builder, $args[3]], $args),
+                2 => $this->assertEquals([new \ReflectionClass(A::class), $form, $builder, $args[3]], $args),
+            };
+        });
 
         $processor->configureBuilder($form, $builder);
     }

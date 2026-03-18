@@ -14,13 +14,12 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Setter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class ElementTypeTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test_simple(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -34,9 +33,7 @@ class ElementTypeTest extends TestCase
         $this->assertSame(['values' => [123, 456, 789]], $form->value());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test_with_configurator(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -55,9 +52,7 @@ class ElementTypeTest extends TestCase
         $this->assertEquals(['values' => [0 => 'This value should be greater than or equal to 200.']], $form->error()->toArray());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test_with_embedded(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

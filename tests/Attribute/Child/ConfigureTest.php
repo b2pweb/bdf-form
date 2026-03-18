@@ -8,13 +8,12 @@ use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class ConfigureTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -26,7 +25,7 @@ class ConfigureTest extends TestCase
              */
             public function configureFoo(ChildBuilderInterface $builder): void
             {
-                $builder->length(['min' => 3]);
+                $builder->length(min: 3);
             }
         };
 
@@ -38,9 +37,7 @@ class ConfigureTest extends TestCase
         $this->assertTrue($form->valid());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test_on_method(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -52,7 +49,7 @@ class ConfigureTest extends TestCase
             #[Configure('foo')]
             public function configureFoo(ChildBuilderInterface $builder): void
             {
-                $builder->length(['min' => 3]);
+                $builder->length(min: 3);
             }
         };
 
@@ -75,7 +72,7 @@ class ConfigureTest extends TestCase
              */
             public function configureFoo(ChildBuilderInterface $builder): void
             {
-                $builder->length(['min' => 3]);
+                $builder->length(min: 3);
             }
         };
 

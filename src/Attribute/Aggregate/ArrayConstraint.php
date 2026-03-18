@@ -10,12 +10,7 @@ use Bdf\Form\Attribute\Constraint\Satisfy;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\CodeGenerator\ObjectInstantiation;
 use Bdf\Form\Child\ChildBuilderInterface;
-use InvalidArgumentException;
-use Nette\PhpGenerator\Literal;
 use Symfony\Component\Validator\Constraint;
-
-use function is_object;
-use function is_string;
 
 /**
  * Add a constraint on the whole array element
@@ -47,7 +42,7 @@ use function is_string;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class ArrayConstraint implements ChildBuilderAttributeInterface
+final readonly class ArrayConstraint implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -60,29 +55,17 @@ final class ArrayConstraint implements ChildBuilderAttributeInterface
          * the constructor parameters will be deduced from public properties of the constraint.
          * This may not work if the constraint has a complex constructor.
          *
-         * @var class-string<Constraint>|Constraint
-         * @readonly
+         * @var Constraint
          */
-        private string|Constraint $constraint,
-        /**
-         * Constraint's constructor options
-         *
-         * @var mixed|null
-         * @readonly
-         */
-        private mixed $options = null
-    ) {
-        if (is_object($constraint) && $options !== null) {
-            throw new InvalidArgumentException('Cannot use options with constraint instance');
-        }
-    }
+        private Constraint $constraint,
+    ) {}
 
     /**
      * {@inheritdoc}
      */
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
-        $builder->arrayConstraint($this->constraint, $this->options);
+        $builder->arrayConstraint($this->constraint);
     }
 
     /**
@@ -90,12 +73,7 @@ final class ArrayConstraint implements ChildBuilderAttributeInterface
      */
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
-        if (is_string($this->constraint)) {
-            $constraint = $generator->useAndSimplifyType($this->constraint);
-            $generator->line('$?->arrayConstraint(?::class, ?);', [$name, new Literal($constraint), $this->options]);
-        } else {
-            $constraint = ObjectInstantiation::singleArrayParameter($this->constraint)->render($generator);
-            $generator->line('$?->arrayConstraint(?);', [$name, $constraint]);
-        }
+        $constraint = ObjectInstantiation::promotedProperties($this->constraint)->render($generator);
+        $generator->line('$?->arrayConstraint(?);', [$name, $constraint]);
     }
 }

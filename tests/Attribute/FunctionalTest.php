@@ -16,6 +16,7 @@ use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Getter;
 use Bdf\Form\PropertyAccess\Setter;
 use Bdf\Form\Transformer\TransformerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\Length;
@@ -23,9 +24,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class FunctionalTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test_simple(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -65,9 +64,8 @@ class FunctionalTest extends TestCase
         ], $form->error()->toArray());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_setter_with_name(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -79,9 +77,8 @@ class FunctionalTest extends TestCase
         $this->assertSame(['bar' => 'azerty'], $form->value());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_getter_with_name(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -93,9 +90,8 @@ class FunctionalTest extends TestCase
         $this->assertSame('aqw', $form->foo->value());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_inheritance(AttributesProcessorInterface $processor)
     {
         $form = new ChildForm(null, $processor);
@@ -242,9 +238,8 @@ PHP
         );
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_buttons(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -271,9 +266,8 @@ PHP
         $this->assertTrue($form->bar->clicked());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_filter(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -285,9 +279,8 @@ PHP
         $this->assertSame(['foo' => '&lt;hello&gt;&amp;world'], $form->value());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_transformer(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

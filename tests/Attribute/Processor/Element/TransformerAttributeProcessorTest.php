@@ -9,13 +9,12 @@ use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Setter;
 use Bdf\Form\Transformer\TransformerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class TransformerAttributeProcessorTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

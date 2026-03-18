@@ -10,13 +10,12 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Getter;
 use Bdf\Form\PropertyAccess\Setter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class CallbackModelTransformerTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new #[Generates(Struct::class)] class(null, $processor) extends AttributeForm {
@@ -49,9 +48,7 @@ class CallbackModelTransformerTest extends TestCase
         $this->assertEquals(10, $form->b->value());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test_with_only_one_transformation_method(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -120,7 +117,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
             /**
              * {@inheritdoc}
              */
-            function transformToHttp($value, ElementInterface $input)
+            function transformToHttp(mixed $value, ElementInterface $input): mixed
             {
                 return $value;
             }
@@ -128,7 +125,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
             /**
              * {@inheritdoc}
              */
-            function transformFromHttp($value, ElementInterface $input)
+            function transformFromHttp(mixed $value, ElementInterface $input): mixed
             {
                 return $this->form->t($value, $input);
             }
@@ -146,7 +143,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
             /**
              * {@inheritdoc}
              */
-            function transformToHttp($value, ElementInterface $input)
+            function transformToHttp(mixed $value, ElementInterface $input): mixed
             {
                 return $this->form->t($value, $input);
             }
@@ -154,7 +151,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
             /**
              * {@inheritdoc}
              */
-            function transformFromHttp($value, ElementInterface $input)
+            function transformFromHttp(mixed $value, ElementInterface $input): mixed
             {
                 return $value;
             }

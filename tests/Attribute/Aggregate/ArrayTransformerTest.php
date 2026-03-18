@@ -8,13 +8,12 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Transformer\TransformerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class ArrayTransformerTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

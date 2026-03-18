@@ -47,7 +47,7 @@ use Symfony\Component\Validator\Constraint;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class CallbackConstraint implements ChildBuilderAttributeInterface
+final readonly class CallbackConstraint implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -75,19 +75,14 @@ final class CallbackConstraint implements ChildBuilderAttributeInterface
          * @readonly
          */
         private ?string $message = null,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritdoc}
      */
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
-        $constraint = new Closure(['callback' => [$form, $this->methodName]]);
-
-        if ($this->message !== null) {
-            $constraint->message = $this->message;
-        }
+        $constraint = new Closure($form->{$this->methodName}(...), $this->message);
 
         $builder->satisfy($constraint);
     }
@@ -100,8 +95,8 @@ final class CallbackConstraint implements ChildBuilderAttributeInterface
         $generator->use(Closure::class, 'ClosureConstraint');
 
         $parameters = $this->message !== null
-            ? new Literal("['callback' => [\$form, ?], 'message' => ?]", [$this->methodName, $this->message])
-            : new Literal('[$form, ?]', [$this->methodName])
+            ? new Literal('$form->?(...), ?', [$this->methodName, $this->message])
+            : new Literal('$form->?(...)', [$this->methodName])
         ;
 
         $generator->line('$?->satisfy(new ClosureConstraint(?));', [$name, $parameters]);

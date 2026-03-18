@@ -6,13 +6,12 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Constraint\CallbackConstraint;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\StringElement;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class CallbackConstraintTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -80,7 +79,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', StringElement::class);
-        $foo->satisfy(new ClosureConstraint(['callback' => [$form, 'validateFoo'], 'message' => 'Foo length must be a multiple of 2']));
+        $foo->satisfy(new ClosureConstraint($form->validateFoo(...), 'Foo length must be a multiple of 2'));
 
         return $this;
     }

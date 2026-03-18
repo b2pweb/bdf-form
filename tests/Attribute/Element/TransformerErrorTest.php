@@ -9,13 +9,12 @@ use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Validator\TransformerExceptionConstraint;
 use http\Message;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class TransformerErrorTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -36,9 +35,8 @@ class TransformerErrorTest extends TestCase
         $this->assertEquals('BAR_ERROR', $form->error()->children()['bar']->code());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_with_callback(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

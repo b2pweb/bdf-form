@@ -6,18 +6,17 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Constraint\Satisfy;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\StringElement;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 use Symfony\Component\Validator\Constraints\Length;
 
 class SatisfyTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
-            #[Satisfy(new Length(['min' => 3]))]
+            #[Satisfy(new Length(min: 3))]
             public StringElement $foo;
         };
 
@@ -32,7 +31,7 @@ class SatisfyTest extends TestCase
     public function test_code_generator()
     {
         $form = new class extends AttributeForm {
-            #[Satisfy(new Length(['min' => 3]))]
+            #[Satisfy(new Length(min: 3))]
             public StringElement $foo;
         };
 
@@ -55,7 +54,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', StringElement::class);
-        $foo->satisfy(new Length(['min' => 3, 'groups' => ['Default']]));
+        $foo->satisfy(new Length(min: 3, groups: ['Default']));
 
         return $this;
     }

@@ -51,7 +51,7 @@ use Symfony\Component\Validator\Constraint;
  * @api
  */
 #[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-final class AsArrayConstraint implements MethodChildBuilderAttributeInterface
+final readonly class AsArrayConstraint implements MethodChildBuilderAttributeInterface
 {
     public function __construct(
         /**

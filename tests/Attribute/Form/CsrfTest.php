@@ -6,14 +6,13 @@ use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Form\Csrf;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Tests\Form\Attribute\TestCase;
 
 class CsrfTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new #[Csrf] class(null, $processor) extends AttributeForm {
@@ -27,9 +26,8 @@ class CsrfTest extends TestCase
         $this->assertTrue($form->valid());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_message(AttributesProcessorInterface $processor)
     {
         $form = new #[Csrf(message: 'my error')] class(null, $processor) extends AttributeForm {
@@ -43,9 +41,8 @@ class CsrfTest extends TestCase
         $this->assertTrue($form->valid());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_name(AttributesProcessorInterface $processor)
     {
         $form = new #[Csrf(name: 't')] class(null, $processor) extends AttributeForm {
@@ -59,9 +56,8 @@ class CsrfTest extends TestCase
         $this->assertTrue($form->valid());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_invalidate(AttributesProcessorInterface $processor)
     {
         $form = new #[Csrf(invalidate: true)] class(null, $processor) extends AttributeForm {
@@ -76,9 +72,8 @@ class CsrfTest extends TestCase
         $this->assertFalse($form->valid());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_tokenId(AttributesProcessorInterface $processor)
     {
         $form = new #[Csrf(tokenId: 'my_token_id')] class(null, $processor) extends AttributeForm {

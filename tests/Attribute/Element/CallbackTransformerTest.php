@@ -8,13 +8,12 @@ use Bdf\Form\Attribute\Element\CallbackTransformer;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class CallbackTransformerTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -51,9 +50,8 @@ class CallbackTransformerTest extends TestCase
         $this->assertEquals('["out","[\"in\",\"b\"]"]', $view['bar']->value());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_with_only_one_transformation_method(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -132,7 +130,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
             /**
              * {@inheritdoc}
              */
-            function transformToHttp($value, ElementInterface $input)
+            function transformToHttp(mixed $value, ElementInterface $input): mixed
             {
                 return $this->form->outTransformer($value, $input);
             }
@@ -140,7 +138,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
             /**
              * {@inheritdoc}
              */
-            function transformFromHttp($value, ElementInterface $input)
+            function transformFromHttp(mixed $value, ElementInterface $input): mixed
             {
                 return $this->form->inTransformer($value, $input);
             }

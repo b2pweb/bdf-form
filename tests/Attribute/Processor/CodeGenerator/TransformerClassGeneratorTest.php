@@ -21,14 +21,14 @@ implements TransformerInterface {
     /**
      * {@inheritdoc}
      */
-    function transformToHttp($value, ElementInterface $input)
+    function transformToHttp(mixed $value, ElementInterface $input): mixed
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    function transformFromHttp($value, ElementInterface $input)
+    function transformFromHttp(mixed $value, ElementInterface $input): mixed
     {
     }
 }
@@ -61,14 +61,14 @@ implements TransformerInterface {
     /**
      * {@inheritdoc}
      */
-    function transformToHttp($value, ElementInterface $input)
+    function transformToHttp(mixed $value, ElementInterface $input): mixed
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    function transformFromHttp($value, ElementInterface $input)
+    function transformFromHttp(mixed $value, ElementInterface $input): mixed
     {
     }
 
@@ -108,7 +108,7 @@ implements TransformerInterface {
     /**
      * {@inheritdoc}
      */
-    function transformToHttp($value, ElementInterface $input)
+    function transformToHttp(mixed $value, ElementInterface $input): mixed
     {
         return $value + 2;
     }
@@ -116,7 +116,7 @@ implements TransformerInterface {
     /**
      * {@inheritdoc}
      */
-    function transformFromHttp($value, ElementInterface $input)
+    function transformFromHttp(mixed $value, ElementInterface $input): mixed
     {
         return $value - 2;
     }

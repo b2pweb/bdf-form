@@ -47,7 +47,7 @@ use ReflectionMethod;
  * @api
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class AsTransformer implements MethodChildBuilderAttributeInterface
+final readonly class AsTransformer implements MethodChildBuilderAttributeInterface
 {
     /**
      * @var list<non-empty-string>

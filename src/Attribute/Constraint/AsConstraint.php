@@ -51,7 +51,7 @@ use Symfony\Component\Validator\Constraint;
  * @api
  */
 #[Attribute(Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-final class AsConstraint implements MethodChildBuilderAttributeInterface
+final readonly class AsConstraint implements MethodChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -70,8 +70,7 @@ final class AsConstraint implements MethodChildBuilderAttributeInterface
          * @readonly
          */
         private ?string $message = null,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritdoc}

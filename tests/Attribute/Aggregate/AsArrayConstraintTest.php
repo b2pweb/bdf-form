@@ -7,13 +7,12 @@ use Bdf\Form\Attribute\Aggregate\AsArrayConstraint;
 use Bdf\Form\Attribute\Aggregate\CallbackArrayConstraint;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class AsArrayConstraintTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -83,10 +82,10 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', ArrayElement::class);
-        $foo->arrayConstraint(new ClosureConstraint(['callback' => [$form, 'validateFoo'], 'message' => 'Foo size must be a multiple of 2']));
+        $foo->arrayConstraint(new ClosureConstraint($form->validateFoo(...), 'Foo size must be a multiple of 2'));
 
         $bar = $builder->add('bar', ArrayElement::class);
-        $bar->arrayConstraint(new ClosureConstraint([$form, 'validateFoo']));
+        $bar->arrayConstraint(new ClosureConstraint($form->validateFoo(...)));
 
         return $this;
     }

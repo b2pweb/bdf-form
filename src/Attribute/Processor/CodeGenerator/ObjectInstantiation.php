@@ -10,7 +10,7 @@ use function get_class;
 /**
  * Utility class for generate an object instantiation
  */
-final class ObjectInstantiation
+final readonly class ObjectInstantiation
 {
     public function __construct(
         /**
@@ -27,8 +27,7 @@ final class ObjectInstantiation
          * @readonly
          */
         private array $constructorParameters = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Render the object instantiation
@@ -46,8 +45,7 @@ final class ObjectInstantiation
 
     /**
      * Configure the ObjectInstantiation utility to generate
-     * the constructor call with a single array parameter,
-     * use to inject all public properties of an object.
+     * the constructor call using promoted properties of the given object.
      *
      * This method should be used for symfony constraints.
      * Properties with default value will be ignored.
@@ -55,11 +53,11 @@ final class ObjectInstantiation
      * @param object $object
      * @return self
      */
-    public static function singleArrayParameter(object $object): self
+    public static function promotedProperties(object $object): self
     {
         return new self(
             get_class($object),
-            [self::extractPublicProperties($object)]
+            self::extractPromotedProperties($object),
         );
     }
 
@@ -71,22 +69,29 @@ final class ObjectInstantiation
      * @return array<string, mixed>
      * @psalm-suppress MixedAssignment
      */
-    private static function extractPublicProperties(object $object): array
+    private static function extractPromotedProperties(object $object): array
     {
         $reflectionObject = new ReflectionObject($object);
-        $properties = [];
+        $parameters = [];
 
-        foreach ($reflectionObject->getProperties() as $property) {
-            if ($property->isPublic() && !$property->isStatic()) {
-                $property->setAccessible(true);
-                $value = $property->getValue($object);
+        foreach ($reflectionObject->getConstructor()?->getParameters() ?? [] as $param) {
+            $value = $object->{$param->name} ?? null;
 
-                if ($property->getDefaultValue() !== $value) {
-                    $properties[$property->getName()] = $value;
+            if ($param->isDefaultValueAvailable() && $value === $param->getDefaultValue()) {
+                continue;
+            }
+
+            if ($reflectionObject->hasProperty($param->name)) {
+                $property = $reflectionObject->getProperty($param->name);
+
+                if ($property->hasDefaultValue() && $value === $property->getDefaultValue()) {
+                    continue;
                 }
             }
+
+            $parameters[$param->name] = $value;
         }
 
-        return $properties;
+        return $parameters;
     }
 }

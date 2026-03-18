@@ -9,13 +9,12 @@ use Bdf\Form\Child\ChildInterface;
 use Bdf\Form\Filter\FilterInterface;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Getter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class FilterAttributeProcessorTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

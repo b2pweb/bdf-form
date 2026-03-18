@@ -92,6 +92,12 @@ class ClassGenerator
             $this->namespace->addUse($returnType->getSingleName());
         }
 
+        if ($returnType !== null) {
+            $method->setReturnType((string) $returnType);
+        } else {
+            $method->setReturnType('mixed');
+        }
+
         $this->class->addMember($method);
 
         return $method;

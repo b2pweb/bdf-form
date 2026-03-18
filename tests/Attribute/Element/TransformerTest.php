@@ -9,13 +9,12 @@ use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\ElementInterface;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Transformer\TransformerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class TransformerTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -30,9 +29,8 @@ class TransformerTest extends TestCase
         $this->assertEquals('A_A', $view['foo']->value());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function testWithArray(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

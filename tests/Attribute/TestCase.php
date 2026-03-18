@@ -15,7 +15,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * @return AttributesProcessorInterface[]
      */
-    public function provideAttributesProcessor(): array
+    public static function provideAttributesProcessor(): array
     {
         return [
             'reflection' => [new ReflectionProcessor(new ConfigureFormBuilderStrategy())],

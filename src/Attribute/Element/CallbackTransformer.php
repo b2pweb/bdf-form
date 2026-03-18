@@ -77,7 +77,7 @@ use Nette\PhpGenerator\PsrPrinter;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class CallbackTransformer implements ChildBuilderAttributeInterface
+final readonly class CallbackTransformer implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
@@ -102,8 +102,7 @@ final class CallbackTransformer implements ChildBuilderAttributeInterface
          * @readonly
          */
         private ?string $toHttp = null,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritdoc}
@@ -126,7 +125,7 @@ final class CallbackTransformer implements ChildBuilderAttributeInterface
             /**
              * {@inheritdoc}
              */
-            public function transformToHttp($value, ElementInterface $input)
+            public function transformToHttp(mixed $value, ElementInterface $input): mixed
             {
                 if ($this->toHttp === null) {
                     return $value;
@@ -138,7 +137,7 @@ final class CallbackTransformer implements ChildBuilderAttributeInterface
             /**
              * {@inheritdoc}
              */
-            public function transformFromHttp($value, ElementInterface $input)
+            public function transformFromHttp(mixed $value, ElementInterface $input): mixed
             {
                 if ($this->fromHttp === null) {
                     return $value;

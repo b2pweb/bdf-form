@@ -69,7 +69,6 @@ final class ConfigureFormBuilderStrategy implements ReflectionStrategyInterface
             $attributeInstance = $attribute->newInstance();
 
             if ($attributeInstance instanceof ChildBuilderAttributeInterface) {
-                /** @var ChildBuilderAttributeInterface $attributeInstance */
                 $attributeInstance->applyOnChildBuilder($form, $elementBuilder);
                 continue;
             }

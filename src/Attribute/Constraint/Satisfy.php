@@ -8,11 +8,9 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\CodeGenerator\ObjectInstantiation;
 use Bdf\Form\Child\ChildBuilderInterface;
-use InvalidArgumentException;
 use Nette\PhpGenerator\Literal;
 use Symfony\Component\Validator\Constraint;
 
-use function is_object;
 use function is_string;
 
 /**
@@ -46,41 +44,26 @@ use function is_string;
  * @api
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-class Satisfy implements ChildBuilderAttributeInterface
+final readonly class Satisfy implements ChildBuilderAttributeInterface
 {
     public function __construct(
         /**
          * The constraint
          *
-         * You can use a class name, and provider arguments on the next parameter,
-         * or directly use the constraint instance.
-         *
-         * When a constraint instance is used, in case of code generation,
-         * the constructor parameters will be deduced from public properties of the constraint.
+         * The constructor parameters will be deduced from public properties of the constraint.
          * This may not work if the constraint has a complex constructor.
-         * @var class-string<Constraint>|Constraint
-         * @readonly
-         */
-        private string|Constraint $constraint,
-        /**
-         * Constraint's constructor options
          *
-         * @var array|null|string
-         * @readonly
+         * @var Constraint
          */
-        private mixed $options = null
-    ) {
-        if (is_object($constraint) && $options !== null) {
-            throw new InvalidArgumentException('Cannot use options with constraint instance');
-        }
-    }
+        private Constraint $constraint,
+    ) {}
 
     /**
      * {@inheritdoc}
      */
     public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
     {
-        $builder->satisfy($this->constraint, $this->options);
+        $builder->satisfy($this->constraint);
     }
 
     /**
@@ -88,12 +71,7 @@ class Satisfy implements ChildBuilderAttributeInterface
      */
     public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
     {
-        if (is_string($this->constraint)) {
-            $type = $generator->useAndSimplifyType($this->constraint);
-            $generator->line('$?->satisfy(?::class, ?);', [$name, new Literal($type), $this->options]);
-        } else {
-            $constraint = ObjectInstantiation::singleArrayParameter($this->constraint)->render($generator);
-            $generator->line('$?->satisfy(?);', [$name, $constraint]);
-        }
+        $constraint = ObjectInstantiation::promotedProperties($this->constraint)->render($generator);
+        $generator->line('$?->satisfy(?);', [$name, $constraint]);
     }
 }

@@ -8,13 +8,12 @@ use Bdf\Form\Attribute\Element\Choices;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Choice\ArrayChoice;
 use Bdf\Form\Leaf\StringElement;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class ChoicesTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -85,13 +84,13 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', StringElement::class);
-        $foo->choices(['foo', 'bar'], ['multipleMessage' => 'my error', 'message' => 'my error']);
+        $foo->choices(['foo', 'bar'], message: 'my error');
 
         $bar = $builder->add('bar', ArrayElement::class);
-        $bar->choices(['foo', 'bar', 'baz'], ['min' => 2, 'multipleMessage' => 'my error', 'message' => 'my error']);
+        $bar->choices(['foo', 'bar', 'baz'], min: 2, message: 'my error');
 
         $baz = $builder->add('baz', StringElement::class);
-        $baz->choices(new LazyChoice([$form, 'generateChoices']), []);
+        $baz->choices(new LazyChoice($form->generateChoices(...)), );
 
         return $this;
     }

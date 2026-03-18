@@ -11,13 +11,12 @@ use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Attribute\Processor\ReflectionProcessor;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Setter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class CallbackGeneratorTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new #[CallbackGenerator('generate')] class extends AttributeForm {

@@ -7,13 +7,12 @@ use Bdf\Form\Attribute\Child\Dependencies;
 use Bdf\Form\Attribute\Element\Date\AfterField;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\Date\DateTimeElement;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class AfterFieldTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -40,9 +39,8 @@ class AfterFieldTest extends TestCase
         ], self::normalizeSpace($form->error()->toArray()));
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_with_message(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -69,9 +67,8 @@ class AfterFieldTest extends TestCase
         ], $form->error()->toArray());
     }
 
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    
+    #[DataProvider('provideAttributesProcessor')]
     public function test_with_or_equal(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {

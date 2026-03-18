@@ -8,13 +8,12 @@ use Bdf\Form\Attribute\Element\Raw;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Form\Attribute\TestCase;
 
 class DateTimeClassTest extends TestCase
 {
-    /**
-     * @dataProvider provideAttributesProcessor
-     */
+    #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
     {
         $form = new class(null, $processor) extends AttributeForm {
@@ -22,7 +21,7 @@ class DateTimeClassTest extends TestCase
             public DateTimeElement $foo;
         };
 
-        $form->submit(['foo' => '2020-11-02T15:21:31+0000']);
+        $form->submit(['foo' => '2020-11-02T15:21:31+0100']);
 
         $this->assertEquals(new MyCustomDate('2020-11-02T15:21:31'), $form->foo->value());
         $this->assertInstanceOf(MyCustomDate::class, $form->foo->value());
