@@ -1,11 +1,13 @@
 {
   "name": "b2pweb/bdf-form",
   "description": "Simple and flexible form library",
+  "keywords": ["attributes", "PHP 8", "form", "validator"],
   "type": "library",
   "license": "MIT",
   "authors": [
     {
-      "name": "Vincent Quatrevieux"
+      "name": "Vincent Quatrevieux",
+      "email": "vquatrevieux@b2pweb.com"
     }
   ],
   "autoload": {
@@ -21,7 +23,8 @@
   "require": {
     "php": "~8.4",
     "symfony/property-access": "~6.4|~7.0|~8.0",
-    "symfony/validator": "~6.4|~7.0|~8.0"
+    "symfony/validator": "~6.4|~7.0|~8.0",
+    "nette/php-generator": "~3.6|~4.0"
   },
   "require-dev": {
     "symfony/security-csrf": "~6.4|~7.0|~8.0",
