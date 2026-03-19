@@ -6,6 +6,7 @@ use Bdf\Form\Button\SubmitButtonBuilder;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Csrf\CsrfElement;
 use Bdf\Form\Leaf\AnyElement;
+use Bdf\Form\Leaf\BackedEnumElement;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
@@ -14,6 +15,7 @@ use Bdf\Form\Leaf\Helper\EmailElement;
 use Bdf\Form\Leaf\Helper\UrlElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
+use Bdf\Form\Leaf\MyStringEnum;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Phone\FormattedPhoneElement;
 use Bdf\Form\Phone\PhoneChildBuilder;
@@ -157,6 +159,22 @@ class FormBuilderTest extends TestCase
 
         $this->assertInstanceOf(Form::class, $form);
         $this->assertInstanceOf(UrlElement::class, $form['value']->element());
+    }
+
+    /**
+     *
+     */
+    public function test_enum()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->enum('value', MyStringEnum::class));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(BackedEnumElement::class, $form['value']->element());
+
+        $form->submit(['value' => 'foo']);
+        $this->assertSame(MyStringEnum::Foo, $form['value']->element()->value());
     }
 
     /**

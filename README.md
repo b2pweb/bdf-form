@@ -991,9 +991,20 @@ An element for handle any value types. This is useful for create an inline custo
 But it's strongly discouraged : prefer use one of the native element, or create a custom one.
 
 ```php
-$builder->add('foo', AnyElement::class) // No helper method are present
+$builder->any('foo')
     ->satisfy(function ($value) { ... }) // Configure the element
     ->transform(function ($value) { ... })
+;
+```
+
+### EnumElement
+
+Handle PHP 8.1 enum values. Both backed enum and simple unit enum are supported.
+If the enum is not backed, it's name will be used as HTTP value. Otherwise, the backed value will be used.
+
+```php
+$builder->enum('foo', FooEnum::class)
+    ->backed(false) // By default, the type of the enum is automatically detected. Use this method to force the use of name instead of backed value, or vice versa
 ;
 ```
 

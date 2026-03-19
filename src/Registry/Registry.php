@@ -18,11 +18,13 @@ use Bdf\Form\Custom\CustomFormBuilder;
 use Bdf\Form\ElementBuilderInterface;
 use Bdf\Form\Leaf\AnyElement;
 use Bdf\Form\Leaf\AnyElementBuilder;
+use Bdf\Form\Leaf\BackedEnumElement;
 use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\BooleanElementBuilder;
 use Bdf\Form\Leaf\Date\DateTimeChildBuilder;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
+use Bdf\Form\Leaf\EnumElementBuilder;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\Helper\EmailElement;
@@ -33,6 +35,7 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
+use Bdf\Form\Leaf\UnitEnumElement;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
@@ -56,6 +59,8 @@ final class Registry implements RegistryInterface
         FloatElement::class => FloatElementBuilder::class,
         BooleanElement::class => BooleanElementBuilder::class,
         AnyElement::class => AnyElementBuilder::class,
+        BackedEnumElement::class => EnumElementBuilder::class,
+        UnitEnumElement::class  => EnumElementBuilder::class,
 
         EmailElement::class => EmailElementBuilder::class,
         UrlElement::class => UrlElementBuilder::class,

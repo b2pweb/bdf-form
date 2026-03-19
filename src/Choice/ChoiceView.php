@@ -27,7 +27,7 @@ class ChoiceView
     public mixed $value;
 
     /**
-     * The view representation of the choice.
+     * Does the current option is selected?
      */
     public bool $selected;
 

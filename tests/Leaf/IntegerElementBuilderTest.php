@@ -3,6 +3,7 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Choice\ArrayChoice;
+use Bdf\Form\Choice\EnumChoice;
 use Locale;
 use NumberFormatter;
 use PHPUnit\Framework\TestCase;
@@ -304,4 +305,36 @@ class IntegerElementBuilderTest extends TestCase
         $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
     }
+
+    /**
+     *
+     */
+    public function test_choices_enum()
+    {
+        $element = $this->builder->choices(MyIntEnum::class)->buildElement();
+
+        $this->assertEquals(new EnumChoice(MyIntEnum::class), $element->choices());
+
+        $element->submit(12);
+        $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
+        $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
+
+        $element->submit(42);
+        $this->assertTrue($element->valid());
+
+        $view = $element->view()->choices();
+        $this->assertTrue($view[0]->selected);
+        $this->assertSame('Foo', $view[0]->label);
+        $this->assertSame('42', $view[0]->value);
+        $this->assertFalse($view[1]->selected);
+        $this->assertSame('Bar', $view[1]->label);
+        $this->assertSame('121', $view[1]->value);
+    }
+}
+
+enum MyIntEnum: int
+{
+    case Foo = 42;
+    case Bar = 121;
 }
