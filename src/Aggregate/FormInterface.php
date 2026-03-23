@@ -33,7 +33,7 @@ interface FormInterface extends ChildAggregateInterface
      * $this->repository->save($form->value());
      * </code>
      *
-     * @param T|class-string|callable():T $entity The entity object, or class name
+     * @param T $entity The entity object, or initial array values
      *
      * @return $this
      *

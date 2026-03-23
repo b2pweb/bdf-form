@@ -10,7 +10,7 @@ use Bdf\Form\ElementInterface;
  *
  * @see ElementInterface::value()
  *
- * @template T
+ * @template T as object|array
  */
 interface ValueGeneratorInterface
 {
@@ -20,7 +20,7 @@ interface ValueGeneratorInterface
      *
      * If the attached value is an object, generate() should return this object
      *
-     * @param T|callable():T|class-string<T> $entity
+     * @param T $entity
      * @see FormInterface::attach()
      */
     public function attach(mixed $entity): void;
@@ -29,10 +29,23 @@ interface ValueGeneratorInterface
      * Generate the value
      * This method should be stateless : calling this method multiple times with same argument should return the same value
      *
+     * If the value needs finalization, this method may return a temporary value used as builder (for example, an array of constructor arguments),
+     * and the finalization will be done by the form after all generators are called.
+     *
+     * The returned value must be compatible with hydrators to allows filling the properties, and must be mutable
+     *
      * @param ElementInterface $element The source element
      *
-     * @return T
+     * @return object|array
      * @see FormInterface::value()
      */
-    public function generate(ElementInterface $element): mixed;
+    public function generate(ElementInterface $element): object|array;
+
+    /**
+     * Finalize the value generation
+     *
+     * @param object|array $value The value generated using {@see ValueGeneratorInterface::generate()} and filled by hydrators
+     * @return T
+     */
+    public function finalize(object|array $value): object|array;
 }

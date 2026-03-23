@@ -21,6 +21,10 @@ use Iterator;
 use Override;
 
 use function assert;
+use function is_array;
+use function is_object;
+use function sprintf;
+use function trigger_error;
 
 /**
  * The base form element
@@ -216,7 +220,7 @@ final class Form implements FormInterface
         }
 
         /** @var T $value */
-        return $this->value = $value;
+        return $this->value = $this->generator->finalize($value);
     }
 
     #[Override]
@@ -296,6 +300,11 @@ final class Form implements FormInterface
     #[Override]
     public function attach($entity): FormInterface
     {
+        /** @psalm-suppress RedundantCondition */
+        if (!is_object($entity) && !is_array($entity)) {
+            @trigger_error(sprintf('Attaching a non-object and non-array value is deprecated since bdf-form 2.0 and will be removed. Got %s.', get_debug_type($entity)), E_USER_DEPRECATED);
+        }
+
         $this->generator->attach($entity);
         $this->value = null; // The value is only attached : it must be filled when calling value()
 

@@ -1129,6 +1129,20 @@ class FormTest extends TestCase
         $this->assertFalse($this->form->patch(0)->valid());
         $this->assertFalse($this->form->patch(false)->valid());
     }
+
+    public function test_value_using_dto_constructor()
+    {
+        $this->form->attach(PersonImmutable::class);
+
+        $this->form->submit([
+            'firstName' => 'John',
+            'lastName' => 'Doe',
+            'id' => 4,
+        ]);
+
+        $this->assertTrue($this->form->valid());
+        $this->assertEquals(new PersonImmutable(4, 'John', 'Doe'), $this->form->value());
+    }
 }
 
 class Person
@@ -1136,4 +1150,13 @@ class Person
     public $id;
     public $firstName;
     public $lastName;
+}
+
+readonly class PersonImmutable
+{
+    public function __construct(
+        public int $id,
+        public string $firstName,
+        public string $lastName,
+    ) {}
 }

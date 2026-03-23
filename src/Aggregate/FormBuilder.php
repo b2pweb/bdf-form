@@ -390,7 +390,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * {@inheritdoc}
      */
     #[Override]
-    public function generates($entity): FormBuilderInterface
+    public function generates(mixed $entity): FormBuilderInterface
     {
         return $this->generator(new ValueGenerator($entity));
     }
