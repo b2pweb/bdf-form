@@ -59,7 +59,7 @@ final readonly class CompileAttributesProcessor implements AttributesProcessorIn
     {
         $formClassName = is_string($context) ? $context : $context::class;
 
-        /** @var class-string<AttributesProcessorInterface&PostConfigureInterface> $className */
+        /** @var class-string<AttributesProcessorInterface> $className */
         $className = ($this->classNameResolver)($formClassName);
 
         if (!class_exists($className)) {
@@ -94,7 +94,7 @@ final readonly class CompileAttributesProcessor implements AttributesProcessorIn
     /**
      * Try to load the processor from its file
      *
-     * @param class-string<AttributesProcessorInterface&PostConfigureInterface> $className Generated processor class name
+     * @param class-string<AttributesProcessorInterface> $className Generated processor class name
      * @param class-string|object $context Form to build
      * @param FormBuilderInterface $builder Builder to configure
      *
@@ -119,7 +119,7 @@ final readonly class CompileAttributesProcessor implements AttributesProcessorIn
      * Generate the processor class and save it into the given file
      *
      * @param string $fileName Target file
-     * @param class-string<AttributesProcessorInterface&PostConfigureInterface> $className Generated processor class name
+     * @param class-string<AttributesProcessorInterface> $className Generated processor class name
      * @param class-string|object $context Form to build
      * @param FormBuilderInterface $builder Builder to configure
      *

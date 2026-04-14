@@ -21,6 +21,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionNamedType;
 
+use function assert;
 use function is_string;
 use function is_subclass_of;
 
@@ -64,7 +65,7 @@ final class ReflectionProcessor implements AttributesProcessorInterface
          *
          * Takes as parameter the metadata and context.
          *
-         * @var (callable(ProcessorMetadata, string|object):string)|null
+         * @var (callable(ProcessorMetadata, class-string|object):void)|null
          */
         private readonly mixed $metadataPostProcess = null,
     ) {
@@ -99,7 +100,7 @@ final class ReflectionProcessor implements AttributesProcessorInterface
 
                 $elementType = $property->getType()->getName();
 
-                if ($this->elementTypeMapper) {
+                if ($this->elementTypeMapper !== null) {
                     $elementType = ($this->elementTypeMapper)($elementType);
                 }
 
@@ -113,6 +114,7 @@ final class ReflectionProcessor implements AttributesProcessorInterface
 
                     foreach ($property->getAttributes() as $attribute) {
                         if (is_subclass_of($attribute->name, ChildBuilderAttributeInterface::class)) {
+                            /** @var ChildBuilderAttributeInterface */
                             $attributes[] = $attribute->newInstance();
                             continue;
                         }
@@ -132,7 +134,7 @@ final class ReflectionProcessor implements AttributesProcessorInterface
             }
         }
 
-        if ($this->metadataPostProcess) {
+        if ($this->metadataPostProcess !== null) {
             ($this->metadataPostProcess)($metadata, $context);
         }
 
@@ -145,6 +147,7 @@ final class ReflectionProcessor implements AttributesProcessorInterface
         }
 
         foreach ($metadata->buttonProperties() as $buttonProperty) {
+            assert($buttonProperty->name !== '');
             $this->strategy->onButtonProperty($buttonProperty, $buttonProperty->name, $context, $builder, $metadata);
         }
 

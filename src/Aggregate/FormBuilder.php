@@ -247,11 +247,16 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @param non-empty-string $name The child name
      * @param class-string $structClass The struct class name
      * @return ChildBuilder<StructFormBuilder>
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     #[Override]
     public function struct(string $name, string $structClass): ChildBuilderInterface
     {
+        /** @var ChildBuilderInterface<StructFormBuilder> $builder */
         $builder = $this->add($name, StructForm::class);
+
         return $builder->class($structClass);
     }
 

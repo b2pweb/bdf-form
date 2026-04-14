@@ -64,6 +64,11 @@ final class ProcessorMetadata
         $this->elementProperties[$metadata->name] = $metadata;
     }
 
+    /**
+     * @param non-empty-string $elementName
+     * @param ChildBuilderAttributeInterface $attribute
+     * @return void
+     */
     public function addChildAttribute(string $elementName, ChildBuilderAttributeInterface $attribute): void
     {
         $this->elementProperties[$elementName]->addAttribute($attribute);

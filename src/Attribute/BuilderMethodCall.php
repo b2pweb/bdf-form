@@ -12,6 +12,8 @@ use function array_is_list;
 /**
  * Call a method on the child/element builder
  * The attribute can be overridden to simplify the declaration of common method calls on builders
+ *
+ * @implements ChildBuilderAttributeInterface<\Bdf\Form\ElementBuilderInterface>
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 readonly class BuilderMethodCall implements ChildBuilderAttributeInterface

@@ -15,7 +15,7 @@ use Override;
  * and hydrated when calling {@see FormInterface::value()}.
  *
  * @template T as object
- * @implements CustomForm<T>
+ * @extends CustomForm<T>
  */
 final class StructForm extends CustomForm
 {

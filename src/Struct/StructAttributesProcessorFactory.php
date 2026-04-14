@@ -26,6 +26,7 @@ use Bdf\Form\PropertyAccess\HydratorInterface;
 use Closure;
 use DateTime;
 use libphonenumber\PhoneNumber;
+use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionProperty;
 
@@ -102,6 +103,11 @@ final class StructAttributesProcessorFactory
         return $type;
     }
 
+    /**
+     * @param ProcessorMetadata $metadata
+     * @param object|class-string $context
+     * @return void
+     */
     public function postProcess(ProcessorMetadata $metadata, object|string $context): void
     {
         // @todo gérer type object ?
@@ -126,6 +132,7 @@ final class StructAttributesProcessorFactory
                 !$property->hasAttribute(Required::class)
                 && $this->isRequired($property->property)
             ) {
+                /** @psalm-suppress InvalidArgument */
                 $property->addAttribute(new Required());
             }
 
@@ -138,8 +145,12 @@ final class StructAttributesProcessorFactory
             }
 
             if ($property->elementType === StructForm::class && !$property->hasAttribute(StructClass::class)) {
-                $typeName = $property->property->getType()?->getName();
-                assert($typeName !== null);
+                $type = $property->property->getType();
+                assert($type instanceof ReflectionNamedType);
+
+                $typeName = $type->getName();
+                assert(class_exists($typeName));
+
                 $property->addAttribute(new StructClass($typeName));
             }
         }
@@ -154,7 +165,7 @@ final class StructAttributesProcessorFactory
         $type = $property->getType();
 
         // Types that allows empty values are not considered as required
-        if ($type === null || $type->allowsNull() || $type->getName() === 'array') {
+        if ($type === null || $type->allowsNull() || (string) $type === 'array') {
             return false;
         }
 

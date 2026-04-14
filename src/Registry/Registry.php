@@ -95,6 +95,7 @@ final class Registry implements RegistryInterface
             return new CustomFormBuilder($formClass, $this->elementBuilder(Form::class));
         });
 
+        /** @psalm-suppress ArgumentTypeCoercion */
         $this->register(StructForm::class, fn (RegistryInterface $registry) => new StructFormBuilder(builder: $registry->elementBuilder(Form::class)));
     }
 

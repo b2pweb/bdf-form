@@ -13,7 +13,13 @@ use ReflectionProperty;
 final class ElementPropertyMetadata
 {
     public function __construct(
+        /**
+         * The field name
+         *
+         * @var non-empty-string
+         */
         public readonly string $name,
+
         public readonly ReflectionProperty $property,
 
         /**

@@ -13,6 +13,7 @@ use function is_subclass_of;
  * Adapt an attribute with its {@see ElementAttributeProcessorInterface} to be used as {@see ChildBuilderAttributeInterface}
  *
  * @template T as object
+ * @implements ChildBuilderAttributeInterface<\Bdf\Form\ElementBuilderInterface>
  */
 final readonly class ElementAttributeChildBuilderAdapter implements ChildBuilderAttributeInterface
 {
