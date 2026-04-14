@@ -43,7 +43,7 @@ use Symfony\Component\Validator\Constraints\Count as CountConstraint;
 final class Count extends CountConstraint implements ChildBuilderAttributeInterface
 {
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $builder->arrayConstraint($this);
     }
@@ -55,7 +55,7 @@ final class Count extends CountConstraint implements ChildBuilderAttributeInterf
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $defaultParameters = get_class_vars(CountConstraint::class);
         /** @var array{

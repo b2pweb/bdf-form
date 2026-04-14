@@ -20,7 +20,6 @@ use Exception;
 use Iterator;
 use Override;
 
-use function assert;
 use function is_array;
 use function is_object;
 use function sprintf;

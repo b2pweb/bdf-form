@@ -48,13 +48,13 @@ final readonly class Raw implements ChildBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $builder->raw($this->flag);
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->line('$?->raw(?);', [$name, $this->flag]);
     }

@@ -51,7 +51,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $builder->submit('button')
             ->value('foo')

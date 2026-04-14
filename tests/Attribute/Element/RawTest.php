@@ -6,7 +6,9 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Element\Raw;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
 
 class RawTest extends TestCase
@@ -23,7 +25,6 @@ class RawTest extends TestCase
     {
         \Locale::setDefault($this->lastLocale);
     }
-
     
     #[DataProvider('provideAttributesProcessor')]
     public function test(AttributesProcessorInterface $processor)
@@ -39,6 +40,17 @@ class RawTest extends TestCase
 
         $this->assertSame(1.0, $form->foo->value());
         $this->assertSame(1.23, $form->bar->value());
+    }
+
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestRawStruct::class, processor: $processor);
+
+        $form->submit(['foo' => '1,23', 'bar' => '1,23']);
+
+        $this->assertSame(1.0, $form->value()->foo);
+        $this->assertSame(1.23, $form->value()->bar);
     }
 
     public function test_code_generator()
@@ -65,7 +77,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', FloatElement::class);
         $foo->raw(true);
@@ -90,4 +102,52 @@ PHP
             , $form
         );
     }
+
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Tests\Form\Attribute\Element\TestRawStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestRawStruct::class);
+
+        $foo = $builder->add('foo', FloatElement::class);
+        $foo->raw(true);
+        $foo->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        $bar = $builder->add('bar', FloatElement::class);
+        $bar->raw(false);
+        $bar->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        return null;
+    }
+}
+
+PHP
+            , TestRawStruct::class
+        );
+    }
+}
+
+class TestRawStruct
+{
+    #[Raw]
+    public ?float $foo;
+
+    #[Raw(false)]
+    public ?float $bar;
 }

@@ -3,100 +3,54 @@
 namespace Bdf\Form\Attribute\Processor;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
-use Bdf\Form\Attribute\AttributeForm;
+use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Attribute\Button\ButtonBuilderAttributeInterface;
-use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
-use Bdf\Form\Attribute\Form\FormBuilderAttributeInterface;
-use Bdf\Form\Attribute\Processor\Element\ConstraintAttributeProcessor;
-use Bdf\Form\Attribute\Processor\Element\ElementAttributeProcessorInterface;
-use Bdf\Form\Attribute\Processor\Element\ExtractorAttributeProcessor;
-use Bdf\Form\Attribute\Processor\Element\FilterAttributeProcessor;
-use Bdf\Form\Attribute\Processor\Element\HydratorAttributeProcessor;
-use Bdf\Form\Attribute\Processor\Element\TransformerAttributeProcessor;
 use Override;
 use ReflectionAttribute;
-use ReflectionClass;
 use ReflectionProperty;
+
+use function is_object;
 
 /**
  * Strategy for directly configure the form builder using attributes
  */
 final class ConfigureFormBuilderStrategy implements ReflectionStrategyInterface
 {
-    /**
-     * @var list<ElementAttributeProcessorInterface>
-     */
-    private array $elementProcessors = [];
-
-    public function __construct()
-    {
-        $this->registerElementAttributeProcessor(new ConstraintAttributeProcessor());
-        $this->registerElementAttributeProcessor(new FilterAttributeProcessor());
-        $this->registerElementAttributeProcessor(new TransformerAttributeProcessor());
-        $this->registerElementAttributeProcessor(new HydratorAttributeProcessor());
-        $this->registerElementAttributeProcessor(new ExtractorAttributeProcessor());
-    }
-
     #[Override]
-    public function onFormClass(ReflectionClass $formClass, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
+    public function onFormClass(ProcessorMetadata $metadata, object|string $context, FormBuilderInterface $builder): void
     {
-        foreach ($formClass->getAttributes(FormBuilderAttributeInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
-            $attribute->newInstance()->applyOnFormBuilder($form, $builder);
+        foreach ($metadata->formAttributes as $attribute) {
+            $attribute->applyOnFormBuilder($context, $builder);
         }
     }
 
     #[Override]
-    public function onButtonProperty(ReflectionProperty $property, string $name, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
+    public function onButtonProperty(ReflectionProperty $property, string $name, object|string $context, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
     {
         $submitBuilder = $builder->submit($name);
 
         foreach ($property->getAttributes(ButtonBuilderAttributeInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
-            $attribute->newInstance()->applyOnButtonBuilder($form, $submitBuilder);
+            $attribute->newInstance()->applyOnButtonBuilder($context, $submitBuilder);
         }
     }
 
     #[Override]
-    public function onElementProperty(ReflectionProperty $property, string $name, string $elementType, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
+    public function onElementProperty(ElementPropertyMetadata $metadata, object|string $context, FormBuilderInterface $builder): void
     {
-        $elementBuilder = $builder->add($name, $elementType);
+        $elementBuilder = $builder->add($metadata->name, $metadata->elementType);
 
-        foreach ($property->getAttributes() as $attribute) {
-            $attributeInstance = $attribute->newInstance();
-
-            if ($attributeInstance instanceof ChildBuilderAttributeInterface) {
-                $attributeInstance->applyOnChildBuilder($form, $elementBuilder);
-                continue;
-            }
-
-            foreach ($this->elementProcessors as $configurator) {
-                if ($attributeInstance instanceof ($configurator->type())) {
-                    $configurator->process($elementBuilder, $attributeInstance);
-                }
-            }
-        }
-
-        foreach ($metadata->registeredChildAttributes($name) as $attribute) {
-            $attribute->applyOnChildBuilder($form, $elementBuilder);
+        foreach ($metadata->attributes as $attribute) {
+            $attribute->applyOnChildBuilder($context, $elementBuilder);
         }
     }
 
     #[Override]
-    public function onPostConfigure(ProcessorMetadata $metadata, AttributeForm $form): ?PostConfigureInterface
+    public function onPostConfigure(ProcessorMetadata $metadata, object|string $context): ?PostConfigureInterface
     {
+        if (!is_object($context)) {
+            return null;
+        }
+
         return new PostConfigureReflectionSetProperties($metadata->elementProperties(), $metadata->buttonProperties());
-    }
-
-    /**
-     * Register a new processor for element attributes
-     *
-     * @param ElementAttributeProcessorInterface<T> $processor
-     *
-     * @return void
-     *
-     * @template T as object
-     */
-    private function registerElementAttributeProcessor(ElementAttributeProcessorInterface $processor): void
-    {
-        $this->elementProcessors[] = $processor;
     }
 }

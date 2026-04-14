@@ -7,7 +7,9 @@ use Bdf\Form\Attribute\Element\CallbackTransformer;
 use Bdf\Form\Attribute\Element\IgnoreTransformerException;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
 
 class IgnoreTransformerExceptionTest extends TestCase
@@ -27,6 +29,17 @@ class IgnoreTransformerExceptionTest extends TestCase
                 throw new \Exception('My error');
             }
         };
+
+        $form->submit(['foo' => 'a', 'bar' => 'b']);
+
+        $this->assertFalse($form->valid());
+        $this->assertEquals(['bar' => 'My error'], $form->error()->toArray());
+    }
+
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestIgnoreTransformerExceptionStruct::class, processor: $processor);
 
         $form->submit(['foo' => 'a', 'bar' => 'b']);
 
@@ -64,15 +77,15 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', StringElement::class);
         $foo->ignoreTransformerException(true);
-        $foo->transformer([$form, 'transform']);
+        $foo->transformer($context->transform(...));
 
         $bar = $builder->add('bar', StringElement::class);
         $bar->ignoreTransformerException(false);
-        $bar->transformer([$form, 'transform']);
+        $bar->transformer($context->transform(...));
 
         return $this;
     }
@@ -90,5 +103,60 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
 PHP
         , $form
 );
+    }
+
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Tests\Form\Attribute\Element\TestIgnoreTransformerExceptionStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestIgnoreTransformerExceptionStruct::class);
+
+        $foo = $builder->add('foo', StringElement::class);
+        $foo->ignoreTransformerException(true);
+        $foo->transformer(TestIgnoreTransformerExceptionStruct::transform(...));
+        $foo->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        $bar = $builder->add('bar', StringElement::class);
+        $bar->ignoreTransformerException(false);
+        $bar->transformer(TestIgnoreTransformerExceptionStruct::transform(...));
+        $bar->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        return null;
+    }
+}
+
+PHP
+        , TestIgnoreTransformerExceptionStruct::class
+);
+    }
+}
+
+class TestIgnoreTransformerExceptionStruct
+{
+    #[IgnoreTransformerException, CallbackTransformer('transform')]
+    public ?string $foo;
+
+    #[IgnoreTransformerException(false), CallbackTransformer('transform')]
+    public ?string $bar;
+
+    public static function transform()
+    {
+        throw new \Exception('My error');
     }
 }

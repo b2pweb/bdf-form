@@ -21,6 +21,9 @@ use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PsrPrinter;
 use Override;
 
+use function is_object;
+use function is_string;
+
 /**
  * Add a HTTP transformer on the child element, by using method
  *
@@ -106,16 +109,23 @@ final readonly class CallbackTransformer implements ChildBuilderAttributeInterfa
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         if ($this->callback !== null) {
-            $builder->transformer([$form, $this->callback]);
+            $callback = is_string($context)
+                ? $context::{$this->callback}(...)
+                : $context->{$this->callback}(...)
+            ;
+            $builder->transformer($callback);
             return;
         }
 
-        $builder->transformer(new class ($form, $this->fromHttp, $this->toHttp) implements TransformerInterface {
+        $builder->transformer(new class ($context, $this->fromHttp, $this->toHttp) implements TransformerInterface {
             public function __construct(
-                private AttributeForm $form,
+                /**
+                 * @var object|class-string
+                 */
+                private object|string $context,
                 private ?string $fromHttp,
                 private ?string $toHttp,
             ) {
@@ -128,7 +138,10 @@ final readonly class CallbackTransformer implements ChildBuilderAttributeInterfa
                     return $value;
                 }
 
-                return $this->form->{$this->toHttp}($value, $input);
+                return is_object($this->context)
+                    ? $this->context->{$this->toHttp}($value, $input)
+                    : $this->context::{$this->toHttp}($value, $input)
+                ;
             }
 
             #[Override]
@@ -138,37 +151,44 @@ final readonly class CallbackTransformer implements ChildBuilderAttributeInterfa
                     return $value;
                 }
 
-                return $this->form->{$this->fromHttp}($value, $input);
+                return is_object($this->context)
+                    ? $this->context->{$this->fromHttp}($value, $input)
+                    : $this->context::{$this->fromHttp}($value, $input)
+                ;
             }
         });
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         if ($this->callback !== null) {
-            $generator->line('$?->transformer([$form, ?]);', [$name, $this->callback]);
+            if (is_object($context)) {
+                $generator->line('$?->transformer($context->?(...));', [$name, $this->callback]);
+            } else {
+                $generator->line('$?->transformer(?::?(...));', [$name, new Literal($generator->useAndSimplifyType($context)), $this->callback]);
+            }
             return;
         }
 
         $transformer = new TransformerClassGenerator($generator->namespace(), $generator->printer());
 
-        $transformer->withPromotedProperty('form')->setPrivate();
+        $transformer->withPromotedProperty('context')->setPrivate();
 
-        if ($this->toHttp !== null) {
-            $transformer->toHttp()->setBody('return $this->form->?($value, $input);', [$this->toHttp]);
-        } else {
-            $transformer->toHttp()->setBody('return $value;');
-        }
+        match (true) {
+            $this->toHttp !== null && is_object($context) => $transformer->toHttp()->setBody('return $this->context->?($value, $input);', [$this->toHttp]),
+            $this->toHttp !== null && is_string($context) => $transformer->toHttp()->setBody('return $this->context::?($value, $input);', [$this->toHttp]),
+            default => $transformer->toHttp()->setBody('return $value;'),
+        };
 
-        if ($this->fromHttp !== null) {
-            $transformer->fromHttp()->setBody('return $this->form->?($value, $input);', [$this->fromHttp]);
-        } else {
-            $transformer->fromHttp()->setBody('return $value;');
-        }
+        match (true) {
+            $this->fromHttp !== null && is_object($context) => $transformer->fromHttp()->setBody('return $this->context->?($value, $input);', [$this->fromHttp]),
+            $this->fromHttp !== null && is_string($context) => $transformer->fromHttp()->setBody('return $this->context::?($value, $input);', [$this->fromHttp]),
+            default => $transformer->fromHttp()->setBody('return $value;'),
+        };
 
         $generator->line(
-            '$?->transformer(new class ($form) ?);',
+            '$?->transformer(new class ($context) ?);',
             [$name, new Literal($transformer->generateClass())]
         );
     }

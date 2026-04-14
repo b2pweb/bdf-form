@@ -53,13 +53,13 @@ final readonly class IgnoreTransformerException implements ChildBuilderAttribute
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $builder->ignoreTransformerException($this->ignore);
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->line('$?->ignoreTransformerException(?);', [$name, $this->ignore]);
     }

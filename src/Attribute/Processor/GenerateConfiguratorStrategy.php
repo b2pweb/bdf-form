@@ -3,23 +3,15 @@
 namespace Bdf\Form\Attribute\Processor;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
-use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Button\ButtonBuilderAttributeInterface;
-use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
-use Bdf\Form\Attribute\Form\FormBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
-use Bdf\Form\Attribute\Processor\Element\ConstraintAttributeProcessor;
-use Bdf\Form\Attribute\Processor\Element\ElementAttributeProcessorInterface;
-use Bdf\Form\Attribute\Processor\Element\ExtractorAttributeProcessor;
-use Bdf\Form\Attribute\Processor\Element\FilterAttributeProcessor;
-use Bdf\Form\Attribute\Processor\Element\HydratorAttributeProcessor;
-use Bdf\Form\Attribute\Processor\Element\TransformerAttributeProcessor;
 use Nette\PhpGenerator\Closure;
 use Nette\PhpGenerator\Literal;
 use Override;
 use ReflectionAttribute;
-use ReflectionClass;
 use ReflectionProperty;
+
+use function is_object;
 
 /**
  * Strategy for generate the processor class code
@@ -29,32 +21,21 @@ final class GenerateConfiguratorStrategy implements ReflectionStrategyInterface
     private AttributesProcessorGenerator $generator;
 
     /**
-     * @var list<ElementAttributeProcessorInterface>
-     */
-    private array $elementProcessors = [];
-
-    /**
      * @param non-empty-string $className The class name to generate. Must have a namespace
      * @throws \InvalidArgumentException If a namespace is not provided, or if the class name is not valid
      */
     public function __construct(string $className)
     {
         $this->generator = new AttributesProcessorGenerator($className);
-
-        $this->registerElementAttributeProcessor(new ConstraintAttributeProcessor());
-        $this->registerElementAttributeProcessor(new FilterAttributeProcessor());
-        $this->registerElementAttributeProcessor(new TransformerAttributeProcessor());
-        $this->registerElementAttributeProcessor(new HydratorAttributeProcessor());
-        $this->registerElementAttributeProcessor(new ExtractorAttributeProcessor());
     }
 
     #[Override]
-    public function onFormClass(ReflectionClass $formClass, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
+    public function onFormClass(ProcessorMetadata $metadata, object|string $context, FormBuilderInterface $builder): void
     {
         $empty = true;
 
-        foreach ($formClass->getAttributes(FormBuilderAttributeInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
-            $attribute->newInstance()->generateCodeForFormBuilder($this->generator, $form);
+        foreach ($metadata->formAttributes as $attribute) {
+            $attribute->generateCodeForFormBuilder($this->generator, $context);
             $empty = false;
         }
 
@@ -64,48 +45,39 @@ final class GenerateConfiguratorStrategy implements ReflectionStrategyInterface
     }
 
     #[Override]
-    public function onButtonProperty(ReflectionProperty $property, string $name, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
+    public function onButtonProperty(ReflectionProperty $property, string $name, object|string $context, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
     {
         $this->generator->line('$builder->submit(?)', [$name]);
 
         foreach ($property->getAttributes(ButtonBuilderAttributeInterface::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
-            $attribute->newInstance()->generateCodeForButtonBuilder($this->generator, $form);
+            $attribute->newInstance()->generateCodeForButtonBuilder($this->generator, $context);
         }
 
         $this->generator->line(";\n");
     }
 
     #[Override]
-    public function onElementProperty(ReflectionProperty $property, string $name, string $elementType, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void
+    public function onElementProperty(ElementPropertyMetadata $metadata, object|string $context, FormBuilderInterface $builder): void
     {
-        $elementType = $this->generator->useAndSimplifyType($elementType);
+        $name = $metadata->name;
+        $elementType = $this->generator->useAndSimplifyType($metadata->elementType);
         $this->generator->line('$? = $builder->add(?, ?::class);', [$name, $name, new Literal($elementType)]);
 
-        foreach ($property->getAttributes() as $attribute) {
-            if (is_subclass_of($attribute->getName(), ChildBuilderAttributeInterface::class)) {
-                /** @var ChildBuilderAttributeInterface $attributeInstance */
-                $attributeInstance = $attribute->newInstance();
-                $attributeInstance->generateCodeForChildBuilder($name, $this->generator, $form);
-                continue;
-            }
-
-            foreach ($this->elementProcessors as $configurator) {
-                if (is_subclass_of($attribute->getName(), $configurator->type())) {
-                    $configurator->generateCode($name, $this->generator, $attribute);
-                }
-            }
-        }
-
-        foreach ($metadata->registeredChildAttributes($name) as $attribute) {
-            $attribute->generateCodeForChildBuilder($name, $this->generator, $form);
+        foreach ($metadata->attributes as $attribute) {
+            $attribute->generateCodeForChildBuilder($name, $this->generator, $context);
         }
 
         $this->generator->line(); // Add empty line
     }
 
     #[Override]
-    public function onPostConfigure(ProcessorMetadata $metadata, AttributeForm $form): ?PostConfigureInterface
+    public function onPostConfigure(ProcessorMetadata $metadata, object|string $context): ?PostConfigureInterface
     {
+        if (!is_object($context)) {
+            $this->generator->line('return null;');
+            return null;
+        }
+
         $this->generator->line('return $this;');
 
         $method = $this->generator
@@ -122,7 +94,9 @@ final class GenerateConfiguratorStrategy implements ReflectionStrategyInterface
 
         $scopedProperties = [];
 
-        foreach ($elementProperties as $name => $property) {
+        foreach ($elementProperties as $name => $propertyMetadata) {
+            $property = $propertyMetadata->property;
+
             if ($property->isPublic()) {
                 $method->addBody('$form->? = $inner[?]->element();', [$name, $name]);
             } else {
@@ -171,19 +145,5 @@ final class GenerateConfiguratorStrategy implements ReflectionStrategyInterface
     public function code(): string
     {
         return $this->generator->print();
-    }
-
-    /**
-     * Register a new processor for element attributes
-     *
-     * @param ElementAttributeProcessorInterface<T> $processor
-     *
-     * @return void
-     *
-     * @template T as object
-     */
-    private function registerElementAttributeProcessor(ElementAttributeProcessorInterface $processor): void
-    {
-        $this->elementProcessors[] = $processor;
     }
 }

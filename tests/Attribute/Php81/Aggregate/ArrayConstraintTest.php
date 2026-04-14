@@ -57,7 +57,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $values = $builder->add('values', ArrayElement::class);
         $values->arrayConstraint(new Unique(message: 'Not unique', groups: ['Default']));

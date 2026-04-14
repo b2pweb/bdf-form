@@ -3,7 +3,10 @@
 namespace Bdf\Form\Attribute\Processor;
 
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
+use Bdf\Form\Attribute\Form\FormBuilderAttributeInterface;
 use ReflectionProperty;
+
+use function array_push;
 
 /**
  * Store metadata about the form that is currently processed
@@ -18,14 +21,33 @@ final class ProcessorMetadata
     private array $buttonProperties = [];
 
     /**
-     * @var array<non-empty-string, ReflectionProperty>
+     * @var array<non-empty-string, ElementPropertyMetadata>
      */
     private array $elementProperties = [];
 
     /**
-     * @var array<string, list<ChildBuilderAttributeInterface>>
+     * Lis of attributes declared on the form class / DTO class
+     *
+     * @var list<FormBuilderAttributeInterface>
      */
-    private array $childAttributes = [];
+    public private(set) array $formAttributes = [];
+
+    /**
+     * Check if the form has the given attribute on it
+     *
+     * @param class-string $name
+     * @return bool
+     */
+    public function hasFormAttribute(string $name): bool
+    {
+        foreach ($this->formAttributes as $formAttribute) {
+            if ($formAttribute instanceof $name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * @param non-empty-string $name
@@ -37,19 +59,19 @@ final class ProcessorMetadata
         $this->buttonProperties[$name] = $property;
     }
 
-    /**
-     * @param non-empty-string $name
-     * @param ReflectionProperty $property
-     * @return void
-     */
-    public function addElementProperty(string $name, ReflectionProperty $property): void
+    public function addElementProperty(ElementPropertyMetadata $metadata): void
     {
-        $this->elementProperties[$name] = $property;
+        $this->elementProperties[$metadata->name] = $metadata;
     }
 
     public function addChildAttribute(string $elementName, ChildBuilderAttributeInterface $attribute): void
     {
-        $this->childAttributes[$elementName][] = $attribute;
+        $this->elementProperties[$elementName]->addAttribute($attribute);
+    }
+
+    public function addFormAttribute(FormBuilderAttributeInterface $attribute): void
+    {
+        $this->formAttributes[] = $attribute;
     }
 
     /**
@@ -61,7 +83,7 @@ final class ProcessorMetadata
     }
 
     /**
-     * @return array<non-empty-string, ReflectionProperty>
+     * @return array<non-empty-string, ElementPropertyMetadata>
      */
     public function elementProperties(): array
     {
@@ -77,17 +99,5 @@ final class ProcessorMetadata
     public function hasProperty(string $name): bool
     {
         return isset($this->buttonProperties[$name]) || isset($this->elementProperties[$name]);
-    }
-
-    /**
-     * Get child attributes manually registered for the given element name
-     * Those attributes are generally registered by the {@see MethodChildBuilderAttributeInterface} attributes on methods
-     *
-     * @param string $name
-     * @return list<ChildBuilderAttributeInterface>
-     */
-    public function registeredChildAttributes(string $name): array
-    {
-        return $this->childAttributes[$name] ?? [];
     }
 }

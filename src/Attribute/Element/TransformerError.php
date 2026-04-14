@@ -10,7 +10,10 @@ use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Transformer\TransformerInterface;
+use Nette\PhpGenerator\Literal;
 use Override;
+
+use function is_object;
 
 /**
  * Fine grain configure error triggered by transformers
@@ -73,7 +76,7 @@ final readonly class TransformerError implements ChildBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         if ($this->message !== null) {
             $builder->transformerErrorMessage($this->message);
@@ -84,12 +87,16 @@ final readonly class TransformerError implements ChildBuilderAttributeInterface
         }
 
         if ($this->validationCallback !== null) {
-            $builder->transformerExceptionValidation([$form, $this->validationCallback]);
+            if (is_object($context)) {
+                $builder->transformerExceptionValidation($context->{$this->validationCallback}(...));
+            } else {
+                $builder->transformerExceptionValidation($context::{$this->validationCallback}(...));
+            }
         }
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->line('$?', [$name]);
 
@@ -102,7 +109,11 @@ final readonly class TransformerError implements ChildBuilderAttributeInterface
         }
 
         if ($this->validationCallback !== null) {
-            $generator->line('    ->transformerExceptionValidation([$form, ?])', [$this->validationCallback]);
+            if (is_object($context)) {
+                $generator->line('    ->transformerExceptionValidation($context->?(...))', [$this->validationCallback]);
+            } else {
+                $generator->line('    ->transformerExceptionValidation(?::?(...))', [new Literal($generator->useAndSimplifyType($context)), $this->validationCallback]);
+            }
         }
 
         $generator->line(';');

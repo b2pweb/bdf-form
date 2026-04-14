@@ -13,6 +13,9 @@ use Bdf\Form\ElementInterface;
 use Nette\PhpGenerator\Literal;
 use Override;
 
+use function is_object;
+use function is_string;
+
 /**
  * Attribute for define the array element type
  * You can also define a configuration method (not required)
@@ -68,21 +71,25 @@ class ElementType implements ChildBuilderAttributeInterface
     }
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
-        $configurator = $this->configurator !== null ? [$form, $this->configurator] : null;
+        $configurator = match (true) {
+            $this->configurator !== null && is_object($context) => $context->{$this->configurator}(...),
+            $this->configurator !== null && is_string($context) => $context::{$this->configurator}(...),
+            default => null,
+        };
         $builder->element($this->elementType, $configurator);
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $elementType = new Literal($generator->useAndSimplifyType($this->elementType));
 
-        if ($this->configurator !== null) {
-            $generator->line('$?->element(?::class, [$form, ?]);', [$name, $elementType, $this->configurator]);
-        } else {
-            $generator->line('$?->element(?::class);', [$name, $elementType]);
-        }
+        match (true) {
+            $this->configurator !== null && is_object($context) => $generator->line('$?->element(?::class, $context->?(...));', [$name, $elementType, $this->configurator]),
+            $this->configurator !== null && is_string($context) => $generator->line('$?->element(?::class, ?::?(...));', [$name, $elementType, new Literal($generator->useAndSimplifyType($context)), $this->configurator]),
+            default => $generator->line('$?->element(?::class);', [$name, $elementType]),
+        };
     }
 }

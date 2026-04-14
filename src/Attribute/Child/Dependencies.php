@@ -54,13 +54,13 @@ final readonly class Dependencies implements ChildBuilderAttributeInterface
     }
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $builder->depends(...$this->dependencies);
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->line('$?->depends(...?);', [$name, $this->dependencies]);
     }

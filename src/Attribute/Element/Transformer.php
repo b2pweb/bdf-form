@@ -77,7 +77,7 @@ class Transformer implements ChildBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $transformer = new $this->transformerClass(...$this->constructorArguments);
 
@@ -90,7 +90,7 @@ class Transformer implements ChildBuilderAttributeInterface
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $transformer = $generator->useAndSimplifyType($this->transformerClass);
         $code = $this->array ? '$?->arrayTransformer(new ?(...?));' : '$?->transformer(new ?(...?));';

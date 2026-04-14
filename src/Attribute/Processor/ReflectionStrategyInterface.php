@@ -3,7 +3,7 @@
 namespace Bdf\Form\Attribute\Processor;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
-use Bdf\Form\Attribute\AttributeForm;
+use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\ElementInterface;
 use ReflectionClass;
 use ReflectionProperty;
@@ -22,14 +22,13 @@ interface ReflectionStrategyInterface
      * Configure the form builder following the form class
      * This method will take the current attribute form class, but also all its ancestors until AttributeForm
      *
-     * @param ReflectionClass<AttributeForm> $formClass Form class to use
-     * @param AttributeForm $form The current form instance
-     * @param FormBuilderInterface $builder Builder to configure
      * @param ProcessorMetadata $metadata Metadata for the current form
+     * @param object|class-string $context The form instance or the DTO class name
+     * @param FormBuilderInterface $builder Builder to configure
      *
      * @return void
      */
-    public function onFormClass(ReflectionClass $formClass, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void;
+    public function onFormClass(ProcessorMetadata $metadata, object|string $context, FormBuilderInterface $builder): void;
 
     /**
      * Configure a button following the declared property
@@ -38,35 +37,32 @@ interface ReflectionStrategyInterface
      *
      * @param ReflectionProperty $property The property to process
      * @param non-empty-string $name The button name
-     * @param AttributeForm $form The current form instance
+     * @param object|class-string $context The form instance or the DTO class name
      * @param FormBuilderInterface $builder Builder to configure
      * @param ProcessorMetadata $metadata Metadata for the current form
      *
      * @return void
      */
-    public function onButtonProperty(ReflectionProperty $property, string $name, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void;
+    public function onButtonProperty(ReflectionProperty $property, string $name, object|string $context, FormBuilderInterface $builder, ProcessorMetadata $metadata): void;
 
     /**
      * Configure an element following the declared property
      * This method is only called one, even if the property is declared multiple times on ancestors
      * Only the child declaration will be processed
      *
-     * @param ReflectionProperty $property The property to process
-     * @param non-empty-string $name The element name
-     * @param class-string<ElementInterface> $elementType The element type (i.e. the property type)
-     * @param AttributeForm $form The current form instance
+     * @param ElementPropertyMetadata $metadata Metadata for the element to process
+     * @param object|class-string $context The form instance or the DTO class name
      * @param FormBuilderInterface $builder Builder to configure
-     * @param ProcessorMetadata $metadata Metadata for the current form
      *
      * @return void
      */
-    public function onElementProperty(ReflectionProperty $property, string $name, string $elementType, AttributeForm $form, FormBuilderInterface $builder, ProcessorMetadata $metadata): void;
+    public function onElementProperty(ElementPropertyMetadata $metadata, object|string $context, FormBuilderInterface $builder): void;
 
     /**
      * @param ProcessorMetadata $metadata Metadata for the current form
-     * @param AttributeForm $form The current form instance
+     * @param object|class-string $context The form instance or the DTO class name
      *
      * @return PostConfigureInterface|null
      */
-    public function onPostConfigure(ProcessorMetadata $metadata, AttributeForm $form): ?PostConfigureInterface;
+    public function onPostConfigure(ProcessorMetadata $metadata, object|string $context): ?PostConfigureInterface;
 }

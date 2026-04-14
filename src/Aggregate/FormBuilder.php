@@ -36,6 +36,8 @@ use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
 use Bdf\Form\Registry\RegistryInterface;
 use Bdf\Form\RootElementInterface;
+use Bdf\Form\Struct\StructForm;
+use Bdf\Form\Struct\StructFormBuilder;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Validator\ValueValidatorInterface;
 use Override;
@@ -237,6 +239,20 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
         /** @var ChildBuilder<EnumElementBuilder> $builder */
         $builder = $this->add($name, UnitEnumElement::class);
         return $builder->enumClass($enumClass);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @param non-empty-string $name The child name
+     * @param class-string $structClass The struct class name
+     * @return ChildBuilder<StructFormBuilder>
+     */
+    #[Override]
+    public function struct(string $name, string $structClass): ChildBuilderInterface
+    {
+        $builder = $this->add($name, StructForm::class);
+        return $builder->class($structClass);
     }
 
     /**

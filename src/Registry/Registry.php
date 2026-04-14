@@ -39,6 +39,8 @@ use Bdf\Form\Leaf\UnitEnumElement;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
+use Bdf\Form\Struct\StructForm;
+use Bdf\Form\Struct\StructFormBuilder;
 use InvalidArgumentException;
 use Override;
 
@@ -92,6 +94,8 @@ final class Registry implements RegistryInterface
             /** @psalm-suppress ArgumentTypeCoercion */
             return new CustomFormBuilder($formClass, $this->elementBuilder(Form::class));
         });
+
+        $this->register(StructForm::class, fn (RegistryInterface $registry) => new StructFormBuilder(builder: $registry->elementBuilder(Form::class)));
     }
 
     #[Override]

@@ -15,7 +15,10 @@ use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\PropertyAccess\Setter;
+use Bdf\Form\Struct\StructForm;
+use Bdf\Form\Util\FieldPath;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
 
 class DependenciesTest extends TestCase
@@ -37,6 +40,15 @@ class DependenciesTest extends TestCase
 
         $form->submit(['foo' => 'a', 'bar' => 'b', 'baz' => 'c']);
         $this->assertSame('acb', $form->baz->value());
+    }
+
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestDependenciesStruct::class, processor: $processor);
+
+        $form->submit(['foo' => 'a', 'bar' => 'b', 'baz' => 'c']);
+        $this->assertSame('acb', $form->value()->baz);
     }
 
     /**
@@ -66,7 +78,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', StringElement::class);
 
@@ -91,5 +103,88 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
 
 PHP
             , $form);
+    }
+
+    /**
+     * @return void
+     */
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Bdf\Form\Transformer\TransformerInterface;
+use Tests\Form\Attribute\Child\TestDependenciesStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestDependenciesStruct::class);
+
+        $foo = $builder->add('foo', StringElement::class);
+        $foo->hydrator(new Setter(null))->extractor(new Getter(null));
+        $foo->required(null);
+
+        $baz = $builder->add('baz', StringElement::class);
+        $baz->depends('foo', 'bar');
+        $baz->transformer(new class ($context) implements TransformerInterface {
+            /**
+             * {@inheritdoc}
+             */
+            function transformToHttp(mixed $value, ElementInterface $input): mixed
+            {
+                return $value;
+            }
+
+            /**
+             * {@inheritdoc}
+             */
+            function transformFromHttp(mixed $value, ElementInterface $input): mixed
+            {
+                return $this->context::bazTransformer($value, $input);
+            }
+
+            public function __construct(
+                private $context,
+            ) {
+            }
+        });
+        $baz->hydrator(new Setter(null))->extractor(new Getter(null));
+        $baz->required(null);
+
+        $bar = $builder->add('bar', StringElement::class);
+        $bar->hydrator(new Setter(null))->extractor(new Getter(null));
+        $bar->required(null);
+
+        return null;
+    }
+}
+
+PHP
+            , TestDependenciesStruct::class);
+    }
+}
+
+class TestDependenciesStruct
+{
+    public string $foo;
+    #[Dependencies('foo', 'bar'), CallbackTransformer(fromHttp: 'bazTransformer')]
+    public string $baz;
+    public string $bar;
+
+    public static function bazTransformer($value, $input)
+    {
+        return FieldPath::parse('../foo')->value($input) . $value . FieldPath::parse('../bar')->value($input);
     }
 }

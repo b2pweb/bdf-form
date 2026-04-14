@@ -4,9 +4,11 @@ namespace Bdf\Form\Attribute\Processor;
 
 use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Aggregate\FormBuilderInterface;
-use Bdf\Form\Attribute\AttributeForm;
+use Closure;
 use LogicException;
 use Override;
+
+use function is_string;
 
 /**
  * Processor for compile attributes to native PHP code for build the form
@@ -29,7 +31,7 @@ final readonly class CompileAttributesProcessor implements AttributesProcessorIn
          *
          * The class name must be contained into a namespace
          *
-         * @var callable(AttributeForm):non-empty-string
+         * @var callable(class-string):non-empty-string
          */
         private mixed $classNameResolver,
         /**
@@ -38,6 +40,13 @@ final readonly class CompileAttributesProcessor implements AttributesProcessorIn
          * @var callable(class-string<AttributesProcessorInterface>):non-empty-string
          */
         private mixed $fileNameResolver,
+
+        /**
+         * Factory for the inner processor used to generate the code, if the generated class do not exist yet
+         *
+         * @var (Closure(ReflectionStrategyInterface):AttributesProcessorInterface)|null
+         */
+        private ?Closure $innerProcessorFactory = null
     ) {}
 
     /**
@@ -46,20 +55,22 @@ final readonly class CompileAttributesProcessor implements AttributesProcessorIn
      * @psalm-suppress PossiblyUnusedReturnValue
      */
      #[Override]
-    public function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): PostConfigureInterface
+    public function configureBuilder(string|object $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
+        $formClassName = is_string($context) ? $context : $context::class;
+
         /** @var class-string<AttributesProcessorInterface&PostConfigureInterface> $className */
-        $className = ($this->classNameResolver)($form);
+        $className = ($this->classNameResolver)($formClassName);
 
         if (!class_exists($className)) {
             /** @psalm-suppress ArgumentTypeCoercion */
-            $this->loadProcessor($className, $form, $builder);
+            $this->loadProcessor($className, $context, $builder);
         }
 
         $generated = new $className();
-        $generated->configureBuilder($form, $builder);
+        $generated->configureBuilder($context, $builder);
 
-        return $generated;
+        return $generated instanceof PostConfigureInterface ? $generated : null;
     }
 
     /**
@@ -67,34 +78,34 @@ final readonly class CompileAttributesProcessor implements AttributesProcessorIn
      * Unlike `configureBuilder()` process, the class will be regenerated if already exists,
      * and the class will not be included
      *
-     * @param AttributeForm $form Form to generate
+     * @param class-string|object $context Form to generate
      *
      * @return void
      */
-    public function generate(AttributeForm $form): void
+    public function generate(string|object $context): void
     {
         /** @var class-string<AttributesProcessorInterface&PostConfigureInterface> $className */
-        $className = ($this->classNameResolver)($form);
+        $className = ($this->classNameResolver)(is_string($context) ? $context : $context::class);
         $fileName = ($this->fileNameResolver)($className);
 
-        $this->generateProcessor($fileName, $className, $form, new FormBuilder());
+        $this->generateProcessor($fileName, $className, $context, new FormBuilder());
     }
 
     /**
      * Try to load the processor from its file
      *
      * @param class-string<AttributesProcessorInterface&PostConfigureInterface> $className Generated processor class name
-     * @param AttributeForm $form Form to build
+     * @param class-string|object $context Form to build
      * @param FormBuilderInterface $builder Builder to configure
      *
      * @return void
      */
-    private function loadProcessor(string $className, AttributeForm $form, FormBuilderInterface $builder): void
+    private function loadProcessor(string $className, string|object $context, FormBuilderInterface $builder): void
     {
         $fileName = ($this->fileNameResolver)($className);
 
         if (!file_exists($fileName)) {
-            $this->generateProcessor($fileName, $className, $form, $builder);
+            $this->generateProcessor($fileName, $className, $context, $builder);
         }
 
         require_once $fileName;
@@ -109,17 +120,20 @@ final readonly class CompileAttributesProcessor implements AttributesProcessorIn
      *
      * @param string $fileName Target file
      * @param class-string<AttributesProcessorInterface&PostConfigureInterface> $className Generated processor class name
-     * @param AttributeForm $form Form to build
+     * @param class-string|object $context Form to build
      * @param FormBuilderInterface $builder Builder to configure
      *
      * @return void
      */
-    private function generateProcessor(string $fileName, string $className, AttributeForm $form, FormBuilderInterface $builder): void
+    private function generateProcessor(string $fileName, string $className, string|object $context, FormBuilderInterface $builder): void
     {
         $generator = new GenerateConfiguratorStrategy($className);
-        $processor = new ReflectionProcessor($generator);
+        $processor = $this->innerProcessorFactory
+            ? ($this->innerProcessorFactory)($generator)
+            : new ReflectionProcessor($generator)
+        ;
 
-        $processor->configureBuilder($form, $builder);
+        $processor->configureBuilder($context, $builder);
 
         $code = $generator->code();
 

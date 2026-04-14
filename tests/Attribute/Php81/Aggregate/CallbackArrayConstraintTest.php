@@ -79,13 +79,13 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', ArrayElement::class);
-        $foo->arrayConstraint(new ClosureConstraint($form->validateFoo(...), 'Foo size must be a multiple of 2'));
+        $foo->arrayConstraint(new ClosureConstraint($context->validateFoo(...), 'Foo size must be a multiple of 2'));
 
         $bar = $builder->add('bar', ArrayElement::class);
-        $bar->arrayConstraint(new ClosureConstraint($form->validateFoo(...)));
+        $bar->arrayConstraint(new ClosureConstraint($context->validateFoo(...)));
 
         return $this;
     }

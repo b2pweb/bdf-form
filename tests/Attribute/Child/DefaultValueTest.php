@@ -13,7 +13,9 @@ use Bdf\Form\Attribute\Processor\ReflectionProcessor;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\PropertyAccess\Setter;
+use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
 
 class DefaultValueTest extends TestCase
@@ -28,6 +30,15 @@ class DefaultValueTest extends TestCase
 
         $form->submit([]);
         $this->assertSame(42, $form->v->value());
+    }
+
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestDefaultValueStruct::class, processor: $processor);
+
+        $form->submit([]);
+        $this->assertSame(42, $form['v']->element()->value());
     }
 
     /**
@@ -55,7 +66,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $v = $builder->add('v', IntegerElement::class);
         $v->default(42);
@@ -75,4 +86,48 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
 PHP
             , $form);
     }
+
+    /**
+     * @return void
+     */
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\Leaf\IntegerElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Tests\Form\Attribute\Child\TestDefaultValueStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestDefaultValueStruct::class);
+
+        $v = $builder->add('v', IntegerElement::class);
+        $v->default(42);
+        $v->hydrator(new Setter(null))->extractor(new Getter(null));
+        $v->required(null);
+
+        return null;
+    }
+}
+
+PHP
+            , TestDefaultValueStruct::class);
+    }
+}
+
+class TestDefaultValueStruct
+{
+    #[DefaultValue(42)]
+    public int $v;
 }
