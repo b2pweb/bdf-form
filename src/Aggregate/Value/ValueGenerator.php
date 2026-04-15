@@ -36,7 +36,7 @@ final class ValueGenerator implements ValueGeneratorInterface
     /**
      * ValueGenerator constructor.
      *
-     * @param callable(ElementInterface):T|T|class-string<T> $value
+     * @param callable(ElementInterface):T|T|class-string $value
      */
     public function __construct(mixed $value = [])
     {
@@ -62,9 +62,12 @@ final class ValueGenerator implements ValueGeneratorInterface
     }
 
     /**
-     * @param callable(ElementInterface):U|U|class-string<U> $value
+     * @param callable(ElementInterface):U|U|class-string $value
      * @return ValueGeneratorInterface<U>
      * @template U as array|object
+     *
+     * @psalm-suppress InvalidReturnStatement
+     * @psalm-suppress InvalidReturnType
      */
     private static function fromValue(mixed $value, bool $cloneObjectValue): ValueGeneratorInterface
     {
@@ -78,6 +81,7 @@ final class ValueGenerator implements ValueGeneratorInterface
         }
 
         if (is_callable($value)) {
+            /** @psalm-suppress PossiblyInvalidFunctionCall */
             return new ClosureValueGenerator($value(...));
         }
 
@@ -85,6 +89,7 @@ final class ValueGenerator implements ValueGeneratorInterface
             return new ObjectValueGenerator($value);
         }
 
+        /** @psalm-suppress PossiblyInvalidArgument */
         return new SimpleValueGenerator($value);
     }
 }
