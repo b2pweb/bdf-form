@@ -7,11 +7,15 @@ use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Struct\Fixtures\Color;
 use Bdf\Form\Struct\Fixtures\ConstraintDto;
+use Bdf\Form\Struct\Fixtures\CustomDate;
+use Bdf\Form\Struct\Fixtures\DtoWithDate;
 use Bdf\Form\Struct\Fixtures\OptionalDto;
 use Bdf\Form\Struct\Fixtures\Point;
 use Bdf\Form\Struct\Fixtures\Shape;
 use Bdf\Form\Struct\Fixtures\SimpleDto;
 use Bdf\Form\Struct\Fixtures\StructWithEmbedded;
+use Bdf\Form\Struct\Fixtures\StructWithOptionalEmbedded;
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -133,6 +137,43 @@ class StructFormTest extends TestCase
     }
 
     #[Test, DataProvider('provideAttributesProcessor')]
+    public function withOptionalEmbedded(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(StructWithOptionalEmbedded::class, processor: $processor);
+
+        $form->submit([]);
+
+        $this->assertFalse($form->valid());
+        $this->assertEquals([
+            'id' => 'This value should not be blank.',
+        ], $form->error()->toArray());
+
+        $form->submit(['id' => 745]);
+        $this->assertTrue($form->valid());
+        $this->assertEquals(new StructWithOptionalEmbedded(745, null), $form->value());
+
+        $form->submit(['id' => 745, 'embedded' => ['value' => '']]);
+        $this->assertFalse($form->valid());
+        $this->assertEquals([
+            'embedded' => [
+                'name' => 'This value should not be blank.',
+                'value' => 'This value should not be blank.',
+            ]
+        ], $form->error()->toArray());
+
+        $form->submit([
+            'id' => 158,
+            'embedded' => [
+                'name' => 'bob',
+                'value' => 41,
+            ],
+        ]);
+
+        $this->assertTrue($form->valid());
+        $this->assertEquals(new StructWithOptionalEmbedded(158, new SimpleDto('bob', 41)), $form->value());
+    }
+
+    #[Test, DataProvider('provideAttributesProcessor')]
     public function withArrayOfStruct(AttributesProcessorInterface $processor)
     {
         $form = new StructForm(Shape::class, processor: $processor);
@@ -216,6 +257,31 @@ class StructFormTest extends TestCase
             PHP,
             Shape::class,
         );
+    }
+
+    #[Test, DataProvider('provideAttributesProcessor')]
+    public function withDate(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(DtoWithDate::class, processor: $processor);
+
+        $form->submit([]);
+
+        $this->assertFalse($form->valid());
+        $this->assertEquals([
+            'start' => 'This value should not be blank.',
+            'end' => 'This value should not be blank.',
+        ], $form->error()->toArray());
+
+        $form->submit([
+            'start' => '2019-01-01',
+            'end' => '2019-01-31',
+        ]);
+
+        $this->assertTrue($form->valid());
+        $this->assertEquals(new DtoWithDate(
+            new DateTimeImmutable('2019-01-01'),
+            new CustomDate('2019-01-31'),
+        ), $form->value());
     }
 
     public function assertGenerated(string $expected, string $structClass): void

@@ -3,8 +3,10 @@
 namespace Bdf\Form\Struct;
 
 use Bdf\Form\Aggregate\ArrayElement;
+use Bdf\Form\Attribute\Aggregate\Optional;
 use Bdf\Form\Attribute\Child\DefaultValue;
 use Bdf\Form\Attribute\Child\GetSet;
+use Bdf\Form\Attribute\Element\Date\DateTimeClass;
 use Bdf\Form\Attribute\Element\Required;
 use Bdf\Form\Attribute\Element\StructClass;
 use Bdf\Form\Attribute\Form\CallbackGenerator;
@@ -12,10 +14,12 @@ use Bdf\Form\Attribute\Form\Generates;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Attribute\Processor\CompileAttributesProcessor;
 use Bdf\Form\Attribute\Processor\ConfigureFormBuilderStrategy;
+use Bdf\Form\Attribute\Processor\ElementPropertyMetadata;
 use Bdf\Form\Attribute\Processor\ProcessorMetadata;
 use Bdf\Form\Attribute\Processor\ReflectionProcessor;
 use Bdf\Form\Attribute\Processor\ReflectionStrategyInterface;
 use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\BooleanElement;
 use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
@@ -25,6 +29,7 @@ use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
 use Closure;
 use DateTime;
+use DateTimeInterface;
 use libphonenumber\PhoneNumber;
 use ReflectionNamedType;
 use ReflectionParameter;
@@ -32,7 +37,9 @@ use ReflectionProperty;
 
 use function assert;
 use function class_exists;
+use function in_array;
 use function is_string;
+use function is_subclass_of;
 
 /**
  * Factory of {@see AttributesProcessorInterface} in context of struct form configuration
@@ -47,9 +54,36 @@ final class StructAttributesProcessorFactory
         'string' => StringElement::class,
         'array' => ArrayElement::class,
         'float' => FloatElement::class,
+        'boot' => BooleanElement::class,
         DateTime::class => DateTimeElement::class,
+        DateTimeInterface::class => DateTimeElement::class,
         PhoneNumber::class => PhoneElement::class,
     ];
+
+    /**
+     * Map a property type to an element type, using {@see is_subclass_of()} to check for inheritance
+     *
+     * @var array<class-string, class-string<ElementInterface>>
+     */
+    private array $mappingInstanceOf = [
+        DateTimeInterface::class => DateTimeElement::class,
+    ];
+
+    /**
+     * Associate a post processor for a given form element type.
+     * The exact element type will be used to resolve the processor.
+     *
+     * @var array<class-string<ElementInterface>, Closure(ElementPropertyMetadata, class-string|object):void>
+     */
+    private array $elementPostProcessors = [];
+
+    public function __construct()
+    {
+        $this->elementPostProcessors = [
+            StructForm::class => $this->postProcessStructForm(...),
+            DateTimeElement::class => $this->postProcessDateTimeElement(...),
+        ];
+    }
 
     /**
      * Create the attributes processor with on the fly form configuration
@@ -89,11 +123,16 @@ final class StructAttributesProcessorFactory
 
     public function mapElementType(string $type): string
     {
-        // @todo handle subclass (ex: datetime)
         $mappedType = $this->mapping[$type] ?? null;
 
         if ($mappedType !== null) {
             return $mappedType;
+        }
+
+        foreach ($this->mappingInstanceOf as $instanceOf => $mappedType) {
+            if (is_subclass_of($type, $instanceOf)) {
+                return $mappedType;
+            }
         }
 
         if (class_exists($type)) {
@@ -106,11 +145,9 @@ final class StructAttributesProcessorFactory
     /**
      * @param ProcessorMetadata $metadata
      * @param object|class-string $context
-     * @return void
      */
     public function postProcess(ProcessorMetadata $metadata, object|string $context): void
     {
-        // @todo gérer type object ?
         if (
             is_string($context)
             && !$metadata->hasFormAttribute(Generates::class)
@@ -144,14 +181,10 @@ final class StructAttributesProcessorFactory
                 }
             }
 
-            if ($property->elementType === StructForm::class && !$property->hasAttribute(StructClass::class)) {
-                $type = $property->property->getType();
-                assert($type instanceof ReflectionNamedType);
+            $postProcessor = $this->elementPostProcessors[$property->elementType] ?? null;
 
-                $typeName = $type->getName();
-                assert(class_exists($typeName));
-
-                $property->addAttribute(new StructClass($typeName));
+            if ($postProcessor !== null) {
+                $postProcessor($property, $context);
             }
         }
     }
@@ -193,5 +226,47 @@ final class StructAttributesProcessorFactory
         }
 
         return null;
+    }
+
+    /**
+     * @param ElementPropertyMetadata $property
+     * @param class-string|object $context
+     */
+    private function postProcessStructForm(ElementPropertyMetadata $property, string|object $context): void
+    {
+        if (!$property->hasAttribute(StructClass::class)) {
+            $type = $property->property->getType();
+            assert($type instanceof ReflectionNamedType);
+
+            $typeName = $type->getName();
+            assert(class_exists($typeName));
+
+            $property->addAttribute(new StructClass($typeName));
+        }
+
+        if (!$property->hasAttribute(Required::class) && !$property->hasAttribute(Optional::class)) {
+            $property->addAttribute(new Optional());
+        }
+    }
+
+    /**
+     * @param ElementPropertyMetadata $property
+     * @param class-string|object $context
+     */
+    private function postProcessDateTimeElement(ElementPropertyMetadata $property, string|object $context): void
+    {
+        if (!$property->hasAttribute(DateTimeClass::class)) {
+            $type = $property->property->getType();
+            assert($type instanceof ReflectionNamedType);
+
+            $typeName = $type->getName();
+
+            if (!in_array($typeName, [DateTime::class, DateTimeInterface::class], true)) {
+                assert(is_subclass_of($typeName, DateTimeInterface::class));
+
+                /** @psalm-suppress InvalidArgument */
+                $property->addAttribute(new DateTimeClass($typeName));
+            }
+        }
     }
 }
