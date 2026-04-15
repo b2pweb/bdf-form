@@ -9,11 +9,14 @@ use Bdf\Form\Struct\Fixtures\Color;
 use Bdf\Form\Struct\Fixtures\ConstraintDto;
 use Bdf\Form\Struct\Fixtures\CustomDate;
 use Bdf\Form\Struct\Fixtures\DtoWithDate;
+use Bdf\Form\Struct\Fixtures\IntEnum;
 use Bdf\Form\Struct\Fixtures\OptionalDto;
 use Bdf\Form\Struct\Fixtures\Point;
 use Bdf\Form\Struct\Fixtures\Shape;
 use Bdf\Form\Struct\Fixtures\SimpleDto;
+use Bdf\Form\Struct\Fixtures\SimpleEnum;
 use Bdf\Form\Struct\Fixtures\StructWithEmbedded;
+use Bdf\Form\Struct\Fixtures\StructWithEnum;
 use Bdf\Form\Struct\Fixtures\StructWithOptionalEmbedded;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -281,6 +284,33 @@ class StructFormTest extends TestCase
         $this->assertEquals(new DtoWithDate(
             new DateTimeImmutable('2019-01-01'),
             new CustomDate('2019-01-31'),
+        ), $form->value());
+    }
+
+    #[Test, DataProvider('provideAttributesProcessor')]
+    public function withEnum(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(StructWithEnum::class, processor: $processor);
+
+        $form->submit([
+            'i' => 42,
+            's' => 'invalid',
+        ]);
+
+        $this->assertFalse($form->valid());
+        $this->assertEquals([
+            'i' => 'This value should not be blank.',
+            's' => 'This value should not be blank.',
+        ], $form->error()->toArray());
+
+        $form->submit([
+            'i' => 2,
+            's' => 'One',
+        ]);
+
+        $this->assertEquals(new StructWithEnum(
+            i: IntEnum::Bar,
+            s: SimpleEnum::One,
         ), $form->value());
     }
 

@@ -4,6 +4,7 @@ namespace Bdf\Form\Struct;
 
 use Bdf\Form\Aggregate\ArrayElement;
 use Bdf\Form\Attribute\Aggregate\Optional;
+use Bdf\Form\Attribute\BuilderMethodCall;
 use Bdf\Form\Attribute\Child\DefaultValue;
 use Bdf\Form\Attribute\Child\GetSet;
 use Bdf\Form\Attribute\Element\Date\DateTimeClass;
@@ -24,6 +25,7 @@ use Bdf\Form\Leaf\Date\DateTimeElement;
 use Bdf\Form\Leaf\FloatElement;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Leaf\UnitEnumElement;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\PropertyAccess\ExtractorInterface;
 use Bdf\Form\PropertyAccess\HydratorInterface;
@@ -34,6 +36,7 @@ use libphonenumber\PhoneNumber;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionProperty;
+use UnitEnum;
 
 use function assert;
 use function class_exists;
@@ -67,6 +70,7 @@ final class StructAttributesProcessorFactory
      */
     private array $mappingInstanceOf = [
         DateTimeInterface::class => DateTimeElement::class,
+        UnitEnum::class => UnitEnumElement::class,
     ];
 
     /**
@@ -82,6 +86,7 @@ final class StructAttributesProcessorFactory
         $this->elementPostProcessors = [
             StructForm::class => $this->postProcessStructForm(...),
             DateTimeElement::class => $this->postProcessDateTimeElement(...),
+            UnitEnumElement::class => $this->postProcessEnumElement(...),
         ];
     }
 
@@ -268,5 +273,17 @@ final class StructAttributesProcessorFactory
                 $property->addAttribute(new DateTimeClass($typeName));
             }
         }
+    }
+
+    /**
+     * @param ElementPropertyMetadata $property
+     * @param class-string|object $context
+     */
+    private function postProcessEnumElement(ElementPropertyMetadata $property, string|object $context): void
+    {
+        $type = $property->property->getType();
+        assert($type instanceof ReflectionNamedType);
+
+        $property->addAttribute(new BuilderMethodCall('enumClass', [$type->getName()]));
     }
 }
