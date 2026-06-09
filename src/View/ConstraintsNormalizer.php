@@ -89,13 +89,16 @@ final class ConstraintsNormalizer
         }
 
         // Cache the option name for the constraint class, to avoid reflection on next calls
-        self::$constraints[get_class($constraint)][$option] = null;
+        self::$constraints[get_class($constraint)] = [];
 
         $value = $constraint->{$option} ?? null;
 
         if (!is_scalar($value)) {
             return null;
         }
+
+        // Keep the option only if it's a scalar
+        self::$constraints[get_class($constraint)][$option] = null;
 
         return [$option => $value];
     }
