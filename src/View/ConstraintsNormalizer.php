@@ -63,10 +63,10 @@ final class ConstraintsNormalizer
      * Extract the default option of a constraint
      * The default option is the first argument of the constraint constructor.
      *
-     * This method will return null if the default option is not defined,
+     * This method will return an empty array if the default option is not defined,
      * or if the value of the default option is not a scalar value.
      *
-     * @return array<string, scalar>|null
+     * @return array<string, scalar>
      */
     private static function getDefaultOption(Constraint $constraint): array
     {
