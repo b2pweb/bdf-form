@@ -91,7 +91,7 @@ final class ConstraintsNormalizer
         }
 
         // Cache the option name for the constraint class, to avoid reflection on next calls
-        self::$constraints[$constraint::class] = null;
+        self::$constraints[$constraint::class] = [];
 
         $value = $constraint->{$option} ?? null;
 
