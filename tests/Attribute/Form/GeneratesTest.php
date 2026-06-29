@@ -3,7 +3,7 @@
 namespace Tests\Form\Attribute\Form;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
-use Bdf\Form\Aggregate\Value\MyEntity;
+use Bdf\Form\Aggregate\Value\Fixtures\MyEntity;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Form\Generates;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;

@@ -4,6 +4,7 @@ namespace Bdf\Form\Aggregate\Value;
 
 use Bdf\Form\ElementInterface;
 use Override;
+use ReflectionClass;
 
 use function class_exists;
 use function is_callable;
@@ -20,59 +21,75 @@ use function is_string;
  * (new ValueGenerator(function (FormInterface $form) { return new MyEntity(...); }))->generate($form); // Custom generator
  * </code>
  *
- * @template T
+ * @template T as array|object
  * @implements ValueGeneratorInterface<T>
+ *
+ * @psalm-suppress InvalidDocblock
  */
 final class ValueGenerator implements ValueGeneratorInterface
 {
     /**
-     * @var callable():T|T|class-string<T>
+     * @var ValueGeneratorInterface<T>
      */
-    private mixed $value;
-
-    /**
-     * @var callable():T|T|class-string<T>|null
-     */
-    private mixed $attachment = null;
+    private ValueGeneratorInterface $generator;
 
     /**
      * ValueGenerator constructor.
      *
-     * @param callable():T|T|class-string<T> $value
+     * @param callable(ElementInterface):T|T|class-string $value
      */
     public function __construct(mixed $value = [])
     {
-        /** @psalm-suppress PropertyTypeCoercion */
-        $this->value = $value;
+        $this->generator = self::fromValue($value, true);
     }
 
     #[Override]
     public function attach(mixed $entity): void
     {
-        /** @psalm-suppress PropertyTypeCoercion */
-        $this->attachment = $entity;
+        $this->generator = self::fromValue($entity, false);
     }
 
     #[Override]
-    public function generate(ElementInterface $element): mixed
+    public function generate(ElementInterface $element): array|object
     {
-        $value = $this->attachment ?? $this->value;
+        return $this->generator->generate($element);
+    }
 
+    #[Override]
+    public function finalize(object|array $value): object|array
+    {
+        return $this->generator->finalize($value);
+    }
+
+    /**
+     * @param callable(ElementInterface):U|U|class-string $value
+     * @return ValueGeneratorInterface<U>
+     * @template U as array|object
+     *
+     * @psalm-suppress InvalidReturnStatement
+     * @psalm-suppress InvalidReturnType
+     */
+    private static function fromValue(mixed $value, bool $cloneObjectValue): ValueGeneratorInterface
+    {
         if (is_string($value) && class_exists($value)) {
-            /** @var T */
-            return new $value;
+            $calUseDefaultConstructor = (new ReflectionClass($value)->getConstructor()?->getNumberOfRequiredParameters() ?? 0) === 0;
+
+            return $calUseDefaultConstructor
+                ? new DefaultConstructorValueGenerator($value)
+                : new ConstructorValueGenerator($value)
+            ;
         }
 
         if (is_callable($value)) {
-            return ($value)($element);
+            /** @psalm-suppress PossiblyInvalidFunctionCall */
+            return new ClosureValueGenerator($value(...));
         }
 
-        // Only clone value if it's not attached
-        if ($this->attachment === null && is_object($value)) {
-            return clone $value;
+        if (is_object($value) && $cloneObjectValue) {
+            return new ObjectValueGenerator($value);
         }
 
-        /** @var T */
-        return $value;
+        /** @psalm-suppress PossiblyInvalidArgument */
+        return new SimpleValueGenerator($value);
     }
 }

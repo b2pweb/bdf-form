@@ -315,7 +315,7 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * });
      * </code>
      *
-     * @param callable|class-string|object|array $entity The entity to generate
+     * @param (callable(ElementInterface):array|object)|class-string|array|object $entity The entity to generate
      *
      * @return $this
      *

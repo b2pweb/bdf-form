@@ -3,7 +3,7 @@
 namespace Tests\Form\Attribute\Processor;
 
 use Bdf\Form\Aggregate\FormBuilder;
-use Bdf\Form\Aggregate\Value\MyEntity;
+use Bdf\Form\Aggregate\Value\Fixtures\MyEntity;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Button\Groups;
 use Bdf\Form\Attribute\Button\Value;
@@ -35,7 +35,7 @@ namespace Generated;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
 use Bdf\Form\Aggregate\FormInterface;
-use Bdf\Form\Aggregate\Value\MyEntity;
+use Bdf\Form\Aggregate\Value\Fixtures\MyEntity;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Attribute\Processor\PostConfigureInterface;
