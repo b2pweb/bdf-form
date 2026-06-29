@@ -7,7 +7,10 @@ use Bdf\Form\Attribute\Child\Dependencies;
 use Bdf\Form\Attribute\Element\Date\AfterField;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\Struct\StructForm;
+use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
 
 class AfterFieldTest extends TestCase
@@ -39,7 +42,28 @@ class AfterFieldTest extends TestCase
         ], self::normalizeSpace($form->error()->toArray()));
     }
 
-    
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestAfterFieldStruct::class, processor: $processor);
+
+        $form->submit([
+            'foo' => '2020-11-02T15:23:00Z',
+            'bar' => '2020-11-02T15:21:00Z',
+        ]);
+
+        $this->assertTrue($form->valid());
+
+        $form->submit([
+            'foo' => '2020-11-02T15:20:50Z',
+            'bar' => '2020-11-02T15:21:50Z',
+        ]);
+        $this->assertFalse($form->valid());
+        $this->assertEquals([
+            'foo' => 'my error',
+        ], self::normalizeSpace($form->error()->toArray()));
+    }
+
     #[DataProvider('provideAttributesProcessor')]
     public function test_with_message(AttributesProcessorInterface $processor)
     {
@@ -118,7 +142,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', DateTimeElement::class);
         $foo->depends('bar');
@@ -144,6 +168,45 @@ PHP
         );
     }
 
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Tests\Form\Attribute\Element\Date\TestAfterFieldStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestAfterFieldStruct::class);
+
+        $foo = $builder->add('foo', DateTimeElement::class);
+        $foo->depends('bar');
+        $foo->afterField('bar', 'my error', true);
+        $foo->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        $bar = $builder->add('bar', DateTimeElement::class);
+        $bar->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        return null;
+    }
+}
+
+PHP
+            , TestAfterFieldStruct::class
+        );
+    }
+
     public static function normalizeSpace(array|string $value): array|string
     {
         if (\is_array($value)) {
@@ -152,4 +215,11 @@ PHP
 
         return \preg_replace('/\p{Zs}+/u', ' ', $value);
     }
+}
+
+class TestAfterFieldStruct
+{
+    #[Dependencies('bar'), AfterField('bar', 'my error', true)]
+    public ?DateTime $foo;
+    public ?DateTime $bar;
 }

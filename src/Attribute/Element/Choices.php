@@ -19,6 +19,9 @@ use Bdf\Form\Leaf\StringElementBuilder;
 use Nette\PhpGenerator\Literal;
 use Override;
 
+use function is_object;
+use function is_string;
+
 /**
  * Define available values choice for the element
  *
@@ -105,7 +108,7 @@ final readonly class Choices implements ChildBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $options = $this->options;
 
@@ -113,16 +116,22 @@ final readonly class Choices implements ChildBuilderAttributeInterface
             $options['message'] = $this->message;
         }
 
+        $choices = $this->choices;
+
+        if (is_string($choices)) {
+            $choices = is_object($context)
+                ? new LazyChoice($context->{$this->choices}(...))
+                : new LazyChoice($context::{$this->choices}(...))
+            ;
+        }
+
         // Q&D fix for psalm because it does not recognize trait as type
         /** @var StringElementBuilder $builder */
-        $builder->choices(
-            is_string($this->choices) ? new LazyChoice($form->{$this->choices}(...)) : $this->choices,
-            ...$options
-        );
+        $builder->choices($choices, ...$options);
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $options = $this->options;
 
@@ -132,7 +141,12 @@ final readonly class Choices implements ChildBuilderAttributeInterface
 
         if (is_string($this->choices)) {
             $generator->use(LazyChoice::class);
-            $choices = new Literal('new LazyChoice($form->?(...))', [$this->choices]);
+
+            if (is_object($context)) {
+                $choices = new Literal('new LazyChoice($context->?(...))', [$this->choices]);
+            } else {
+                $choices = new Literal('new LazyChoice(?::?(...))', [new Literal($generator->useAndSimplifyType($context)), $this->choices]);
+            }
         } else {
             $choices = $this->choices;
         }

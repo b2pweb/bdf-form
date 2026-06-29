@@ -18,19 +18,19 @@ interface ButtonBuilderAttributeInterface
     /**
      * Configure the button builder
      *
-     * @param AttributeForm $form The current form instance
+     * @param object|class-string $context The form instance or the DTO class name
      * @param ButtonBuilderInterface $builder Builder to configure
      */
-    public function applyOnButtonBuilder(AttributeForm $form, ButtonBuilderInterface $builder): void;
+    public function applyOnButtonBuilder(object|string $context, ButtonBuilderInterface $builder): void;
 
     /**
      * Generate the code corresponding to the attribute
      * The generated code must perform same action as `applyOnButtonBuilder()`
      *
      * @param AttributesProcessorGenerator $generator Code generator for the "configureBuilder" method
-     * @param AttributeForm $form The current form instance
+     * @param object|class-string $context The form instance or the DTO class name
      *
      * @return void
      */
-    public function generateCodeForButtonBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void;
+    public function generateCodeForButtonBuilder(AttributesProcessorGenerator $generator, object|string $context): void;
 }

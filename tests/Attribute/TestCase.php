@@ -9,6 +9,7 @@ use Bdf\Form\Attribute\Processor\CompileAttributesProcessor;
 use Bdf\Form\Attribute\Processor\ConfigureFormBuilderStrategy;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Attribute\Processor\ReflectionProcessor;
+use Bdf\Form\Struct\StructAttributesProcessorFactory;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -26,12 +27,37 @@ class TestCase extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @return AttributesProcessorInterface[]
+     */
+    public static function provideStructAttributesProcessor(): array
+    {
+        $factory = new StructAttributesProcessorFactory();
+
+        return [
+            'reflection' => [$factory->runtime()],
+            'compile' => [$factory->generated(
+                fn ($form) => 'Generated\\G' . bin2hex(random_bytes(16)),
+                fn ($className) => sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'Generated_' . str_replace('\\', '_', $className) . '.php'
+            )],
+        ];
+    }
+
     public function assertGenerated(string $expected, AttributeForm $form): void
     {
         $generator = new GenerateConfiguratorStrategy('Generated\GeneratedConfigurator');
         $processor = new ReflectionProcessor($generator);
 
         $processor->configureBuilder($form, new FormBuilder());
+        $this->assertEquals($expected, $generator->code());
+    }
+
+    public function assertGeneratedStruct(string $expected, string $structClass): void
+    {
+        $generator = new GenerateConfiguratorStrategy('Generated\GeneratedConfigurator');
+        $processor = new StructAttributesProcessorFactory()->create($generator);
+
+        $processor->configureBuilder($structClass, new FormBuilder());
         $this->assertEquals($expected, $generator->code());
     }
 }

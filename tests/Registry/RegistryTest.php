@@ -45,6 +45,8 @@ use Bdf\Form\Leaf\UnitEnumElement;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Phone\PhoneElementBuilder;
+use Bdf\Form\Struct\StructForm;
+use Bdf\Form\Struct\StructFormBuilder;
 use Bdf\Form\Transformer\ClosureTransformer;
 use Bdf\Form\Transformer\DataTransformerAdapter;
 use Bdf\Form\Transformer\TransformerAggregate;
@@ -110,6 +112,7 @@ class RegistryTest extends TestCase
         $this->assertInstanceOf(FormBuilder::class, $this->registry->elementBuilder(Form::class));
         $this->assertInstanceOf(ArrayElementBuilder::class, $this->registry->elementBuilder(ArrayElement::class));
         $this->assertInstanceOf(CustomFormBuilder::class, $this->registry->elementBuilder(MyCustomForm::class));
+        $this->assertInstanceOf(StructFormBuilder::class, $this->registry->elementBuilder(StructForm::class));
         $this->assertInstanceOf(MyCustomForm::class, $this->registry->elementBuilder(MyCustomForm::class)->buildElement());
 
         $builder = $this->createMock(ElementBuilderInterface::class);

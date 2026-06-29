@@ -139,7 +139,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $bar = $builder->add('bar', IntegerElement::class);
         $bar->satisfy(new NotBlank());
@@ -203,7 +203,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $bar = $builder->add('bar', IntegerElement::class);
         $bar->satisfy(new NotBlank());
@@ -214,7 +214,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
         $foo = $builder->add('foo', StringElement::class);
         $foo->extractor(new Getter());
         $foo->hydrator(new Setter());
-        $foo->transformer([$form, 'transform']);
+        $foo->transformer($context->transform(...));
 
         return $this;
     }

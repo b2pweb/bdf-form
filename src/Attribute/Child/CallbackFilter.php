@@ -3,12 +3,14 @@
 namespace Bdf\Form\Attribute\Child;
 
 use Attribute;
-use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Element\CallbackTransformer;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Nette\PhpGenerator\Literal;
 use Override;
+
+use function is_object;
 
 /**
  * Add a filter on the child element, by using method
@@ -57,14 +59,22 @@ final readonly class CallbackFilter implements ChildBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
-        $builder->filter([$form, $this->method]);
+        if (is_object($context)) {
+            $builder->filter($context->{$this->method}(...));
+        } else {
+            $builder->filter($context::{$this->method}(...));
+        }
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
-        $generator->line('$?->filter([$form, ?]);', [$name, $this->method]);
+        if (is_object($context)) {
+            $generator->line('$?->filter($context->?(...));', [$name, $this->method]);
+        } else {
+            $generator->line('$?->filter(?::?(...));', [$name, new Literal($generator->useAndSimplifyType($context)), $this->method]);
+        }
     }
 }

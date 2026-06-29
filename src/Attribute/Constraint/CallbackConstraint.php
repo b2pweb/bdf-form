@@ -14,6 +14,9 @@ use Nette\PhpGenerator\Literal;
 use Override;
 use Symfony\Component\Validator\Constraint;
 
+use function is_object;
+use function sprintf;
+
 /**
  * Define a custom constraint for an element, using a validation method
  *
@@ -79,21 +82,31 @@ final readonly class CallbackConstraint implements ChildBuilderAttributeInterfac
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
-        $constraint = new Closure($form->{$this->methodName}(...), $this->message);
+        if (is_object($context)) {
+            $constraint = new Closure($context->{$this->methodName}(...), $this->message);
+        } else {
+            $constraint = new Closure($context::{$this->methodName}(...), $this->message);
+        }
 
         $builder->satisfy($constraint);
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->use(Closure::class, 'ClosureConstraint');
 
+        if (is_object($context)) {
+            $closure = sprintf('$context->%s(...)', $this->methodName);
+        } else {
+            $closure = sprintf('%s::%s(...)', $generator->useAndSimplifyType($context), $this->methodName);
+        }
+
         $parameters = $this->message !== null
-            ? new Literal('$form->?(...), ?', [$this->methodName, $this->message])
-            : new Literal('$form->?(...)', [$this->methodName])
+            ? new Literal($closure . ', ?', [$this->message])
+            : new Literal($closure)
         ;
 
         $generator->line('$?->satisfy(new ClosureConstraint(?));', [$name, $parameters]);

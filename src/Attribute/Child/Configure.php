@@ -8,8 +8,11 @@ use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\MethodChildBuilderAttributeInterface;
 use Bdf\Form\Child\ChildBuilderInterface;
+use Nette\PhpGenerator\Literal;
 use Override;
 use ReflectionMethod;
+
+use function is_object;
 
 /**
  * Define a custom configuration method for an element
@@ -65,15 +68,23 @@ class Configure implements ChildBuilderAttributeInterface, MethodChildBuilderAtt
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
-        $form->{$this->target}($builder);
+        if (is_object($context)) {
+            $context->{$this->target}($builder);
+        } else {
+            $context::{$this->target}($builder);
+        }
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
-        $generator->line('$form->?($?);', [$this->target, $name]);
+        if (is_object($context)) {
+            $generator->line('$context->?($?);', [$this->target, $name]);
+        } else {
+            $generator->line('?::?($?);', [new Literal($generator->useAndSimplifyType($context)), $this->target, $name]);
+        }
     }
 
     #[Override]

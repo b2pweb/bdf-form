@@ -50,13 +50,13 @@ final readonly class Generates implements FormBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnFormBuilder(AttributeForm $form, FormBuilderInterface $builder): void
+    public function applyOnFormBuilder(object|string $context, FormBuilderInterface $builder): void
     {
         $builder->generates($this->className);
     }
 
     #[Override]
-    public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->line(
             '$builder->generates(?::class);',

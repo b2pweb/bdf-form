@@ -30,7 +30,6 @@ class AttributesProcessorGeneratorTest extends TestCase
 namespace Generated;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
-use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Attribute\Processor\PostConfigureInterface;
 
@@ -39,7 +38,7 @@ class Processor implements AttributesProcessorInterface
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
     }
 }
@@ -62,7 +61,6 @@ PHP
 namespace Generated;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
-use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Attribute\Processor\PostConfigureInterface;
 
@@ -71,7 +69,7 @@ class Processor implements AttributesProcessorInterface
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo->bar(1, 2, 3);
     }
@@ -98,7 +96,6 @@ PHP
 namespace Generated;
 
 use Bdf\Form\Aggregate\FormBuilderInterface;
-use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Attribute\Processor\PostConfigureInterface;
 use PHPUnit\Framework\Constraint\Count;
@@ -108,7 +105,7 @@ class Processor implements AttributesProcessorInterface
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $builder->satisfy(new Count(min: 3, max: 6));
     }

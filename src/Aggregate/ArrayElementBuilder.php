@@ -18,6 +18,8 @@ use Bdf\Form\Leaf\UnitEnumElement;
 use Bdf\Form\Phone\PhoneElement;
 use Bdf\Form\Registry\Registry;
 use Bdf\Form\Registry\RegistryInterface;
+use Bdf\Form\Struct\StructForm;
+use Bdf\Form\Struct\StructFormBuilder;
 use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Util\MagicCallForwarding;
 use Bdf\Form\Util\TransformerBuilderTrait;
@@ -322,6 +324,35 @@ class ArrayElementBuilder implements ElementBuilderInterface
     {
         return $this->element(UnitEnumElement::class, function (EnumElementBuilder $builder) use ($enumClass, $configurator) {
             $builder->enumClass($enumClass);
+
+            if ($configurator !== null) {
+                $configurator($builder);
+            }
+        });
+    }
+
+    /**
+     * Define as array of struct
+     *
+     * <code>
+     * $builder->array('coordinates')->struct(Coordinate::class, function(StructFormBuilder $builder) {
+     *     // ...
+     * })->getset();
+     * </code>
+     *
+     * @param class-string<S> $className The struct class name
+     * @param callable(StructFormBuilder):void|null $configurator Callback for configure the inner element builder
+     *
+     * @return static
+     * @psalm-this-out ArrayElementBuilder<S>
+     *
+     * @template S as object
+     * @since 2.0
+     */
+    public function struct(string $className, ?callable $configurator = null): static
+    {
+        return $this->element(StructForm::class, function (StructFormBuilder $builder) use ($className, $configurator) {
+            $builder->class($className);
 
             if ($configurator !== null) {
                 $configurator($builder);

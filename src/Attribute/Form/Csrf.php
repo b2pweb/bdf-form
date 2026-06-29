@@ -78,7 +78,7 @@ final readonly class Csrf implements FormBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnFormBuilder(AttributeForm $form, FormBuilderInterface $builder): void
+    public function applyOnFormBuilder(object|string $context, FormBuilderInterface $builder): void
     {
         $csrf = $builder->csrf($this->name);
 
@@ -96,7 +96,7 @@ final readonly class Csrf implements FormBuilderAttributeInterface
     }
 
     #[Override]
-    public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, object|string $context): void
     {
         $parameters = [$this->name];
         $line = '$builder->csrf(?)';

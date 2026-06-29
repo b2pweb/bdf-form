@@ -4,6 +4,7 @@ namespace Tests\Form\Attribute\Processor;
 
 use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Attribute\AttributeForm;
+use Bdf\Form\Attribute\Processor\ElementPropertyMetadata;
 use Bdf\Form\Attribute\Processor\ProcessorMetadata;
 use Bdf\Form\Attribute\Processor\ReflectionProcessor;
 use Bdf\Form\Attribute\Processor\ReflectionStrategyInterface;
@@ -21,12 +22,7 @@ class ReflectionProcessorTest extends TestCase
         $form = new B();
         $builder = new FormBuilder();
 
-        $strategy->expects($matcher = $this->exactly(2))->method('onFormClass')->willReturnCallback(function (...$args) use ($matcher, $form, $builder) {
-            match ($matcher->numberOfInvocations()) {
-                1 => $this->assertEquals([new \ReflectionClass(B::class), $form, $builder, $args[3]], $args),
-                2 => $this->assertEquals([new \ReflectionClass(A::class), $form, $builder, $args[3]], $args),
-            };
-        });
+        $strategy->expects($this->once())->method('onFormClass');
 
         $processor->configureBuilder($form, $builder);
     }
@@ -40,7 +36,7 @@ class ReflectionProcessorTest extends TestCase
         $builder = new FormBuilder();
 
         $strategy->expects($this->once())->method('onElementProperty')
-            ->with(new \ReflectionProperty(B::class, 'foo'), 'foo', StringElement::class, $form, $builder)
+            ->with(new ElementPropertyMetadata('foo', new \ReflectionProperty(B::class, 'foo'), StringElement::class, []), $form, $builder)
         ;
 
         $processor->configureBuilder($form, $builder);

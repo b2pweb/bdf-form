@@ -15,12 +15,12 @@ interface AttributesProcessorInterface
     /**
      * Configure the form builder
      *
-     * @param AttributeForm $form The form to analyze
+     * @param object|class-string $context The form or DTO class name to analyze
      * @param FormBuilderInterface $builder Builder to configure
      *
      * @return PostConfigureInterface|null The post configuration action to perform
      *
      * @see AttributeForm::configure() Should be called in this method
      */
-    public function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface;
+    public function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface;
 }

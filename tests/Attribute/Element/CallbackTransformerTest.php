@@ -8,7 +8,9 @@ use Bdf\Form\Attribute\Element\CallbackTransformer;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\IntegerElement;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
 
 class CallbackTransformerTest extends TestCase
@@ -50,6 +52,21 @@ class CallbackTransformerTest extends TestCase
         $this->assertEquals('["out","[\"in\",\"b\"]"]', $view['bar']->value());
     }
 
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestCallbackTransformerStruct::class, processor: $processor);
+
+        $form->submit(['foo' => 'a', 'bar' => 'b']);
+
+        $this->assertEquals('["a",true]', $form->value()->foo);
+        $this->assertEquals('["in","b"]', $form->value()->bar);
+
+        $view = $form->view();
+
+        $this->assertEquals('["[\"a\",true]",false]', $view['foo']->value());
+        $this->assertEquals('["out","[\"in\",\"b\"]"]', $view['bar']->value());
+    }
     
     #[DataProvider('provideAttributesProcessor')]
     public function test_with_only_one_transformation_method(AttributesProcessorInterface $processor)
@@ -120,19 +137,19 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', StringElement::class);
-        $foo->transformer([$form, 'fooTransformer']);
+        $foo->transformer($context->fooTransformer(...));
 
         $bar = $builder->add('bar', StringElement::class);
-        $bar->transformer(new class ($form) implements TransformerInterface {
+        $bar->transformer(new class ($context) implements TransformerInterface {
             /**
              * {@inheritdoc}
              */
             function transformToHttp(mixed $value, ElementInterface $input): mixed
             {
-                return $this->form->outTransformer($value, $input);
+                return $this->context->outTransformer($value, $input);
             }
 
             /**
@@ -140,11 +157,11 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
              */
             function transformFromHttp(mixed $value, ElementInterface $input): mixed
             {
-                return $this->form->inTransformer($value, $input);
+                return $this->context->inTransformer($value, $input);
             }
 
             public function __construct(
-                private $form,
+                private $context,
             ) {
             }
         });
@@ -164,5 +181,90 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
 
 PHP
         , $form);
+    }
+
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\ElementInterface;
+use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Bdf\Form\Transformer\TransformerInterface;
+use Tests\Form\Attribute\Element\TestCallbackTransformerStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestCallbackTransformerStruct::class);
+
+        $foo = $builder->add('foo', StringElement::class);
+        $foo->transformer(TestCallbackTransformerStruct::fooTransformer(...));
+        $foo->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        $bar = $builder->add('bar', StringElement::class);
+        $bar->transformer(new class ($context) implements TransformerInterface {
+            /**
+             * {@inheritdoc}
+             */
+            function transformToHttp(mixed $value, ElementInterface $input): mixed
+            {
+                return $this->context::outTransformer($value, $input);
+            }
+
+            /**
+             * {@inheritdoc}
+             */
+            function transformFromHttp(mixed $value, ElementInterface $input): mixed
+            {
+                return $this->context::inTransformer($value, $input);
+            }
+
+            public function __construct(
+                private $context,
+            ) {
+            }
+        });
+        $bar->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        return null;
+    }
+}
+
+PHP
+        , TestCallbackTransformerStruct::class);
+    }
+}
+
+class TestCallbackTransformerStruct
+{
+    #[CallbackTransformer('fooTransformer')]
+    public ?string $foo;
+
+    #[CallbackTransformer(fromHttp: 'inTransformer', toHttp: 'outTransformer')]
+    public ?string $bar;
+
+    public static function fooTransformer($value, StringElement $input, bool $toPhp)
+    {
+        return json_encode([$value, $toPhp]);
+    }
+
+    public static function inTransformer($value, StringElement $input)
+    {
+        return json_encode(['in', $value]);
+    }
+
+    public static function outTransformer($value, StringElement $input)
+    {
+        return json_encode(['out', $value]);
     }
 }

@@ -6,7 +6,9 @@ use Bdf\Form\Aggregate\FormInterface;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Form\Csrf;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Security\Csrf\CsrfTokenManager;
 use Tests\Form\Attribute\TestCase;
 
@@ -26,7 +28,19 @@ class CsrfTest extends TestCase
         $this->assertTrue($form->valid());
     }
 
-    
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestCsrfStruct::class, processor: $processor);
+
+        $form->submit([]);
+        $this->assertFalse($form->valid());
+        $this->assertEquals(['_token' => 'my error'], $form->error()->toArray());
+
+        $form->submit(['_token' => $form['_token']->view()->value()]);
+        $this->assertTrue($form->valid());
+    }
+
     #[DataProvider('provideAttributesProcessor')]
     public function test_message(AttributesProcessorInterface $processor)
     {
@@ -106,7 +120,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $builder->csrf('_token')->tokenId('my_token')->message('my error')->invalidate(true);
 
@@ -124,4 +138,40 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
 PHP
             , $form);
     }
+
+    /**
+     * @return void
+     */
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Tests\Form\Attribute\Form\TestCsrfStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->csrf('_token')->tokenId('my_token')->message('my error')->invalidate(true);
+        $builder->generates(TestCsrfStruct::class);
+
+        return null;
+    }
+}
+
+PHP
+            , TestCsrfStruct::class);
+    }
+}
+
+#[Csrf(tokenId: 'my_token', message: 'my error', invalidate: true)]
+class TestCsrfStruct
+{
 }

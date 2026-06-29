@@ -3,10 +3,8 @@
 namespace Bdf\Form\Attribute\Child;
 
 use Attribute;
-use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\ChildBuilderAttributeInterface;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
-use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
 use Bdf\Form\Child\ChildBuilder;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Child\Http\ArrayOffsetHttpFields;
@@ -56,7 +54,7 @@ final readonly class HttpField implements ChildBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         if (!$builder instanceof ChildBuilder) {
             throw new LogicException('The HttpField attribute can only be used on a ChildBuilder instance');
@@ -66,7 +64,7 @@ final readonly class HttpField implements ChildBuilderAttributeInterface
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->use(ArrayOffsetHttpFields::class);
         $generator->line('$?->httpFields(new ArrayOffsetHttpFields(?));', [$name, $this->name]);

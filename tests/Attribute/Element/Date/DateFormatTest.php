@@ -6,7 +6,10 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Element\Date\DateFormat;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\Struct\StructForm;
+use DateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
 
 class DateFormatTest extends TestCase
@@ -22,6 +25,16 @@ class DateFormatTest extends TestCase
         $form->submit(['foo' => '02/11/2020 15:21']);
 
         $this->assertEquals(new MyCustomDate('2020-11-02T15:21:00'), $form->foo->value());
+    }
+
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestDateFormatStruct::class, processor: $processor);
+
+        $form->submit(['foo' => '02/11/2020 15:21']);
+
+        $this->assertEquals(new DateTime('2020-11-02T15:21:00'), $form->value()->foo);
     }
 
     public function test_code_generator()
@@ -46,7 +59,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', DateTimeElement::class);
         $foo->format('d/m/Y H:i');
@@ -67,4 +80,44 @@ PHP
             , $form
         );
     }
+
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\Leaf\Date\DateTimeElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Tests\Form\Attribute\Element\Date\TestDateFormatStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestDateFormatStruct::class);
+
+        $foo = $builder->add('foo', DateTimeElement::class);
+        $foo->format('d/m/Y H:i');
+        $foo->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        return null;
+    }
+}
+
+PHP
+            , TestDateFormatStruct::class
+        );
+    }
+}
+class TestDateFormatStruct
+{
+    #[DateFormat('d/m/Y H:i')]
+    public ?DateTime $foo;
 }

@@ -20,6 +20,8 @@ use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Phone\FormattedPhoneElement;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElement;
+use Bdf\Form\Struct\Fixtures\SimpleDto;
+use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraints\Count;
@@ -175,6 +177,25 @@ class FormBuilderTest extends TestCase
 
         $form->submit(['value' => 'foo']);
         $this->assertSame(MyStringEnum::Foo, $form['value']->element()->value());
+    }
+
+    /**
+     *
+     */
+    public function test_struct()
+    {
+        $this->assertInstanceOf(ChildBuilder::class, $this->builder->struct('value', SimpleDto::class));
+
+        $form = $this->builder->buildElement();
+
+        $this->assertInstanceOf(Form::class, $form);
+        $this->assertInstanceOf(StructForm::class, $form['value']->element());
+
+        $form->submit(['value' => [
+            'name' => 'foo',
+            'value' => '42'
+        ]]);
+        $this->assertEquals(new SimpleDto('foo', 42), $form['value']->element()->value());
     }
 
     /**

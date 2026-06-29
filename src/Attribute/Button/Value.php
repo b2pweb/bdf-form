@@ -44,13 +44,13 @@ final readonly class Value implements ButtonBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnButtonBuilder(AttributeForm $form, ButtonBuilderInterface $builder): void
+    public function applyOnButtonBuilder(object|string $context, ButtonBuilderInterface $builder): void
     {
         $builder->value($this->value);
     }
 
     #[Override]
-    public function generateCodeForButtonBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForButtonBuilder(AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->line('    ->value(?)', [$this->value]);
     }

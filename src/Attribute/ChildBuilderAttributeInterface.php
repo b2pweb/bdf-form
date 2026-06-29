@@ -18,10 +18,10 @@ interface ChildBuilderAttributeInterface
     /**
      * Configure the child builder
      *
-     * @param AttributeForm $form The current form instance
+     * @param object|class-string $context The form instance or the DTO class name
      * @param ChildBuilderInterface<E> $builder The builder to configure
      */
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void;
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void;
 
     /**
      * Generate the code corresponding to the attribute
@@ -29,9 +29,9 @@ interface ChildBuilderAttributeInterface
      *
      * @param non-empty-string $name The variable name without $
      * @param AttributesProcessorGenerator $generator Code generator for the "configureBuilder" method
-     * @param AttributeForm $form The current form instance
+     * @param object|class-string $context The form instance or the DTO class name
      *
      * @return void
      */
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void;
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void;
 }

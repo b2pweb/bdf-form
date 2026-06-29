@@ -8,8 +8,12 @@ use Bdf\Form\Aggregate\Value\ValueGenerator;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Processor\CodeGenerator\AttributesProcessorGenerator;
 use Bdf\Form\Attribute\Processor\GenerateConfiguratorStrategy;
+use Nette\PhpGenerator\Literal;
 use Nette\PhpGenerator\Method;
 use Override;
+
+use function is_object;
+use function is_string;
 
 /**
  * Define the value generator of the form, using a callback method
@@ -54,14 +58,22 @@ final readonly class CallbackGenerator implements FormBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnFormBuilder(AttributeForm $form, FormBuilderInterface $builder): void
+    public function applyOnFormBuilder(object|string $context, FormBuilderInterface $builder): void
     {
-        $builder->generates([$form, $this->callback]);
+        if (is_object($context)) {
+            $builder->generates($context->{$this->callback}(...));
+        } else {
+            $builder->generates($context::{$this->callback}(...));
+        }
     }
 
     #[Override]
-    public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, object|string $context): void
     {
-        $generator->line('$builder->generates([$this, ?]);', [$this->callback]);
+        if (is_object($context)) {
+            $generator->line('$builder->generates([$this, ?]);', [$this->callback]);
+        } else {
+            $generator->line('$builder->generates(?::?(...));', [new Literal($generator->useAndSimplifyType($context)), $this->callback]);
+        }
     }
 }

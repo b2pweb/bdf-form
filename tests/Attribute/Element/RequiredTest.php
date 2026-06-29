@@ -6,7 +6,9 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Element\Required;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
 
 class RequiredTest extends TestCase
@@ -21,6 +23,21 @@ class RequiredTest extends TestCase
             #[Required('my message')]
             public FloatElement $bar;
         };
+
+        $form->submit(['foo' => '']);
+        $this->assertEquals([
+            'foo' => 'This value should not be blank.',
+            'bar' => 'my message',
+        ], $form->error()->toArray());
+
+        $form->submit(['foo' => '1.2', 'bar' => '4.5']);
+        $this->assertTrue($form->valid());
+    }
+
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestRequiredStruct::class, processor: $processor);
 
         $form->submit(['foo' => '']);
         $this->assertEquals([
@@ -56,7 +73,7 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', FloatElement::class);
         $foo->required(null);
@@ -81,4 +98,52 @@ PHP
             , $form
         );
     }
+
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\Leaf\FloatElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Tests\Form\Attribute\Element\TestRequiredStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestRequiredStruct::class);
+
+        $foo = $builder->add('foo', FloatElement::class);
+        $foo->required(null);
+        $foo->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        $bar = $builder->add('bar', FloatElement::class);
+        $bar->required('my message');
+        $bar->hydrator(new Setter(null))->extractor(new Getter(null));
+
+        return null;
+    }
+}
+
+PHP
+            , TestRequiredStruct::class
+        );
+    }
+}
+
+class TestRequiredStruct
+{
+    #[Required]
+    public ?float $foo;
+
+    #[Required('my message')]
+    public ?float $bar;
 }

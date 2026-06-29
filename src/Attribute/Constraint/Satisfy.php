@@ -60,13 +60,13 @@ final readonly class Satisfy implements ChildBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $builder->satisfy($this->constraint);
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $constraint = ObjectInstantiation::promotedProperties($this->constraint)->render($generator);
         $generator->line('$?->satisfy(?);', [$name, $constraint]);

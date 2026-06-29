@@ -14,6 +14,8 @@ use Bdf\Form\Leaf\MyStringEnum;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\PhoneElementBuilder;
+use Bdf\Form\Struct\Fixtures\SimpleDto;
+use Bdf\Form\Struct\StructFormBuilder;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
@@ -194,6 +196,27 @@ class ArrayElementBuilderTest extends TestCase
         $values = $element->submit(['bar'])->value();
 
         $this->assertSame([MyStringEnum::Bar], $values);
+    }
+
+    public function test_struct()
+    {
+        $element = $this->builder->struct(SimpleDto::class, function (StructFormBuilder $builder) {})->buildElement();
+
+        $values = $element->submit([
+            [
+                'name' => 'foo',
+                'value' => 5,
+            ],
+            [
+                'name' => 'bar',
+                'value' => 6,
+            ],
+        ])->value();
+
+        $this->assertEquals([
+            new SimpleDto('foo', 5),
+            new SimpleDto('bar', 6),
+        ], $values);
     }
 
     /**

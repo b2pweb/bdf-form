@@ -6,8 +6,12 @@ use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Element\AsTransformer;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\Form\Attribute\TestCase;
+
+use function json_encode;
 
 class AsTransformerTest extends TestCase
 {
@@ -33,6 +37,19 @@ class AsTransformerTest extends TestCase
         $this->assertEquals('["[\"a\",true]",false]', $view['foo']->value());
     }
 
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(TestAsTransformerStruct::class, processor: $processor);
+
+        $form->submit(['foo' => 'a']);
+
+        $this->assertEquals('["a",true]', $form->value()->foo);
+
+        $view = $form->view();
+
+        $this->assertEquals('["[\"a\",true]",false]', $view['foo']->value());
+    }
 
     public function test_code_generator()
     {
@@ -61,10 +78,10 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $foo = $builder->add('foo', StringElement::class);
-        $foo->transformer([$form, 'fooTransformer']);
+        $foo->transformer($context->fooTransformer(...));
 
         return $this;
     }
@@ -80,5 +97,50 @@ class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigu
 
 PHP
         , $form);
+    }
+
+    public function test_code_generator_struct()
+    {
+        $this->assertGeneratedStruct(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\PropertyAccess\Getter;
+use Bdf\Form\PropertyAccess\Setter;
+use Tests\Form\Attribute\Element\TestAsTransformerStruct;
+
+class GeneratedConfigurator implements AttributesProcessorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $builder->generates(TestAsTransformerStruct::class);
+
+        $foo = $builder->add('foo', StringElement::class);
+        $foo->hydrator(new Setter(null))->extractor(new Getter(null));
+        $foo->transformer(TestAsTransformerStruct::fooTransformer(...));
+
+        return null;
+    }
+}
+
+PHP
+        , TestAsTransformerStruct::class);
+    }
+}
+
+class TestAsTransformerStruct
+{
+    public ?string $foo;
+
+    #[AsTransformer('foo')]
+    public static function fooTransformer($value, StringElement $input, bool $toPhp)
+    {
+        return json_encode([$value, $toPhp]);
     }
 }

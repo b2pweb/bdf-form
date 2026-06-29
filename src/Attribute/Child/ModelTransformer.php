@@ -58,13 +58,13 @@ final readonly class ModelTransformer implements ChildBuilderAttributeInterface
     }
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $builder->modelTransformer(new $this->transformerClass(...$this->constructorArguments));
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $transformer = $generator->useAndSimplifyType($this->transformerClass);
         $generator->line('$?->modelTransformer(new ?(...?));', [$name, new Literal($transformer), $this->constructorArguments]);

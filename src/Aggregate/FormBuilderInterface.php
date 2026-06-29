@@ -19,6 +19,7 @@ use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\PhoneChildBuilder;
 use Bdf\Form\Phone\PhoneElementBuilder;
+use Bdf\Form\Struct\StructFormBuilder;
 use Override;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -188,6 +189,23 @@ interface FormBuilderInterface extends ElementBuilderInterface
      * @since 2.0
      */
     public function enum(string $name, string $enumClass): ChildBuilderInterface;
+
+    /**
+     * Add a new embedded form following the given struct
+     *
+     * <code>
+     * $builder->struct('options', Options::class)->getset();
+     * </code>
+     *
+     * @param non-empty-string $name The child name
+     * @param class-string $structClass The struct class name
+     *
+     * @return ChildBuilder|StructFormBuilder
+     * @psalm-return ChildBuilderInterface<StructFormBuilder>
+     *
+     * @since 2.0
+     */
+    public function struct(string $name, string $structClass): ChildBuilderInterface;
 
     /**
      * Add a new csrf token on form

@@ -17,7 +17,7 @@ final readonly class PostConfigureReflectionSetProperties implements PostConfigu
          * Properties which store form elements
          * The key is the element name, and value is the reflection property
          *
-         * @var array<non-empty-string, ReflectionProperty>
+         * @var array<non-empty-string, ElementPropertyMetadata>
          */
         private array $elementProperties,
         /**
@@ -32,8 +32,8 @@ final readonly class PostConfigureReflectionSetProperties implements PostConfigu
     #[Override]
     public function postConfigure(AttributeForm $form, FormInterface $inner): void
     {
-        foreach ($this->elementProperties as $name => $reflection) {
-            $reflection->setValue($form, $inner[$name]->element());
+        foreach ($this->elementProperties as $name => $metadata) {
+            $metadata->property->setValue($form, $inner[$name]->element());
         }
 
         foreach ($this->buttonProperties as $name => $reflection) {

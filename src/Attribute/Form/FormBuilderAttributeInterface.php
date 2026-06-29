@@ -19,19 +19,19 @@ interface FormBuilderAttributeInterface
     /**
      * Configure the given builder
      *
-     * @param AttributeForm $form The form to configure
+     * @param object|class-string $context The form instance or the DTO class name
      * @param FormBuilderInterface $builder The form builder
      */
-    public function applyOnFormBuilder(AttributeForm $form, FormBuilderInterface $builder): void;
+    public function applyOnFormBuilder(object|string $context, FormBuilderInterface $builder): void;
 
     /**
      * Generate the code corresponding to the attribute
      * The generated code must perform same action as `applyOnFormBuilder()`
      *
      * @param AttributesProcessorGenerator $generator Code generator for the "configureBuilder" method
-     * @param AttributeForm $form The current form instance
+     * @param object|class-string $context The form instance or the DTO class name
      *
      * @return void
      */
-    public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, AttributeForm $form): void;
+    public function generateCodeForFormBuilder(AttributesProcessorGenerator $generator, object|string $context): void;
 }

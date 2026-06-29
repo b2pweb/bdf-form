@@ -59,13 +59,13 @@ final readonly class GetSet implements ChildBuilderAttributeInterface
     ) {}
 
     #[Override]
-    public function applyOnChildBuilder(AttributeForm $form, ChildBuilderInterface $builder): void
+    public function applyOnChildBuilder(object|string $context, ChildBuilderInterface $builder): void
     {
         $builder->hydrator(new Setter($this->propertyName))->extractor(new Getter($this->propertyName));
     }
 
     #[Override]
-    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, AttributeForm $form): void
+    public function generateCodeForChildBuilder(string $name, AttributesProcessorGenerator $generator, object|string $context): void
     {
         $generator->use(Setter::class)->use(Getter::class);
         $generator->line('$?->hydrator(new Setter(?))->extractor(new Getter(?));', [$name, $this->propertyName, $this->propertyName]);

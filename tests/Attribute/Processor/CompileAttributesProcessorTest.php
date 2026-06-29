@@ -31,7 +31,7 @@ class CompileAttributesProcessorTest extends TestCase
         clearstatcache();
 
         $processor = new CompileAttributesProcessor(
-            fn (AttributeForm $form) => 'Generated\\' . get_class($form) . 'Configurator',
+            fn (string $className) => 'Generated\\' . $className . 'Configurator',
             fn (string $className) => '/tmp' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php'
         );
 
@@ -67,17 +67,17 @@ class MyFormConfigurator implements AttributesProcessorInterface, PostConfigureI
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $builder->generates(Person::class);
 
         $firstName = $builder->add('firstName', StringElement::class);
         $firstName->satisfy(new NotBlank());
-        $firstName->satisfy(new ClosureConstraint($form->validateName(...)));
+        $firstName->satisfy(new ClosureConstraint($context->validateName(...)));
         $firstName->hydrator(new Setter(null))->extractor(new Getter(null));
 
         $lastName = $builder->add('lastName', StringElement::class);
-        $lastName->satisfy(new ClosureConstraint($form->validateName(...)));
+        $lastName->satisfy(new ClosureConstraint($context->validateName(...)));
         $lastName->hydrator(new Setter(null))->extractor(new Getter(null));
 
         $age = $builder->add('age', IntegerElement::class);
@@ -129,7 +129,7 @@ class Configurator implements AttributesProcessorInterface, PostConfigureInterfa
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         return $this;
     }
@@ -146,7 +146,7 @@ PHP
         );
 
         $processor = new CompileAttributesProcessor(
-            fn (AttributeForm $form) => 'Generated\\Configurator',
+            fn (string $className) => 'Generated\\Configurator',
             fn (string $className) => $file
         );
 
@@ -178,7 +178,7 @@ PHP
         );
 
         $processor = new CompileAttributesProcessor(
-            fn (AttributeForm $form) => 'Generated\\InvalidConfigurator',
+            fn (string $className) => 'Generated\\InvalidConfigurator',
             fn (string $className) => $file
         );
 
@@ -209,7 +209,7 @@ PHP
         );
 
         $processor = new CompileAttributesProcessor(
-            fn (AttributeForm $form) => 'Generated\\NotAClass',
+            fn (string $className) => 'Generated\\NotAClass',
             fn (string $className) => $file
         );
 
@@ -232,7 +232,7 @@ PHP
         file_put_contents($filename, 'invalid php file');
 
         $processor = new CompileAttributesProcessor(
-            fn (AttributeForm $form) => 'Generated\ManualConfigurator',
+            fn (string $className) => 'Generated\ManualConfigurator',
             fn (string $className) => $filename
         );
 
@@ -268,17 +268,17 @@ class ManualConfigurator implements AttributesProcessorInterface, PostConfigureI
     /**
      * {@inheritdoc}
      */
-    function configureBuilder(AttributeForm $form, FormBuilderInterface $builder): ?PostConfigureInterface
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
     {
         $builder->generates(Person::class);
 
         $firstName = $builder->add('firstName', StringElement::class);
         $firstName->satisfy(new NotBlank());
-        $firstName->satisfy(new ClosureConstraint($form->validateName(...)));
+        $firstName->satisfy(new ClosureConstraint($context->validateName(...)));
         $firstName->hydrator(new Setter(null))->extractor(new Getter(null));
 
         $lastName = $builder->add('lastName', StringElement::class);
-        $lastName->satisfy(new ClosureConstraint($form->validateName(...)));
+        $lastName->satisfy(new ClosureConstraint($context->validateName(...)));
         $lastName->hydrator(new Setter(null))->extractor(new Getter(null));
 
         $age = $builder->add('age', IntegerElement::class);
