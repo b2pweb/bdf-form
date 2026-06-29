@@ -293,6 +293,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function email(string $name): ChildBuilderInterface
     {
         return $this->add($name, EmailElement::class);
@@ -314,6 +315,7 @@ class FormBuilder extends AbstractElementBuilder implements FormBuilderInterface
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
+    #[Override]
     public function url(string $name): ChildBuilderInterface
     {
         return $this->add($name, UrlElement::class);
