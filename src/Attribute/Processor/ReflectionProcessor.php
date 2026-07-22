@@ -92,6 +92,7 @@ final class ReflectionProcessor implements AttributesProcessorInterface
 
                 if (
                     !$property->hasType()
+                    || $property->isStatic()
                     || !$property->getType() instanceof ReflectionNamedType
                     || $metadata->hasProperty($name)
                 ) {

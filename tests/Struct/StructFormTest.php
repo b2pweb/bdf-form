@@ -9,6 +9,7 @@ use Bdf\Form\Struct\Fixtures\Color;
 use Bdf\Form\Struct\Fixtures\ConstraintDto;
 use Bdf\Form\Struct\Fixtures\CustomDate;
 use Bdf\Form\Struct\Fixtures\DtoWithDate;
+use Bdf\Form\Struct\Fixtures\DtoWithStaticProperty;
 use Bdf\Form\Struct\Fixtures\IntEnum;
 use Bdf\Form\Struct\Fixtures\OptionalDto;
 use Bdf\Form\Struct\Fixtures\Point;
@@ -215,6 +216,24 @@ class StructFormTest extends TestCase
                 new Point(7, 8),
             ]
         ), $form->value());
+    }
+
+    #[Test, DataProvider('provideAttributesProcessor')]
+    public function shouldIgnoreStaticProperty(AttributesProcessorInterface $processor)
+    {
+        $form = new StructForm(DtoWithStaticProperty::class, processor: $processor);
+
+        $form->submit([
+            'name' => 'bar',
+            'value' => 42,
+            'staticProperty' => 'foo',
+        ]);
+
+        // The static property must not be registered as a form field
+        $this->assertFalse(isset($form['staticProperty']));
+        $this->assertTrue($form->valid());
+        $this->assertEquals(new DtoWithStaticProperty('bar', 42), $form->value());
+        $this->assertSame('ignored', DtoWithStaticProperty::$staticProperty);
     }
 
     #[Test]

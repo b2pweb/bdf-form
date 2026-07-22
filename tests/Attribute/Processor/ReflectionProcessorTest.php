@@ -56,6 +56,24 @@ class ReflectionProcessorTest extends TestCase
 
         $processor->configureBuilder($form, $builder);
     }
+
+    public function test_should_ignore_static_property()
+    {
+        $strategy = $this->createMock(ReflectionStrategyInterface::class);
+        $processor = new ReflectionProcessor($strategy);
+
+        $form = new WithStaticProperty();
+        $builder = new FormBuilder();
+
+        $strategy->expects($this->never())->method('onElementProperty');
+
+        $processor->configureBuilder($form, $builder);
+    }
+}
+
+class WithStaticProperty extends AttributeForm
+{
+    public static StringElement $staticElement;
 }
 
 class A extends AttributeForm
