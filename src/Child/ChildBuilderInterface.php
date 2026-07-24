@@ -160,14 +160,14 @@ interface ChildBuilderInterface
      * });
      * </code>
      *
-     * @param callable|TransformerInterface $transformer The transformer
+     * @param callable|TransformerInterface|class-string<TransformerInterface> $transformer The transformer
      * @param bool $append Append the transformer. Prepend if false
      *
      * @return $this
      *
      * @see TransformerInterface
      */
-    public function modelTransformer(callable|TransformerInterface $transformer, bool $append = true): static;
+    public function modelTransformer(callable|TransformerInterface|string $transformer, bool $append = true): static;
 
     /**
      * Creates the child instance

@@ -3,7 +3,12 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Choice\ArrayChoice;
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\Choice\EnumChoice;
+use Bdf\Form\Choice\LazyChoice;
+use Bdf\Form\Registry\Registry;
+use InvalidArgumentException;
 use Locale;
 use NumberFormatter;
 use PHPUnit\Framework\TestCase;
@@ -331,10 +336,70 @@ class IntegerElementBuilderTest extends TestCase
         $this->assertSame('Bar', $view[1]->label);
         $this->assertSame('121', $view[1]->value);
     }
+
+    /**
+     *
+     */
+    public function test_choices_from_service()
+    {
+        $choice = new MyIntServiceChoice();
+
+        $registry = new Registry();
+        $registry->registerService($choice);
+
+        $builder = new IntegerElementBuilder($registry);
+        $element = $builder->choices(MyIntServiceChoice::class)->buildElement();
+
+        $this->assertInstanceOf(LazyChoice::class, $element->choices());
+        $this->assertSame([12, 34, 56], $element->choices()->values());
+
+        $element->submit(22);
+        $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
+        $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
+
+        $element->submit(34);
+        $this->assertTrue($element->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_choices_from_service_not_registered()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Service "'.MyIntServiceChoice::class.'" is not registered.');
+
+        $element = $this->builder->choices(MyIntServiceChoice::class)->buildElement();
+        $element->submit(34);
+    }
 }
 
 enum MyIntEnum: int
 {
     case Foo = 42;
     case Bar = 121;
+}
+
+class MyIntServiceChoice implements ChoiceInterface
+{
+    public function values(): array
+    {
+        return [12, 34, 56];
+    }
+
+    public function view(?callable $configuration = null): array
+    {
+        $view = [];
+
+        foreach ($this->values() as $value) {
+            $view[] = $choice = new ChoiceView($value, $value);
+
+            if ($configuration !== null) {
+                $configuration($choice);
+            }
+        }
+
+        return $view;
+    }
 }

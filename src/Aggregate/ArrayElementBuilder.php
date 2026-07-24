@@ -103,7 +103,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * Define a transformer on the inner element
      */
     #[Override]
-    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
+    public function transformer(callable|TransformerInterface|string $transformer, bool $append = true): static
     {
         $this->getElementBuilder()->transformer($transformer, $append);
 
@@ -440,13 +440,17 @@ class ArrayElementBuilder implements ElementBuilderInterface
      */
     final public function choices(ChoiceInterface|array|string|callable $choices, ?string $message = null, ?bool $multiple = null, ?bool $strict = null, ?int $min = null, ?int $max = null, ?string $minMessage = null, ?string $maxMessage = null): static
     {
-        /** @psalm-suppress MissingConstructor */
-        $builder = new class {
+        /** @psalm-suppress PropertyNotSetInConstructor */
+        $builder = new class($this->registry) {
             use ChoiceBuilderTrait {
                 getChoices as public;
             }
 
             public ChoiceConstraint $constraint;
+
+            public function __construct(
+                private readonly RegistryInterface $registry,
+            ) {}
 
             #[Override]
             public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static
@@ -454,6 +458,12 @@ class ArrayElementBuilder implements ElementBuilderInterface
                 assert($constraint instanceof ChoiceConstraint);
                 $this->constraint = $constraint;
                 return $this;
+            }
+
+            #[Override]
+            protected function registry(): RegistryInterface
+            {
+                return $this->registry;
             }
         };
 

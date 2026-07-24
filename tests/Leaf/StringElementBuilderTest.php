@@ -3,7 +3,14 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Choice\ArrayChoice;
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\Choice\EnumChoice;
+use Bdf\Form\Choice\LazyChoice;
+use Bdf\Form\ElementInterface;
+use Bdf\Form\Registry\Registry;
+use Bdf\Form\Transformer\TransformerInterface;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -89,6 +96,35 @@ class StringElementBuilderTest extends TestCase
         ;
 
         $this->assertEquals('_ab', $element->submit('_')->value());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_from_service()
+    {
+        $registry = new Registry();
+        $registry->registerService(new MyTransformerService());
+
+        $builder = new StringElementBuilder($registry);
+        $element = $builder
+            ->transformer(MyTransformerService::class)
+            ->transformer(function ($value) { return $value . 'a'; })
+            ->buildElement()
+        ;
+
+        $this->assertEquals('_a>', $element->submit('_')->value());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_from_service_not_registered()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Service "'.MyTransformerService::class.'" is not registered.');
+
+        $this->builder->transformer(MyTransformerService::class);
     }
 
     /**
@@ -209,10 +245,83 @@ class StringElementBuilderTest extends TestCase
         $this->assertSame('Bar', $view[1]->label);
         $this->assertSame('bar', $view[1]->value);
     }
+
+    /**
+     *
+     */
+    public function test_choices_from_service()
+    {
+        $choice = new MyServiceChoice();
+
+        $registry = new Registry();
+        $registry->registerService($choice);
+
+        $builder = new StringElementBuilder($registry);
+        $element = $builder->choices(MyServiceChoice::class)->buildElement();
+
+        $this->assertInstanceOf(LazyChoice::class, $element->choices());
+        $this->assertSame(['foo', 'bar'], $element->choices()->values());
+
+        $element->submit('aaa');
+        $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
+        $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
+
+        $element->submit('foo');
+        $this->assertTrue($element->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_choices_from_service_not_registered()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Service "'.MyServiceChoice::class.'" is not registered.');
+
+        $element = $this->builder->choices(MyServiceChoice::class)->buildElement();
+        $element->submit('foo');
+    }
 }
 
 enum MyStringEnum: string
 {
     case Foo = 'foo';
     case Bar = 'bar';
+}
+
+class MyTransformerService implements TransformerInterface
+{
+    public function transformToHttp(mixed $value, ElementInterface $input): mixed
+    {
+        return $value;
+    }
+
+    public function transformFromHttp(mixed $value, ElementInterface $input): mixed
+    {
+        return $value . '>';
+    }
+}
+
+class MyServiceChoice implements ChoiceInterface
+{
+    public function values(): array
+    {
+        return ['foo', 'bar'];
+    }
+
+    public function view(?callable $configuration = null): array
+    {
+        $view = [];
+
+        foreach ($this->values() as $value) {
+            $view[] = $choice = new ChoiceView($value, $value);
+
+            if ($configuration !== null) {
+                $configuration($choice);
+            }
+        }
+
+        return $view;
+    }
 }

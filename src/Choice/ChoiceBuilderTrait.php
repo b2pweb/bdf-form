@@ -3,7 +3,9 @@
 namespace Bdf\Form\Choice;
 
 use BackedEnum;
+use Bdf\Form\AbstractElementBuilder;
 use Bdf\Form\ElementBuilderInterface;
+use Bdf\Form\Registry\RegistryInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Choice as ChoiceConstraint;
 
@@ -45,11 +47,14 @@ trait ChoiceBuilderTrait
      * // Using enum
      * $builder->choices(MyEnum::class);
      *
+     * // Using choice from service (e.g. if a container is used, the choice will be loaded from the container)
+     * $builder->choices(MyChoice::class);
+     *
      * $builder->choices(['foo', 'bar'], 'my error'); // With message
      * $builder->choices(['foo', 'bar'], min: 2, max: 6); // With custom options
      * </code>
      *
-     * @param ChoiceInterface|array|class-string<BackedEnum>|callable $choices  The allowed values in PHP form.
+     * @param ChoiceInterface|array|class-string<BackedEnum|ChoiceInterface>|callable $choices  The allowed values in PHP form.
      * @param string|null $message The error message.
      * @param non-negative-int|null $min
      * @param positive-int|null $max
@@ -63,6 +68,7 @@ trait ChoiceBuilderTrait
             $choices = match (true) {
                 is_array($choices) => new ArrayChoice($choices),
                 is_string($choices) && is_subclass_of($choices, BackedEnum::class) => new EnumChoice($choices),
+                is_string($choices) && is_subclass_of($choices, ChoiceInterface::class) => new LazyChoice(fn () => $this->registry()->service($choices)),
                 is_callable($choices) => new LazyChoice($choices),
             };
         }
@@ -102,4 +108,11 @@ trait ChoiceBuilderTrait
      * @see ElementBuilderInterface::satisfy()
      */
     abstract public function satisfy(Constraint|callable $constraint, ?string $message = null, bool $append = true): static;
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see AbstractElementBuilder::registry()
+     */
+    abstract protected function registry(): RegistryInterface;
 }

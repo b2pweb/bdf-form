@@ -21,18 +21,14 @@ use function is_string;
  *
  * This attribute is equivalent to call :
  * <code>
- * $builder->integer('foo')->satisfy(MyConstraint::class, $options);
+ * $builder->integer('foo')->satisfy(new MyConstraint(foo: 'bar'));
  * </code>
  *
  * Usage:
  * <code>
  * class MyForm extends AttributeForm
  * {
- *     #[Satisfy(MyConstraint::class, ['foo' => 'bar'])]
- *     private IntegerElement $foo;
- *
- *     // or on PHP 8.1
- *     #[Satisfy(new MyConstraint(['foo' => 'bar']))]
+ *     #[Satisfy(new MyConstraint(foo: 'bar'))]
  *     private IntegerElement $foo;
  * }
  * </code>

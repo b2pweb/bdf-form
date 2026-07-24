@@ -12,6 +12,7 @@ use Bdf\Form\Transformer\TransformerInterface;
 use function array_unshift;
 use function count;
 use function is_callable;
+use function is_string;
 
 /**
  * Trait for implements builder of transformer
@@ -31,12 +32,15 @@ trait TransformerBuilderTrait
     /**
      * {@inheritdoc}
      *
+     * @param callable|TransformerInterface|class-string<TransformerInterface> $transformer
      * @see ElementBuilderInterface::transformer()
      */
-    final public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
+    final public function transformer(callable|TransformerInterface|string $transformer, bool $append = true): static
     {
         if (is_callable($transformer)) {
             $transformer = new ClosureTransformer($transformer);
+        } elseif (is_string($transformer)) {
+            $transformer = $this->registry()->service($transformer);
         }
 
         if ($append === true) {

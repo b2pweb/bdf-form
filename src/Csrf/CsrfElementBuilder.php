@@ -136,7 +136,7 @@ class CsrfElementBuilder implements ElementBuilderInterface
     }
 
     #[Override]
-    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
+    public function transformer(callable|TransformerInterface|string $transformer, bool $append = true): static
     {
         throw new BadMethodCallException();
     }
