@@ -433,13 +433,13 @@ class ChildBuilder implements ChildBuilderInterface
     /**
      * Forward call to element builder
      *
-     * @param callable|TransformerInterface $transformer
+     * @param callable|TransformerInterface|class-string<TransformerInterface> $transformer
      * @param bool $append
      * @return $this
      *
      * @see ElementBuilderInterface::transformer()
      */
-    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
+    public function transformer(callable|TransformerInterface|string $transformer, bool $append = true): static
     {
         $this->elementBuilder->transformer($transformer, $append);
 

@@ -103,7 +103,7 @@ class ArrayElementBuilder implements ElementBuilderInterface
      * Define a transformer on the inner element
      */
     #[Override]
-    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
+    public function transformer(callable|TransformerInterface|string $transformer, bool $append = true): static
     {
         $this->getElementBuilder()->transformer($transformer, $append);
 

@@ -3,6 +3,8 @@
 namespace Bdf\Form\Aggregate;
 
 use Bdf\Form\Choice\EnumChoice;
+use Bdf\Form\ElementInterface;
+use Bdf\Form\Transformer\TransformerInterface;
 use Bdf\Form\Choice\LazyChoice;
 use Bdf\Form\Leaf\AnyElementBuilder;
 use Bdf\Form\Leaf\BooleanElementBuilder;
@@ -12,6 +14,7 @@ use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
 use Bdf\Form\Leaf\MyServiceChoice;
 use Bdf\Form\Leaf\MyStringEnum;
+use Bdf\Form\Leaf\MyTransformerService;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\PhoneElementBuilder;
@@ -266,6 +269,31 @@ class ArrayElementBuilderTest extends TestCase
     /**
      *
      */
+    public function test_arrayTransformer_from_service()
+    {
+        $registry = new Registry();
+        $registry->registerService(new MyArrayTransformerService());
+
+        $builder = new ArrayElementBuilder($registry);
+        $element = $builder->arrayTransformer(MyArrayTransformerService::class)->buildElement();
+
+        $this->assertSame(['bar' => 'foo'], $element->submit(['foo' => 'bar'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_arrayTransformer_from_service_not_registered()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Service "'.MyArrayTransformerService::class.'" is not registered.');
+
+        $this->builder->arrayTransformer(MyArrayTransformerService::class);
+    }
+
+    /**
+     *
+     */
     public function test_count()
     {
         $element = $this->builder->count(null, /*min: */3)->buildElement();
@@ -325,6 +353,31 @@ class ArrayElementBuilderTest extends TestCase
         $element = $this->builder->buildElement();
 
         $this->assertSame(['BAC'], $element->submit([''])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_from_service()
+    {
+        $registry = new Registry();
+        $registry->registerService(new MyTransformerService());
+
+        $builder = new ArrayElementBuilder($registry);
+        $element = $builder->transformer(MyTransformerService::class)->buildElement();
+
+        $this->assertSame(['foo>', 'bar>'], $element->submit(['foo', 'bar'])->value());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_from_service_not_registered()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Service "'.MyTransformerService::class.'" is not registered.');
+
+        $this->builder->transformer(MyTransformerService::class);
     }
 
     /**
@@ -429,5 +482,18 @@ class ArrayElementBuilderTest extends TestCase
 
         $element = $this->builder->choices(MyServiceChoice::class)->buildElement();
         $element->submit(['foo', 'bar']);
+    }
+}
+
+class MyArrayTransformerService implements TransformerInterface
+{
+    public function transformToHttp(mixed $value, ElementInterface $input): mixed
+    {
+        return array_flip($value);
+    }
+
+    public function transformFromHttp(mixed $value, ElementInterface $input): mixed
+    {
+        return array_flip($value);
     }
 }

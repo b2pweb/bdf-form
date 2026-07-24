@@ -27,8 +27,10 @@ trait DelegateElementBuilderTrait
 
     /**
      * {@inheritdoc}
+     *
+     * @param callable|TransformerInterface|class-string<TransformerInterface> $transformer
      */
-    final public function transformer(callable|TransformerInterface $transformer, bool $append = true): static
+    final public function transformer(callable|TransformerInterface|string $transformer, bool $append = true): static
     {
         $this->getElementBuilder()->transformer($transformer, $append);
 

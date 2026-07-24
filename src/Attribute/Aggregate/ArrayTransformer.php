@@ -20,8 +20,12 @@ use Bdf\Form\Transformer\TransformerInterface;
  * <code>
  * class MyForm extends AttributeForm
  * {
- *     #[ArrayTransformer(MyTransformer::class, ['foo', 'bar']), ElementType(IntegerElement::class)]
+ *     #[ArrayTransformer(new MyTransformer(['foo', 'bar']), ElementType(IntegerElement::class)]
  *     private ArrayElement $foo;
+ *
+ *     // Load the transformer from the registry/container
+ *     #[ArrayTransformer(TransformerService::class)]
+ *     private ArrayElement $bar;
  * }
  * </code>
  *
@@ -35,11 +39,11 @@ use Bdf\Form\Transformer\TransformerInterface;
 class ArrayTransformer extends Transformer
 {
     /**
-     * @param class-string<TransformerInterface> $transformerClass The transformer class name
+     * @param class-string<TransformerInterface>|TransformerInterface $transformer The transformer class name or instance
      * @param array $constructorArguments Arguments to provide on the transformer constructor
      */
-    public function __construct(string $transformerClass, array $constructorArguments = [])
+    public function __construct(string|TransformerInterface $transformer, array $constructorArguments = [])
     {
-        parent::__construct($transformerClass, $constructorArguments, true);
+        parent::__construct($transformer, $constructorArguments, true);
     }
 }

@@ -7,7 +7,9 @@ use Bdf\Form\Choice\ChoiceInterface;
 use Bdf\Form\Choice\ChoiceView;
 use Bdf\Form\Choice\EnumChoice;
 use Bdf\Form\Choice\LazyChoice;
+use Bdf\Form\ElementInterface;
 use Bdf\Form\Registry\Registry;
+use Bdf\Form\Transformer\TransformerInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
@@ -94,6 +96,35 @@ class StringElementBuilderTest extends TestCase
         ;
 
         $this->assertEquals('_ab', $element->submit('_')->value());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_from_service()
+    {
+        $registry = new Registry();
+        $registry->registerService(new MyTransformerService());
+
+        $builder = new StringElementBuilder($registry);
+        $element = $builder
+            ->transformer(MyTransformerService::class)
+            ->transformer(function ($value) { return $value . 'a'; })
+            ->buildElement()
+        ;
+
+        $this->assertEquals('_a>', $element->submit('_')->value());
+    }
+
+    /**
+     *
+     */
+    public function test_transformer_from_service_not_registered()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Service "'.MyTransformerService::class.'" is not registered.');
+
+        $this->builder->transformer(MyTransformerService::class);
     }
 
     /**
@@ -257,6 +288,19 @@ enum MyStringEnum: string
 {
     case Foo = 'foo';
     case Bar = 'bar';
+}
+
+class MyTransformerService implements TransformerInterface
+{
+    public function transformToHttp(mixed $value, ElementInterface $input): mixed
+    {
+        return $value;
+    }
+
+    public function transformFromHttp(mixed $value, ElementInterface $input): mixed
+    {
+        return $value . '>';
+    }
 }
 
 class MyServiceChoice implements ChoiceInterface

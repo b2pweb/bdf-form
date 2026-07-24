@@ -88,16 +88,18 @@ interface ElementBuilderInterface
      *         return $value->export();
      *     }
      * });
+     *
+     * $builder->transformer(TransformerService::class); // Add a transformer, loaded from the registry/container
      * </code>
      *
-     * @param callable|TransformerInterface $transformer The transformer.
+     * @param callable|TransformerInterface|class-string<TransformerInterface> $transformer The transformer.
      * @param bool $append Append the transformer. Prepend if false
      *
      * @return $this
      *
      * @see TransformerInterface
      */
-    public function transformer(callable|TransformerInterface $transformer, bool $append = true): static;
+    public function transformer(callable|TransformerInterface|string $transformer, bool $append = true): static;
 
     /**
      * Define the initial value of the element
