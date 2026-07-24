@@ -3,6 +3,11 @@
 namespace Bdf\Form\Leaf;
 
 use Bdf\Form\Choice\ArrayChoice;
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Choice\ChoiceView;
+use Bdf\Form\Choice\LazyChoice;
+use Bdf\Form\Registry\Registry;
+use InvalidArgumentException;
 use Locale;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\DataTransformer\IntegerToLocalizedStringTransformer;
@@ -339,5 +344,65 @@ class FloatElementBuilderTest extends TestCase
         $this->assertFalse($element->valid());
         $this->assertTrue($element->failed());
         $this->assertEquals('my error', $element->error()->global());
+    }
+
+    /**
+     *
+     */
+    public function test_choices_from_service()
+    {
+        $choice = new MyFloatServiceChoice();
+
+        $registry = new Registry();
+        $registry->registerService($choice);
+
+        $builder = new FloatElementBuilder($registry);
+        $element = $builder->choices(MyFloatServiceChoice::class)->buildElement();
+
+        $this->assertInstanceOf(LazyChoice::class, $element->choices());
+        $this->assertSame([12.3, 45.6, 78.9], $element->choices()->values());
+
+        $element->submit('14.7');
+        $this->assertFalse($element->valid());
+        $this->assertTrue($element->failed());
+        $this->assertEquals('The value you selected is not a valid choice.', $element->error()->global());
+
+        $element->submit('45.6');
+        $this->assertTrue($element->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_choices_from_service_not_registered()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Service "'.MyFloatServiceChoice::class.'" is not registered.');
+
+        $element = $this->builder->choices(MyFloatServiceChoice::class)->buildElement();
+        $element->submit('45.6');
+    }
+}
+
+class MyFloatServiceChoice implements ChoiceInterface
+{
+    public function values(): array
+    {
+        return [12.3, 45.6, 78.9];
+    }
+
+    public function view(?callable $configuration = null): array
+    {
+        $view = [];
+
+        foreach ($this->values() as $value) {
+            $view[] = $choice = new ChoiceView($value, $value);
+
+            if ($configuration !== null) {
+                $configuration($choice);
+            }
+        }
+
+        return $view;
     }
 }

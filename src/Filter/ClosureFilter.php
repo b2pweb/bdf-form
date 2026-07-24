@@ -2,6 +2,7 @@
 
 namespace Bdf\Form\Filter;
 
+use Attribute;
 use Bdf\Form\Child\ChildBuilderInterface;
 use Bdf\Form\Child\ChildInterface;
 use Override;
@@ -18,6 +19,7 @@ use Override;
  *
  * @see ChildBuilderInterface::filter()
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final readonly class ClosureFilter implements FilterInterface
 {
     /**

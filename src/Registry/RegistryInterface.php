@@ -60,4 +60,14 @@ interface RegistryInterface
      * @return ButtonBuilderInterface
      */
     public function buttonBuilder(string $name): ButtonBuilderInterface;
+
+    /**
+     * Get a service instance
+     *
+     * @param class-string<T> $class
+     *
+     * @return T
+     * @template T as object
+     */
+    public function service(string $class): object;
 }

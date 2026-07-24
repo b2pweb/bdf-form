@@ -29,6 +29,7 @@ use function is_string;
  * - a simple array of values (without labels)
  * - an associative array for provide a label (in key), and inner value (in value)
  * - a method name for resolving choices in lazy way
+ * - a choice class name to load from the registry/container
  *
  * Note: this attribute is not repeatable
  *
@@ -49,6 +50,9 @@ use function is_string;
  *
  *     #[Choices('loadBazValues', 'Invalid value')]
  *     private StringElement $baz;
+ *
+ *     #[Choices(MyChoices::class)]
+ *     private StringElement $oof;
  *
  *     // For dynamic choices, or with complex logic
  *     public function loadBazValues(): array
@@ -86,7 +90,7 @@ final readonly class Choices implements ChildBuilderAttributeInterface
          * If the value is an array, the key will be used as label (displayed value), and the value as real value
          * The label is not required.
          *
-         * @var literal-string|array
+         * @var literal-string|class-string<ChoiceInterface>|array
          * @readonly
          */
         private string|array $choices,
@@ -118,7 +122,7 @@ final readonly class Choices implements ChildBuilderAttributeInterface
 
         $choices = $this->choices;
 
-        if (is_string($choices)) {
+        if (is_string($choices) && !class_exists($choices)) {
             $choices = is_object($context)
                 ? new LazyChoice($context->{$this->choices}(...))
                 : new LazyChoice($context::{$this->choices}(...))
@@ -139,7 +143,7 @@ final readonly class Choices implements ChildBuilderAttributeInterface
             $options['message'] = $this->message;
         }
 
-        if (is_string($this->choices)) {
+        if (is_string($this->choices) && !class_exists($this->choices)) {
             $generator->use(LazyChoice::class);
 
             if (is_object($context)) {

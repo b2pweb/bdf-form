@@ -3,11 +3,16 @@
 namespace Tests\Form\Attribute\Element;
 
 use Bdf\Form\Aggregate\ArrayElement;
+use Bdf\Form\Aggregate\FormBuilder;
 use Bdf\Form\Attribute\AttributeForm;
 use Bdf\Form\Attribute\Element\Choices;
 use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
 use Bdf\Form\Choice\ArrayChoice;
+use Bdf\Form\Choice\ChoiceInterface;
+use Bdf\Form\Choice\ChoiceView;
+use Bdf\Form\Choice\LazyChoice;
 use Bdf\Form\Leaf\StringElement;
+use Bdf\Form\Registry\Registry;
 use Bdf\Form\Struct\StructForm;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -65,6 +70,110 @@ class ChoicesTest extends TestCase
 
         $form->submit(['foo' => 'bar', 'bar' => ['bar'], 'baz' => 'ccc']);
         $this->assertEquals(['bar' => 'You must select at least 2 choices.'], $form->error()->toArray());
+    }
+
+    #[Test, DataProvider('provideAttributesProcessor')]
+    public function from_service(AttributesProcessorInterface $processor)
+    {
+        $registry = new Registry();
+        $registry->registerService(new TestChoicesService());
+
+        $form = new class(new FormBuilder($registry), $processor) extends AttributeForm {
+            #[Choices(TestChoicesService::class, message: 'my error')]
+            public StringElement $foo;
+
+            #[Choices(TestChoicesService::class, message: 'my error', options: ['min' => 2])]
+            public ArrayElement $bar;
+        };
+
+        $form->submit(['foo' => 'a', 'bar' => ['b']]);
+
+        $this->assertInstanceOf(LazyChoice::class, $form->foo->choices());
+        $this->assertSame(['aaa', 'bbb', 'ccc'], $form->foo->choices()->values());
+        $this->assertInstanceOf(LazyChoice::class, $form->bar->choices());
+        $this->assertSame(['aaa', 'bbb', 'ccc'], $form->bar->choices()->values());
+        $this->assertEquals(['foo' => 'my error', 'bar' => 'my error'], $form->error()->toArray());
+
+        $form->submit(['foo' => 'aaa', 'bar' => ['aaa', 'bbb']]);
+        $this->assertTrue($form->valid());
+
+        $form->submit(['foo' => 'aaa', 'bar' => ['aaa']]);
+        $this->assertEquals(['bar' => 'You must select at least 2 choices.'], $form->error()->toArray());
+    }
+
+    #[Test, DataProvider('provideStructAttributesProcessor')]
+    public function struct_from_service(AttributesProcessorInterface $processor)
+    {
+        $registry = new Registry();
+        $registry->registerService(new TestChoicesService());
+
+        $form = new StructForm(TestChoicesServiceStruct::class, new FormBuilder($registry), processor: $processor);
+
+        $form->submit(['foo' => 'a', 'bar' => ['b']]);
+
+        $this->assertInstanceOf(LazyChoice::class, $form['foo']->element()->choices());
+        $this->assertSame(['aaa', 'bbb', 'ccc'], $form['foo']->element()->choices()->values());
+        $this->assertInstanceOf(LazyChoice::class, $form['bar']->element()->choices());
+        $this->assertSame(['aaa', 'bbb', 'ccc'], $form['bar']->element()->choices()->values());
+        $this->assertEquals(['foo' => 'my error', 'bar' => 'my error'], $form->error()->toArray());
+
+        $form->submit(['foo' => 'aaa', 'bar' => ['aaa', 'bbb']]);
+        $this->assertTrue($form->valid());
+
+        $form->submit(['foo' => 'aaa', 'bar' => ['aaa']]);
+        $this->assertEquals(['bar' => 'You must select at least 2 choices.'], $form->error()->toArray());
+    }
+
+    public function test_code_generator_from_service()
+    {
+        $form = new class extends AttributeForm {
+            #[Choices(TestChoicesService::class, message: 'my error')]
+            public StringElement $foo;
+
+            #[Choices(TestChoicesService::class, message: 'my error', options: ['min' => 2])]
+            public ArrayElement $bar;
+        };
+
+        $this->assertGenerated(<<<'PHP'
+namespace Generated;
+
+use Bdf\Form\Aggregate\ArrayElement;
+use Bdf\Form\Aggregate\FormBuilderInterface;
+use Bdf\Form\Aggregate\FormInterface;
+use Bdf\Form\Attribute\AttributeForm;
+use Bdf\Form\Attribute\Processor\AttributesProcessorInterface;
+use Bdf\Form\Attribute\Processor\PostConfigureInterface;
+use Bdf\Form\Leaf\StringElement;
+
+class GeneratedConfigurator implements AttributesProcessorInterface, PostConfigureInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    function configureBuilder(object|string $context, FormBuilderInterface $builder): ?PostConfigureInterface
+    {
+        $foo = $builder->add('foo', StringElement::class);
+        $foo->choices('Tests\Form\Attribute\Element\TestChoicesService', message: 'my error');
+
+        $bar = $builder->add('bar', ArrayElement::class);
+        $bar->choices('Tests\Form\Attribute\Element\TestChoicesService', min: 2, message: 'my error');
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    function postConfigure(AttributeForm $form, FormInterface $inner): void
+    {
+        $form->foo = $inner['foo']->element();
+        $form->bar = $inner['bar']->element();
+    }
+}
+
+PHP
+        , $form
+);
     }
 
     public function test_code_generator()
@@ -192,5 +301,30 @@ class TestChoicesStruct
     public static function generateChoices()
     {
         return ['aaa', 'bbb', 'ccc'];
+    }
+}
+
+class TestChoicesServiceStruct
+{
+    public function __construct(
+        #[Choices(TestChoicesService::class, message: 'my error')]
+        public ?string $foo,
+        #[Choices(TestChoicesService::class, message: 'my error', options: ['min' => 2])]
+        public array $bar,
+    ) {}
+}
+
+class TestChoicesService implements ChoiceInterface
+{
+    #[\Override]
+    public function values(): array
+    {
+        return ['aaa', 'bbb', 'ccc'];
+    }
+
+    #[\Override]
+    public function view(?callable $configuration = null): array
+    {
+        return new ArrayChoice($this->view())->view($configuration);
     }
 }

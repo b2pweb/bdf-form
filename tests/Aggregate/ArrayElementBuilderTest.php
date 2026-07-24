@@ -10,12 +10,15 @@ use Bdf\Form\Leaf\Date\DateTimeElementBuilder;
 use Bdf\Form\Leaf\EnumElementBuilder;
 use Bdf\Form\Leaf\FloatElementBuilder;
 use Bdf\Form\Leaf\IntegerElementBuilder;
+use Bdf\Form\Leaf\MyServiceChoice;
 use Bdf\Form\Leaf\MyStringEnum;
 use Bdf\Form\Leaf\StringElement;
 use Bdf\Form\Leaf\StringElementBuilder;
 use Bdf\Form\Phone\PhoneElementBuilder;
+use Bdf\Form\Registry\Registry;
 use Bdf\Form\Struct\Fixtures\SimpleDto;
 use Bdf\Form\Struct\StructFormBuilder;
+use InvalidArgumentException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
@@ -392,5 +395,39 @@ class ArrayElementBuilderTest extends TestCase
         $this->assertEquals('One or more of the given values is invalid.', $element->error()->global());
 
         $this->assertTrue($element->submit(['foo', 'bar'])->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_choices_from_service()
+    {
+        $choice = new MyServiceChoice();
+
+        $registry = new Registry();
+        $registry->registerService($choice);
+
+        $builder = new ArrayElementBuilder($registry);
+        $element = $builder->choices(MyServiceChoice::class)->buildElement();
+
+        $this->assertInstanceOf(LazyChoice::class, $element->choices());
+        $this->assertSame(['foo', 'bar'], $element->choices()->values());
+
+        $this->assertFalse($element->submit(['foo', 'aaa'])->valid());
+        $this->assertEquals('One or more of the given values is invalid.', $element->error()->global());
+
+        $this->assertTrue($element->submit(['foo', 'bar'])->valid());
+    }
+
+    /**
+     *
+     */
+    public function test_choices_from_service_not_registered()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Service "'.MyServiceChoice::class.'" is not registered.');
+
+        $element = $this->builder->choices(MyServiceChoice::class)->buildElement();
+        $element->submit(['foo', 'bar']);
     }
 }

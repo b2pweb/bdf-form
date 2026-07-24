@@ -156,6 +156,18 @@ class RegistryTest extends TestCase
         $this->assertInstanceOf(SubmitButtonBuilder::class, $this->registry->buttonBuilder('btn'));
         $this->assertEquals('btn', $this->registry->buttonBuilder('btn')->buildButton()->name());
     }
+
+    public function test_service()
+    {
+        $service = new \stdClass();
+        $this->registry->registerService($service);
+
+        $this->assertSame($service, $this->registry->service(\stdClass::class));
+
+        $otherService = new \stdClass();
+        $this->registry->registerService($otherService, 'other');
+        $this->assertSame($otherService, $this->registry->service('other'));
+    }
 }
 
 class MyCustomTestElement extends LeafElement
