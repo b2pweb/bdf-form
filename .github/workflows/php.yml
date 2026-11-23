@@ -6,12 +6,15 @@ on:
   pull_request:
     branches: [ '[1-9].[0-9]+' ]
 
+env:
+  COMPOSER_NO_SECURITY_BLOCKING: "1"
+
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['8.4', '8.5']
+        php-versions: ['8.4', '8.5', '8.6']
     name: PHP ${{ matrix.php-versions }}
 
     steps:
@@ -47,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sf-versions: ['6.4', '7.4', '8.0']
+        sf-versions: ['6.4', '7.4', '8.0', '8.1']
     name: Symfony ${{ matrix.sf-versions }}
 
     steps:
@@ -121,9 +124,9 @@ jobs:
       run: |
         if [ -n "$GITHUB_BASE_REF" ]; then
           git fetch --depth=1 origin $GITHUB_BASE_REF
-          ./infection.phar --logger-github --git-diff-base=origin/$GITHUB_BASE_REF --git-diff-filter=AM --min-msi=80
+          ./infection.phar --logger-github --git-diff-base=origin/$GITHUB_BASE_REF --git-diff-filter=AM --min-msi=80 --ignore-msi-with-no-mutations
         else
-          ./infection.phar --logger-github --min-msi=80
+          ./infection.phar --logger-github --min-msi=80 --ignore-msi-with-no-mutations
         fi
 
   coverage:

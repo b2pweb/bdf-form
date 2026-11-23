@@ -161,6 +161,6 @@ class TestAsFilterStruct
     #[AsFilter('foo', 'bar')]
     public static function aFilter($value, Child $input, $default)
     {
-        return base64_decode($value);
+        return $value !== null ? base64_decode($value) : '';
     }
 }

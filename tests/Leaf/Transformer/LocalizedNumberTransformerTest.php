@@ -113,7 +113,7 @@ class LocalizedNumberTransformerTest extends TestCase
         $this->assertSame(12.34, $transformer->transformFromHttp('12,34', $element));
         $this->assertSame('12,34', $transformer->transformToHttp(12.34, $element));
 
-        $transformer = new LocalizedNumberTransformer(null, false, \NumberFormatter::ROUND_HALFEVEN, 'ar');
+        $transformer = new LocalizedNumberTransformer(null, false, \NumberFormatter::ROUND_HALFEVEN, 'ar_EG');
         $this->assertSame(12.34, $transformer->transformFromHttp('١٢٫٣٤', $element));
         $this->assertSame('١٢٫٣٤', $transformer->transformToHttp(12.34, $element));
     }
