@@ -124,9 +124,9 @@ jobs:
       run: |
         if [ -n "$GITHUB_BASE_REF" ]; then
           git fetch --depth=1 origin $GITHUB_BASE_REF
-          ./infection.phar --logger-github --git-diff-base=origin/$GITHUB_BASE_REF --git-diff-filter=AM --min-msi=80
+          ./infection.phar --logger-github --git-diff-base=origin/$GITHUB_BASE_REF --git-diff-filter=AM --min-msi=80 --ignore-msi-with-no-mutations
         else
-          ./infection.phar --logger-github --min-msi=80
+          ./infection.phar --logger-github --min-msi=80 --ignore-msi-with-no-mutations
         fi
 
   coverage:
