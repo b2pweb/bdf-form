@@ -8,6 +8,8 @@
   stderr="true"
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/13.0/phpunit.xsd"
   cacheDirectory=".phpunit.cache"
+  executionOrder="random,defects"
+  resolveDependencies="true"
 >
   <php>
     <!-- php -r 'echo -1 & ~E_USER_DEPRECATED;' -->
