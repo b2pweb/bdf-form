@@ -40,6 +40,7 @@ final class ValueGenerator implements ValueGeneratorInterface
      */
     public function __construct(mixed $value = [])
     {
+        /** @psalm-suppress InvalidPropertyAssignmentValue */
         $this->generator = self::fromValue($value, true);
     }
 

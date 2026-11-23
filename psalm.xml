@@ -21,5 +21,6 @@
         <DocblockTypeContradiction errorLevel="suppress" />
         <RedundantConditionGivenDocblockType errorLevel="suppress" />
         <RedundantCastGivenDocblockType errorLevel="suppress" />
+        <DeprecatedSyntax errorLevel="suppress" />
     </issueHandlers>
 </psalm>

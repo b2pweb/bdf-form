@@ -241,7 +241,7 @@ class TransformerWithArguments implements TransformerInterface
 
     public function transformToHttp($value, ElementInterface $input)
     {
-        return substr($value, strlen((string) $this->prefix));
+        return substr($value ?? '', strlen((string) $this->prefix));
     }
 
     public function transformFromHttp($value, ElementInterface $input)
